@@ -84,7 +84,6 @@ const config: Config = {
         docs: {
           routeBasePath: '/',  // Docs at the root of /docs/
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/claraprise/clara-agent/edit/main/website/',
         },
         blog: false,
         theme: {
@@ -139,8 +138,8 @@ const config: Config = {
           position: 'left',
         },
         {
-          href: 'https://agent.claraprise.com/',
-          label: 'Download',
+          href: 'https://workprise.fr',
+          label: 'Workprise',
           position: 'left',
         },
         {
@@ -148,18 +147,13 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://agent.claraprise.com',
-          label: 'Home',
+          href: 'https://portal.workprise.fr',
+          label: 'Portal',
           position: 'right',
         },
         {
-          href: 'https://github.com/claraprise/clara-agent',
+          href: 'https://github.com/claraprise',
           label: 'GitHub',
-          position: 'right',
-        },
-        {
-          href: 'https://discord.gg/Workprise',
-          label: 'Discord',
           position: 'right',
         },
       ],
@@ -173,27 +167,26 @@ const config: Config = {
             { label: 'Getting Started', to: '/getting-started/quickstart' },
             { label: 'User Guide', to: '/user-guide/cli' },
             { label: 'Developer Guide', to: '/developer-guide/architecture' },
-            { label: 'Reference', to: '/reference/cli-commands' },
+            { label: 'Responsible AI', to: '/user-guide/responsible-ai' },
           ],
         },
         {
-          title: 'Community',
+          title: 'Ecosystem',
           items: [
-            { label: 'Discord', href: 'https://discord.gg/Workprise' },
-            { label: 'GitHub Issues', href: 'https://github.com/claraprise/clara-agent/issues' },
-            { label: 'Skills Hub', href: 'https://agentskills.io' },
+            { label: 'Web Portal', href: 'https://portal.workprise.fr' },
+            { label: 'GitHub Organization', href: 'https://github.com/claraprise' },
+            { label: 'Contact', href: 'mailto:contact@workprise.com' },
           ],
         },
         {
-          title: 'More',
+          title: 'Company',
           items: [
-            { label: 'Desktop Download', href: 'https://agent.claraprise.com/' },
-            { label: 'GitHub', href: 'https://github.com/claraprise/clara-agent' },
-            { label: 'Workprise', href: 'https://workprise.com' },
+            { label: 'Workprise', href: 'https://workprise.fr' },
+            { label: 'Claraprise', href: 'https://claraprise.com' },
           ],
         },
       ],
-      copyright: `Built by <a href="https://workprise.com">Workprise</a> · MIT License · ${new Date().getFullYear()}`,
+      copyright: `Built by <a href="https://workprise.com">Workprise</a> · Claraprise · ${new Date().getFullYear()}`,
     },
     prism: {
       theme: prismThemes.github,
