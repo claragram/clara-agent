@@ -16,7 +16,7 @@ export const fr: Translations = {
     collapse: 'Réduire',
     confirm: 'Confirmer',
     connect: 'Connecter',
-    connecting: 'Connexion…',
+    connecting: 'Connexion en cours…',
     continue: 'Continuer',
     copied: 'Copié !',
     copy: 'Copier',
@@ -30,7 +30,7 @@ export const fr: Translations = {
     formatJson: 'Formater le JSON',
     free: 'Gratuit',
     loading: 'Chargement…',
-    notSet: 'Non défini',
+    notSet: 'Non configuré',
     refresh: 'Actualiser',
     remove: 'Supprimer',
     replace: 'Remplacer',
@@ -47,9 +47,9 @@ export const fr: Translations = {
 
   fileMenu: {
     revealFinder: 'Afficher dans le Finder',
-    revealExplorer: 'Reveal in File Explorer',
+    revealExplorer: 'Afficher dans l\'Explorateur',
     revealFileManager: 'Ouvrir le dossier parent',
-    revealInSidebar: 'Reveal in filetree',
+    revealInSidebar: 'Afficher dans l\'arborescence',
     copyPath: 'Copier le chemin',
     copyRelativePath: 'Copier le chemin relatif',
     download: 'Télécharger',
@@ -57,99 +57,99 @@ export const fr: Translations = {
     downloadFailed: 'Échec du téléchargement',
     rename: 'Renommer…',
     delete: 'Supprimer',
-    renameTitle: 'Renommer',
-    renameLabel: 'New name',
+    renameTitle: 'Rename',
+    renameLabel: 'Nouveau nom',
     deleteTitle: name => `Delete ${name}?`,
-    deleteBody: 'It will be moved to the Trash — you can restore it from there.',
-    pathCopied: 'Chemin copié'
+    deleteBody: 'Il sera déplacé vers la corbeille — vous pourrez le restaurer depuis celle-ci.',
+    pathCopied: 'Chemin d\'accès copié'
   },
 
   boot: {
-    ready: 'Clara Desktop is ready',
+    ready: 'Clara Desktop est prêt',
     desktopBootFailedWithMessage: message => `Desktop boot failed: ${message}`,
     steps: {
-      connectingGateway: 'Connecting live desktop gateway',
-      loadingSettings: 'Loading Clara settings',
-      loadingSessions: 'Loading recent sessions',
-      retryingRemoteBackend: 'Reconnecting to the remote Clara backend…',
-      startingDesktopConnection: 'Starting desktop connection',
-      startingClaraDesktop: 'Starting Clara Desktop…'
+      connectingGateway: 'Connexion à la passerelle de bureau…',
+      loadingSettings: 'Chargement des paramètres de Clara…',
+      loadingSessions: 'Chargement des sessions récentes…',
+      retryingRemoteBackend: 'Reconnexion au serveur Clara distant…',
+      startingDesktopConnection: 'Démarrage de la connexion bureau…',
+      startingClaraDesktop: 'Démarrage de Clara Desktop…'
     },
     errors: {
-      backgroundExited: 'Clara background process exited.',
-      backgroundExitedDuringStartup: 'Clara background process exited during startup.',
-      backendStopped: 'Backend stopped',
-      desktopBootFailed: 'Desktop boot failed',
-      gatewayConnectionLost: 'Lost connection to the gateway',
+      backgroundExited: 'Le processus d\'arrière-plan Clara s\'est arrêté.',
+      backgroundExitedDuringStartup: 'Le processus Clara s\'est arrêté pendant le démarrage.',
+      backendStopped: 'Serveur backend arrêté',
+      desktopBootFailed: 'Échec du démarrage de l\'application de bureau',
+      gatewayConnectionLost: 'Connexion à la passerelle perdue',
       gatewayConnectionLostDetail:
         'Still retrying in the background. You can keep reading and drafting — open Gateway settings if this persists.',
-      gatewaySignInRequired: 'Gateway sign-in required',
-      ipcBridgeUnavailable: 'Desktop IPC bridge is unavailable.'
+      gatewaySignInRequired: 'Authentification à la passerelle requise',
+      ipcBridgeUnavailable: 'Le pont IPC du bureau n\'est pas disponible.'
     },
     failure: {
       title: "Clara couldn't start",
       description:
         "The background gateway didn't come up. Try one of the recovery steps below. Nothing here deletes your chats or settings.",
-      remoteTitle: 'Remote gateway sign-in required',
+      remoteTitle: 'Connexion à la passerelle distante requise',
       remoteDescription:
         'Your remote gateway session has expired. Sign in again to reconnect. Nothing here deletes your chats or settings.',
       retry: 'Réessayer',
-      repairInstall: 'Repair install',
-      useLocalGateway: 'Use local gateway',
-      gatewaySettings: 'Gateway settings',
+      repairInstall: 'Réparer l\'installation',
+      useLocalGateway: 'Utiliser la passerelle locale',
+      gatewaySettings: 'Paramètres de passerelle',
       back: 'Retour',
-      openLogs: 'Open logs',
+      openLogs: 'Ouvrir les journaux',
       repairHint: 'Repair re-runs the installer and can take a few minutes on a fresh machine.',
       remoteSignInHint: signInLabel =>
         `Signs out of the saved remote browser session, then opens ${signInLabel}. Use local gateway to switch to the bundled backend instead.`,
-      signOutAndSignIn: 'Sign out & sign in',
+      signOutAndSignIn: 'Se déconnecter & se reconnecter',
       remoteFailureHint: 'Check the gateway URL and sign-in under Gateway settings, or switch to the local gateway.',
-      cloudDownTitle: 'Clara Cloud agent is down',
+      cloudDownTitle: 'L\'agent cloud Clara est indisponible',
       cloudDownDescription:
         'The Clara-managed cloud agent this gateway connects to is returning a server error. It cannot be restarted from here — check its status, switch to the local gateway, or get support.',
       cloudDownHint:
         'The buttons below open the Clara Portal (instance status and controls) and our Discord for support.',
-      cloudDownCheckPortal: 'Check Portal status',
-      cloudDownDiscord: 'Get help on Discord',
-      hideRecentLogs: 'Hide recent logs',
-      showRecentLogs: 'Show recent logs',
-      signedInTitle: 'Signed in',
-      signedInMessage: 'Reconnecting to the remote gateway…',
-      signInIncompleteTitle: 'Sign-in incomplete',
+      cloudDownCheckPortal: 'Vérifier le statut du portail',
+      cloudDownDiscord: 'Obtenir de l\'aide sur Discord',
+      hideRecentLogs: 'Masquer les journaux récents',
+      showRecentLogs: 'Afficher les journaux récents',
+      signedInTitle: 'Connecté',
+      signedInMessage: 'Reconnexion à la passerelle distante…',
+      signInIncompleteTitle: 'Connexion incomplète',
       signInIncompleteMessage: 'The login window closed before authentication finished.',
-      signInFailed: 'Sign-in failed',
-      signInToRemoteGateway: 'Sign in to remote gateway',
+      signInFailed: 'Échec de connexion',
+      signInToRemoteGateway: 'Se connecter à la passerelle distante',
       signInWithProvider: provider => `Sign in with ${provider}`,
-      identityProvider: 'your identity provider'
+      identityProvider: 'votre fournisseur d\'identité'
     }
   },
 
   notifications: {
     region: 'Notifications',
-    hide: 'Hide',
-    show: 'Show',
+    hide: 'Masquer',
+    show: 'Afficher',
     more: count => `${count} more ${count === 1 ? 'notification' : 'notifications'}`,
-    clearAll: 'Clear all',
-    dismiss: 'Dismiss notification',
-    details: 'Details',
-    copyDetail: 'Copy detail',
-    copyDetailFailed: 'Could not copy notification detail',
-    backendOutOfDateTitle: 'Backend out of date',
+    clearAll: 'Tout effacer',
+    dismiss: 'Ignorer la notification',
+    details: 'Détails',
+    copyDetail: 'Copier les détails',
+    copyDetailFailed: 'Impossible de copier les détails de la notification',
+    backendOutOfDateTitle: 'Serveur backend obsolète',
     backendOutOfDateMessage:
       'Your Clara backend is older than this desktop build and may not work correctly. Update to align them.',
-    installMethodUnsupportedTitle: 'Unsupported install method',
-    updateClara: 'Update Clara',
-    updateReadyTitle: 'Update ready',
+    installMethodUnsupportedTitle: 'Méthode d\'installation non prise en charge',
+    updateClara: 'Mettre à jour Clara',
+    updateReadyTitle: 'Mise à jour disponible',
     updateReadyMessage: count => `${count} new change${count === 1 ? '' : 's'} available.`,
-    updateReadyMessageUnknown: 'A new update is available.',
+    updateReadyMessageUnknown: 'Une nouvelle mise à jour est disponible.',
     seeWhatsNew: "See what's new",
     mcp: {
       needsAuthTitle: 'MCP server needs re-authentication',
       needsAuthMessage: name => `${name} MCP needs re-authentication.`,
       errorTitle: 'MCP server unreachable',
       errorMessage: name => `${name} MCP failed its health check.`,
-      signIn: 'Sign in',
-      view: 'View'
+      signIn: 'Se connecter',
+      view: 'Voir'
     },
     errors: {
       elevenLabsNeedsKey: 'ElevenLabs STT needs ELEVENLABS_API_KEY.',
@@ -185,17 +185,17 @@ export const fr: Translations = {
       unavailable: 'Voice unavailable'
     },
     native: {
-      approvalTitle: 'Approval needed',
-      approveAction: 'Approve',
-      rejectAction: 'Reject',
-      inputTitle: 'Input needed',
-      inputBody: 'Clara is waiting for your response.',
-      turnDoneTitle: 'Clara finished',
+      approvalTitle: 'Approbation requise',
+      approveAction: 'Approuver',
+      rejectAction: 'Rejeter',
+      inputTitle: 'Saisie requise',
+      inputBody: 'Clara attend votre réponse.',
+      turnDoneTitle: 'Clara a terminé',
       turnDoneBody: '',
-      turnErrorTitle: 'Turn failed',
-      backgroundDoneTitle: 'Background task finished',
-      backgroundFailedTitle: 'Background task failed',
-      creditsTitle: 'Credits'
+      turnErrorTitle: 'Échec du tour',
+      backgroundDoneTitle: 'Tâche de fond terminée',
+      backgroundFailedTitle: 'Échec de la tâche de fond',
+      creditsTitle: 'Crédits'
     }
   },
 
@@ -269,10 +269,10 @@ export const fr: Translations = {
     conflictWith: label => `Also bound to “${label}”`,
     categories: {
       composer: 'Composer',
-      profiles: 'Profils d\'agents',
+      profiles: 'Profils',
       session: 'Session',
       navigation: 'Navigation',
-      view: 'View'
+      view: 'Voir'
     },
     actions: {
       'keybinds.openPanel': 'Open keyboard shortcuts',
@@ -285,7 +285,7 @@ export const fr: Translations = {
       'nav.artifacts': 'Open artifacts',
       'nav.cron': 'Open scheduled jobs',
       'nav.agents': 'Open agents',
-      'session.new': 'New session',
+      'session.new': 'Nouvelle session',
       'session.newTab': 'New session tab',
       'session.newWindow': 'New window',
       'session.next': 'Next session',
@@ -373,7 +373,7 @@ export const fr: Translations = {
   },
 
   language: {
-    label: 'Language',
+    label: 'Langue',
     description: 'Choisissez la langue de l\'interface de Clara.',
     saving: 'Enregistrement de la langue…',
     saveError: 'Échec de la mise à jour de la langue',
@@ -386,7 +386,7 @@ export const fr: Translations = {
     closeSettings: 'Fermer les paramètres',
     exportConfig: 'Exporter la configuration',
     importConfig: 'Importer la configuration',
-    resetToDefaults: 'Rétablir les paramètres par défaut',
+    resetToDefaults: 'Rétablir les réglages par défaut',
     resetConfirm: 'Réinitialiser tous les paramètres par défaut de Clara ?',
     exportFailed: 'Échec de l\'exportation',
     resetFailed: 'Échec de la réinitialisation',
@@ -476,11 +476,11 @@ export const fr: Translations = {
       focusedHint: 'Completion alerts only fire while Clara is in the background.',
       kinds: {
         approval: {
-          label: 'Approval needed',
+          label: 'Approbation requise',
           description: 'A command is waiting for you to approve or reject it.'
         },
         input: {
-          label: 'Input needed',
+          label: 'Saisie requise',
           description: 'Clara asked a question or needs a password or secret.'
         },
         turnDone: {
@@ -488,11 +488,11 @@ export const fr: Translations = {
           description: 'A turn finished while Clara was in the background.'
         },
         turnError: {
-          label: 'Turn failed',
+          label: 'Échec du tour',
           description: 'Background turn errors.'
         },
         backgroundDone: {
-          label: 'Background task finished',
+          label: 'Tâche de fond terminée',
           description: 'A backgrounded terminal command completed.'
         },
         credits: {
@@ -532,29 +532,29 @@ export const fr: Translations = {
       sessions: 'Search archived sessions...'
     },
     modeOptions: {
-      light: { label: 'Clair', description: 'Surfaces claires pour le bureau' },
+      light: { label: 'Clair', description: 'Surfaces lumineuses adaptées au jour' },
       dark: { label: 'Sombre', description: 'Espace de travail sombre à faible reflet' },
-      system: { label: 'Système', description: 'Suivre l\'apparence du système d\'exploitation' }
+      system: { label: 'Système', description: 'S\'adapte automatiquement à macOS' }
     },
     appearance: {
       title: 'Apparence',
       intro: 'Desktop-only. Mode is brightness; theme is palette and chat chrome.',
       colorMode: 'Mode de couleur',
-      colorModeDesc: 'Choisissez un mode fixe ou laissez Clara suivre le réglage système.',
+      colorModeDesc: 'Choisissez un thème fixe ou laissez Clara suivre le réglage de votre système.',
       toolViewTitle: 'Affichage des appels d\'outils',
-      toolViewDesc: 'Produit masque les données brutes ; Technique affiche les entrées/sorties complètes.',
+      toolViewDesc: 'Mode Produit masque le détail technique ; Mode Technique affiche les entrées/sorties brutes.',
       reasoningCollapsedTitle: 'Réduire le raisonnement par défaut',
-      reasoningCollapsedDesc: 'Conserver le raisonnement généré sans le déplier automatiquement.',
+      reasoningCollapsedDesc: 'Conserve le flux de réflexion accessible sans l\'étendre automatiquement.',
       uiScaleTitle: 'Échelle de l\'interface',
       uiScaleDesc: (percent: number) =>
         `Scales text and controls across the whole app. Cmd/Ctrl with +, - and 0 also works. Current: ${percent}%.`,
       sessionDensityTitle: 'Densité de la liste des sessions',
-      sessionDensityDesc: 'Choisissez la quantité de contexte sous les titres de session dans la barre latérale.',
+      sessionDensityDesc: 'Choisissez la quantité de contexte affichée sous les titres de sessions.',
       sessionDensityCompact: 'Compact',
       sessionDensityComfortable: 'Confortable',
       sessionDensityDetailed: 'Détaillé',
       tabStripTitle: 'Barre d\'onglets',
-      tabStripDesc: 'Afficher les onglets au-dessus d\'une zone. Les masque automatiquement pour un panneau unique.',
+      tabStripDesc: 'Affiche les onglets au-dessus d\'une zone.',
       tabStripAuto: 'Automatique',
       tabStripAlways: 'Toujours',
       tabStripNever: 'Jamais',
@@ -562,7 +562,7 @@ export const fr: Translations = {
       terminalFontDesc:
         'Choose an installed font for Desktop terminals. Nerd Fonts render Powerlevel10k and shell icons; leave blank to use bundled JetBrains Mono.',
       terminalFontPlaceholder: 'MesloLGS NF or a CSS font stack',
-      terminalFontPreview: 'Aperçu des caractères',
+      terminalFontPreview: 'Aperçu des symboles',
       terminalFontReset: 'Use default',
       translucencyTitle: 'Window Translucency',
       translucencyDesc: 'See your desktop through the whole window, text and all. Tuned separately for light and dark.',
@@ -711,7 +711,7 @@ export const fr: Translations = {
       none: 'None',
       noneParen: '(none)',
       builtinOnly: 'Built-in only',
-      notSet: 'Non défini',
+      notSet: 'Non configuré',
       commaSeparated: 'comma-separated values',
       searchPlaceholder: 'Search…',
       noResults: 'No results found',
@@ -898,8 +898,8 @@ export const fr: Translations = {
       remoteUrlDesc: 'Base URL for the remote dashboard backend. Path prefixes are supported, for example /clara.',
       probing: 'Checking how this gateway authenticates…',
       probeError: 'Could not reach this gateway yet. Check the URL — the auth method will appear once it responds.',
-      signedIn: 'Signed in',
-      signIn: 'Sign in',
+      signedIn: 'Connecté',
+      signIn: 'Se connecter',
       signOut: 'Sign out',
       signInWith: provider => `Sign in with ${provider}`,
       authTitle: 'Authentication',
@@ -929,7 +929,7 @@ export const fr: Translations = {
       saveAndReconnect: 'Save and reconnect',
       diagnostics: 'Diagnostics',
       diagnosticsDesc: 'Reveal desktop.log in your file manager — useful when the gateway fails to start.',
-      openLogs: 'Open logs',
+      openLogs: 'Ouvrir les journaux',
       incompleteTitle: 'Remote gateway incomplete',
       incompleteSignIn: 'Enter a remote URL and sign in before switching to remote.',
       incompleteToken: 'Enter a remote URL and session token before switching to remote.',
@@ -945,7 +945,7 @@ export const fr: Translations = {
       signedOutTitle: 'Signed out',
       signedOutMessage: 'Cleared the remote gateway session.',
       failedLoad: 'Gateway settings failed to load',
-      signInFailed: 'Sign-in failed',
+      signInFailed: 'Échec de connexion',
       signOutFailed: 'Sign-out failed',
       testFailed: 'Remote gateway test failed',
       applyFailed: 'Could not apply gateway settings',
@@ -994,7 +994,7 @@ export const fr: Translations = {
       empty: 'Nothing configured in this category yet.'
     },
     search: {
-      placeholder: 'Rechercher dans tous les paramètres…',
+      placeholder: 'Rechercher dans les paramètres…',
       pill: 'Search'
     },
     profileScope: {
@@ -1298,7 +1298,7 @@ export const fr: Translations = {
       change: 'Modifier',
       choose: 'Choisir',
       clear: 'Effacer',
-      notSet: 'Non défini',
+      notSet: 'Non configuré',
       failedLoad: 'Could not load archived sessions',
       unarchiveFailed: 'Unarchive failed',
       deleteFailed: 'Delete failed',
@@ -1316,7 +1316,7 @@ export const fr: Translations = {
       failedReveal: key => `Failed to reveal ${key}`,
       removeConfirm: key => `Remove ${key} from .env?`,
       set: 'Définir',
-      notSet: 'Non défini',
+      notSet: 'Non configuré',
       selectedTitle: 'Provider selected',
       selectedMessage: provider => `${provider} is now active.`,
       failedSelect: provider => `Failed to select ${provider}`,
@@ -1332,7 +1332,7 @@ export const fr: Translations = {
       claraIncluded: 'Included with a Clara subscription — sign in to Clara Portal to activate.',
       claraAuthNeededTitle: 'Sign in to Clara Portal',
       claraAuthNeededMessage: provider => `${provider} is saved but won't activate until you sign in to Clara Portal.`,
-      claraAuthSignIn: 'Sign in',
+      claraAuthSignIn: 'Se connecter',
       claraAuthDoneTitle: 'Clara Portal connected',
       claraAuthDoneMessage: 'Your subscription backends are now active.',
       claraAuthFailed: 'Clara Portal sign-in did not complete',
@@ -1663,7 +1663,7 @@ export const fr: Translations = {
       usage: 'Token, cost, and skill activity over time'
     },
     nav: {
-      newChat: { title: 'New session', detail: 'Start a fresh session' },
+      newChat: { title: 'Nouvelle session', detail: 'Start a fresh session' },
       settings: { title: 'Settings', detail: 'Configure Clara desktop' },
       skills: { title: 'Capabilities', detail: 'Skills, tools, and MCP servers' },
       messaging: { title: 'Messaging', detail: 'Set up Telegram, Slack, Discord, and more' },
@@ -1690,7 +1690,7 @@ export const fr: Translations = {
     restartGateway: 'Restart gateway',
     openBrowser: 'Open browser',
     gatewayRestartFailed: 'Gateway restart failed.',
-    updateClara: 'Update Clara',
+    updateClara: 'Mettre à jour Clara',
     reloadWindow: 'Reload window',
     actionRunning: 'running',
     actionDone: 'done',
@@ -1772,7 +1772,7 @@ export const fr: Translations = {
     loadFailed: 'Messaging platforms failed to load',
     states: {
       connected: 'Connected',
-      connecting: 'Connexion…',
+      connecting: 'Connexion en cours…',
       disabled: 'Disabled',
       fatal: 'Erreur',
       gateway_stopped: 'Messaging gateway stopped',
@@ -1817,7 +1817,7 @@ export const fr: Translations = {
     pendingRequests: count => `Pending requests (${count})`,
     pendingAria: count => `${count} pending pairing ${count === 1 ? 'request' : 'requests'}`,
     approvedUsers: count => `Approved users (${count})`,
-    approve: 'Approve',
+    approve: 'Approuver',
     approving: 'Approving...',
     revoke: 'Revoke',
     revoking: 'Revoking...',
@@ -1985,7 +1985,7 @@ export const fr: Translations = {
   profiles: {
     close: 'Close profiles',
     nameHint: 'Lowercase letters, digits, hyphens, and underscores. Must start with a letter or digit.',
-    title: 'Profils d\'agents',
+    title: 'Profils',
     count: count => `${count} ${count === 1 ? 'profile' : 'profiles'}`,
     search: 'Search profiles...',
     loading: 'Loading profiles...',
@@ -2056,7 +2056,7 @@ export const fr: Translations = {
     skills: count => `${count} ${count === 1 ? 'skill' : 'skills'}`,
     env: 'env',
     defaultBadge: 'Default',
-    rename: 'Renommer',
+    rename: 'Rename',
     renameMenu: 'Renommer…',
     exportMenu: 'Export…',
     editSoul: 'Edit SOUL.md…',
@@ -2064,7 +2064,7 @@ export const fr: Translations = {
     copying: 'Copying...',
     modelLabel: 'Model',
     skillsLabel: 'Compétences',
-    notSet: 'Non défini',
+    notSet: 'Non configuré',
     soulDesc: 'The system prompt and persona instructions baked into this profile.',
     soulOptional: 'optional',
     soulPlaceholder: mode => `The system prompt / persona for this profile.\nLeave blank to keep the ${mode} default.`,
@@ -2097,7 +2097,7 @@ export const fr: Translations = {
     displayNameTitle: 'Name this agent',
     displayNameDesc: 'Sets a display name shown across the app. The internal profile ID stays "default".',
     displayNameLabel: 'Display name',
-    newNameLabel: 'New name',
+    newNameLabel: 'Nouveau nom',
     renaming: 'Renaming...',
     created: 'Profile created',
     renamed: 'Profile renamed',
@@ -2317,7 +2317,7 @@ export const fr: Translations = {
 
   sidebar: {
     nav: {
-      'new-session': 'New session',
+      'new-session': 'Nouvelle session',
       skills: 'Capabilities',
       messaging: 'Messaging',
       artifacts: 'Artifacts',
@@ -2415,7 +2415,7 @@ export const fr: Translations = {
       forceRemove: 'Force remove',
       enter: label => `Open ${label}`,
       reorder: label => `Reorder ${label}`,
-      toggle: (label, open) => `${open ? 'Show' : 'Hide'} ${label} sessions`,
+      toggle: (label, open) => `${open ? 'Afficher' : 'Masquer'} ${label} sessions`,
       back: 'All projects'
     },
     newSessionIn: label => `New session in ${label}`,
@@ -2833,12 +2833,12 @@ export const fr: Translations = {
     remoteUrlPlaceholder: 'https://gateway.example.com/clara',
     probing: 'Detecting gateway authentication...',
     probeError: 'Could not reach that Clara gateway.',
-    identityProvider: 'your identity provider',
+    identityProvider: 'votre fournisseur d\'identité',
     authTitle: 'Authentication',
     authNeedsOauth: provider => `Sign in with ${provider} before testing this gateway.`,
     authSignedIn: 'Browser sign-in completed.',
     connected: 'Connected',
-    signIn: 'Sign in',
+    signIn: 'Se connecter',
     signInWith: provider => `Sign in with ${provider}`,
     enterUrlFirst: 'Enter a gateway URL first.',
     signInIncomplete: 'The sign-in window closed before authentication completed.',
@@ -2914,7 +2914,7 @@ export const fr: Translations = {
     pasteApiKey: 'Paste API key',
     localApiKeyPlaceholder: 'API key (optional — only if your endpoint requires one)',
     couldNotSave: 'Could not save credential.',
-    connecting: 'Connexion…',
+    connecting: 'Connexion en cours…',
     update: 'Mettre à jour',
     flowSubtitles: {
       pkce: 'Opens your browser to sign in, then continues here',
@@ -3012,7 +3012,7 @@ export const fr: Translations = {
     gatewayMenu: {
       gateway: 'Passerelle',
       connected: 'Connected',
-      connecting: 'Connexion…',
+      connecting: 'Connexion en cours…',
       offline: 'Offline',
       inferenceReady: 'Inference ready',
       inferenceNotReady: 'Inference not ready',
@@ -3068,7 +3068,7 @@ export const fr: Translations = {
       gatewayTitle: 'Passerelle',
       customizeTitle: 'Show in status bar',
       hideStatusbar: 'Hide status bar',
-      resetStatusbar: 'Rétablir les paramètres par défaut',
+      resetStatusbar: 'Rétablir les réglages par défaut',
       toggleApprovalMode: 'Approvals',
       toggleBackendVersion: 'Backend version',
       toggleCacheHitRate: 'Cache hit rate',
@@ -3178,7 +3178,7 @@ export const fr: Translations = {
     loading: 'Loading preview',
     unavailable: 'Preview unavailable',
     opening: 'Opening...',
-    hide: 'Hide',
+    hide: 'Masquer',
     openPreview: 'Open preview',
     openInBrowser: 'Open in browser',
     openInExternal: 'Open in external',
@@ -3386,14 +3386,14 @@ export const fr: Translations = {
         disk: 'Disk full',
         endpoint: 'Custom endpoint error',
         gateway: 'Gateway error',
-        generic: 'Turn failed',
+        generic: 'Échec du tour',
         provider: 'Provider error',
         runtime: 'Local runtime error',
         streaming: 'Streaming connection error'
       },
       errorRetry: 'Réessayer',
       errorSwitchProvider: 'Switch provider',
-      errorOpenLogs: 'Open logs',
+      errorOpenLogs: 'Ouvrir les journaux',
       errorOpenLogsFailed: 'Could not open the logs folder',
       errorOpenDesktopLogs: 'Open Desktop logs',
       errorCopyDiagnostics: 'Copy error details',
@@ -3428,8 +3428,8 @@ export const fr: Translations = {
       moreOptions: 'More approval options',
       allowSession: 'Allow this session',
       alwaysAllowMenu: 'Always allow…',
-      jumpToApproval: 'Approval needed',
-      reject: 'Reject',
+      jumpToApproval: 'Approbation requise',
+      reject: 'Rejeter',
       alwaysTitle: 'Always allow this command?',
       alwaysDescription: pattern =>
         `This adds the “${pattern}” pattern to your permanent allowlist (~/.clara/config.yaml). Clara won’t ask again for commands like this — in this session or any future one.`,
@@ -3704,7 +3704,7 @@ export const fr: Translations = {
     boundaryTitle: 'Something broke in the interface',
     boundaryDesc: 'The view hit an unexpected error. Your chats and settings are safe.',
     reloadWindow: 'Reload window',
-    openLogs: 'Open logs'
+    openLogs: 'Ouvrir les journaux'
   },
 
   ui: {
@@ -3721,7 +3721,7 @@ export const fr: Translations = {
     sidebar: {
       title: 'Sidebar',
       description: 'Displays the mobile sidebar.',
-      toggle: open => `${open ? 'Show' : 'Hide'} sidebar`
+      toggle: open => `${open ? 'Afficher' : 'Masquer'} sidebar`
     }
   }
 }
