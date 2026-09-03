@@ -1,19 +1,21 @@
 import { defineLocale } from './define-locale'
 
 export const it = defineLocale({
-  common: {
-    save: 'Salva',
-    cancel: 'Annulla',
-    search: 'Search...',
-    close: 'Close'
+  language: {
+    label: 'Lingua',
+    description: "Scegli la lingua per l'interfaccia desktop.",
+    saving: 'Salvataggio lingua…',
+    saveError: 'Aggiornamento lingua non réussito',
+    switchTo: 'Cambia lingua',
+    searchPlaceholder: 'Cerca lingue…',
+    noResults: 'Nessuna lingua trovata'
   },
   settings: {
-    title: 'Impostazioni',
-    language: 'Lingua',
-    languageDescription: 'Scegli la lingua dell interfaccia di Clara.',
-    appearance: 'Aspetto'
-  },
-  chat: {
-    placeholder: 'Invia un messaggio a Clara...'
+    appearance: {
+      title: 'Aspetto',
+      uiScaleTitle: 'Scala interfaccia',
+      uiScaleDesc: (percent: number) =>
+        `Ridimensiona testo e controlli nell'intera app. Attuale: ${percent}%.`
+    }
   }
 })

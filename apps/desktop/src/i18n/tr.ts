@@ -1,19 +1,21 @@
 import { defineLocale } from './define-locale'
 
 export const tr = defineLocale({
-  common: {
-    save: 'Kaydet',
-    cancel: 'İptal',
-    search: 'Search...',
-    close: 'Close'
+  language: {
+    label: 'Dil',
+    description: 'Masaüstü arayüzü için dili seçin.',
+    saving: 'Dil kaydediliyor…',
+    saveError: 'Dil güncellemesi başarısız oldu',
+    switchTo: 'Dili değiştir',
+    searchPlaceholder: 'Dil ara…',
+    noResults: 'Dil bulunamadı'
   },
   settings: {
-    title: 'Ayarlar',
-    language: 'Dil',
-    languageDescription: 'Clara arayüz dilini seçin.',
-    appearance: 'Görünüm'
-  },
-  chat: {
-    placeholder: 'Clara ya bir mesaj gönderin...'
+    appearance: {
+      title: 'Görünüm',
+      uiScaleTitle: 'Arayüz Ölçeği',
+      uiScaleDesc: (percent: number) =>
+        `Uygulama genelinde metin ve kontrolleri ölçeklendirir. Geçerli: %${percent}.`
+    }
   }
 })
