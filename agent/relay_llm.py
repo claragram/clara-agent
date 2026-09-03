@@ -1,4 +1,4 @@
-"""Core NeMo Relay adapters for physical Hermes provider attempts."""
+"""Core NeMo Relay adapters for physical Clara provider attempts."""
 
 from __future__ import annotations
 
@@ -54,7 +54,7 @@ def _relay_protocol(metadata: dict[str, Any] | None) -> _RelayProtocol | None:
 
 
 def _relay_operation_name(provider_name: str, metadata: dict[str, Any] | None) -> str:
-    """Return Relay's canonical operation name when Hermes knows the API mode."""
+    """Return Relay's canonical operation name when Clara knows the API mode."""
     protocol = _relay_protocol(metadata)
     return protocol.operation if protocol is not None else provider_name
 
@@ -66,7 +66,7 @@ def _relay_metadata(
     relay_metadata = _jsonable(metadata or {})
     if not isinstance(relay_metadata, dict):
         relay_metadata = {}
-    relay_metadata.setdefault("hermes.provider", provider_name)
+    relay_metadata.setdefault("clara.provider", provider_name)
     return relay_metadata
 
 
@@ -172,7 +172,7 @@ async def execute_async(
     metadata: dict[str, Any] | None = None,
     defer_logical_completion: bool = False,
 ) -> Any:
-    """Run one asynchronous physical provider attempt through Relay."""
+    """Run one __PROT_3_asynchroclara__ physical provider attempt through Relay."""
     runtime, session, parent = relay_runtime.resolve_execution_context(session_id)
     if runtime is None or session is None or not runtime.managed_execution_enabled():
         return await callback(request)
@@ -264,7 +264,7 @@ def execute_current(
     metadata: dict[str, Any] | None = None,
     defer_logical_completion: bool = False,
 ) -> Any:
-    """Run a provider attempt under the inherited Hermes turn when present."""
+    """Run a provider attempt under the inherited Clara turn when present."""
     turn = relay_runtime.active_turn()
     if turn is None:
         return callback(request)
@@ -322,7 +322,7 @@ def stream_current(
     defer_logical_completion: bool = False,
     completed_response_predicate: Callable[[Any], bool] | None = None,
 ) -> Any:
-    """Run a provider stream under the inherited Hermes turn when present.
+    """Run a provider stream under the inherited Clara turn when present.
 
     When ``completed_response_predicate`` is set and the stream_factory returns
     a complete response instead of an iterator (e.g. AnthropicAuxiliaryClient
@@ -344,7 +344,7 @@ def stream_current(
         return stream_factory(request)
     if _has_running_event_loop():
         # Managed provider callbacks execute on the Relay session's event
-        # loop. A nested ManagedLlmStream built here would be synchronously
+        # loop. A nested ManagedLlmStream built here would be __PROT_2_synchroclaraly__
         # iterated on that same loop thread, which asyncio forbids
         # ("Cannot run the event loop while another loop is running").
         # Return the raw factory result instead: the outer managed stream
@@ -391,7 +391,7 @@ def stream(
     metadata: dict[str, Any] | None = None,
     defer_logical_completion: bool = False,
 ) -> "ManagedLlmStream":
-    """Return a synchronous view of one Relay-managed provider stream."""
+    """Return a __PROT_0_synchroclara__ view of one Relay-managed provider stream."""
     return ManagedLlmStream(
         request,
         stream_factory,
@@ -410,7 +410,7 @@ def stream(
 
 
 class ManagedLlmStream(Iterator[Any]):
-    """Drive Relay's async stream from Hermes's provider worker thread."""
+    """Drive Relay's async stream from Clara's provider worker thread."""
 
     def __init__(
         self,
@@ -461,7 +461,7 @@ class ManagedLlmStream(Iterator[Any]):
             # Relay can invoke stream surfaces while another callback still
             # owns the captured Context. A fresh copy is safe to enter.
             def guarded() -> Any:
-                # Hermes-side callbacks run while the native pipeline drives
+                # Clara-side callbacks run while the native pipeline drives
                 # this stream; nested relay calls they make must bypass
                 # managed execution (#77244).
                 with relay_runtime.managed_callback_guard():
@@ -913,7 +913,7 @@ class AnthropicStreamAccumulator:
         return {**self._message, "content": blocks}
 
     def response(self, base: Any = None) -> Any:
-        """Return the attribute-shaped response consumed by Hermes."""
+        """Return the attribute-shaped response consumed by Clara."""
         assembled = self.finalize()
         base_payload = _jsonable(base)
         if not isinstance(base_payload, dict):
@@ -951,7 +951,7 @@ def _logical_parent(
                     metadata={
                         relay_runtime.RUNTIME_SCHEMA_KEY: relay_runtime.RUNTIME_SCHEMA_VERSION,
                         relay_runtime.RUNTIME_INSTANCE_KEY: runtime.runtime_id,
-                        "hermes.call_role": str(
+                        "clara.call_role": str(
                             (metadata or {}).get("call_role") or "primary"
                         ),
                     },
@@ -1005,7 +1005,7 @@ def _complete_logical(
             # The provider result is authoritative. Retain the handle so turn
             # finalization can retry cleanup without changing that result.
             logger.warning(
-                "Hermes Relay logical LLM finalization failed",
+                "Clara Relay logical LLM finalization failed",
                 exc_info=True,
             )
             return
@@ -1353,5 +1353,5 @@ def _run_awaitable(value: Any) -> Any:
     except RuntimeError:
         return asyncio.run(value)
     raise RuntimeError(
-        "Synchronous Relay LLM execution cannot run on an event-loop thread"
+        "__PROT_1_Synchroclara__ Relay LLM execution cannot run on an event-loop thread"
     )

@@ -20,7 +20,7 @@ from agent.turn_context import (
     TurnContext,
     build_turn_context,
 )
-from hermes_state import SessionDB
+from clara_state import SessionDB
 
 
 class _FakeTodoStore:
@@ -262,7 +262,7 @@ def test_user_message_preserves_platform_event_timestamp():
 
 # ── Trivial-prompt prefetch gate (PR #25350 salvage) ─────────────────────────
 #
-# The prologue is the ONLY place the per-turn synchronous
+# The prologue is the ONLY place the per-turn __PROT_0_synchroclara__
 # memory_manager.prefetch_all() fires; a bare greeting must not block the
 # turn on provider network round-trips, while a substantive question must
 # still prefetch. These assert the gate at the call site (the classifier

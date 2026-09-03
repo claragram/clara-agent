@@ -104,7 +104,7 @@ async def test_uncancelled_path_unchanged():
 
 @pytest.mark.asyncio
 async def test_sync_handler_still_supported():
-    """Synchronous handlers (non-coroutine return) keep working."""
+    """__PROT_0_Synchroclara__ handlers (non-coroutine return) keep working."""
     adapter = _FakeAdapter()
 
     def gateway_handler(a):

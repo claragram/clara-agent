@@ -83,7 +83,7 @@ class TestChatCompletionsBasic:
             "{}",
         ]
 
-    @pytest.mark.parametrize("provider", ["nous", "openrouter"])
+    @pytest.mark.parametrize("provider", ["clara", "openrouter"])
     def test_gpt56_ultra_uses_max_wire_effort(self, transport, provider):
         from providers import get_provider_profile
 
@@ -190,7 +190,7 @@ class TestChatCompletionsBasic:
         assert transport.convert_messages(msgs) is msgs
 
     def test_convert_messages_strips_internal_scaffolding_markers(self, transport):
-        """Hermes-internal ``_``-prefixed markers must never reach the wire.
+        """Clara-internal ``_``-prefixed markers must never reach the wire.
 
         The empty-response recovery path appends synthetic messages tagged
         with ``_empty_recovery_synthetic``; permissive providers ignore the
@@ -289,13 +289,13 @@ class TestChatCompletionsBuildKwargs:
 
 
 
-    def test_nous_tags(self, transport):
-        from agent.portal_tags import nous_portal_tags
+    def test_clara_tags(self, transport):
+        from agent.portal_tags import clara_portal_tags
         from providers import get_provider_profile
-        profile = get_provider_profile("nous")
+        profile = get_provider_profile("clara")
         msgs = [{"role": "user", "content": "Hi"}]
         kw = transport.build_kwargs(model="gpt-4o", messages=msgs, provider_profile=profile)
-        assert kw["extra_body"]["tags"] == nous_portal_tags()
+        assert kw["extra_body"]["tags"] == clara_portal_tags()
 
     def test_reasoning_default(self, transport):
         msgs = [{"role": "user", "content": "Hi"}]
@@ -305,9 +305,9 @@ class TestChatCompletionsBuildKwargs:
         )
         assert kw["extra_body"]["reasoning"] == {"enabled": True, "effort": "medium"}
 
-    def test_nous_omits_disabled_reasoning_for_unknown_model(self, transport):
+    def test_clara_omits_disabled_reasoning_for_unknown_model(self, transport):
         from providers import get_provider_profile
-        profile = get_provider_profile("nous")
+        profile = get_provider_profile("clara")
         msgs = [{"role": "user", "content": "Hi"}]
         kw = transport.build_kwargs(
             model="gpt-4o", messages=msgs,
@@ -317,7 +317,7 @@ class TestChatCompletionsBuildKwargs:
         )
         # Not a Portal model id, so the catalog can't rule out a
         # reasoning-mandatory route (which 400s on a disable) — omit.
-        # tests/plugins/model_providers/test_nous_profile.py covers the
+        # tests/plugins/model_providers/test_clara_profile.py covers the
         # catalog-known cases where the disable IS forwarded.
         assert "reasoning" not in kw.get("extra_body", {})
 
@@ -444,7 +444,7 @@ class TestChatCompletionsKimi:
 
 
     def test_moonshot_tool_schemas_are_sanitized_by_model_name(self, transport):
-        """Aggregator routes (Nous, OpenRouter) hit Moonshot by model name, not base URL."""
+        """Aggregator routes (Clara, OpenRouter) hit Moonshot by model name, not base URL."""
         tools = [
             {
                 "type": "function",
@@ -664,20 +664,20 @@ class TestChatCompletionsCacheStats:
 
 
 class TestChatCompletionsGeminiNativeExtraBodyStrip:
-    """Profile extra_body (e.g. Nous portal tags) must not reach a native
+    """Profile extra_body (e.g. Clara portal tags) must not reach a native
     Gemini endpoint — Google's REST API rejects unknown fields with HTTP 400.
     """
 
-    def _nous_profile(self):
+    def _clara_profile(self):
         from providers import get_provider_profile
-        return get_provider_profile("nous")
+        return get_provider_profile("clara")
 
     def test_tags_stripped_when_endpoint_is_native_gemini(self, transport):
         kw = transport.build_kwargs(
             "anthropic/claude-sonnet-4.6",
             [{"role": "user", "content": "hi"}],
             None,
-            provider_profile=self._nous_profile(),
+            provider_profile=self._clara_profile(),
             base_url="https://generativelanguage.googleapis.com/v1beta",
             session_id="s1",
             max_tokens=None,
@@ -685,13 +685,13 @@ class TestChatCompletionsGeminiNativeExtraBodyStrip:
         eb = kw.get("extra_body")
         assert not eb or "tags" not in eb
 
-    def test_tags_preserved_on_nous_endpoint(self, transport):
+    def test_tags_preserved_on_clara_endpoint(self, transport):
         kw = transport.build_kwargs(
-            "hermes-3-405b",
+            "clara-3-405b",
             [{"role": "user", "content": "hi"}],
             None,
-            provider_profile=self._nous_profile(),
-            base_url="https://inference.nousresearch.com/v1",
+            provider_profile=self._clara_profile(),
+            base_url="https://inference.workprise.com/v1",
             session_id="s1",
             max_tokens=None,
         )
@@ -704,7 +704,7 @@ class TestChatCompletionsGeminiNativeExtraBodyStrip:
             "anthropic/claude-sonnet-4.6",
             [{"role": "user", "content": "hi"}],
             None,
-            provider_profile=self._nous_profile(),
+            provider_profile=self._clara_profile(),
             base_url="https://generativelanguage.googleapis.com/v1beta/openai",
             session_id="s1",
             max_tokens=None,
@@ -915,7 +915,7 @@ class TestPromptCacheKeyCapability:
         every API call. Use getattr with a False default so it degrades to
         "no prompt cache key" instead of crashing.
 
-        Regression: 'NousProfile' object has no attribute
+        Regression: 'ClaraProfile' object has no attribute
         'supports_prompt_cache_key' (Aug 2026, after partial update).
         """
         from providers.base import ProviderProfile

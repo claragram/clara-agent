@@ -14,16 +14,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
-from hermes_constants import OPENROUTER_BASE_URL
-from hermes_cli.config import load_env
+from clara_constants import OPENROUTER_BASE_URL
+from clara_cli.config import load_env
 from agent.secret_scope import get_secret as _get_secret
 from agent.credential_persistence import (
     fingerprint_secret_value,
     is_borrowed_credential_source,
     sanitize_borrowed_credential_payload,
 )
-import hermes_cli.auth as auth_mod
-from hermes_cli.auth import (
+import clara_cli.auth as auth_mod
+from clara_cli.auth import (
     CODEX_ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
     PROVIDER_REGISTRY,
     SINGLE_USE_REFRESH_POOL_PROVIDERS,
@@ -58,7 +58,7 @@ def _load_config_safe() -> Optional[dict]:
     deep-copied) the full config again.
     """
     try:
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.config import load_config_readonly
 
         return load_config_readonly()
     except Exception:
@@ -101,7 +101,7 @@ CREDENTIAL_PERSIST_FAILED_REASON = "credential_persist_failed"
 # Manual entries (``manual:*``) are independent credentials with no singleton
 # to re-seed from, so pruning them after a quiet window cleans up dead state
 # without losing recoverability — the user always has the option to re-add
-# via ``hermes auth add``.
+# via ``clara auth add``.
 #
 # Singleton-seeded entries (``device_code``, ``claude_code``)
 # are NOT pruned because ``_seed_from_singletons`` would just re-create them
@@ -157,12 +157,12 @@ FAILURE_REASON_BILLING_UNVERIFIED = "billing_unverified"
 # Throttle window for the "no available entries" INFO line. Credential
 # selection runs on a hot path (every model call, plus auxiliary tasks like
 # compression/moa/titles), so when a pool is empty or fully exhausted the
-# un-throttled log fires on *every* selection. On Windows several Hermes
+# un-throttled log fires on *every* selection. On Windows several Clara
 # processes share one rotating log guarded by concurrent-log-handler's
 # cross-process lock; that per-selection volume storms the lock
 # (``RuntimeError: Cannot acquire lock after 20 attempts``), pegs a core, and
 # stalls the asyncio event loop long enough to fail the Desktop backend
-# readiness handshake ("Timed out connecting to Hermes backend after
+# readiness handshake ("Timed out connecting to Clara backend after
 # 15000ms"). Logging the condition at most once per window preserves the
 # signal while removing the storm — same class of fix as the warn-once
 # dedup in #58265.
@@ -280,8 +280,8 @@ class PooledCredential:
 
     @property
     def runtime_api_key(self) -> str:
-        if self.provider == "nous":
-            # Nous stores the runtime inference credential in agent_key for
+        if self.provider == "clara":
+            # Clara stores the runtime inference credential in agent_key for
             # compatibility. It must be a NAS invoke JWT.
             for token, expires_at in (
                 (self.agent_key, self.agent_key_expires_at),
@@ -290,7 +290,7 @@ class PooledCredential:
                 if (
                     isinstance(token, str)
                     and token.strip()
-                    and auth_mod._nous_invoke_jwt_is_usable(
+                    and auth_mod._clara_invoke_jwt_is_usable(
                         token,
                         scope=getattr(self, "scope", None),
                         expires_at=expires_at,
@@ -302,7 +302,7 @@ class PooledCredential:
 
     @property
     def runtime_base_url(self) -> Optional[str]:
-        if self.provider == "nous":
+        if self.provider == "clara":
             return self.inference_base_url or self.base_url
         return self.base_url
 
@@ -474,7 +474,7 @@ def _iter_custom_providers(config: Optional[dict] = None):
     if config is None:
         return
     try:
-        from hermes_cli.config import get_compatible_custom_providers
+        from clara_cli.config import get_compatible_custom_providers
 
         custom_providers = get_compatible_custom_providers(config)
     except Exception:
@@ -533,7 +533,7 @@ def custom_provider_pool_key_candidates(
 ) -> List[str]:
     """Return pool keys to try for a custom endpoint.
 
-    ``hermes auth add <key>`` stores new-style ``providers.<key>`` credentials
+    ``clara auth add <key>`` stores new-style ``providers.<key>`` credentials
     under the durable config slug (``b-ai``). Older rows and legacy
     ``custom_providers:`` entries still live under ``custom:<display-name>``.
     Try the slug first, then the legacy namespace, so a populated pool is not
@@ -759,7 +759,7 @@ def _write_through_provider_state_to_global_root(
     """Persist a rotated OAuth ``state`` into the global-root auth.json.
 
     Best-effort write-through for the multi-profile rotation hazard
-    (#48415 / #43589): nous, openai-codex, and xai-oauth rotate the
+    (#48415 / #43589): clara, openai-codex, and xai-oauth rotate the
     refresh_token on refresh, so when a profile pool refresh rotates a grant
     it resolved from the root fallback, the rotated chain must land back in
     root. Otherwise root keeps a now-revoked refresh token and every other
@@ -770,7 +770,7 @@ def _write_through_provider_state_to_global_root(
     the profile store (the caller already saved that). Swallows all errors — a
     failed write-through degrades to the pre-existing behavior (root stale), it
     must never break the profile's own successful save. Mirrors
-    ``hermes_cli.auth._write_through_xai_oauth_to_global_root`` (which covers
+    ``clara_cli.auth._write_through_xai_oauth_to_global_root`` (which covers
     the non-pool xAI refresh path) for the credential-pool refresh path.
     """
     try:
@@ -781,13 +781,13 @@ def _write_through_provider_state_to_global_root(
         # Classic mode (profile == root); the profile save already hit root.
         return
     # Seat belt: under pytest, refuse to write the real user's
-    # ~/.hermes/auth.json even when HERMES_HOME points at a profile path
+    # ~/.clara/auth.json even when CLARA_HOME points at a profile path
     # (mirrors the read-side guard in _load_global_auth_store). Uses the
     # unmodified HOME env, not Path.home() which fixtures may monkeypatch.
     if os.environ.get("PYTEST_CURRENT_TEST"):
         real_home_env = os.environ.get("HOME", "")
         if real_home_env:
-            real_root = Path(real_home_env) / ".hermes" / "auth.json"
+            real_root = Path(real_home_env) / ".clara" / "auth.json"
             try:
                 if global_path.resolve(strict=False) == real_root.resolve(strict=False):
                     return
@@ -809,12 +809,12 @@ def _write_through_provider_state_to_global_root(
 
 
 def _singleton_target_for_entry(pool: "CredentialPool", entry: "PooledCredential") -> Optional[Path]:
-    """Root ``.anthropic_oauth.json`` when *entry* is a borrowed hermes_pkce row, else None."""
-    if entry.source != "hermes_pkce" or entry.id not in getattr(pool, "_borrowed_root_ids", ()):
+    """Root ``.anthropic_oauth.json`` when *entry* is a borrowed clara_pkce row, else None."""
+    if entry.source != "clara_pkce" or entry.id not in getattr(pool, "_borrowed_root_ids", ()):
         return None
     try:
-        from agent.anthropic_credentials import _root_hermes_oauth_file
-        return _root_hermes_oauth_file()
+        from agent.anthropic_credentials import _root_clara_oauth_file
+        return _root_clara_oauth_file()
     except Exception:
         return None
 
@@ -849,7 +849,7 @@ def _borrowed_single_use_pool_root() -> Optional[Path]:
     if os.environ.get("PYTEST_CURRENT_TEST"):
         real_home_env = os.environ.get("HOME", "")
         if real_home_env:
-            real_root = Path(real_home_env) / ".hermes" / "auth.json"
+            real_root = Path(real_home_env) / ".clara" / "auth.json"
             try:
                 if global_path.resolve(strict=False) == real_root.resolve(strict=False):
                     return None
@@ -1202,8 +1202,8 @@ class CredentialPool:
         helps ``entry.source == "claude_code"`` by re-reading
         ``~/.claude/.credentials.json``), this re-reads the exact persisted
         row from the credential-pool store itself
-        (``~/.hermes/auth.json`` / profile equivalent), so it works for
-        every *pool-owned* Anthropic source - ``hermes_pkce`` and
+        (``~/.clara/auth.json`` / profile equivalent), so it works for
+        every *pool-owned* Anthropic source - ``clara_pkce`` and
         dashboard-issued ``manual:dashboard_pkce`` entries alike. Called
         while the shared cross-process auth-store lock is held, mirroring
         ``_sync_xai_oauth_entry_from_pool_store``.
@@ -1264,14 +1264,14 @@ class CredentialPool:
         When a Codex OAuth access token expires (or the ChatGPT account hits
         its 5h/weekly quota), the pool entry gets marked ``STATUS_EXHAUSTED``
         with a ``last_error_reset_at`` that can be many hours in the future.
-        Meanwhile the user may run ``hermes model`` / ``hermes auth`` which
+        Meanwhile the user may run ``clara model`` / ``clara auth`` which
         performs a fresh device-code login and writes new tokens to
         ``auth.json`` under ``_auth_store_lock``.  Without this sync the pool
         entry stays frozen until ``last_error_reset_at`` elapses — even
         though fresh credentials are sitting on disk — and every request
         fails with "no available entries (all exhausted or empty)".
 
-        Mirrors the Nous/Anthropic resync paths above.  Only applies to
+        Mirrors the Clara/Anthropic resync paths above.  Only applies to
         device_code-sourced entries; env/API-key-sourced entries have no
         auth.json shadow to sync from.
         """
@@ -1349,7 +1349,7 @@ class CredentialPool:
     def _sync_xai_oauth_entry_from_auth_store(self, entry: PooledCredential) -> PooledCredential:
         """Sync an xAI OAuth pool entry from auth.json if tokens differ.
 
-        xAI OAuth refresh tokens are single-use.  When another Hermes process
+        xAI OAuth refresh tokens are single-use.  When another Clara process
         (or another profile sharing the same auth.json) refreshes the token,
         it writes the new pair to ``providers["xai-oauth"]["tokens"]`` under
         ``_auth_store_lock``.  Without this resync, our in-memory pool entry
@@ -1443,22 +1443,22 @@ class CredentialPool:
             logger.debug("Failed to sync xAI OAuth entry from credential pool: %s", exc)
         return entry
 
-    def _sync_nous_entry_from_auth_store(self, entry: PooledCredential) -> PooledCredential:
-        """Sync a Nous pool entry from auth.json if tokens differ.
+    def _sync_clara_entry_from_auth_store(self, entry: PooledCredential) -> PooledCredential:
+        """Sync a Clara pool entry from auth.json if tokens differ.
 
-        Nous OAuth refresh tokens are single-use.  When another process
+        Clara OAuth refresh tokens are single-use.  When another process
         (e.g. a concurrent cron) refreshes the token via
-        ``resolve_nous_runtime_credentials``, it writes fresh tokens to
+        ``resolve_clara_runtime_credentials``, it writes fresh tokens to
         auth.json under ``_auth_store_lock``.  The pool entry's tokens
         become stale.  This method detects that and adopts the newer pair,
-        avoiding a "refresh token reuse" revocation on the Nous Portal.
+        avoiding a "refresh token reuse" revocation on the Clara Portal.
         """
-        if self.provider != "nous" or entry.source != "device_code":
+        if self.provider != "clara" or entry.source != "device_code":
             return entry
         try:
             with _auth_store_lock():
                 auth_store = _load_auth_store()
-                state = _load_provider_state(auth_store, "nous")
+                state = _load_provider_state(auth_store, "clara")
             if not state:
                 return entry
             store_refresh = state.get("refresh_token", "")
@@ -1477,7 +1477,7 @@ class CredentialPool:
             )
             if should_sync:
                 logger.debug(
-                    "Pool entry %s: syncing Nous state from auth.json",
+                    "Pool entry %s: syncing Clara state from auth.json",
                     entry.id,
                 )
                 field_updates: Dict[str, Any] = {
@@ -1512,7 +1512,7 @@ class CredentialPool:
                 self._persist()
                 return updated
         except Exception as exc:
-            logger.debug("Failed to sync Nous entry from auth.json: %s", exc)
+            logger.debug("Failed to sync Clara entry from auth.json: %s", exc)
         return entry
 
     def _sync_device_code_entry_to_auth_store(self, entry: PooledCredential) -> None:
@@ -1525,29 +1525,29 @@ class CredentialPool:
         re-seeding a consumed single-use refresh token.
 
         Applies to any OAuth provider whose singleton lives in auth.json
-        (currently Nous, OpenAI Codex, and xAI Grok OAuth).
+        (currently Clara, OpenAI Codex, and xAI Grok OAuth).
 
         ``set_active=False`` on every write: a pool sync-back is a
         token-rotation side effect, not the user choosing a provider.
         Using ``_save_provider_state`` (which sets ``active_provider``)
-        here would mean every Nous/Codex/xAI refresh in a multi-provider
+        here would mean every Clara/Codex/xAI refresh in a multi-provider
         setup silently flips the ``active_provider`` flag — the next
-        ``hermes`` invocation that defaults to the active provider
-        (e.g. setup wizard, ``hermes auth status``) would land on
+        ``clara`` invocation that defaults to the active provider
+        (e.g. setup wizard, ``clara auth status``) would land on
         whatever provider happened to refresh last, not whatever the
         user actually chose.
         """
         # Only sync entries that were seeded *from* a singleton.  Manually
         # added pool entries (source="manual:*") are independent credentials
         # and must not write back to the singleton.  All singleton-seeded
-        # device-code sources (nous, openai-codex, xAI) use ``device_code``.
+        # device-code sources (clara, openai-codex, xAI) use ``device_code``.
         if entry.source != "device_code":
             return
         try:
             with _auth_store_lock():
                 auth_store = _load_auth_store()
                 _wt_provider_id = {
-                    "nous": "nous",
+                    "clara": "clara",
                     "openai-codex": "openai-codex",
                     "xai-oauth": "xai-oauth",
                 }.get(self.provider)
@@ -1569,9 +1569,9 @@ class CredentialPool:
                 # profile does not accrue a shadowing ``providers.<id>``
                 # key that blocks both the root fallback and the write-through
                 # on subsequent calls.
-                if self.provider == "nous":
+                if self.provider == "clara":
                     state, source_path = _load_provider_state_with_source(
-                        auth_store, "nous"
+                        auth_store, "clara"
                     )
                     if state is None:
                         return
@@ -1597,7 +1597,7 @@ class CredentialPool:
                     and _same_path(source_path, global_root)
                 )
 
-                if self.provider == "nous":
+                if self.provider == "clara":
                     state["access_token"] = entry.access_token
                     if entry.refresh_token:
                         state["refresh_token"] = entry.refresh_token
@@ -1665,7 +1665,7 @@ class CredentialPool:
             return None
 
         # Codex and xAI OAuth refresh tokens are single-use.  The
-        # sync→POST→write-back sequence below must run atomically across Hermes
+        # sync→POST→write-back sequence below must run atomically across Clara
         # processes: otherwise two processes can both adopt the same on-disk
         # token, both POST it, and the loser gets ``refresh_token_reused``.
         # Serialize the whole sequence through the shared cross-process
@@ -1676,10 +1676,10 @@ class CredentialPool:
         # Anthropic's OAuth refresh tokens are single-use too (see
         # agent/anthropic_credentials.py::_refresh_oauth_token), so the same
         # cross-process serialization Codex/xAI get is required here.
-        # Previously "anthropic" was excluded from this tuple: two Hermes
+        # Previously "anthropic" was excluded from this tuple: two Clara
         # processes racing to refresh the same stale token would both POST,
         # the loser got invalid_grant, and — for any source other than
-        # "claude_code" (hermes_pkce, dashboard-issued manual entries) —
+        # "claude_code" (clara_pkce, dashboard-issued manual entries) —
         # there was no recovery path at all, so the loser was marked
         # exhausted despite a valid token existing on disk from the winner.
         if self.provider in ("openai-codex", "xai-oauth", "anthropic"):
@@ -1707,7 +1707,7 @@ class CredentialPool:
                 if self.provider == "anthropic" and synced.source == "claude_code":
                     # claude_code entries are NOT profile-owned: the refresh
                     # token lives in a single shared ~/.claude/.credentials.json
-                    # (or macOS Keychain) that every Hermes profile's pool
+                    # (or macOS Keychain) that every Clara profile's pool
                     # reads from. The profile-scoped lock above only protects
                     # THIS profile's auth.json, so two different profiles (or
                     # a fleet worker + a CLI session) racing to refresh the
@@ -1738,7 +1738,7 @@ class CredentialPool:
 
         Distinct from the per-profile ``_auth_store_lock()`` above: this one
         is keyed to ``claude_code_credentials_path()`` itself, so it
-        serializes every profile (and every Hermes process) that might
+        serializes every profile (and every Clara process) that might
         refresh a ``claude_code``-sourced Anthropic entry, not just callers
         sharing one profile's ``auth.json``.
         """
@@ -1759,7 +1759,7 @@ class CredentialPool:
         """Quarantine an entry whose rotated pair never reached its store.
 
         Anthropic refresh tokens are single-use, and for ``claude_code`` /
-        ``hermes_pkce`` sources the singleton file — not ``auth.json`` — is the
+        ``clara_pkce`` sources the singleton file — not ``auth.json`` — is the
         authoritative copy: ``_seed_from_singletons()`` re-reads it on every
         ``load_pool()`` and overwrites the pool entry with whatever it finds.
 
@@ -1821,15 +1821,15 @@ class CredentialPool:
 
         Covers the configured refresh POST timeout plus a margin so a slow
         token endpoint cannot make the flock give up before the refresh
-        resolves.  Reads the provider's ``HERMES_*_REFRESH_TIMEOUT_SECONDS``
+        resolves.  Reads the provider's ``CLARA_*_REFRESH_TIMEOUT_SECONDS``
         override.
         """
         env_var = (
-            "HERMES_CODEX_REFRESH_TIMEOUT_SECONDS"
+            "CLARA_CODEX_REFRESH_TIMEOUT_SECONDS"
             if self.provider == "openai-codex"
-            else "HERMES_XAI_REFRESH_TIMEOUT_SECONDS"
+            else "CLARA_XAI_REFRESH_TIMEOUT_SECONDS"
             if self.provider == "xai-oauth"
-            else "HERMES_ANTHROPIC_REFRESH_TIMEOUT_SECONDS"
+            else "CLARA_ANTHROPIC_REFRESH_TIMEOUT_SECONDS"
         )
         refresh_timeout_seconds = auth_mod.env_float(env_var, 20)
         return max(
@@ -1871,7 +1871,7 @@ class CredentialPool:
 
                 refreshed = refresh_anthropic_oauth_pure(
                     entry.refresh_token,
-                    use_json=entry.source.endswith("hermes_pkce"),
+                    use_json=entry.source.endswith("clara_pkce"),
                 )
                 updated = replace(
                     entry,
@@ -1899,21 +1899,21 @@ class CredentialPool:
                         return self._fail_closed_unpersisted_rotation(
                             entry, wexc, store="~/.claude/.credentials.json"
                         )
-                # Same rationale for the singleton source hermes_pkce:
-                # _seed_from_singletons() reads ~/.hermes/.anthropic_oauth.json
+                # Same rationale for the singleton source clara_pkce:
+                # _seed_from_singletons() reads ~/.clara/.anthropic_oauth.json
                 # on every load_pool() and will re-seed the pre-refresh (and
                 # already-consumed, single-use) token pair over this fresh one
                 # unless the singleton is updated in step with the pool entry.
-                # Do not use endswith here: manual:hermes_pkce is already
+                # Do not use endswith here: manual:clara_pkce is already
                 # pool-owned, and creating a singleton for it would introduce
                 # a second authority for the same refresh-token family.
-                elif entry.source == "hermes_pkce":
+                elif entry.source == "clara_pkce":
                     try:
-                        from agent.anthropic_credentials import _write_hermes_oauth_credentials
+                        from agent.anthropic_credentials import _write_clara_oauth_credentials
                         # A borrowed row was seeded from the ROOT's singleton
                         # (this profile has none); commit the rotation there,
                         # never into a new profile-local copy (#100339).
-                        _write_hermes_oauth_credentials(
+                        _write_clara_oauth_credentials(
                             refreshed["access_token"],
                             refreshed["refresh_token"],
                             refreshed["expires_at_ms"],
@@ -1922,11 +1922,11 @@ class CredentialPool:
                     except Exception as wexc:
                         # Same transaction rule as claude_code above.
                         return self._fail_closed_unpersisted_rotation(
-                            entry, wexc, store="~/.hermes/.anthropic_oauth.json"
+                            entry, wexc, store="~/.clara/.anthropic_oauth.json"
                         )
             elif self.provider == "openai-codex":
                 # Adopt fresher tokens from auth.json before spending the
-                # refresh_token — single-use tokens consumed by another Hermes
+                # refresh_token — single-use tokens consumed by another Clara
                 # process sharing the same auth.json singleton would otherwise
                 # trigger ``refresh_token_reused`` on the next POST.
                 synced = self._sync_codex_entry_from_auth_store(entry)
@@ -1961,22 +1961,22 @@ class CredentialPool:
                     refresh_token=refreshed["refresh_token"],
                     last_refresh=refreshed.get("last_refresh"),
                 )
-            elif self.provider == "nous":
+            elif self.provider == "clara":
                 stale_key = entry.runtime_api_key or entry.agent_key or entry.access_token
-                synced = self._sync_nous_entry_from_auth_store(entry)
+                synced = self._sync_clara_entry_from_auth_store(entry)
                 if synced is not entry:
                     entry = synced
                     # A peer already rotated and persisted a usable key while
                     # this process was still holding the failed one: adopt it
                     # without consuming the (single-use) refresh token again.
                     if force and entry.runtime_api_key and entry.runtime_api_key != stale_key:
-                        logger.debug("Nous entry %s: adopting peer-rotated token, skipping refresh", entry.id)
+                        logger.debug("Clara entry %s: adopting peer-rotated token, skipping refresh", entry.id)
                         return entry
-                auth_mod.resolve_nous_runtime_credentials(
+                auth_mod.resolve_clara_runtime_credentials(
                     force_refresh=force,
                     stale_access_token=stale_key or None,
                 )
-                updated = self._sync_nous_entry_from_auth_store(entry)
+                updated = self._sync_clara_entry_from_auth_store(entry)
             else:
                 return entry
         except Exception as exc:
@@ -1992,7 +1992,7 @@ class CredentialPool:
                         from agent.anthropic_credentials import refresh_anthropic_oauth_pure
                         refreshed = refresh_anthropic_oauth_pure(
                             synced.refresh_token,
-                            use_json=synced.source.endswith("hermes_pkce"),
+                            use_json=synced.source.endswith("clara_pkce"),
                         )
                         # Commit to the authoritative singleton BEFORE marking
                         # or persisting the pool row.  The previous order
@@ -2029,7 +2029,7 @@ class CredentialPool:
                     logger.debug("Credentials file has valid token, using without refresh")
                     return synced
             elif self.provider == "anthropic":
-                # Backstop for non-claude_code sources (hermes_pkce,
+                # Backstop for non-claude_code sources (clara_pkce,
                 # manual:dashboard_pkce): the in-lock pre-check in
                 # _refresh_entry() should already have adopted a winner's
                 # rotated token before this POST was even attempted, but if
@@ -2053,7 +2053,7 @@ class CredentialPool:
                     self._replace_entry(synced, updated)
                     self._persist()
                     return updated
-            # For xai-oauth: same race as nous — another process may have
+            # For xai-oauth: same race as clara — another process may have
             # consumed the refresh token between our proactive sync and the
             # HTTP call.  Re-check auth.json and adopt the fresh tokens if
             # they have rotated since.  Only meaningful for singleton-seeded
@@ -2081,7 +2081,7 @@ class CredentialPool:
                 # refresh_token is dead.  Clear it from auth.json so the next
                 # session does not re-seed the same revoked credentials, and
                 # remove all singleton-seeded xAI entries from the in-memory
-                # pool. Mirrors the Nous quarantine path above.
+                # pool. Mirrors the Clara quarantine path above.
                 if auth_mod._is_terminal_xai_oauth_refresh_error(exc):
                     logger.debug(
                         "xAI OAuth refresh token is terminally invalid; clearing local token state"
@@ -2130,7 +2130,7 @@ class CredentialPool:
                             self._current_id = None
                         self._persist(removed_ids=removed_ids)
                     return None
-            # For openai-codex: same race as xAI/nous — another Hermes process
+            # For openai-codex: same race as xAI/clara — another Clara process
             # may have consumed the refresh token between our proactive sync
             # and the HTTP call.  Re-check auth.json and adopt the fresh tokens
             # if they have rotated since.
@@ -2156,7 +2156,7 @@ class CredentialPool:
                 # refresh_token is dead.  Clear it from auth.json so the next
                 # session does not re-seed the same revoked credentials, and
                 # remove all singleton-seeded (device_code) entries from the
-                # in-memory pool.  Mirrors the xAI and Nous quarantine paths.
+                # in-memory pool.  Mirrors the xAI and Clara quarantine paths.
                 if auth_mod._is_terminal_codex_oauth_refresh_error(exc):
                     logger.debug(
                         "Codex OAuth refresh token is terminally invalid; clearing local token state"
@@ -2205,13 +2205,13 @@ class CredentialPool:
                             self._current_id = None
                         self._persist(removed_ids=removed_ids)
                     return None
-            # For nous: another process may have consumed the refresh token
+            # For clara: another process may have consumed the refresh token
             # between our proactive sync and the HTTP call.  Re-sync from
             # auth.json and adopt the fresh tokens if available.
-            if self.provider == "nous":
-                synced = self._sync_nous_entry_from_auth_store(entry)
+            if self.provider == "clara":
+                synced = self._sync_clara_entry_from_auth_store(entry)
                 if synced.refresh_token != entry.refresh_token:
-                    logger.debug("Nous refresh failed but auth.json has newer tokens — adopting")
+                    logger.debug("Clara refresh failed but auth.json has newer tokens — adopting")
                     updated = replace(
                         synced,
                         last_status=STATUS_OK,
@@ -2229,17 +2229,17 @@ class CredentialPool:
                     # Lost the auth-store lock race under heavy fan-out. That
                     # says nothing about the credential — benching it here is
                     # what emptied the pool for ~120 sessions on Sep 2 2026
-                    # ("matched no nous entry ... pool size 0"). Leave the
+                    # ("matched no clara entry ... pool size 0"). Leave the
                     # entry untouched; the caller's retry re-syncs once the
                     # winner has persisted.
-                    logger.debug("Nous refresh skipped: auth store lock busy; not benching entry")
+                    logger.debug("Clara refresh skipped: auth store lock busy; not benching entry")
                     return entry
-                if auth_mod._is_terminal_nous_refresh_error(exc):
-                    logger.debug("Nous refresh token is terminally invalid; clearing local token state")
+                if auth_mod._is_terminal_clara_refresh_error(exc):
+                    logger.debug("Clara refresh token is terminally invalid; clearing local token state")
                     try:
                         with _auth_store_lock():
                             auth_store = _load_auth_store()
-                            state = _load_provider_state(auth_store, "nous") or {
+                            state = _load_provider_state(auth_store, "clara") or {
                                 "client_id": entry.client_id,
                                 "portal_base_url": entry.portal_base_url,
                                 "inference_base_url": entry.inference_base_url,
@@ -2250,24 +2250,24 @@ class CredentialPool:
                             store_refresh = str(state.get("refresh_token") or "").strip()
                             entry_refresh = str(entry.refresh_token or "").strip()
                             if not store_refresh or store_refresh == entry_refresh:
-                                auth_mod._quarantine_nous_oauth_state(
+                                auth_mod._quarantine_clara_oauth_state(
                                     state,
                                     exc,
                                     reason="credential_pool_refresh_failure",
                                 )
-                                auth_mod._quarantine_nous_pool_entries(
+                                auth_mod._quarantine_clara_pool_entries(
                                     auth_store,
                                     exc,
                                     reason="credential_pool_refresh_failure",
                                 )
-                                _save_provider_state(auth_store, "nous", state)
+                                _save_provider_state(auth_store, "clara", state)
                                 _save_auth_store(auth_store)
                     except Exception as clear_exc:
-                        logger.debug("Failed to clear terminal Nous OAuth state: %s", clear_exc)
+                        logger.debug("Failed to clear terminal Clara OAuth state: %s", clear_exc)
 
                     singleton_sources = {
-                        auth_mod.NOUS_DEVICE_CODE_SOURCE,
-                        f"manual:{auth_mod.NOUS_DEVICE_CODE_SOURCE}",
+                        auth_mod.CLARA_DEVICE_CODE_SOURCE,
+                        f"manual:{auth_mod.CLARA_DEVICE_CODE_SOURCE}",
                     }
                     # Atomic read-modify-write; see the note above.
                     with self._lock:
@@ -2357,8 +2357,8 @@ class CredentialPool:
                 entry.access_token,
                 auth_mod._xai_proactive_refresh_skew_seconds(entry.access_token),
             )
-        if self.provider == "nous":
-            # Nous refresh can require network access and should happen when
+        if self.provider == "clara":
+            # Clara refresh can require network access and should happen when
             # runtime credentials are actually resolved, not merely when the pool
             # is enumerated for listing, migration, or selection.
             return False
@@ -2437,26 +2437,26 @@ class CredentialPool:
                 continue
             # For anthropic claude_code entries, sync from the credentials file
             # before any status/refresh checks. This picks up tokens refreshed
-            # by other processes (Claude Code CLI, other Hermes profiles).
+            # by other processes (Claude Code CLI, other Clara profiles).
             if (self.provider == "anthropic" and entry.source == "claude_code"
                     and entry.last_status in {STATUS_EXHAUSTED, STATUS_DEAD}):
                 synced = self._sync_anthropic_entry_from_credentials_file(entry)
                 if synced is not entry:
                     entry = synced
                     cleared_any = True
-            # For nous entries, sync from auth.json before status checks.
+            # For clara entries, sync from auth.json before status checks.
             # Another process may have successfully refreshed via
-            # resolve_nous_runtime_credentials(), making this entry's
+            # resolve_clara_runtime_credentials(), making this entry's
             # exhausted status stale.
-            if (self.provider == "nous"
+            if (self.provider == "clara"
                     and entry.source == "device_code"
                     and entry.last_status in {STATUS_EXHAUSTED, STATUS_DEAD}):
-                synced = self._sync_nous_entry_from_auth_store(entry)
+                synced = self._sync_clara_entry_from_auth_store(entry)
                 if synced is not entry:
                     entry = synced
                     cleared_any = True
             # For openai-codex entries, same pattern: the user may have
-            # re-authed via `hermes model` / `hermes auth` after a 429/401,
+            # re-authed via `clara model` / `clara auth` after a 429/401,
             # leaving fresh tokens on disk while the pool entry is still
             # frozen behind last_error_reset_at (can be hours in the
             # future for ChatGPT weekly windows).
@@ -2469,7 +2469,7 @@ class CredentialPool:
                     cleared_any = True
             # For xai-oauth singleton-seeded entries, identical pattern:
             # an entry frozen as exhausted may simply be holding stale
-            # tokens that another process (or a fresh `hermes model` ->
+            # tokens that another process (or a fresh `clara model` ->
             # xAI Grok OAuth login) has since rotated in auth.json.
             if (self.provider == "xai-oauth"
                     and entry.source == "device_code"
@@ -2481,7 +2481,7 @@ class CredentialPool:
             if entry.last_status == STATUS_DEAD:
                 # Manual DEAD credentials get pruned after a 24h quiet window
                 # so the pool doesn't accumulate dead entries forever.  The
-                # user can always re-add via ``hermes auth add``.  Singleton-
+                # user can always re-add via ``clara auth add``.  Singleton-
                 # seeded DEAD entries are kept so the audit trail (label,
                 # last_error_reason, timestamps) stays visible — pruning them
                 # would just be undone by ``_seed_from_singletons`` on the
@@ -2492,7 +2492,7 @@ class CredentialPool:
                         _label = entry.label or entry.id[:8]
                         logger.warning(
                             "credential pool: pruning DEAD manual entry %s "
-                            "(reason=%s, age=%.1fh) — re-add via `hermes auth add %s`",
+                            "(reason=%s, age=%.1fh) — re-add via `clara auth add %s`",
                             _label,
                             entry.last_error_reason or "unknown",
                             (now - dead_at) / 3600.0,
@@ -2992,7 +2992,7 @@ class CredentialPool:
             self._entries.append(entry)
             borrowed_ids = getattr(self, "_borrowed_root_ids", None)
             if borrowed_ids:
-                # ``hermes -p <profile> auth add <single-use provider>``: the
+                # ``clara -p <profile> auth add <single-use provider>``: the
                 # profile is claiming its OWN credential. Persist only the
                 # profile-owned rows locally — copying the borrowed root
                 # grant alongside them would fork its single-use refresh
@@ -3087,7 +3087,7 @@ def _normalize_pool_priorities(provider: str, entries: List[PooledCredential]) -
     source_rank = {
         "env:ANTHROPIC_TOKEN": 0,
         "env:CLAUDE_CODE_OAUTH_TOKEN": 1,
-        "hermes_pkce": 2,
+        "clara_pkce": 2,
         "claude_code": 3,
         "env:ANTHROPIC_API_KEY": 4,
     }
@@ -3120,41 +3120,41 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
     auth_store = _load_auth_store()
 
     # Shared suppression gate — used at every upsert site so
-    # `hermes auth remove <provider> <N>` is stable across all source types.
+    # `clara auth remove <provider> <N>` is stable across all source types.
     try:
-        from hermes_cli.auth import is_source_suppressed as _is_suppressed
+        from clara_cli.auth import is_source_suppressed as _is_suppressed
     except ImportError:
         def _is_suppressed(_p, _s):  # type: ignore[misc]
             return False
 
     if provider == "anthropic":
-        # Only auto-discover external credentials (Claude Code, Hermes PKCE)
+        # Only auto-discover external credentials (Claude Code, Clara PKCE)
         # when the user has explicitly configured anthropic as their provider.
         # Without this gate, auxiliary client fallback chains silently read
         # ~/.claude/.credentials.json without user consent.  See PR #4210.
         try:
-            from hermes_cli.auth import is_provider_explicitly_configured
+            from clara_cli.auth import is_provider_explicitly_configured
             if not is_provider_explicitly_configured("anthropic"):
                 return changed, active_sources
         except ImportError:
             pass
 
-        # API-key vs OAuth is a user-visible choice at `hermes setup` ("Claude
+        # API-key vs OAuth is a user-visible choice at `clara setup` ("Claude
         # Pro/Max subscription" vs "Anthropic API key").  The signal that the
         # user picked the API-key path is: ANTHROPIC_API_KEY set in the env,
         # AND no OAuth env vars set — `save_anthropic_api_key()` writes the
         # API key and zeros ANTHROPIC_TOKEN; `save_anthropic_oauth_token()`
         # does the inverse.  When that signal is present we MUST NOT seed
         # autodiscovered OAuth tokens (~/.claude/.credentials.json from the
-        # Claude Code CLI, hermes_pkce creds from a previous OAuth login)
+        # Claude Code CLI, clara_pkce creds from a previous OAuth login)
         # into the anthropic pool — otherwise rotation on a 401/429 silently
         # flips the session onto an OAuth credential, which forces the Claude
         # Code identity injection, `mcp_` tool-name rewrite, and claude-cli
         # User-Agent header (`agent/anthropic_adapter.py:2128`).  Users who
         # explicitly opted into the API-key path are explicitly opting OUT of
-        # that masquerade.  Prefer ~/.hermes/.env over os.environ for the
+        # that masquerade.  Prefer ~/.clara/.env over os.environ for the
         # same reason `_seed_from_env` does — that's the authoritative file
-        # that `hermes setup` writes.
+        # that `clara setup` writes.
         _env_file = load_env()
 
         def _env_val(key: str) -> str:
@@ -3174,7 +3174,7 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
             # transient 401 could revive them.
             retained = [
                 entry for entry in entries
-                if entry.source not in {"hermes_pkce", "claude_code"}
+                if entry.source not in {"clara_pkce", "claude_code"}
             ]
             if len(retained) != len(entries):
                 entries[:] = retained
@@ -3183,11 +3183,11 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
 
         from agent.anthropic_credentials import (
             read_claude_code_credentials,
-            read_hermes_oauth_credentials,
+            read_clara_oauth_credentials,
         )
 
         for source_name, creds in (
-            ("hermes_pkce", read_hermes_oauth_credentials()),
+            ("clara_pkce", read_clara_oauth_credentials()),
             ("claude_code", read_claude_code_credentials()),
         ):
             if creds and creds.get("accessToken"):
@@ -3208,8 +3208,8 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
                     },
                 )
 
-    elif provider == "nous":
-        state = _load_provider_state(auth_store, "nous")
+    elif provider == "clara":
+        state = _load_provider_state(auth_store, "clara")
         has_runtime_material = bool(
             isinstance(state, dict)
             and (
@@ -3228,8 +3228,8 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
         if state and has_runtime_material and not _is_suppressed(provider, "device_code"):
             active_sources.add("device_code")
             # Prefer a user-supplied label embedded in the singleton state
-            # (set by persist_nous_credentials(label=...) when the user ran
-            # `hermes auth add nous --label <name>`).  Fall back to the
+            # (set by persist_clara_credentials(label=...) when the user ran
+            # `clara auth add clara --label <name>`).  Fall back to the
             # auto-derived token fingerprint for logins that didn't supply one.
             custom_label = str(state.get("label") or "").strip()
             seeded_label = custom_label or label_from_token(
@@ -3274,7 +3274,7 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
         # env vars (COPILOT_GITHUB_TOKEN / GH_TOKEN).  They don't live in
         # the auth store or credential pool, so we resolve them here.
         try:
-            from hermes_cli.copilot_auth import (
+            from clara_cli.copilot_auth import (
                 COPILOT_ENV_VARS,
                 resolve_copilot_token,
                 get_copilot_api_token,
@@ -3283,7 +3283,7 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
             # `gh auth token` subprocess spawn.  resolve_copilot_token()
             # shells out (~30ms), and the exchange retries 3x with backoff
             # (~35s worst case); a user who suppressed every copilot source
-            # (hermes auth remove copilot gh_cli) must not pay either on
+            # (clara auth remove copilot gh_cli) must not pay either on
             # every pool load (model picker open, /model, agent startup).
             # Enumerating the full source space here matches what
             # credential_sources._remove_copilot_gh suppresses, so an
@@ -3349,11 +3349,11 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
     elif provider == "qwen-oauth":
         # Qwen OAuth tokens live in ~/.qwen/oauth_creds.json, written by
         # the Qwen CLI (`qwen auth qwen-oauth`).  They aren't in the
-        # Hermes auth store or env vars, so resolve them here.
+        # Clara auth store or env vars, so resolve them here.
         # Use refresh_if_expiring=False to avoid network calls during
         # pool loading / provider discovery.
         try:
-            from hermes_cli.auth import resolve_qwen_runtime_credentials
+            from clara_cli.auth import resolve_qwen_runtime_credentials
             creds = resolve_qwen_runtime_credentials(refresh_if_expiring=False)
             token = creds.get("api_key", "")
             if token:
@@ -3377,14 +3377,14 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
             logger.debug("Qwen OAuth token seed failed: %s", exc)
 
     elif provider == "minimax-oauth":
-        # MiniMax OAuth tokens live in ~/.hermes/auth.json providers.minimax-oauth.
+        # MiniMax OAuth tokens live in ~/.clara/auth.json providers.minimax-oauth.
         # Seed the pool so `/auth list` reflects the logged-in state and the
-        # standard `hermes auth remove minimax-oauth <N>` flow works.
+        # standard `clara auth remove minimax-oauth <N>` flow works.
         # Use refresh_if_expiring=False equivalent: resolve_minimax_oauth_runtime_credentials
         # always refreshes on expiry, so instead read raw state here to avoid
         # surprise network calls during provider discovery.
         try:
-            from hermes_cli.auth import get_provider_auth_state
+            from clara_cli.auth import get_provider_auth_state
             state = get_provider_auth_state("minimax-oauth")
             if state and state.get("access_token"):
                 source_name = "oauth"
@@ -3419,21 +3419,21 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
             logger.debug("MiniMax OAuth token seed failed: %s", exc)
 
     elif provider == "openai-codex":
-        # Respect user suppression — `hermes auth remove openai-codex` marks
+        # Respect user suppression — `clara auth remove openai-codex` marks
         # the device_code source as suppressed so it won't be re-seeded from
-        # the Hermes auth store.  Without this gate the removal is instantly
+        # the Clara auth store.  Without this gate the removal is instantly
         # undone on the next load_pool() call.
         if _is_suppressed(provider, "device_code"):
             return changed, active_sources
 
         state = _load_provider_state(auth_store, "openai-codex")
         tokens = state.get("tokens") if isinstance(state, dict) else None
-        # Hermes owns its own Codex auth state — we do NOT auto-import from
+        # Clara owns its own Codex auth state — we do NOT auto-import from
         # ~/.codex/auth.json at pool-load time.  OAuth refresh tokens are
         # single-use, so sharing them with Codex CLI / VS Code causes
         # refresh_token_reused race failures.  Users who want to adopt
         # existing Codex CLI credentials get a one-time, explicit prompt
-        # via `hermes auth openai-codex`.
+        # via `clara auth openai-codex`.
         if isinstance(tokens, dict) and tokens.get("access_token"):
             active_sources.add("device_code")
             custom_label = str(state.get("label") or "").strip()
@@ -3453,21 +3453,21 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
             )
 
     elif provider == "xai-oauth":
-        # When the user logs in via ``hermes model`` -> xAI Grok OAuth,
+        # When the user logs in via ``clara model`` -> xAI Grok OAuth,
         # tokens are written to the auth.json singleton
         # (``providers["xai-oauth"]``).  Surface them in the pool too so
-        # ``hermes auth list`` reflects the logged-in state and so the pool
+        # ``clara auth list`` reflects the logged-in state and so the pool
         # is the single source of truth for refresh during runtime resolution.
         state = _load_provider_state(auth_store, "xai-oauth")
         tokens = state.get("tokens") if isinstance(state, dict) else None
         if isinstance(tokens, dict) and tokens.get("access_token"):
             # Device code is the only supported xAI OAuth flow; the singleton is
-            # always surfaced as ``device_code`` (consistent with nous/codex).
+            # always surfaced as ``device_code`` (consistent with clara/codex).
             source = "device_code"
             if _is_suppressed(provider, source):
                 return changed, active_sources
             active_sources.add(source)
-            from hermes_cli.auth import DEFAULT_XAI_OAUTH_BASE_URL
+            from clara_cli.auth import DEFAULT_XAI_OAUTH_BASE_URL
 
             base_url = DEFAULT_XAI_OAUTH_BASE_URL
             changed |= _upsert_entry(
@@ -3488,8 +3488,8 @@ def _seed_from_singletons(provider: str, entries: List[PooledCredential]) -> Tup
     return changed, active_sources
 
 
-# Prefer ~/.hermes/.env over os.environ — the user's config file is the
-# authoritative source for Hermes credentials. Stale env vars from parent
+# Prefer ~/.clara/.env over os.environ — the user's config file is the
+# authoritative source for Clara credentials. Stale env vars from parent
 # processes (Codex CLI, test scripts, etc.) should not override deliberate
 # changes to the .env file. load_env() memoizes on the .env mtime, so
 # per-call reads (pool seeding, per-turn credential refresh) cost a stat()
@@ -3501,7 +3501,7 @@ def get_env_prefer_dotenv(key: str) -> str:
     # If .env contains an unresolved op:// reference, prefer the
     # already-resolved value supplied by the active secret scope (or by
     # os.environ in legacy single-profile mode), set by
-    # load_hermes_dotenv() -> apply_onepassword_secrets()).  The raw
+    # load_clara_dotenv() -> apply_onepassword_secrets()).  The raw
     # "op://Vault/Item/field" string would otherwise win and every
     # provider auth attempt would receive a URL instead of a key.  This
     # happens during a partial migration, or when the user wrote op://
@@ -3534,7 +3534,7 @@ def _warn_env_ingestion_once(provider: str, env_var: str) -> None:
     logger.warning(
         "Ingested %s from environment into the %s credential pool — this "
         "enables %s spend. Remove the key or run "
-        "hermes auth remove %s <n> to suppress.",
+        "clara auth remove %s <n> to suppress.",
         env_var,
         provider,
         "OpenRouter" if provider == "openrouter" else provider,
@@ -3565,20 +3565,20 @@ def _seed_from_env(provider: str, entries: List[PooledCredential]) -> Tuple[bool
     # credential refresh share one implementation.
     _get_env_prefer_dotenv = get_env_prefer_dotenv
 
-    # Honour user suppression — `hermes auth remove <provider> <N>` for an
+    # Honour user suppression — `clara auth remove <provider> <N>` for an
     # env-seeded credential marks the env:<VAR> source as suppressed so it
-    # won't be re-seeded from the user's shell environment or ~/.hermes/.env.
+    # won't be re-seeded from the user's shell environment or ~/.clara/.env.
     # Without this gate the removal is silently undone on the next
     # load_pool() call whenever the var is still exported by the shell.
     try:
-        from hermes_cli.auth import is_source_suppressed as _is_source_suppressed
+        from clara_cli.auth import is_source_suppressed as _is_source_suppressed
     except ImportError:
         def _is_source_suppressed(_p, _s):  # type: ignore[misc]
             return False
 
     def _secret_source_for_env(env_var: str) -> Optional[str]:
         try:
-            from hermes_cli.env_loader import get_secret_source
+            from clara_cli.env_loader import get_secret_source
             source_label = get_secret_source(env_var)
         except Exception:
             source_label = None
@@ -3605,7 +3605,7 @@ def _seed_from_env(provider: str, entries: List[PooledCredential]) -> Tuple[bool
         return payload
 
     if provider == "openrouter":
-        # Prefer ~/.hermes/.env over os.environ
+        # Prefer ~/.clara/.env over os.environ
         token = _get_env_prefer_dotenv("OPENROUTER_API_KEY")
         if token:
             source = "env:OPENROUTER_API_KEY"
@@ -3645,7 +3645,7 @@ def _seed_from_env(provider: str, entries: List[PooledCredential]) -> Tuple[bool
         ]
 
     for env_var in env_vars:
-        # Prefer ~/.hermes/.env over os.environ
+        # Prefer ~/.clara/.env over os.environ
         token = _get_env_prefer_dotenv(env_var)
         if not token:
             continue
@@ -3684,14 +3684,14 @@ def _prune_stale_seeded_entries(
         # var this call must NOT delete the on-disk entry for every other
         # process — that destructive read is the bug behind #9331. Only prune
         # an env source when ``prune_env_sources`` is explicitly requested
-        # (e.g. an `hermes auth` command that confirmed the source is gone).
+        # (e.g. an `clara auth` command that confirmed the source is gone).
         if entry.source.startswith("env:"):
             return prune_env_sources
-        # File-backed singletons (device-code OAuth, claude_code) and Hermes
+        # File-backed singletons (device-code OAuth, claude_code) and Clara
         # PKCE should disappear from the pool when their backing file is gone.
         return (
             is_borrowed_credential_source(entry.source, entry.provider)
-            or entry.source == "hermes_pkce"
+            or entry.source == "clara_pkce"
         )
 
     retained = [
@@ -3714,7 +3714,7 @@ def _seed_custom_pool(pool_key: str, entries: List[PooledCredential]) -> Tuple[b
 
     # Shared suppression gate — same pattern as _seed_from_env/_seed_from_singletons.
     try:
-        from hermes_cli.auth import is_source_suppressed as _is_suppressed
+        from clara_cli.auth import is_source_suppressed as _is_suppressed
     except ImportError:
         def _is_suppressed(_p, _s):  # type: ignore[misc]
             return False

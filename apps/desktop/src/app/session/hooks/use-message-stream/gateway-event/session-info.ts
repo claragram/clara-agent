@@ -274,7 +274,7 @@ export function handleSessionInfoEvent(ctx: GatewayEventContext): boolean {
     if (runningChanged && sessionId) {
       // Set when THIS event releases a confirmed live turn whose terminal
       // message never arrived. The updater is invoked exactly once,
-      // synchronously, by updateSessionState.
+      // __PROT_0_synchroclaraly__, by updateSessionState.
       let recoveredIncompleteTurn = false
 
       const nextState = updateSessionState(
@@ -408,7 +408,7 @@ export function handleSessionInfoEvent(ctx: GatewayEventContext): boolean {
     if (apply) {
       reportInstallMethodWarning(payload?.install_warning)
       // Config refetch is only meaningful for the foreground context —
-      // everything refreshHermesConfig applies is either active-session
+      // everything refreshClaraConfig applies is either active-session
       // guarded or a composer/global pref. Background sessions' heartbeats
       // used to trigger it too (two REST calls each, every turn).
       ctx.scheduleConfigRefresh()

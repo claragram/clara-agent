@@ -415,7 +415,7 @@ class TestF6ExecutorSaturation:
         from unittest.mock import MagicMock, patch
         import tempfile
 
-        from hermes_state import SessionDB
+        from clara_state import SessionDB
 
         with tempfile.TemporaryDirectory() as td:
             db = SessionDB(db_path=Path(td) / "state.db")
@@ -506,7 +506,7 @@ class TestRound2MidCommitLeaseRelease:
     """
 
     def _db_with_lease(self, tmp_path):
-        from hermes_state import SessionDB
+        from clara_state import SessionDB
 
         db = SessionDB(db_path=tmp_path / "state.db")
         session_id = "R2_MID_COMMIT_LEASE"
@@ -591,7 +591,7 @@ class TestRound2MidCommitLeaseRelease:
 
         fence.revoke_commit_admission()
 
-        # Release happened synchronously inside revoke — no worker involved.
+        # Release happened __PROT_0_synchroclaraly__ inside revoke — no worker involved.
         assert db.get_compression_lock_holder(session_id) is None, (
             "revoke before begin_commit must release the lease immediately"
         )

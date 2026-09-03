@@ -8,7 +8,7 @@ Resolution order for text tasks (auto mode):
   1. User's main provider + main model (used regardless of provider type —
      aggregators, direct API-key providers, native Anthropic, Codex, etc.)
   2. OpenRouter  (OPENROUTER_API_KEY)
-  3. Nous Portal (~/.hermes/auth.json active provider)
+  3. Clara Portal (~/.clara/auth.json active provider)
   4. Custom endpoint (config.yaml model.base_url + OPENAI_API_KEY)
   5. Native Anthropic
   6. Direct API-key providers (z.ai/GLM, Kimi/Moonshot, MiniMax, MiniMax-CN)
@@ -21,7 +21,7 @@ the default. A one-time WARNING is logged for non-``:free`` models.
 Resolution order for vision/multimodal tasks (auto mode):
   1. Selected main provider, if it is one of the supported vision backends below
   2. OpenRouter
-  3. Nous Portal
+  3. Clara Portal
   4. Native Anthropic
   5. Custom endpoint (for local vision models: Qwen-VL, LLaVA, Pixtral, etc.)
   6. None
@@ -173,8 +173,8 @@ from agent.model_metadata import (
     get_model_context_length,
     strip_codex_context_variant_suffix as _strip_codex_ctx_variant,
 )
-from hermes_cli.config import get_hermes_home
-from hermes_constants import OPENROUTER_BASE_URL
+from clara_cli.config import get_clara_home
+from clara_constants import OPENROUTER_BASE_URL
 from utils import base_url_host_matches, base_url_hostname, env_float, is_truthy_value, model_forces_max_completion_tokens, normalize_proxy_env_vars
 
 logger = logging.getLogger(__name__)
@@ -203,13 +203,13 @@ def _resolve_aux_verify(base_url: Optional[str]) -> Any:
 
     Mirrors the main client's TLS resolution so auxiliary calls (compression,
     vision, title generation, etc.) honor per-provider
-    ``ssl_ca_cert`` / ``ssl_verify`` config and the ``HERMES_CA_BUNDLE`` /
+    ``ssl_ca_cert`` / ``ssl_verify`` config and the ``CLARA_CA_BUNDLE`` /
     ``SSL_CERT_FILE`` env conventions. Best-effort: any failure falls back to
     the httpx/certifi default (``True``).
     """
     try:
         from agent.ssl_verify import resolve_httpx_verify
-        from hermes_cli.config import (
+        from clara_cli.config import (
             get_custom_provider_tls_settings,
             load_config_readonly,
         )
@@ -258,7 +258,7 @@ def _openai_http_client_kwargs(
             logger.warning(
                 "agent.process_bootstrap.build_keepalive_http_client is "
                 "unavailable — mixed/stale install detected (#64333). Falling "
-                "back to the SDK default HTTP client. Run `hermes update` (or "
+                "back to the SDK default HTTP client. Run `clara update` (or "
                 "reinstall the Desktop app) to resync the runtime."
             )
         client = None
@@ -278,7 +278,7 @@ def _create_openai_client(*, api_key: str, base_url: str, **kwargs: Any) -> Any:
     # unrecognized bearer. Override the SDK's Authorization header with an
     # empty value (single shared chokepoint for every aux client build).
     try:
-        from hermes_cli.models import (
+        from clara_cli.models import (
             OPENCODE_ZEN_FREE_KEYLESS_PLACEHOLDER,
             opencode_zen_free_headers,
         )
@@ -289,13 +289,13 @@ def _create_openai_client(*, api_key: str, base_url: str, **kwargs: Any) -> Any:
     except Exception:
         pass
     _apply_required_codex_headers(kwargs, access_token=api_key, base_url=base_url)
-    # Hermes owns auxiliary retry + provider/model fallback policy (the
+    # Clara owns auxiliary retry + provider/model fallback policy (the
     # same-provider transient retry in call_llm plus the except-chain
     # fallback). The OpenAI SDK's own default (max_retries=2 → up to 3
     # attempts) silently multiplies the effective wall time of every aux call
     # by 3× on a slow/hung endpoint, so a 120s timeout can stall ~360s before
-    # Hermes sees a single failure (issue #54465). Disable SDK-internal retries
-    # by default and let Hermes control the budget; explicit callers can still
+    # Clara sees a single failure (issue #54465). Disable SDK-internal retries
+    # by default and let Clara control the budget; explicit callers can still
     # override via kwargs.
     kwargs.setdefault("max_retries", 0)
     return OpenAI(api_key=api_key, base_url=base_url, **kwargs)
@@ -447,7 +447,7 @@ class _AuxiliaryCancellationDecision:
 # consumers below tick it only for non-empty streamed payloads, and the host
 # extends its deadline while tokens are moving (see gateway/run.py session
 # hygiene + CompressionCommitFence.touch_progress). Thread-local matches the
-# call topology — the aux call and its stream consumption run synchronously
+# call topology — the aux call and its stream consumption run __PROT_3_synchroclaraly__
 # on the thread that installed the hook.
 _aux_progress = threading.local()
 _aux_dispatch = threading.local()
@@ -680,7 +680,7 @@ def _run_protected_sync_provider_call(
     state and never holds the session lock.
 
     Ordinary auxiliary calls, and protected calls without a cancellation source,
-    retain the historical direct synchronous path with no extra thread.
+    retain the historical direct __PROT_0_synchroclara__ path with no extra thread.
     """
     source_cancel_check = _capture_aux_cancel_check()
     if not _aux_interrupt_protected() or not callable(source_cancel_check):
@@ -729,7 +729,7 @@ def _run_protected_sync_provider_call(
     threading.Thread(
         target=provider_context.run,
         args=(_provider_worker,),
-        name="hermes-protected-aux-provider",
+        name="clara-protected-aux-provider",
         daemon=True,
     ).start()
 
@@ -754,7 +754,7 @@ def _client_declares(client_obj: Any, flag: str) -> bool:
 
     Capability declaration instead of isinstance: a client shipped by an
     out-of-tree provider profile can opt out of the transport/async wrappers
-    without this module importing it. Mirrors ``SUPPORTS_HERMES_TOOL_CALLS`` in
+    without this module importing it. Mirrors ``SUPPORTS_CLARA_TOOL_CALLS`` in
     ``agent/background_review.py``. Absent attribute → False, so every ordinary
     client keeps its existing behaviour.
     """
@@ -976,7 +976,7 @@ def _compression_threshold_for_model(
     """Return a context-compression threshold override for specific models.
 
     The threshold is the fraction of the model's context window that must be
-    consumed before Hermes triggers summarization.  Higher values delay
+    consumed before Clara triggers summarization.  Higher values delay
     compression and preserve more raw context.
 
     Per-model/route overrides:
@@ -1009,17 +1009,17 @@ def _compression_threshold_for_model(
 #
 # Matched as substrings against the provider's LIVE /v1/models catalog rather
 # than pinned as exact ids, because exact ids rot: a hardcoded
-# "google/gemini-3-flash" kept 404ing here once Nous dropped it upstream, and
+# "google/gemini-3-flash" kept 404ing here once Clara dropped it upstream, and
 # every aux call paid a wasted round-trip before the retry net caught it.
 # Families outlive their version numbers, so a new mini/flash/haiku release is
 # picked up with no source edit.
 #
-# Rolling "-latest" aliases come first where a provider publishes them (Nous
+# Rolling "-latest" aliases come first where a provider publishes them (Clara
 # serves ~openai/gpt-mini-latest, ~google/gemini-flash-latest, …): they are the
 # only ids that are structurally rot-proof.
 #
 # Order is measured, not guessed — p50 on a real titling prompt against the
-# Nous catalog: gpt-mini-latest 1.40s, claude-haiku-latest 1.55s,
+# Clara catalog: gpt-mini-latest 1.40s, claude-haiku-latest 1.55s,
 # gemini-flash-latest 2.13s, step-3.7-flash 7.84s, grok-4.1-fast 8.05s. So the
 # first family a provider actually serves is also the fastest it can offer.
 _FAST_MODEL_FAMILIES: tuple = (
@@ -1089,10 +1089,10 @@ def _fast_model_from_catalog(provider_id: str) -> str:
     network path — the underlying fetch is memory+disk cached with a
     last-known-good fallback.
     """
-    is_nous = provider_id.strip().lower() == "nous"
+    is_clara = provider_id.strip().lower() == "clara"
     try:
-        from hermes_cli.auth import resolve_api_key_provider_credentials
-        from hermes_cli.models import fetch_models_with_pricing
+        from clara_cli.auth import resolve_api_key_provider_credentials
+        from clara_cli.models import fetch_models_with_pricing
         from providers import get_provider_profile
 
         # The provider's own credentials, because most ``/v1/models`` endpoints
@@ -1109,16 +1109,16 @@ def _fast_model_from_catalog(provider_id: str) -> str:
             # fetch below still works for the catalogs that allow it.
             logger.debug("No credentials for %s catalog", provider_id, exc_info=True)
 
-        if not api_key and is_nous:
-            # Nous is OAuth, so the resolver above raises for it. An anonymous
+        if not api_key and is_clara:
+            # Clara is OAuth, so the resolver above raises for it. An anonymous
             # read returns the full catalog, and a model picked from it is
             # refused at request time by the org's policy.
             try:
-                from hermes_cli.models import _resolve_nous_pricing_credentials
+                from clara_cli.models import _resolve_clara_pricing_credentials
 
-                api_key, base_url = _resolve_nous_pricing_credentials()
+                api_key, base_url = _resolve_clara_pricing_credentials()
             except Exception:
-                logger.debug("No Nous credentials for catalog", exc_info=True)
+                logger.debug("No Clara credentials for catalog", exc_info=True)
 
         if not base_url:
             base_url = str(getattr(get_provider_profile(provider_id), "base_url", "") or "")
@@ -1128,37 +1128,37 @@ def _fast_model_from_catalog(provider_id: str) -> str:
         # fetch_models_with_pricing appends its own /v1/models.
         if base_url.endswith("/v1"):
             base_url = base_url[:-3]
-        # Same entry the pickers use, so the Nous-only arguments must match
+        # Same entry the pickers use, so the Clara-only arguments must match
         # theirs: seeding it here without them costs the picker its sale chrome
         # and leaves the policy catalog with no expiry.
-        _nous_kwargs = {}
-        if is_nous:
-            from hermes_cli.models import _NOUS_CATALOG_TTL_SECONDS
+        _clara_kwargs = {}
+        if is_clara:
+            from clara_cli.models import _CLARA_CATALOG_TTL_SECONDS
 
-            _nous_kwargs = {
+            _clara_kwargs = {
                 "include_sale_original": True,
-                "cache_ttl_seconds": _NOUS_CATALOG_TTL_SECONDS,
+                "cache_ttl_seconds": _CLARA_CATALOG_TTL_SECONDS,
             }
         catalog = fetch_models_with_pricing(
-            api_key=api_key or None, base_url=base_url, timeout=3.0, **_nous_kwargs
+            api_key=api_key or None, base_url=base_url, timeout=3.0, **_clara_kwargs
         ) or {}
     except Exception:
         logger.debug("Fast-model catalog lookup failed for %s", provider_id, exc_info=True)
         return ""
 
     ids = sorted((str(m) for m in catalog), key=_model_recency_key, reverse=True)
-    if is_nous:
+    if is_clara:
         # The catalog's keys are a source of ids here, so the policy narrows
         # them as it does the pickers' lists.
         try:
-            from hermes_cli.models import (
-                nous_policy_allowed_ids,
-                restrict_to_nous_policy,
+            from clara_cli.models import (
+                clara_policy_allowed_ids,
+                restrict_to_clara_policy,
             )
 
-            ids = restrict_to_nous_policy(ids, nous_policy_allowed_ids())
+            ids = restrict_to_clara_policy(ids, clara_policy_allowed_ids())
         except Exception:
-            logger.debug("Nous policy filter unavailable", exc_info=True)
+            logger.debug("Clara policy filter unavailable", exc_info=True)
     for family in _FAST_MODEL_FAMILIES:
         for model_id in ids:
             lowered = model_id.lower()
@@ -1167,15 +1167,15 @@ def _fast_model_from_catalog(provider_id: str) -> str:
     return ""
 
 
-def _nous_policy_blocks(model_id: str) -> bool:
+def _clara_policy_blocks(model_id: str) -> bool:
     """True when the org's model policy does not admit *model_id*."""
     try:
-        from hermes_cli.models import nous_policy_allowed_ids, restrict_to_nous_policy
+        from clara_cli.models import clara_policy_allowed_ids, restrict_to_clara_policy
 
-        allowed = nous_policy_allowed_ids()
-        return bool(allowed) and not restrict_to_nous_policy([model_id], allowed)
+        allowed = clara_policy_allowed_ids()
+        return bool(allowed) and not restrict_to_clara_policy([model_id], allowed)
     except Exception:
-        logger.debug("Nous policy check unavailable", exc_info=True)
+        logger.debug("Clara policy check unavailable", exc_info=True)
         return False
 
 
@@ -1190,7 +1190,7 @@ def _get_aux_model_for_provider(provider_id: str, *, prefer_fast: bool = False) 
        both rot-proof and latency-ordered.
     2. ``prefer_fast`` only — the provider's own recommendation hook
        (``ProviderProfile.resolve_aux_model``). Live, but tuned for *quality*
-       on long-context side tasks (Nous returns its compaction pick), so it
+       on long-context side tasks (Clara returns its compaction pick), so it
        ranks below the catalog match for latency-critical work.
     3. ``ProviderProfile.default_aux_model`` — curated, hardcoded, may rot.
     4. The legacy hardcoded dict, for providers predating the profiles system.
@@ -1223,7 +1223,7 @@ def _get_aux_model_for_provider(provider_id: str, *, prefer_fast: bool = False) 
     # Steps 2-4 are policy-blind: resolve_aux_model queries a public
     # recommendation and the rest are hardcoded. A blocked pick is refused at
     # request time, so drop it and let the caller keep the main model.
-    if picked and provider_id.strip().lower() == "nous" and _nous_policy_blocks(picked):
+    if picked and provider_id.strip().lower() == "clara" and _clara_policy_blocks(picked):
         return ""
     return picked
 
@@ -1327,8 +1327,8 @@ _PROVIDERS_WITHOUT_VISION: frozenset = frozenset({
 # `X-Title` is the canonical attribution header OpenRouter's dashboard
 # reads; the previous `X-OpenRouter-Title` label was not recognized there.
 _OR_HEADERS_BASE = {
-    "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-    "X-Title": "Hermes Agent",
+    "HTTP-Referer": "https://agent.claraprise.com",
+    "X-Title": "Clara Agent",
     "X-OpenRouter-Categories": "productivity,cli-agent",
 }
 
@@ -1351,7 +1351,7 @@ def _apply_user_default_headers(headers: dict | None) -> dict | None:
     when nothing is configured. No allocation when there are no overrides.
     """
     try:
-        from hermes_cli.config import cfg_get, load_config
+        from clara_cli.config import cfg_get, load_config
         _cfg = load_config()
         user_headers = cfg_get(_cfg, "model", "default_headers")
         # ``model.extra_headers`` is an accepted alias (matches the
@@ -1383,10 +1383,10 @@ def build_or_headers(or_config: dict | None = None) -> dict:
     Precedence for response cache: env var > config.yaml > default (enabled).
 
     Environment variables:
-        ``HERMES_OPENROUTER_CACHE`` — truthy (``1``/``true``/``yes``/``on``)
+        ``CLARA_OPENROUTER_CACHE`` — truthy (``1``/``true``/``yes``/``on``)
             enables caching; ``0``/``false``/``no``/``off`` disables.
             Overrides ``openrouter.response_cache`` in config.yaml.
-        ``HERMES_OPENROUTER_CACHE_TTL`` — integer seconds (1-86400).
+        ``CLARA_OPENROUTER_CACHE_TTL`` — integer seconds (1-86400).
             Overrides ``openrouter.response_cache_ttl`` in config.yaml.
 
     *or_config* is the ``openrouter`` section from config.yaml.  When *None*,
@@ -1397,13 +1397,13 @@ def build_or_headers(or_config: dict | None = None) -> dict:
     # Resolve config from disk if not provided.
     if or_config is None:
         try:
-            from hermes_cli.config import load_config_readonly
+            from clara_cli.config import load_config_readonly
             or_config = load_config_readonly().get("openrouter", {})
         except Exception:
             or_config = {}
 
     # Determine cache enabled: env var overrides config.
-    env_cache = os.environ.get("HERMES_OPENROUTER_CACHE", "").strip().lower()
+    env_cache = os.environ.get("CLARA_OPENROUTER_CACHE", "").strip().lower()
     if env_cache:
         cache_enabled = env_cache in _TRUTHY_ENV_VALUES
     else:
@@ -1415,7 +1415,7 @@ def build_or_headers(or_config: dict | None = None) -> dict:
     headers["X-OpenRouter-Cache"] = "true"
 
     # Determine TTL: env var overrides config.
-    env_ttl = os.environ.get("HERMES_OPENROUTER_CACHE_TTL", "").strip()
+    env_ttl = os.environ.get("CLARA_OPENROUTER_CACHE_TTL", "").strip()
     if env_ttl:
         if env_ttl.isdigit():
             ttl = int(env_ttl)
@@ -1432,7 +1432,7 @@ def build_or_headers(or_config: dict | None = None) -> dict:
 # NVIDIA NIM cloud billing attribution.  Keep this host-gated because the
 # nvidia provider also supports local/on-prem NIM endpoints via NVIDIA_BASE_URL.
 _NVIDIA_NIM_CLOUD_HEADERS = {
-    "X-BILLING-INVOKE-ORIGIN": "HermesAgent",
+    "X-BILLING-INVOKE-ORIGIN": "ClaraAgent",
 }
 
 
@@ -1445,42 +1445,42 @@ def build_nvidia_nim_headers(base_url: str | None) -> dict:
 
 # Vercel AI Gateway app attribution headers. HTTP-Referer maps to
 # referrerUrl and X-Title maps to appName in the gateway's analytics.
-from hermes_cli import __version__ as _HERMES_VERSION
+from clara_cli import __version__ as _CLARA_VERSION
 
 _AI_GATEWAY_HEADERS = {
-    "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-    "X-Title": "Hermes Agent",
-    "User-Agent": f"HermesAgent/{_HERMES_VERSION}",
+    "HTTP-Referer": "https://agent.claraprise.com",
+    "X-Title": "Clara Agent",
+    "User-Agent": f"ClaraAgent/{_CLARA_VERSION}",
 }
 
-# Nous Portal extra_body for product attribution.
+# Clara Portal extra_body for product attribution.
 # Callers should pass this as extra_body in chat.completions.create()
-# when the auxiliary client is backed by Nous Portal.
+# when the auxiliary client is backed by Clara Portal.
 #
 # The tags are computed from agent.portal_tags so the client= marker stays
-# in lockstep with hermes_cli.__version__ across every Portal call site
+# in lockstep with clara_cli.__version__ across every Portal call site
 # (main loop, aux, compression, web_extract). Do not inline a literal here;
 # see agent/portal_tags.py for the rationale.
-from agent.portal_tags import nous_portal_tags as _nous_portal_tags
+from agent.portal_tags import clara_portal_tags as _clara_portal_tags
 
 
-def _nous_extra_body() -> dict:
-    """Return a fresh Nous Portal ``extra_body`` dict.
+def _clara_extra_body() -> dict:
+    """Return a fresh Clara Portal ``extra_body`` dict.
 
-    Computed at call time so a hot-reloaded ``hermes_cli.__version__`` is
+    Computed at call time so a hot-reloaded ``clara_cli.__version__`` is
     reflected without restarting long-running processes.
     """
-    return {"tags": _nous_portal_tags()}
+    return {"tags": _clara_portal_tags()}
 
 
 # Backwards-compatible module attribute. Some callers (tests, third-party
-# plugins) read ``NOUS_EXTRA_BODY`` directly; keep it as a snapshot of the
+# plugins) read ``CLARA_EXTRA_BODY`` directly; keep it as a snapshot of the
 # current tags. Callers that need the freshest value should call
-# ``_nous_extra_body()`` or import ``nous_portal_tags`` directly.
-NOUS_EXTRA_BODY = _nous_extra_body()
+# ``_clara_extra_body()`` or import ``clara_portal_tags`` directly.
+CLARA_EXTRA_BODY = _clara_extra_body()
 
-# Set at resolve time — True if the auxiliary client points to Nous Portal
-auxiliary_is_nous: bool = False
+# Set at resolve time — True if the auxiliary client points to Clara Portal
+auxiliary_is_clara: bool = False
 
 # Default auxiliary models per provider.
 # _OPENROUTER_MODEL is the BUILT-IN fallback used only when the user never set
@@ -1491,10 +1491,10 @@ auxiliary_is_nous: bool = False
 # auxiliary.openrouter_model values are honored untouched (paid allowed when
 # the user chose it; _warn_paid_lane_once still fires for that case).
 _OPENROUTER_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
-_NOUS_MODEL = "google/gemini-3.6-flash"
-_NOUS_DEFAULT_BASE_URL = "https://inference-api.nousresearch.com/v1"
+_CLARA_MODEL = "google/gemini-3.6-flash"
+_CLARA_DEFAULT_BASE_URL = "https://inference-api.claraprise.com/v1"
 _ANTHROPIC_DEFAULT_BASE_URL = "https://api.anthropic.com"
-_AUTH_JSON_PATH = get_hermes_home() / "auth.json"
+_AUTH_JSON_PATH = get_clara_home() / "auth.json"
 
 # Codex helpers live in a small leaf module so fresh client builders never
 # request newly added exports from a stale, long-lived auxiliary router. The
@@ -1622,7 +1622,7 @@ def _pool_runtime_api_key(entry: Any) -> str:
     if entry is None:
         return ""
     # Use the PooledCredential.runtime_api_key property which handles
-    # provider-specific fallback (e.g. agent_key for nous).
+    # provider-specific fallback (e.g. agent_key for clara).
     key = getattr(entry, "runtime_api_key", None) or getattr(entry, "access_token", "")
     return str(key or "").strip()
 
@@ -1630,15 +1630,15 @@ def _pool_runtime_api_key(entry: Any) -> str:
 def _pool_runtime_base_url(entry: Any, fallback: str = "") -> str:
     if entry is None:
         return str(fallback or "").strip().rstrip("/")
-    if getattr(entry, "provider", None) == "nous":
+    if getattr(entry, "provider", None) == "clara":
         # Funnel through the canonical auth-layer reader so the env override
-        # shares one normalization path with the rest of the NOUS resolution.
-        from hermes_cli.auth import _nous_inference_env_override
+        # shares one normalization path with the rest of the CLARA resolution.
+        from clara_cli.auth import _clara_inference_env_override
 
-        env_url = _nous_inference_env_override()
+        env_url = _clara_inference_env_override()
         if env_url:
             return env_url
-    # runtime_base_url handles provider-specific logic (e.g. nous prefers inference_base_url).
+    # runtime_base_url handles provider-specific logic (e.g. clara prefers inference_base_url).
     # Fall back through inference_base_url and base_url for non-PooledCredential entries.
     url = (
         getattr(entry, "runtime_base_url", None)
@@ -1689,9 +1689,9 @@ def _is_anthropic_compatible_host(url: str) -> bool:
         return False
 
 
-def _nous_min_key_ttl_seconds() -> int:
+def _clara_min_key_ttl_seconds() -> int:
     try:
-        return max(60, int(os.getenv("HERMES_NOUS_MIN_KEY_TTL_SECONDS", "1800")))
+        return max(60, int(os.getenv("CLARA_CLARA_MIN_KEY_TTL_SECONDS", "1800")))
     except (TypeError, ValueError):
         return 1800
 
@@ -1784,7 +1784,7 @@ class _CodexCompletionsAdapter:
         )
 
         resp_kwargs: Dict[str, Any] = {
-            # Strip the Hermes-side ``-900k`` large-context picker suffix —
+            # Strip the Clara-side ``-900k`` large-context picker suffix —
             # the Codex backend only knows the base slug (mirrors the main
             # transport in agent/transports/codex.py::build_kwargs).
             "model": _strip_codex_ctx_variant(model),
@@ -2475,7 +2475,7 @@ class _AnthropicCompletionsAdapter:
         self._is_oauth = is_oauth
         # Prefer the caller-supplied URL (AnthropicAuxiliaryClient keeps the
         # pre-strip Portal ``.../v1`` form). Only fall back to the SDK
-        # client's host for Nous Portal — a blanket fallback would flip
+        # client's host for Clara Portal — a blanket fallback would flip
         # MiniMax/Zhipu/etc. aux adapters from "unknown host = native
         # Anthropic" to third-party (stripping thinking signatures).
         self._base_url = base_url or None
@@ -2483,9 +2483,9 @@ class _AnthropicCompletionsAdapter:
             candidate = str(getattr(real_client, "base_url", "") or "") or None
             if candidate:
                 try:
-                    from agent.anthropic_adapter import _is_nous_portal_endpoint
+                    from agent.anthropic_adapter import _is_clara_portal_endpoint
 
-                    if _is_nous_portal_endpoint(candidate):
+                    if _is_clara_portal_endpoint(candidate):
                         self._base_url = candidate
                 except Exception:
                     pass
@@ -2568,7 +2568,7 @@ class _AnthropicCompletionsAdapter:
         #   - ``response_format``: the OpenAI structured-output shape is
         #     TRANSLATED into top-level ``output_config.format`` below;
         #     forwarding the raw field 400s on strict Anthropic gateways.
-        #   - ``_``-prefixed keys: private Hermes plumbing (_reasoning_config
+        #   - ``_``-prefixed keys: private Clara plumbing (_reasoning_config
         #     et al.), never wire fields.
         caller_extra_body = kwargs.get("extra_body")
         # A top-level ``response_format`` kwarg (the OpenAI SDK's documented
@@ -2807,7 +2807,7 @@ def _endpoint_speaks_anthropic_messages(base_url: str) -> bool:
     """True if the endpoint at ``base_url`` speaks the Anthropic Messages
     protocol instead of OpenAI chat.completions.
 
-    Mirrors ``hermes_cli.runtime_provider._detect_api_mode_for_url`` so the
+    Mirrors ``clara_cli.runtime_provider._detect_api_mode_for_url`` so the
     auxiliary client and the main agent stay in sync on transport selection.
     Covers:
 
@@ -2851,7 +2851,7 @@ def _maybe_wrap_anthropic(
     Returns ``client_obj`` unchanged when:
 
     - It's already a complete client — an Anthropic/Codex wrapper, or any
-      client declaring ``HERMES_SKIP_TRANSPORT_WRAP`` (the native and ACP
+      client declaring ``CLARA_SKIP_TRANSPORT_WRAP`` (the native and ACP
       shims, in-tree or from a provider plugin).
     - The endpoint is an OpenAI-wire endpoint.
     - ``api_mode`` is explicitly set to a non-Anthropic transport.
@@ -2874,7 +2874,7 @@ def _maybe_wrap_anthropic(
     # wire adapter. Declared as a class attribute rather than isinstance-checked
     # so an out-of-tree provider's client is covered too — and so this hot path
     # no longer imports the native/ACP client modules just to type-test.
-    if _client_declares(client_obj, "HERMES_SKIP_TRANSPORT_WRAP"):
+    if _client_declares(client_obj, "CLARA_SKIP_TRANSPORT_WRAP"):
         return client_obj
 
     # Explicit non-anthropic api_mode wins over URL heuristics.
@@ -2917,13 +2917,13 @@ def _maybe_wrap_anthropic(
     )
 
 
-def _read_nous_auth() -> Optional[dict]:
-    """Read and validate ~/.hermes/auth.json for an active Nous provider.
+def _read_clara_auth() -> Optional[dict]:
+    """Read and validate ~/.clara/auth.json for an active Clara provider.
 
-    Returns the provider state dict if Nous is active with tokens,
+    Returns the provider state dict if Clara is active with tokens,
     otherwise None.
     """
-    pool_present, entry = _select_pool_entry("nous")
+    pool_present, entry = _select_pool_entry("clara")
     if pool_present:
         if entry is None:
             return None
@@ -2931,7 +2931,7 @@ def _read_nous_auth() -> Optional[dict]:
             "access_token": getattr(entry, "access_token", ""),
             "refresh_token": getattr(entry, "refresh_token", None),
             "agent_key": getattr(entry, "agent_key", None),
-            "inference_base_url": _pool_runtime_base_url(entry, _NOUS_DEFAULT_BASE_URL),
+            "inference_base_url": _pool_runtime_base_url(entry, _CLARA_DEFAULT_BASE_URL),
             "portal_base_url": getattr(entry, "portal_base_url", None),
             "client_id": getattr(entry, "client_id", None),
             "scope": getattr(entry, "scope", None),
@@ -2943,21 +2943,21 @@ def _read_nous_auth() -> Optional[dict]:
         if not _AUTH_JSON_PATH.is_file():
             return None
         data = json.loads(_AUTH_JSON_PATH.read_text(encoding="utf-8-sig"))
-        if data.get("active_provider") != "nous":
+        if data.get("active_provider") != "clara":
             return None
-        provider = data.get("providers", {}).get("nous", {})
+        provider = data.get("providers", {}).get("clara", {})
         # Must have at least an access_token or agent_key
         if not provider.get("agent_key") and not provider.get("access_token"):
             return None
         return provider
     except Exception as exc:
-        logger.debug("Could not read Nous auth: %s", exc)
+        logger.debug("Could not read Clara auth: %s", exc)
         return None
 
 
-def _nous_api_key(provider: dict) -> str:
-    """Extract a usable Nous inference JWT from stored auth state."""
-    from hermes_cli.auth import _nous_invoke_jwt_is_usable
+def _clara_api_key(provider: dict) -> str:
+    """Extract a usable Clara inference JWT from stored auth state."""
+    from clara_cli.auth import _clara_invoke_jwt_is_usable
 
     for token_key, expiry_key in (
         ("agent_key", "agent_key_expires_at"),
@@ -2966,7 +2966,7 @@ def _nous_api_key(provider: dict) -> str:
         token = provider.get(token_key)
         if not isinstance(token, str) or not token.strip():
             continue
-        if _nous_invoke_jwt_is_usable(
+        if _clara_invoke_jwt_is_usable(
             token,
             scope=provider.get("scope"),
             expires_at=provider.get(expiry_key),
@@ -2975,19 +2975,19 @@ def _nous_api_key(provider: dict) -> str:
     return ""
 
 
-def _nous_base_url() -> str:
-    """Resolve the Nous inference base URL from env or default."""
-    return os.getenv("NOUS_INFERENCE_BASE_URL", _NOUS_DEFAULT_BASE_URL)
+def _clara_base_url() -> str:
+    """Resolve the Clara inference base URL from env or default."""
+    return os.getenv("CLARA_INFERENCE_BASE_URL", _CLARA_DEFAULT_BASE_URL)
 
 
-def _resolve_nous_pool_runtime_api(*, force_refresh: bool = False) -> Optional[tuple[str, str]]:
-    """Resolve Nous auxiliary credentials from the selected pool entry."""
+def _resolve_clara_pool_runtime_api(*, force_refresh: bool = False) -> Optional[tuple[str, str]]:
+    """Resolve Clara auxiliary credentials from the selected pool entry."""
     try:
-        from hermes_cli.auth import _agent_key_is_usable
+        from clara_cli.auth import _agent_key_is_usable
 
-        pool = load_pool("nous")
+        pool = load_pool("clara")
     except Exception as exc:
-        logger.debug("Auxiliary Nous pool credential resolution failed: %s", exc)
+        logger.debug("Auxiliary Clara pool credential resolution failed: %s", exc)
         return None
 
     if not pool or not pool.has_credentials():
@@ -2996,7 +2996,7 @@ def _resolve_nous_pool_runtime_api(*, force_refresh: bool = False) -> Optional[t
     try:
         entry = pool.select()
     except Exception as exc:
-        logger.debug("Auxiliary Nous pool selection failed: %s", exc)
+        logger.debug("Auxiliary Clara pool selection failed: %s", exc)
         return None
 
     if entry is None:
@@ -3007,11 +3007,11 @@ def _resolve_nous_pool_runtime_api(*, force_refresh: bool = False) -> Optional[t
         "agent_key_expires_at": getattr(entry, "agent_key_expires_at", None),
         "scope": getattr(entry, "scope", None),
     }
-    if force_refresh or not _agent_key_is_usable(state, _nous_min_key_ttl_seconds()):
+    if force_refresh or not _agent_key_is_usable(state, _clara_min_key_ttl_seconds()):
         try:
             refreshed = pool.try_refresh_current()
         except Exception as exc:
-            logger.debug("Auxiliary Nous pool refresh failed: %s", exc)
+            logger.debug("Auxiliary Clara pool refresh failed: %s", exc)
             refreshed = None
         if refreshed is None:
             return None
@@ -3024,34 +3024,34 @@ def _resolve_nous_pool_runtime_api(*, force_refresh: bool = False) -> Optional[t
         "expires_at": getattr(entry, "expires_at", None),
         "scope": getattr(entry, "scope", None),
     }
-    api_key = _nous_api_key(provider)
-    base_url = _pool_runtime_base_url(entry, _NOUS_DEFAULT_BASE_URL)
+    api_key = _clara_api_key(provider)
+    base_url = _pool_runtime_base_url(entry, _CLARA_DEFAULT_BASE_URL)
     if not api_key or not base_url:
         return None
     return api_key, base_url
 
 
-def _resolve_nous_runtime_api(*, force_refresh: bool = False) -> Optional[tuple[str, str]]:
-    """Return fresh Nous runtime credentials when available.
+def _resolve_clara_runtime_api(*, force_refresh: bool = False) -> Optional[tuple[str, str]]:
+    """Return fresh Clara runtime credentials when available.
 
     This mirrors the main agent's 401 recovery path and keeps auxiliary
     clients aligned with the singleton auth store + JWT refresh flow instead of
     relying only on whatever raw tokens happen to be sitting in auth.json
     or the credential pool.
     """
-    pooled = _resolve_nous_pool_runtime_api(force_refresh=force_refresh)
+    pooled = _resolve_clara_pool_runtime_api(force_refresh=force_refresh)
     if pooled is not None:
         return pooled
 
     try:
-        from hermes_cli.auth import resolve_nous_runtime_credentials
+        from clara_cli.auth import resolve_clara_runtime_credentials
 
-        creds = resolve_nous_runtime_credentials(
-            timeout_seconds=env_float("HERMES_NOUS_TIMEOUT_SECONDS", 15),
+        creds = resolve_clara_runtime_credentials(
+            timeout_seconds=env_float("CLARA_CLARA_TIMEOUT_SECONDS", 15),
             force_refresh=force_refresh,
         )
     except Exception as exc:
-        logger.debug("Auxiliary Nous runtime credential resolution failed: %s", exc)
+        logger.debug("Auxiliary Clara runtime credential resolution failed: %s", exc)
         return None
 
     api_key = str(creds.get("api_key") or "").strip()
@@ -3067,15 +3067,15 @@ def _resolve_xai_oauth_for_aux() -> Optional[Tuple[str, str]]:
     Prefer the credential pool, matching the main runtime/provider status
     path.  Some xAI OAuth logins live only as pool entries; falling straight
     to the singleton auth-store resolver would make auxiliary tasks such as
-    compression report "no provider configured" even though ``hermes auth
+    compression report "no provider configured" even though ``clara auth
     status`` shows xAI OAuth as logged in.
 
-    Falls back to ``hermes_cli.auth``'s singleton runtime resolver for older
+    Falls back to ``clara_cli.auth``'s singleton runtime resolver for older
     auth-store-only logins. Returns ``None`` if the user is not authenticated
     with xAI Grok OAuth.
     """
     try:
-        from hermes_cli.auth import (
+        from clara_cli.auth import (
             DEFAULT_XAI_OAUTH_BASE_URL,
             _xai_validate_inference_base_url,
         )
@@ -3090,7 +3090,7 @@ def _resolve_xai_oauth_for_aux() -> Optional[Tuple[str, str]]:
                     or ""
                 ).strip()
                 base_url = _xai_validate_inference_base_url(
-                    os.getenv("HERMES_XAI_BASE_URL", "").strip().rstrip("/")
+                    os.getenv("CLARA_XAI_BASE_URL", "").strip().rstrip("/")
                     or os.getenv("XAI_BASE_URL", "").strip().rstrip("/")
                     or str(getattr(entry, "runtime_base_url", None) or "").strip().rstrip("/")
                     or str(getattr(entry, "base_url", None) or "").strip().rstrip("/"),
@@ -3102,7 +3102,7 @@ def _resolve_xai_oauth_for_aux() -> Optional[Tuple[str, str]]:
         logger.debug("Auxiliary xAI OAuth pool credential resolution failed: %s", exc)
 
     try:
-        from hermes_cli.auth import resolve_xai_oauth_runtime_credentials
+        from clara_cli.auth import resolve_xai_oauth_runtime_credentials
 
         creds = resolve_xai_oauth_runtime_credentials()
     except Exception as exc:
@@ -3117,7 +3117,7 @@ def _resolve_xai_oauth_for_aux() -> Optional[Tuple[str, str]]:
 
 
 def _read_codex_access_token() -> Optional[str]:
-    """Read a valid, non-expired Codex OAuth access token from Hermes auth store.
+    """Read a valid, non-expired Codex OAuth access token from Clara auth store.
 
     If a credential pool exists but currently has no selectable runtime entry
     (for example all pool slots are marked exhausted), fall back to the
@@ -3132,7 +3132,7 @@ def _read_codex_access_token() -> Optional[str]:
             return token
 
     try:
-        from hermes_cli.auth import _read_codex_tokens
+        from clara_cli.auth import _read_codex_tokens
         data = _read_codex_tokens()
         tokens = data.get("tokens", {})
         access_token = tokens.get("access_token")
@@ -3166,7 +3166,7 @@ def _resolve_api_key_provider() -> Tuple[Optional[OpenAI], Optional[str]]:
     credentials, or (None, None) if none are configured.
     """
     try:
-        from hermes_cli.auth import PROVIDER_REGISTRY, resolve_api_key_provider_credentials
+        from clara_cli.auth import PROVIDER_REGISTRY, resolve_api_key_provider_credentials
     except ImportError:
         logger.debug("Could not import PROVIDER_REGISTRY for API-key fallback")
         return None, None
@@ -3182,7 +3182,7 @@ def _resolve_api_key_provider() -> Tuple[Optional[OpenAI], Optional[str]]:
             # Without this gate, Claude Code credentials get silently used
             # as auxiliary fallback when the user's primary provider fails.
             try:
-                from hermes_cli.auth import is_provider_explicitly_configured
+                from clara_cli.auth import is_provider_explicitly_configured
                 if not is_provider_explicitly_configured("anthropic"):
                     continue
             except ImportError:
@@ -3210,7 +3210,7 @@ def _resolve_api_key_provider() -> Tuple[Optional[OpenAI], Optional[str]]:
             if base_url_host_matches(base_url, "api.kimi.com"):
                 extra["default_headers"] = {"User-Agent": "claude-code/0.1.0"}
             elif base_url_host_matches(base_url, "githubcopilot.com"):
-                from hermes_cli.models import copilot_default_headers
+                from clara_cli.models import copilot_default_headers
 
                 extra["default_headers"] = copilot_default_headers()
             elif base_url_host_matches(base_url, "integrate.api.nvidia.com"):
@@ -3250,7 +3250,7 @@ def _resolve_api_key_provider() -> Tuple[Optional[OpenAI], Optional[str]]:
         if base_url_host_matches(base_url, "api.kimi.com"):
             extra["default_headers"] = {"User-Agent": "claude-code/0.1.0"}
         elif base_url_host_matches(base_url, "githubcopilot.com"):
-            from hermes_cli.models import copilot_default_headers
+            from clara_cli.models import copilot_default_headers
 
             extra["default_headers"] = copilot_default_headers()
         elif base_url_host_matches(base_url, "integrate.api.nvidia.com"):
@@ -3298,7 +3298,7 @@ def _aux_openrouter_settings() -> Tuple[bool, str]:
     config-read failure.
     """
     try:
-        from hermes_cli.config import cfg_get, load_config_readonly
+        from clara_cli.config import cfg_get, load_config_readonly
 
         cfg = load_config_readonly()
         free_only = bool(cfg_get(cfg, "auxiliary", "free_only", default=False))
@@ -3381,55 +3381,55 @@ def _describe_openrouter_unavailable(model: str = None) -> str:
     return "no usable OpenRouter credentials found"
 
 
-def _try_nous(vision: bool = False) -> Tuple[Optional[OpenAI], Optional[str]]:
-    # Check cross-session rate limit guard before attempting Nous —
-    # if another session already recorded a 429, skip Nous entirely
+def _try_clara(vision: bool = False) -> Tuple[Optional[OpenAI], Optional[str]]:
+    # Check cross-session rate limit guard before attempting Clara —
+    # if another session already recorded a 429, skip Clara entirely
     # to avoid piling more requests onto the tapped RPH bucket.
     try:
-        from agent.nous_rate_guard import nous_rate_limit_remaining
-        _remaining = nous_rate_limit_remaining()
+        from agent.clara_rate_guard import clara_rate_limit_remaining
+        _remaining = clara_rate_limit_remaining()
         if _remaining is not None and _remaining > 0:
             logger.debug(
-                "Auxiliary: skipping Nous Portal (rate-limited, resets in %.0fs)",
+                "Auxiliary: skipping Clara Portal (rate-limited, resets in %.0fs)",
                 _remaining,
             )
-            _mark_provider_unhealthy("nous", ttl=_remaining)
+            _mark_provider_unhealthy("clara", ttl=_remaining)
             return None, None
     except Exception:
         pass
 
-    nous = _read_nous_auth()
-    runtime = _resolve_nous_runtime_api(force_refresh=False)
-    if runtime is None and not nous:
+    clara = _read_clara_auth()
+    runtime = _resolve_clara_runtime_api(force_refresh=False)
+    if runtime is None and not clara:
         logger.warning(
-            "Auxiliary Nous client unavailable: no Nous authentication found "
-            "(run: hermes auth)."
+            "Auxiliary Clara client unavailable: no Clara authentication found "
+            "(run: clara auth)."
         )
-        _mark_provider_unhealthy("nous", ttl=60)
+        _mark_provider_unhealthy("clara", ttl=60)
         return None, None
-    if runtime is None and nous:
+    if runtime is None and clara:
         logger.debug(
-            "Auxiliary Nous: runtime JWT refresh failed; checking stored "
+            "Auxiliary Clara: runtime JWT refresh failed; checking stored "
             "auth.json token."
         )
-    global auxiliary_is_nous
-    auxiliary_is_nous = True
-    logger.debug("Auxiliary client: Nous Portal")
+    global auxiliary_is_clara
+    auxiliary_is_clara = True
+    logger.debug("Auxiliary client: Clara Portal")
 
     # Ask the Portal which model it currently recommends for this task type.
-    # The /api/nous/recommended-models endpoint is the authoritative source:
-    # it distinguishes paid vs free tier recommendations, and get_nous_recommended_aux_model
-    # auto-detects the caller's tier via check_nous_free_tier().  Fall back to
-    # _NOUS_MODEL (google/gemini-3-flash-preview) when the Portal is unreachable
+    # The /api/clara/recommended-models endpoint is the authoritative source:
+    # it distinguishes paid vs free tier recommendations, and get_clara_recommended_aux_model
+    # auto-detects the caller's tier via check_clara_free_tier().  Fall back to
+    # _CLARA_MODEL (google/gemini-3-flash-preview) when the Portal is unreachable
     # or returns a null recommendation for this task type.
-    model = _NOUS_MODEL
+    model = _CLARA_MODEL
     if not _aux_probe_active():
         # Availability probes skip the recommended-model lookup: the exact
-        # model is irrelevant to "is Nous resolvable?", and the Portal
+        # model is irrelevant to "is Clara resolvable?", and the Portal
         # recommended-models fetch below can hit the network.
         try:
-            from hermes_cli.models import get_nous_recommended_aux_model
-            recommended = get_nous_recommended_aux_model(vision=vision)
+            from clara_cli.models import get_clara_recommended_aux_model
+            recommended = get_clara_recommended_aux_model(vision=vision)
             if recommended:
                 model = recommended
                 logger.debug(
@@ -3451,15 +3451,15 @@ def _try_nous(vision: bool = False) -> Tuple[Optional[OpenAI], Optional[str]]:
     if runtime is not None:
         api_key, base_url = runtime
     else:
-        api_key = _nous_api_key(nous or {})
+        api_key = _clara_api_key(clara or {})
         if not api_key:
             logger.warning(
-                "Auxiliary Nous client unavailable: no usable inference JWT found "
-                "(run: hermes auth add nous)."
+                "Auxiliary Clara client unavailable: no usable inference JWT found "
+                "(run: clara auth add clara)."
             )
-            _mark_provider_unhealthy("nous", ttl=60)
+            _mark_provider_unhealthy("clara", ttl=60)
             return None, None
-        base_url = str((nous or {}).get("inference_base_url") or _nous_base_url()).rstrip("/")
+        base_url = str((clara or {}).get("inference_base_url") or _clara_base_url()).rstrip("/")
     return (
         _create_openai_client(
             api_key=api_key,
@@ -3469,21 +3469,21 @@ def _try_nous(vision: bool = False) -> Tuple[Optional[OpenAI], Optional[str]]:
     )
 
 
-def _refresh_nous_recommended_model(
+def _refresh_clara_recommended_model(
     *, vision: bool, stale_model: Optional[str]
 ) -> Optional[str]:
-    """Re-fetch the Nous Portal's recommended model after a stale-model 404.
+    """Re-fetch the Clara Portal's recommended model after a stale-model 404.
 
     Long-lived processes (gateway, watchers) cache the Portal's
     ``recommended-models`` payload for 10 minutes and, in practice, can pin a
     model for the whole process lifetime. When that model is later dropped from
-    the Nous → OpenRouter catalog, every auxiliary call 404s with
+    the Clara → OpenRouter catalog, every auxiliary call 404s with
     "model does not exist". This forces a fresh Portal fetch and returns a
     model name to retry with:
 
       * the Portal's current recommendation for the task, if it differs from
         the model that just failed; otherwise
-      * ``_NOUS_MODEL`` (google/gemini-3-flash-preview), the known-good default,
+      * ``_CLARA_MODEL`` (google/gemini-3-flash-preview), the known-good default,
         if it too differs from the failed model.
 
     Returns ``None`` when no usable alternative is available (e.g. the Portal
@@ -3493,20 +3493,20 @@ def _refresh_nous_recommended_model(
     stale = (stale_model or "").strip().lower()
     fresh: Optional[str] = None
     try:
-        from hermes_cli.models import get_nous_recommended_aux_model
+        from clara_cli.models import get_clara_recommended_aux_model
 
-        fresh = get_nous_recommended_aux_model(vision=vision, force_refresh=True)
+        fresh = get_clara_recommended_aux_model(vision=vision, force_refresh=True)
     except Exception as exc:
         logger.debug(
-            "Nous recommended-model refresh failed (%s); using default %s",
-            exc, _NOUS_MODEL,
+            "Clara recommended-model refresh failed (%s); using default %s",
+            exc, _CLARA_MODEL,
         )
     if fresh and fresh.strip().lower() != stale:
         return fresh
     # Portal recommendation unchanged or unavailable — fall back to the
     # hardcoded known-good default, but only if it's actually different.
-    if _NOUS_MODEL.strip().lower() != stale:
-        return _NOUS_MODEL
+    if _CLARA_MODEL.strip().lower() != stale:
+        return _CLARA_MODEL
     return None
 
 
@@ -3526,7 +3526,7 @@ def _read_main_model() -> str:
     if isinstance(override, str) and override.strip():
         return override.strip()
     try:
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.config import load_config_readonly
         cfg = load_config_readonly()
         model_cfg = cfg.get("model", {})
         if isinstance(model_cfg, str) and model_cfg.strip():
@@ -3553,7 +3553,7 @@ def _read_main_provider() -> str:
     if isinstance(override, str) and override.strip():
         return override.strip().lower()
     try:
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.config import load_config_readonly
         cfg = load_config_readonly()
         model_cfg = cfg.get("model", {})
         if isinstance(model_cfg, dict):
@@ -3582,7 +3582,7 @@ def _read_main_api_key() -> str:
     if isinstance(override, str) and override.strip():
         return override.strip()
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
         cfg = load_config()
         model_cfg = cfg.get("model", {})
         if isinstance(model_cfg, dict):
@@ -3603,7 +3603,7 @@ def _read_main_base_url() -> str:
     if isinstance(override, str) and override.strip():
         return override.strip()
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
         cfg = load_config()
         model_cfg = cfg.get("model", {})
         if isinstance(model_cfg, dict):
@@ -3637,8 +3637,8 @@ def _resolve_moa_aggregator(preset_name: Optional[str]) -> Tuple[Optional[str], 
         or a malformed aggregator slot).
     """
     try:
-        from hermes_cli.config import load_config
-        from hermes_cli.moa_config import resolve_moa_preset
+        from clara_cli.config import load_config
+        from clara_cli.moa_config import resolve_moa_preset
 
         preset = resolve_moa_preset(load_config().get("moa") or {}, preset_name or None)
         agg = preset.get("aggregator") or {}
@@ -4026,7 +4026,7 @@ def _resolve_custom_runtime() -> Tuple[Optional[str], Optional[str], Optional[st
     environment.
     """
     try:
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from clara_cli.runtime_provider import resolve_runtime_provider
 
         runtime = resolve_runtime_provider(requested="custom")
     except Exception as exc:
@@ -4116,7 +4116,7 @@ def _validate_base_url(base_url: str) -> None:
     except ValueError as exc:
         raise RuntimeError(
             f"Malformed custom endpoint URL: {candidate!r}. "
-            "Run `hermes setup` or `hermes model` and enter a valid http(s) base URL."
+            "Run `clara setup` or `clara model` and enter a valid http(s) base URL."
         ) from exc
 
 
@@ -4193,12 +4193,12 @@ def _build_xai_oauth_aux_client(model: str) -> Tuple[Optional[Any], Optional[str
         return None, None
     api_key, base_url = resolved
     logger.debug("Auxiliary client: xAI OAuth (%s via Responses API)", model)
-    from tools.xai_http import hermes_xai_default_headers
+    from tools.xai_http import clara_xai_default_headers
 
     real_client = _create_openai_client(
         api_key=api_key,
         base_url=base_url,
-        default_headers=hermes_xai_default_headers(),
+        default_headers=clara_xai_default_headers(),
     )
     return CodexAuxiliaryClient(real_client, model), model
 
@@ -4253,8 +4253,8 @@ def _try_azure_foundry(
 ) -> Tuple[Optional[Any], Optional[str]]:
     """Resolve an Azure Foundry auxiliary client via the runtime resolver.
 
-    Mirrors the ``_try_anthropic`` / ``_try_nous`` shape but delegates to
-    :func:`hermes_cli.runtime_provider._resolve_azure_foundry_runtime` —
+    Mirrors the ``_try_anthropic`` / ``_try_clara`` shape but delegates to
+    :func:`clara_cli.runtime_provider._resolve_azure_foundry_runtime` —
     the same resolver the main agent uses — so:
 
     * ``auth_mode: api_key`` (default) gets the static
@@ -4274,9 +4274,9 @@ def _try_azure_foundry(
     Returns ``(client, model)`` or ``(None, None)`` on failure.
     """
     try:
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
-        from hermes_cli.auth import AuthError
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.runtime_provider import _resolve_azure_foundry_runtime
+        from clara_cli.auth import AuthError
+        from clara_cli.config import load_config_readonly
     except ImportError:
         return None, None
 
@@ -4395,7 +4395,7 @@ def _try_anthropic(explicit_api_key: str = None) -> Tuple[Optional[Any], Optiona
     # see issue #52608.
     base_url = _pool_runtime_base_url(entry, _ANTHROPIC_DEFAULT_BASE_URL) if pool_present else _ANTHROPIC_DEFAULT_BASE_URL
     try:
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.config import load_config_readonly
         cfg = load_config_readonly()
         model_cfg = cfg.get("model")
         if isinstance(model_cfg, dict):
@@ -4427,7 +4427,7 @@ def _try_anthropic(explicit_api_key: str = None) -> Tuple[Optional[Any], Optiona
 
 _AUTO_PROVIDER_LABELS = {
     "_try_openrouter": "openrouter",
-    "_try_nous": "nous",
+    "_try_clara": "clara",
     "_try_custom_endpoint": "local/custom",
     "_resolve_api_key_provider": "api-key",
 }
@@ -4486,7 +4486,7 @@ def _get_provider_chain() -> List[tuple]:
     """
     return [
         ("openrouter", _try_openrouter),
-        ("nous", _try_nous),
+        ("clara", _try_clara),
         ("local/custom", _try_custom_endpoint),
         ("api-key", _resolve_api_key_provider),
     ]
@@ -4508,7 +4508,7 @@ def _get_provider_chain() -> List[tuple]:
 # happened). Entries auto-expire so a topped-up account recovers without
 # manual intervention.
 #
-# Failure isolation: the cache is in-process only. A second hermes
+# Failure isolation: the cache is in-process only. A second clara
 # process won't inherit the unhealthy mark — that's intentional, since
 # the user might be running two profiles with different OpenRouter keys.
 
@@ -4521,7 +4521,7 @@ _aux_unhealthy_logged_at: Dict[str, float] = {}
 # with the alias map in _try_payment_fallback below.
 _AUX_UNHEALTHY_LABEL_ALIASES = {
     "openrouter": "openrouter",
-    "nous": "nous",
+    "clara": "clara",
     "custom": "local/custom",
     "local/custom": "local/custom",
     "openai-codex": "openai-codex",
@@ -4594,7 +4594,7 @@ def _log_skip_unhealthy(label: str, task: Optional[str] = None) -> None:
 
 def _reset_aux_unhealthy_cache() -> None:
     """Clear the unhealthy cache. Used by tests and by a future explicit
-    user trigger (e.g. ``hermes config aux reset``)."""
+    user trigger (e.g. ``clara config aux reset``)."""
     _aux_unhealthy_until.clear()
     _aux_unhealthy_logged_at.clear()
 
@@ -4641,15 +4641,15 @@ def _is_payment_error(exc: Exception) -> bool:
     return False
 
 
-def _nous_portal_account_has_fresh_paid_access() -> bool:
-    """Return True only when the fresh Nous account API says paid access is allowed."""
+def _clara_portal_account_has_fresh_paid_access() -> bool:
+    """Return True only when the fresh Clara account API says paid access is allowed."""
     try:
-        from hermes_cli.nous_account import get_nous_portal_account_info
+        from clara_cli.clara_account import get_clara_portal_account_info
 
-        account_info = get_nous_portal_account_info(force_fresh=True)
+        account_info = get_clara_portal_account_info(force_fresh=True)
         return account_info.paid_service_access is True
     except Exception as exc:
-        logger.debug("Auxiliary Nous paid-entitlement refresh check failed: %s", exc)
+        logger.debug("Auxiliary Clara paid-entitlement refresh check failed: %s", exc)
         return False
 
 
@@ -4785,7 +4785,7 @@ def _transient_retry_count() -> int:
     Best-effort: any config-read failure falls back to the default.
     """
     try:
-        from hermes_cli.config import cfg_get, load_config
+        from clara_cli.config import cfg_get, load_config
 
         val = cfg_get(load_config(), "auxiliary", "transient_retries")
         if val is None:
@@ -4927,7 +4927,7 @@ def _is_model_not_found_error(exc: Exception) -> bool:
 
     This fires when a resolved model name is no longer served by the endpoint
     — most commonly when a long-lived process pinned a Portal-recommended model
-    that has since been dropped from the Nous → OpenRouter catalog. The Nous
+    that has since been dropped from the Clara → OpenRouter catalog. The Clara
     proxy returns 404 with a body like::
 
         Model 'gpt-5.4-mini' not found. The requested model does not exist
@@ -5128,8 +5128,8 @@ def _recoverable_pool_provider(
         return "openai-codex"
     if base_url_host_matches(base, "openrouter.ai"):
         return "openrouter"
-    if base_url_host_matches(base, "inference-api.nousresearch.com"):
-        return "nous"
+    if base_url_host_matches(base, "inference-api.claraprise.com"):
+        return "clara"
     if base_url_host_matches(base, "api.anthropic.com"):
         return "anthropic"
     if base_url_host_matches(base, "githubcopilot.com"):
@@ -5146,7 +5146,7 @@ def _recoverable_pool_provider(
         rt_provider = rt.get("provider", "")
         if rt_provider and rt_provider not in {"", "auto", "custom"}:
             try:
-                from hermes_cli.auth import PROVIDER_REGISTRY
+                from clara_cli.auth import PROVIDER_REGISTRY
                 pconfig = PROVIDER_REGISTRY.get(rt_provider)
                 if pconfig and getattr(pconfig, "auth_type", None) == "api_key":
                     rt_base = str(getattr(pconfig, "inference_base_url", "") or "").rstrip("/")
@@ -5361,7 +5361,7 @@ def _refresh_provider_credentials(provider: str) -> bool:
     normalized = _normalize_aux_provider(provider)
     try:
         if normalized == "copilot":
-            from hermes_cli.copilot_auth import (
+            from clara_cli.copilot_auth import (
                 _jwt_cache,
                 _token_fingerprint,
                 exchange_copilot_token,
@@ -5376,18 +5376,18 @@ def _refresh_provider_credentials(provider: str) -> bool:
             _evict_cached_clients(normalized)
             return True
         if normalized == "openai-codex":
-            from hermes_cli.auth import resolve_codex_runtime_credentials
+            from clara_cli.auth import resolve_codex_runtime_credentials
 
             creds = resolve_codex_runtime_credentials(force_refresh=True)
             if not str(creds.get("api_key", "") or "").strip():
                 return False
             _evict_cached_clients(normalized)
             return True
-        if normalized == "nous":
-            from hermes_cli.auth import resolve_nous_runtime_credentials
+        if normalized == "clara":
+            from clara_cli.auth import resolve_clara_runtime_credentials
 
-            creds = resolve_nous_runtime_credentials(
-                timeout_seconds=env_float("HERMES_NOUS_TIMEOUT_SECONDS", 15),
+            creds = resolve_clara_runtime_credentials(
+                timeout_seconds=env_float("CLARA_CLARA_TIMEOUT_SECONDS", 15),
                 force_refresh=True,
             )
             if not str(creds.get("api_key", "") or "").strip():
@@ -5416,7 +5416,7 @@ def _refresh_provider_credentials(provider: str) -> bool:
                 if refreshed is not None and str(getattr(refreshed, "runtime_api_key", "") or "").strip():
                     _evict_cached_clients(normalized)
                     return True
-            from hermes_cli.auth import resolve_xai_oauth_runtime_credentials
+            from clara_cli.auth import resolve_xai_oauth_runtime_credentials
 
             creds = resolve_xai_oauth_runtime_credentials(force_refresh=True)
             if not str(creds.get("api_key", "") or "").strip():
@@ -5456,7 +5456,7 @@ def _auth_refresh_provider_for_route(
     Auto-routed auxiliary calls keep ``resolved_provider == "auto"`` even
     after _get_cached_client() selects a concrete backend. Infer the backend
     from the selected client's base URL so auth refresh works for auto →
-    Copilot/Codex/Anthropic/Nous routes too. (#20832)
+    Copilot/Codex/Anthropic/Clara routes too. (#20832)
     """
     normalized = _normalize_aux_provider(resolved_provider)
     if normalized and normalized != "auto":
@@ -5467,8 +5467,8 @@ def _auth_refresh_provider_for_route(
         return "openai-codex"
     if base_url_host_matches(client_base_url, "api.anthropic.com"):
         return "anthropic"
-    if base_url_host_matches(client_base_url, "inference-api.nousresearch.com"):
-        return "nous"
+    if base_url_host_matches(client_base_url, "inference-api.claraprise.com"):
+        return "clara"
     return normalized
 
 
@@ -5553,7 +5553,7 @@ def _complete_fallback_destination(
             api_mode = "anthropic_messages"
         else:
             try:
-                from hermes_cli.runtime_provider import resolve_runtime_provider
+                from clara_cli.runtime_provider import resolve_runtime_provider
 
                 runtime = resolve_runtime_provider(
                     requested=provider,
@@ -5589,7 +5589,7 @@ def _fallback_destination(
     fb_label: str,
 ) -> _FallbackDestination:
     """Return the resolved route identity used by a fallback request."""
-    attached = getattr(fb_client, "_hermes_fallback_destination", None)
+    attached = getattr(fb_client, "_clara_fallback_destination", None)
     if isinstance(attached, _FallbackDestination):
         return attached
 
@@ -5605,13 +5605,13 @@ def _fallback_destination(
     return _complete_fallback_destination(provider, base_url, api_mode, model)
 
 
-def _replan_synchronous_cache_sections(
+def _replan_synchroclara_cache_sections(
     messages: list,
     tools: Optional[list],
     *,
     destination: _FallbackDestination,
 ) -> tuple[list, list]:
-    """Strip source decoration and plan one synchronous destination locally."""
+    """Strip source decoration and plan one __PROT_1_synchroclara__ destination locally."""
     from agent.agent_runtime_helpers import (
         configured_cache_ttl,
         plan_cache_sections_for_destination,
@@ -5689,7 +5689,7 @@ def _call_fallback_candidate_sync(
         max_tokens=max_tokens,
         extra_body=effective_extra_body,
     )
-    fallback_messages, fallback_tools = _replan_synchronous_cache_sections(
+    fallback_messages, fallback_tools = _replan_synchroclara_cache_sections(
         messages,
         tools,
         destination=destination,
@@ -5743,7 +5743,7 @@ def _call_fallback_candidate_sync(
                     destination.api_mode,
                     retry_model or destination.model,
                 )
-                retry_messages, retry_tools = _replan_synchronous_cache_sections(
+                retry_messages, retry_tools = _replan_synchroclara_cache_sections(
                     messages,
                     tools,
                     destination=retry_destination,
@@ -5833,7 +5833,7 @@ async def _call_fallback_candidate_async(
         )
         effective_timeout = fb_timeout
     destination = _fallback_destination(task, fb_client, fb_model, fb_label)
-    fallback_messages, fallback_tools = _replan_synchronous_cache_sections(
+    fallback_messages, fallback_tools = _replan_synchroclara_cache_sections(
         messages,
         tools,
         destination=destination,
@@ -5876,7 +5876,7 @@ async def _call_fallback_candidate_async(
                     destination.api_mode,
                     retry_model or destination.model,
                 )
-                retry_messages, retry_tools = _replan_synchronous_cache_sections(
+                retry_messages, retry_tools = _replan_synchroclara_cache_sections(
                     messages,
                     tools,
                     destination=retry_destination,
@@ -5934,7 +5934,7 @@ def _try_payment_fallback(
     if main_provider and main_provider.lower() in skip:
         skip_labels.add(main_provider.lower())
     # Map common resolved_provider values back to chain labels.
-    _alias_to_label = {"openrouter": "openrouter", "nous": "nous",
+    _alias_to_label = {"openrouter": "openrouter", "clara": "clara",
                        "openai-codex": "openai-codex", "codex": "openai-codex",
                        "custom": "local/custom", "local/custom": "local/custom"}
     skip_chain_labels = {_alias_to_label.get(s, s) for s in skip_labels}
@@ -6277,9 +6277,9 @@ def _fallback_entry_api_key(entry: Dict[str, Any]) -> Optional[str]:
 
     Delegates to the centralized, secret-scope-aware resolver so this path
     doesn't leak another profile's credential via a raw ``os.getenv`` under
-    gateway multiplexing (see ``hermes_cli.fallback_config.resolve_entry_api_key``).
+    gateway multiplexing (see ``clara_cli.fallback_config.resolve_entry_api_key``).
     """
-    from hermes_cli.fallback_config import resolve_entry_api_key
+    from clara_cli.fallback_config import resolve_entry_api_key
 
     return resolve_entry_api_key(entry)
 
@@ -6302,7 +6302,7 @@ def _resolve_fallback_entry(entry: Dict[str, Any]) -> Tuple[Optional[Any], Optio
     )
     if client is not None:
         try:
-            client._hermes_fallback_destination = _fallback_destination_from_entry(
+            client._clara_fallback_destination = _fallback_destination_from_entry(
                 entry, client, resolved_model
             )
         except Exception:
@@ -6318,14 +6318,14 @@ def _try_main_fallback_chain(
     """Try the top-level main-agent fallback chain for an auxiliary call.
 
     ``provider: auto`` auxiliary tasks should respect the user's declared
-    main fallback policy before dropping into Hermes' built-in discovery
+    main fallback policy before dropping into Clara' built-in discovery
     chain. The top-level chain is read through ``get_fallback_chain`` so
     both modern ``fallback_providers`` and legacy ``fallback_model`` entries
     participate in the same order as the main agent.
     """
     try:
-        from hermes_cli.config import load_config_readonly
-        from hermes_cli.fallback_config import get_fallback_chain
+        from clara_cli.config import load_config_readonly
+        from clara_cli.fallback_config import get_fallback_chain
 
         chain = get_fallback_chain(load_config_readonly())
     except Exception as exc:
@@ -6422,15 +6422,15 @@ def _resolve_auto_route(
       1. User's main provider + main model, regardless of provider type.
          This means auxiliary tasks (compression, vision, web extraction,
          session search, etc.) use the same model the user configured for
-         chat.  Users on OpenRouter/Nous get their chosen chat model; users
+         chat.  Users on OpenRouter/Clara get their chosen chat model; users
          on DeepSeek/ZAI/Alibaba get theirs; etc.  Running aux tasks on the
          user's picked model keeps behavior predictable — no surprise
          switches to a cheap fallback model for side tasks.
-      2. OpenRouter → Nous → custom → Codex → API-key providers (fallback
+      2. OpenRouter → Clara → custom → Codex → API-key providers (fallback
          chain, only used when the main provider has no working client).
     """
-    global auxiliary_is_nous, _stale_base_url_warned
-    auxiliary_is_nous = False  # Reset — _try_nous() will set True if it wins
+    global auxiliary_is_clara, _stale_base_url_warned
+    auxiliary_is_clara = False  # Reset — _try_clara() will set True if it wins
     runtime = _normalize_main_runtime(main_runtime)
     runtime_provider = runtime.get("provider", "")
     runtime_model = str(runtime.get("model") or "")
@@ -6440,8 +6440,8 @@ def _resolve_auto_route(
 
     # ── Warn once if OPENAI_BASE_URL is set but config.yaml uses a named
     #    provider (not 'custom').  This catches the common "env poisoning"
-    #    scenario where a user switches providers via `hermes model` but the
-    #    old OPENAI_BASE_URL lingers in ~/.hermes/.env. ──
+    #    scenario where a user switches providers via `clara model` but the
+    #    old OPENAI_BASE_URL lingers in ~/.clara/.env. ──
     if not _stale_base_url_warned:
         _env_base = os.getenv("OPENAI_BASE_URL", "").strip()
         _cfg_provider = runtime_provider or _read_main_provider()
@@ -6451,8 +6451,8 @@ def _resolve_auto_route(
             logger.warning(
                 "OPENAI_BASE_URL is set (%s) but model.provider is '%s'. "
                 "Auxiliary clients may route to the wrong endpoint. "
-                "Run: hermes model to reconfigure, or remove "
-                "OPENAI_BASE_URL from ~/.hermes/.env",
+                "Run: clara model to reconfigure, or remove "
+                "OPENAI_BASE_URL from ~/.clara/.env",
                 _env_base, _cfg_provider,
             )
             _stale_base_url_warned = True
@@ -6461,7 +6461,7 @@ def _resolve_auto_route(
     #
     # This is the primary aux backend for every user.  "auto" means
     # "use my main chat model for side tasks as well" — including users
-    # on aggregators (OpenRouter, Nous) who previously got routed to a
+    # on aggregators (OpenRouter, Clara) who previously got routed to a
     # cheap provider-side default.  Explicit per-task overrides set via
     # config.yaml (auxiliary.<task>.provider) still win over this.
     main_provider = str(runtime_provider or _read_main_provider() or "")
@@ -6518,7 +6518,7 @@ def _resolve_auto_route(
             # Named custom provider (custom_providers / providers dict entry).
             _has_named_entry = False
             try:
-                from hermes_cli.runtime_provider import _get_named_custom_provider
+                from clara_cli.runtime_provider import _get_named_custom_provider
                 _has_named_entry = _get_named_custom_provider(main_provider) is not None
             except ImportError:
                 pass
@@ -6621,7 +6621,7 @@ def _tag_effective_provider(client: Any, provider: str) -> None:
     if client is None or not provider:
         return
     try:
-        setattr(client, "_hermes_aux_effective_provider", provider)
+        setattr(client, "_clara_aux_effective_provider", provider)
     except (AttributeError, TypeError):
         logger.debug(
             "Auxiliary client %s cannot retain effective provider %s",
@@ -6631,7 +6631,7 @@ def _tag_effective_provider(client: Any, provider: str) -> None:
 
 def _effective_provider_for_client(client: Any, fallback: str) -> str:
     """Return the concrete provider selected for an auto-routed client."""
-    effective_provider = getattr(client, "_hermes_aux_effective_provider", "")
+    effective_provider = getattr(client, "_clara_aux_effective_provider", "")
     if isinstance(effective_provider, str) and effective_provider:
         return effective_provider
     return str(fallback or "")
@@ -6675,7 +6675,7 @@ def _to_async_client(sync_client, model: str, is_vision: bool = False):
         pass
     # Clients that are already usable from async code (the ACP shims drive a
     # subprocess, not an HTTP connection pool) opt out of the async wrapper.
-    if _client_declares(sync_client, "HERMES_SKIP_ASYNC_WRAP"):
+    if _client_declares(sync_client, "CLARA_SKIP_ASYNC_WRAP"):
         return sync_client, model
 
     async_kwargs = {
@@ -6686,7 +6686,7 @@ def _to_async_client(sync_client, model: str, is_vision: bool = False):
     if base_url_host_matches(sync_base_url, "openrouter.ai"):
         async_kwargs["default_headers"] = build_or_headers()
     elif base_url_host_matches(sync_base_url, "githubcopilot.com"):
-        from hermes_cli.copilot_auth import copilot_request_headers
+        from clara_cli.copilot_auth import copilot_request_headers
 
         async_kwargs["default_headers"] = copilot_request_headers(
             is_agent_turn=True, is_vision=is_vision
@@ -6700,9 +6700,9 @@ def _to_async_client(sync_client, model: str, is_vision: bool = False):
             sync_client.api_key, base_url=sync_base_url,
         )
     elif base_url_host_matches(sync_base_url, "x.ai"):
-        from tools.xai_http import hermes_xai_default_headers
+        from tools.xai_http import clara_xai_default_headers
 
-        async_kwargs["default_headers"] = hermes_xai_default_headers()
+        async_kwargs["default_headers"] = clara_xai_default_headers()
     else:
         # Fall back to profile.default_headers for providers that declare
         # client-level headers on their ProviderProfile (e.g. attribution
@@ -6727,7 +6727,7 @@ def _to_async_client(sync_client, model: str, is_vision: bool = False):
         **_openai_http_client_kwargs(sync_base_url, async_mode=True),
         **async_kwargs,
     }
-    # See _create_openai_client: disable SDK-internal retries so Hermes owns
+    # See _create_openai_client: disable SDK-internal retries so Clara owns
     # the auxiliary retry/timeout budget (issue #54465).
     async_kwargs.setdefault("max_retries", 0)
     return AsyncOpenAI(**async_kwargs), model
@@ -6738,7 +6738,7 @@ def _normalize_resolved_model(model_name: Optional[str], provider: str) -> Optio
     if not model_name:
         return model_name
     try:
-        from hermes_cli.model_normalize import normalize_model_for_provider
+        from clara_cli.model_normalize import normalize_model_for_provider
 
         return normalize_model_for_provider(model_name, provider)
     except Exception:
@@ -6766,7 +6766,7 @@ def resolve_provider_client(
 
     Args:
         provider: Provider identifier.  One of:
-            "openrouter", "nous", "openai-codex" (or "codex"),
+            "openrouter", "clara", "openai-codex" (or "codex"),
             "zai", "kimi-coding", "minimax", "minimax-cn",
             "custom" (OPENAI_BASE_URL + OPENAI_API_KEY),
             "auto" (full auto-detection chain).
@@ -6858,15 +6858,15 @@ def resolve_provider_client(
     # return the actual current runtime model when the caller did not explicitly
     # request one. (# compression-current-model)
     #
-    # Nous + vision is the one carve-out: the branch below resolves its model
-    # from the Portal's tier-aware vision recommendation (``_try_nous(vision=
+    # Clara + vision is the one carve-out: the branch below resolves its model
+    # from the Portal's tier-aware vision recommendation (``_try_clara(vision=
     # True)``), and ``final_model = model or default`` means anything pre-filled
     # here wins over that. The main chat model is routinely text-only (e.g. a
     # ``:free`` chat SKU), so pre-filling it sends the image to a model that
     # cannot accept one and the Portal 404s. Leave ``model`` unset and let the
     # Portal slot through; only an explicit caller model may override it.
-    _nous_portal_vision = provider == "nous" and is_vision
-    if not model and provider != "auto" and not _nous_portal_vision:
+    _clara_portal_vision = provider == "clara" and is_vision
+    if not model and provider != "auto" and not _clara_portal_vision:
         model = _get_aux_model_for_provider(provider) or _read_main_model_for_aux() or model
 
     def _needs_codex_wrap(client_obj, base_url_str: str, model_str: str) -> bool:
@@ -6961,8 +6961,8 @@ def resolve_provider_client(
         return (_to_async_client(client, final_model, is_vision=is_vision) if async_mode
                 else (client, final_model))
 
-    # ── Nous Portal (OAuth) ──────────────────────────────────────────
-    if provider == "nous":
+    # ── Clara Portal (OAuth) ──────────────────────────────────────────
+    if provider == "clara":
         # Detect vision tasks: caller flag (strict vision backend), explicit
         # model override from _PROVIDER_VISION_MODELS, or a known vision id.
         _is_vision = (
@@ -6970,18 +6970,18 @@ def resolve_provider_client(
             or model in _PROVIDER_VISION_MODELS.values()
             or (model or "").strip().lower() == "mimo-v2-omni"
         )
-        client, default = _try_nous(vision=_is_vision)
+        client, default = _try_clara(vision=_is_vision)
         if client is None:
-            logger.warning("resolve_provider_client: nous requested "
-                           "but Nous Portal not configured (run: hermes auth)")
+            logger.warning("resolve_provider_client: clara requested "
+                           "but Clara Portal not configured (run: clara auth)")
             return None, None
         final_model = _normalize_resolved_model(model or default, provider)
         # Dual-wire: anthropic/* → /v1/messages, everything else stays on
         # /chat/completions. Derive from the catalog id (not a stale
         # api_mode=chat_completions) so aux matches the main agent.
-        from hermes_cli.providers import nous_api_mode
+        from clara_cli.providers import clara_api_mode
 
-        portal_mode = nous_api_mode(final_model)
+        portal_mode = clara_api_mode(final_model)
         api_key_str = str(getattr(client, "api_key", "") or "")
         base_url_str = str(getattr(client, "base_url", "") or "")
         client = _maybe_wrap_anthropic(
@@ -7005,7 +7005,7 @@ def resolve_provider_client(
             codex_token = _read_codex_access_token()
             if not codex_token:
                 logger.warning("resolve_provider_client: openai-codex requested "
-                               "but no Codex OAuth token found (run: hermes model)")
+                               "but no Codex OAuth token found (run: clara model)")
                 return None, None
             final_model = _normalize_resolved_model(model, provider)
             raw_client = _create_openai_client(
@@ -7018,7 +7018,7 @@ def resolve_provider_client(
         client, default = _build_codex_client(model)
         if client is None:
             logger.warning("resolve_provider_client: openai-codex requested "
-                           "but no Codex OAuth token found (run: hermes model)")
+                           "but no Codex OAuth token found (run: clara model)")
             return None, None
         final_model = _normalize_resolved_model(model or default, provider)
         return (_to_async_client(client, final_model, is_vision=is_vision) if async_mode
@@ -7030,14 +7030,14 @@ def resolve_provider_client(
     # silently re-routing every auxiliary task (compression, web extract,
     # session search, curator, etc.) to whatever Step-2 fallback the user
     # has configured.  Users on xAI Grok OAuth would then see surprise
-    # OpenRouter / Nous bills for side tasks they thought were running on
+    # OpenRouter / Clara bills for side tasks they thought were running on
     # their xAI subscription.
     if provider == "xai-oauth":
         client, default = _build_xai_oauth_aux_client(model)
         if client is None:
             logger.warning(
                 "resolve_provider_client: xai-oauth requested but no xAI "
-                "OAuth token found (run: hermes model -> xAI Grok OAuth — SuperGrok / Premium+)"
+                "OAuth token found (run: clara model -> xAI Grok OAuth — SuperGrok / Premium+)"
             )
             return None, None
         final_model = _normalize_resolved_model(model or default, provider)
@@ -7096,7 +7096,7 @@ def resolve_provider_client(
             if base_url_host_matches(custom_base, "api.kimi.com"):
                 extra["default_headers"] = {"User-Agent": "claude-code/0.1.0"}
             elif base_url_host_matches(custom_base, "githubcopilot.com"):
-                from hermes_cli.copilot_auth import copilot_request_headers
+                from clara_cli.copilot_auth import copilot_request_headers
                 extra["default_headers"] = copilot_request_headers(
                     is_agent_turn=True, is_vision=is_vision
                 )
@@ -7140,13 +7140,13 @@ def resolve_provider_client(
 
     # ── Named custom providers (config.yaml providers dict / custom_providers list) ───
     try:
-        from hermes_cli.runtime_provider import _get_named_custom_provider
+        from clara_cli.runtime_provider import _get_named_custom_provider
         # When the raw requested name is an alias (``kimi`` → ``kimi-coding``)
         # and the user defined a ``custom_providers`` entry under that alias
         # name, the custom entry is the intended target — the built-in alias
         # rewriting would otherwise hijack the request.  Only preferred when
         # the raw name is an alias (not a canonical provider name) so custom
-        # entries that coincidentally match a canonical provider (e.g. ``nous``)
+        # entries that coincidentally match a canonical provider (e.g. ``clara``)
         # still defer to the built-in per `_get_named_custom_provider`'s guard.
         custom_entry = None
         if original_provider and original_provider != provider:
@@ -7319,7 +7319,7 @@ def resolve_provider_client(
         if client is None:
             logger.warning(
                 "resolve_provider_client: azure-foundry requested but "
-                "runtime resolution failed (run: hermes doctor for "
+                "runtime resolution failed (run: clara doctor for "
                 "diagnostics)"
             )
             return None, None
@@ -7329,13 +7329,13 @@ def resolve_provider_client(
 
     # ── API-key providers from PROVIDER_REGISTRY ─────────────────────
     try:
-        from hermes_cli.auth import (
+        from clara_cli.auth import (
             PROVIDER_REGISTRY,
             resolve_api_key_provider_credentials,
             resolve_external_process_provider_credentials,
         )
     except ImportError:
-        logger.debug("hermes_cli.auth not available for provider %s", provider)
+        logger.debug("clara_cli.auth not available for provider %s", provider)
         return None, None
 
     pconfig = PROVIDER_REGISTRY.get(provider)
@@ -7372,7 +7372,7 @@ def resolve_provider_client(
         # (including a Go subscription key) is rejected. Route through the
         # keyless Zen runtime regardless of configured OpenCode credentials.
         try:
-            from hermes_cli.models import opencode_zen_free_runtime as _oc_free_rt
+            from clara_cli.models import opencode_zen_free_runtime as _oc_free_rt
             _free_rt = _oc_free_rt(provider, model)
         except Exception:
             _free_rt = None
@@ -7381,7 +7381,7 @@ def resolve_provider_client(
             raw_base_url = str(_free_rt["base_url"]).rstrip("/")
         if provider == "actual":
             try:
-                from hermes_cli.auth import (
+                from clara_cli.auth import (
                     ACTUAL_LOCAL_NOAUTH_PLACEHOLDER,
                     is_actual_local_base_url,
                     normalize_actual_base_url,
@@ -7425,7 +7425,7 @@ def resolve_provider_client(
         if base_url_host_matches(base_url, "api.kimi.com"):
             headers["User-Agent"] = "claude-code/0.1.0"
         elif base_url_host_matches(base_url, "githubcopilot.com"):
-            from hermes_cli.copilot_auth import copilot_request_headers
+            from clara_cli.copilot_auth import copilot_request_headers
 
             headers.update(copilot_request_headers(
                 is_agent_turn=True, is_vision=is_vision
@@ -7433,9 +7433,9 @@ def resolve_provider_client(
         elif base_url_host_matches(base_url, "integrate.api.nvidia.com"):
             headers.update(build_nvidia_nim_headers(base_url))
         elif base_url_host_matches(base_url, "x.ai"):
-            from tools.xai_http import hermes_xai_default_headers
+            from tools.xai_http import clara_xai_default_headers
 
-            headers.update(hermes_xai_default_headers())
+            headers.update(clara_xai_default_headers())
         else:
             # Fall back to profile.default_headers for providers that declare
             # client-level attribution headers on their profile (e.g. GMI
@@ -7460,7 +7460,7 @@ def resolve_provider_client(
         # routes through responses.stream().
         if provider == "copilot" and final_model and not raw_codex:
             try:
-                from hermes_cli.models import _should_use_copilot_responses_api
+                from clara_cli.models import _should_use_copilot_responses_api
                 if _should_use_copilot_responses_api(final_model):
                     logger.debug(
                         "resolve_provider_client: copilot model %s needs "
@@ -7664,8 +7664,8 @@ def resolve_provider_client(
 
     elif pconfig.auth_type in {"oauth_device_code", "oauth_external"}:
         # OAuth providers — route through their specific try functions
-        if provider == "nous":
-            return resolve_provider_client("nous", model, async_mode)
+        if provider == "clara":
+            return resolve_provider_client("clara", model, async_mode)
         if provider == "openai-codex":
             return resolve_provider_client("openai-codex", model, async_mode)
         if provider == "xai-oauth":
@@ -7736,7 +7736,7 @@ def get_async_text_auxiliary_client(task: str = "", *, main_runtime: Optional[Di
 
 _VISION_AUTO_PROVIDER_ORDER = (
     "openrouter",
-    "nous",
+    "clara",
     "deepinfra",
 )
 
@@ -7757,7 +7757,7 @@ def _main_model_supports_vision(provider: str, model: Optional[str]) -> bool:
     """
     try:
         from agent.image_routing import _lookup_supports_vision
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.config import load_config_readonly
     except ImportError:
         return True
     try:
@@ -7785,11 +7785,11 @@ def _resolve_strict_vision_backend(
         return resolve_provider_client("copilot", model, is_vision=True)
     if provider == "openrouter":
         return _try_openrouter(model=model)
-    if provider == "nous":
+    if provider == "clara":
         # Must go through resolve_provider_client so anthropic/* vision
-        # recommendations wrap onto /v1/messages — _try_nous alone returns
+        # recommendations wrap onto /v1/messages — _try_clara alone returns
         # a bare OpenAI client and the call 404s.
-        return resolve_provider_client("nous", model, is_vision=True)
+        return resolve_provider_client("clara", model, is_vision=True)
     if provider == "openai-codex":
         # Route through resolve_provider_client so the caller's explicit
         # model is used.  There is no safe default Codex model (shifting
@@ -7824,7 +7824,7 @@ def _strict_vision_backend_available(provider: str) -> bool:
 def get_available_vision_backends() -> List[str]:
     """Return the currently available vision backends in auto-selection order.
 
-    Order: active provider → OpenRouter → Nous → stop.  This is the single
+    Order: active provider → OpenRouter → Clara → stop.  This is the single
     source of truth for setup, tool gating, and runtime auto-routing of
     vision tasks.
     """
@@ -7839,7 +7839,7 @@ def get_available_vision_backends() -> List[str]:
             client, _ = resolve_provider_client(main_provider, _read_main_model())
             if client is not None:
                 available.append(main_provider)
-    # 2. OpenRouter, 3. Nous — skip if already covered by main provider.
+    # 2. OpenRouter, 3. Clara — skip if already covered by main provider.
     for p in _VISION_AUTO_PROVIDER_ORDER:
         if p not in available and _strict_vision_backend_available(p):
             available.append(p)
@@ -7902,12 +7902,12 @@ def resolve_vision_provider_client(
         #      that differs from the chat model (e.g. xiaomi → mimo-v2-omni,
         #      zai → glm-5v-turbo). DeepInfra is similar but resolves its
         #      default vision model live from the catalog (see
-        #      :func:`_resolve_provider_vision_default`). Nous is the
+        #      :func:`_resolve_provider_vision_default`). Clara is the
         #      exception: it has a dedicated strict vision backend with
         #      tier-aware defaults, so it must not fall through to the
         #      user's text chat model here.
         #   2. OpenRouter (vision-capable aggregator fallback)
-        #   3. Nous Portal (vision-capable aggregator fallback)
+        #   3. Clara Portal (vision-capable aggregator fallback)
         #   4. DeepInfra   (OpenAI-compatible; vision model discovered
         #                   live from the catalog — tried when
         #                   DEEPINFRA_API_KEY is set)
@@ -7941,9 +7941,9 @@ def resolve_vision_provider_client(
             # provider default is available (catalog unreachable).
             provider_vision_default = _resolve_provider_vision_default(main_provider)
             vision_model = provider_vision_default or main_model
-            if main_provider == "nous":
-                # Nous resolves its vision model from the Portal's tier-aware
-                # recommended-models slots inside _try_nous(vision=True).
+            if main_provider == "clara":
+                # Clara resolves its vision model from the Portal's tier-aware
+                # recommended-models slots inside _try_clara(vision=True).
                 # Passing the chat model here overrides that pick, so a
                 # text-only chat default (e.g. a `:free` chat SKU) receives the
                 # image and the upstream rejects it with a 404. Only an
@@ -8091,10 +8091,10 @@ def resolve_vision_provider_client(
 def get_auxiliary_extra_body() -> dict:
     """Return extra_body kwargs for auxiliary API calls.
     
-    Includes Nous Portal product tags when the auxiliary client is backed
-    by Nous Portal. Returns empty dict otherwise.
+    Includes Clara Portal product tags when the auxiliary client is backed
+    by Clara Portal. Returns empty dict otherwise.
     """
-    return _nous_extra_body() if auxiliary_is_nous else {}
+    return _clara_extra_body() if auxiliary_is_clara else {}
 
 
 def auxiliary_max_tokens_param(value: int, *, model: Optional[str] = None) -> dict:
@@ -8113,7 +8113,7 @@ def auxiliary_max_tokens_param(value: int, *, model: Optional[str] = None) -> di
     # max_tokens on newer GPT-4o/o-series/GPT-5-style models.
     _custom_host = base_url_hostname(custom_base) or ""
     if (not or_key
-            and _read_nous_auth() is None
+            and _read_clara_auth() is None
             and (
                 _custom_host == "api.openai.com"
                 or _custom_host == "api.githubcopilot.com"
@@ -8233,7 +8233,7 @@ def _store_cached_client(cache_key: tuple, client: Any, default_model: Optional[
         _client_cache[cache_key] = (client, default_model, bound_loop)
 
 
-def _refresh_nous_auxiliary_client(
+def _refresh_clara_auxiliary_client(
     *,
     cache_provider: str,
     model: Optional[str],
@@ -8244,8 +8244,8 @@ def _refresh_nous_auxiliary_client(
     main_runtime: Optional[Dict[str, Any]] = None,
     is_vision: bool = False,
 ) -> Tuple[Optional[Any], Optional[str]]:
-    """Refresh Nous runtime creds, rebuild the client, and replace the cache entry."""
-    runtime = _resolve_nous_runtime_api(force_refresh=True)
+    """Refresh Clara runtime creds, rebuild the client, and replace the cache entry."""
+    runtime = _resolve_clara_runtime_api(force_refresh=True)
     if runtime is None:
         return None, model
 
@@ -8739,7 +8739,7 @@ def _resolve_task_provider_model(
         if normalized in {"", "auto", "custom"} or normalized.startswith("custom:"):
             return False
         try:
-            from hermes_cli.providers import get_provider
+            from clara_cli.providers import get_provider
 
             return get_provider(normalized) is not None
         except Exception:
@@ -8750,7 +8750,7 @@ def _resolve_task_provider_model(
                 "copilot",
                 "copilot-acp",
                 "minimax-oauth",
-                "nous",
+                "clara",
                 "openai-codex",
                 "qwen-oauth",
                 "xai-oauth",
@@ -8816,7 +8816,7 @@ def _get_auxiliary_task_config(task: str) -> Dict[str, Any]:
     """Return the config dict for auxiliary.<task>, or {} when unavailable.
 
     For plugin-registered auxiliary tasks (see
-    :meth:`hermes_cli.plugins.PluginContext.register_auxiliary_task`) the
+    :meth:`clara_cli.plugins.PluginContext.register_auxiliary_task`) the
     plugin's declared *defaults* are layered underneath the user's config
     so an unconfigured plugin task still works:
 
@@ -8827,7 +8827,7 @@ def _get_auxiliary_task_config(task: str) -> Dict[str, Any]:
     if not task:
         return {}
     try:
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.config import load_config_readonly
         config = load_config_readonly()
     except ImportError:
         return {}
@@ -8840,7 +8840,7 @@ def _get_auxiliary_task_config(task: str) -> Dict[str, Any]:
     # ctx.register_auxiliary_task(defaults={...}) takes effect without
     # forcing the user to write config.yaml entries.
     try:
-        from hermes_cli.plugins import get_plugin_auxiliary_tasks
+        from clara_cli.plugins import get_plugin_auxiliary_tasks
         for _entry in get_plugin_auxiliary_tasks():
             if _entry.get("key") == task:
                 _defaults = _entry.get("defaults") or {}
@@ -8882,7 +8882,7 @@ def _fast_lane_config_fields(
     - ``cap``: positive int from ``max_output_tokens``, else None.
       Booleans are config drift, never a cap (``int(True) == 1``).
     """
-    from hermes_constants import parse_reasoning_effort
+    from clara_constants import parse_reasoning_effort
 
     provider = str(config.get("provider") or "").strip().lower()
     model = str(config.get("model") or "").strip()
@@ -8908,7 +8908,7 @@ def resolve_compression_fast_lane(
 
     A cap is safe only when the operator has selected a concrete auxiliary
     provider/model, explicitly certified it as non-reasoning, and that exact
-    route is the one Hermes will call. A requested model covers a compressor
+    route is the one Clara will call. A requested model covers a compressor
     summary-model override. Auto/inherited and drifted routes stay uncapped.
     """
     config = (
@@ -9040,7 +9040,7 @@ def _get_task_extra_body(task: str) -> Dict[str, Any]:
                     task,
                 )
                 return result
-            from hermes_constants import parse_reasoning_effort
+            from clara_constants import parse_reasoning_effort
             parsed = parse_reasoning_effort(effort)
             if parsed is not None:
                 result["reasoning"] = parsed
@@ -9338,11 +9338,11 @@ def _build_call_kwargs(
                 _is_gemini_native = is_native_gemini_base_url(_effective_base)
             except Exception:
                 pass
-        _nous_on_messages = False
-        if _provider_norm in {"nous", "nous-portal", "nousresearch"}:
-            from hermes_cli.providers import nous_api_mode
+        _clara_on_messages = False
+        if _provider_norm in {"clara", "clara-portal", "workprise"}:
+            from clara_cli.providers import clara_api_mode
 
-            _nous_on_messages = nous_api_mode(model) == "anthropic_messages"
+            _clara_on_messages = clara_api_mode(model) == "anthropic_messages"
         # OpenRouter budgets credit against the requested output cap; when the
         # param is omitted it assumes the model's FULL output window (e.g.
         # 65,536), so low-credit accounts 402 ("can only afford N") even
@@ -9363,7 +9363,7 @@ def _build_call_kwargs(
         _is_managed_local = _is_managed_local_endpoint(_effective_base)
         if (
             _is_anthropic_compat_endpoint(provider, _effective_base)
-            or _nous_on_messages
+            or _clara_on_messages
             or _is_nvidia_nim
             or _is_moa
             or _is_gemini_native
@@ -9400,7 +9400,7 @@ def _build_call_kwargs(
     # Build provider-aware reasoning kwargs through the same profile hooks used
     # by the standard chat-completions transport. Some providers require
     # top-level controls (Kimi/custom ``reasoning_effort``), others use nested
-    # body fields (Gemini ``thinking_config``), and OpenRouter/Nous use
+    # body fields (Gemini ``thinking_config``), and OpenRouter/Clara use
     # ``extra_body.reasoning``. Profiles are the source of truth for those wire
     # shapes. Providers without a reasoning-aware profile retain the generic
     # ``extra_body.reasoning`` fallback used by Codex-compatible adapters.
@@ -9466,9 +9466,9 @@ def _build_call_kwargs(
     # compression/title/vision calls on the same upstream instance as the
     # main turn (cache warmth) — tags alone are not enough on /v1/messages.
     _provider_for_portal = str(provider or "").strip().lower()
-    if _provider_for_portal in {"nous", "nous-portal", "nousresearch"}:
+    if _provider_for_portal in {"clara", "clara-portal", "workprise"}:
         if "tags" not in merged_extra:
-            merged_extra["tags"] = _nous_portal_tags()
+            merged_extra["tags"] = _clara_portal_tags()
         if "session_id" not in merged_extra:
             try:
                 from agent.portal_tags import get_conversation_context
@@ -9481,7 +9481,7 @@ def _build_call_kwargs(
     if merged_extra:
         kwargs["extra_body"] = merged_extra
 
-    # Anthropic Messages adapters translate Hermes reasoning into native
+    # Anthropic Messages adapters translate Clara reasoning into native
     # ``thinking`` via a private kwarg (and strip OpenAI-shaped
     # ``extra_body.reasoning``). Do not expose this private kwarg to ordinary
     # OpenAI-compatible SDK clients, which would reject it. Portal Claude is
@@ -9489,14 +9489,14 @@ def _build_call_kwargs(
     if reasoning_config and isinstance(reasoning_config, dict):
         provider_norm = str(provider or "").strip().lower()
         effective_base = base_url or ""
-        _nous_on_messages = False
-        if provider_norm in {"nous", "nous-portal", "nousresearch"}:
-            from hermes_cli.providers import nous_api_mode
+        _clara_on_messages = False
+        if provider_norm in {"clara", "clara-portal", "workprise"}:
+            from clara_cli.providers import clara_api_mode
 
-            _nous_on_messages = nous_api_mode(model) == "anthropic_messages"
+            _clara_on_messages = clara_api_mode(model) == "anthropic_messages"
         if (
             provider_norm == "anthropic"
-            or _nous_on_messages
+            or _clara_on_messages
             or _endpoint_speaks_anthropic_messages(effective_base)
             or _is_anthropic_compat_endpoint(provider_norm, effective_base)
         ):
@@ -9733,7 +9733,7 @@ def _managed_local_netloc() -> str:
         return cached
     netloc = ""
     try:
-        from hermes_cli.local_runtime.supervisor import state_path
+        from clara_cli.local_runtime.supervisor import state_path
 
         raw = state_path().read_text(encoding="utf-8")
         base = str((json.loads(raw) or {}).get("base_url", ""))
@@ -9745,7 +9745,7 @@ def _managed_local_netloc() -> str:
 
 
 def _is_managed_local_endpoint(base_url: Optional[str]) -> bool:
-    """True when *base_url* targets the llama-server this Hermes manages."""
+    """True when *base_url* targets the llama-server this Clara manages."""
     if not base_url:
         return False
     managed = _managed_local_netloc()
@@ -9795,7 +9795,7 @@ def _provider_requires_stream(provider: str, base_url: Optional[str]) -> bool:
     if _is_managed_local_endpoint(_url):
         return True
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
         aux_cfg = (load_config() or {}).get("auxiliary", {})
         markers = aux_cfg.get("stream_only_base_urls") or []
         if isinstance(markers, (list, tuple)):
@@ -10341,7 +10341,7 @@ def _call_llm_impl(
     stream_options: dict = None,
     route_info: Optional[Dict[str, str]] = None,
 ) -> Any:
-    """Centralized synchronous LLM call.
+    """Centralized __PROT_2_synchroclara__ LLM call.
 
     Resolves provider + model (from task config, explicit args, or auto-detect),
     handles auth, request formatting, and model-specific arg adjustments.
@@ -10360,7 +10360,7 @@ def _call_llm_impl(
         tools: Tool definitions (for function calling).
         timeout: Request timeout in seconds (None = read from auxiliary.{task}.timeout config).
         extra_body: Additional request body fields.
-        reasoning_config: Optional Hermes reasoning config for direct model calls
+        reasoning_config: Optional Clara reasoning config for direct model calls
               such as MoA reference/aggregator slots.
         extra_headers: Additional per-request HTTP headers. These override
             client-level defaults for providers that gate capabilities on
@@ -10415,7 +10415,7 @@ def _call_llm_impl(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup"
+                f"Run: clara setup"
             )
         resolved_provider = effective_provider or resolved_provider
     else:
@@ -10450,7 +10450,7 @@ def _call_llm_impl(
                     raise RuntimeError(
                         f"Provider '{_explicit}' is set in config.yaml but no API key "
                         f"was found. Set the {_explicit.upper()}_API_KEY environment "
-                        f"variable, or switch to a different provider with `hermes model`."
+                        f"variable, or switch to a different provider with `clara model`."
                     )
             # For auto/custom with no credentials, try the full auto chain
             # rather than hardcoding OpenRouter (which may be depleted).
@@ -10469,7 +10469,7 @@ def _call_llm_impl(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup")
+                f"Run: clara setup")
 
     effective_timeout = _effective_aux_timeout(task, timeout)
     request_provider = effective_provider or resolved_provider
@@ -10756,22 +10756,22 @@ def _call_llm_impl(
                     raise
                 first_err = retry_err
 
-        # ── Stale-model self-heal (Nous Portal recommendation drift) ───
+        # ── Stale-model self-heal (Clara Portal recommendation drift) ───
         # A long-lived process can pin a Portal-recommended model that has
-        # since been dropped from the Nous → OpenRouter catalog, so every
+        # since been dropped from the Clara → OpenRouter catalog, so every
         # auxiliary call 404s with "model does not exist". Force a fresh
         # Portal fetch and retry once with the current recommendation (or the
-        # known-good default). Only applies to Nous-routed calls.
-        _heal_is_nous = (
-            resolved_provider == "nous"
-            or base_url_host_matches(_base_info, "inference-api.nousresearch.com")
+        # known-good default). Only applies to Clara-routed calls.
+        _heal_is_clara = (
+            resolved_provider == "clara"
+            or base_url_host_matches(_base_info, "inference-api.claraprise.com")
         )
-        if _is_model_not_found_error(first_err) and _heal_is_nous:
-            healed_model = _refresh_nous_recommended_model(
+        if _is_model_not_found_error(first_err) and _heal_is_clara:
+            healed_model = _refresh_clara_recommended_model(
                 vision=(task == "vision"), stale_model=kwargs.get("model"))
             if healed_model and healed_model != kwargs.get("model"):
                 logger.warning(
-                    "Auxiliary %s: model %r no longer in Nous catalog; "
+                    "Auxiliary %s: model %r no longer in Clara catalog; "
                     "retrying with refreshed recommendation %r",
                     task or "call", kwargs.get("model"), healed_model,
                 )
@@ -10787,18 +10787,18 @@ def _call_llm_impl(
                 except Exception as retry_err:
                     first_err = retry_err
 
-        # ── Nous auth refresh parity with main agent ──────────────────
-        client_is_nous = (
-            resolved_provider == "nous"
-            or base_url_host_matches(_base_info, "inference-api.nousresearch.com")
+        # ── Clara auth refresh parity with main agent ──────────────────
+        client_is_clara = (
+            resolved_provider == "clara"
+            or base_url_host_matches(_base_info, "inference-api.claraprise.com")
         )
         if (
             _is_payment_error(first_err)
-            and client_is_nous
-            and _nous_portal_account_has_fresh_paid_access()
+            and client_is_clara
+            and _clara_portal_account_has_fresh_paid_access()
         ):
-            refreshed_client, refreshed_model = _refresh_nous_auxiliary_client(
-                cache_provider=resolved_provider or "nous",
+            refreshed_client, refreshed_model = _refresh_clara_auxiliary_client(
+                cache_provider=resolved_provider or "clara",
                 model=final_model,
                 async_mode=False,
                 base_url=resolved_base_url,
@@ -10809,7 +10809,7 @@ def _call_llm_impl(
             )
             if refreshed_client is not None:
                 logger.info(
-                    "Auxiliary %s: refreshed Nous runtime credentials after paid account check, retrying",
+                    "Auxiliary %s: refreshed Clara runtime credentials after paid account check, retrying",
                     task or "call",
                 )
                 if refreshed_model and refreshed_model != kwargs.get("model"):
@@ -10832,9 +10832,9 @@ def _call_llm_impl(
                         raise
                     first_err = retry_err
 
-        if _is_auth_error(first_err) and client_is_nous:
-            refreshed_client, refreshed_model = _refresh_nous_auxiliary_client(
-                cache_provider=resolved_provider or "nous",
+        if _is_auth_error(first_err) and client_is_clara:
+            refreshed_client, refreshed_model = _refresh_clara_auxiliary_client(
+                cache_provider=resolved_provider or "clara",
                 model=final_model,
                 async_mode=False,
                 base_url=resolved_base_url,
@@ -10844,7 +10844,7 @@ def _call_llm_impl(
                 is_vision=(task == "vision"),
             )
             if refreshed_client is not None:
-                logger.info("Auxiliary %s: refreshed Nous runtime credentials after 401, retrying",
+                logger.info("Auxiliary %s: refreshed Clara runtime credentials after 401, retrying",
                             task or "call")
                 if refreshed_model and refreshed_model != kwargs.get("model"):
                     kwargs["model"] = refreshed_model
@@ -10861,7 +10861,7 @@ def _call_llm_impl(
             resolved_provider, _base_info)
         if (_is_auth_error(first_err)
                 and auth_refresh_provider not in {"auto", "", None}
-                and not client_is_nous):
+                and not client_is_clara):
             if _refresh_provider_credentials(auth_refresh_provider):
                 if auth_refresh_provider != _normalize_aux_provider(resolved_provider):
                     # The stale client is cached under the route label
@@ -10970,7 +10970,7 @@ def _call_llm_impl(
         # against the same rate-limited endpoint.
         #
         # ── Auth error fallback (#21165) ─────────────────────────────
-        # When the resolved provider returns 401 and neither the Nous
+        # When the resolved provider returns 401 and neither the Clara
         # refresh path nor explicit provider credential refresh applies,
         # fall back to an alternative provider instead of dropping the
         # auxiliary task on the floor (silent compression failure /
@@ -11242,7 +11242,7 @@ async def async_call_llm(
     reasoning_config: Optional[dict] = None,
     route_info: Optional[Dict[str, str]] = None,
 ) -> Any:
-    """Run an asynchronous auxiliary LLM request under the configured limit."""
+    """Run an __PROT_4_asynchroclara__ auxiliary LLM request under the configured limit."""
     semaphore = _acquire_async_aux_semaphore(task)
     if semaphore is not None:
         await semaphore.acquire()
@@ -11285,7 +11285,7 @@ async def _async_call_llm_impl(
     reasoning_config: Optional[dict] = None,
     route_info: Optional[Dict[str, str]] = None,
 ) -> Any:
-    """Centralized asynchronous LLM call.
+    """Centralized __PROT_5_asynchroclara__ LLM call.
 
     Same as call_llm() but async. See call_llm() for full documentation.
     """
@@ -11321,7 +11321,7 @@ async def _async_call_llm_impl(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup"
+                f"Run: clara setup"
             )
         resolved_provider = effective_provider or resolved_provider
     else:
@@ -11354,7 +11354,7 @@ async def _async_call_llm_impl(
                     raise RuntimeError(
                         f"Provider '{_explicit}' is set in config.yaml but no API key "
                         f"was found. Set the {_explicit.upper()}_API_KEY environment "
-                        f"variable, or switch to a different provider with `hermes model`."
+                        f"variable, or switch to a different provider with `clara model`."
                     )
             if client is None and not resolved_base_url:
                 logger.info("Auxiliary %s: provider %s unavailable, trying auto-detection chain",
@@ -11371,7 +11371,7 @@ async def _async_call_llm_impl(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup")
+                f"Run: clara setup")
 
     effective_timeout = _effective_aux_timeout(task, timeout)
     request_provider = effective_provider or resolved_provider
@@ -11553,21 +11553,21 @@ async def _async_call_llm_impl(
                     raise
                 first_err = retry_err
 
-        # ── Stale-model self-heal (Nous Portal recommendation drift) ───
+        # ── Stale-model self-heal (Clara Portal recommendation drift) ───
         # See the sync call_llm() path for the rationale: a long-lived process
         # can pin a Portal-recommended model that has since been dropped from
-        # the Nous → OpenRouter catalog, 404'ing every auxiliary call. Force a
+        # the Clara → OpenRouter catalog, 404'ing every auxiliary call. Force a
         # fresh Portal fetch and retry once with the current recommendation.
-        _heal_is_nous = (
-            resolved_provider == "nous"
-            or base_url_host_matches(_client_base, "inference-api.nousresearch.com")
+        _heal_is_clara = (
+            resolved_provider == "clara"
+            or base_url_host_matches(_client_base, "inference-api.claraprise.com")
         )
-        if _is_model_not_found_error(first_err) and _heal_is_nous:
-            healed_model = _refresh_nous_recommended_model(
+        if _is_model_not_found_error(first_err) and _heal_is_clara:
+            healed_model = _refresh_clara_recommended_model(
                 vision=(task == "vision"), stale_model=kwargs.get("model"))
             if healed_model and healed_model != kwargs.get("model"):
                 logger.warning(
-                    "Auxiliary %s (async): model %r no longer in Nous catalog; "
+                    "Auxiliary %s (async): model %r no longer in Clara catalog; "
                     "retrying with refreshed recommendation %r",
                     task or "call", kwargs.get("model"), healed_model,
                 )
@@ -11583,18 +11583,18 @@ async def _async_call_llm_impl(
                 except Exception as retry_err:
                     first_err = retry_err
 
-        # ── Nous auth refresh parity with main agent ──────────────────
-        client_is_nous = (
-            resolved_provider == "nous"
-            or base_url_host_matches(_client_base, "inference-api.nousresearch.com")
+        # ── Clara auth refresh parity with main agent ──────────────────
+        client_is_clara = (
+            resolved_provider == "clara"
+            or base_url_host_matches(_client_base, "inference-api.claraprise.com")
         )
         if (
             _is_payment_error(first_err)
-            and client_is_nous
-            and _nous_portal_account_has_fresh_paid_access()
+            and client_is_clara
+            and _clara_portal_account_has_fresh_paid_access()
         ):
-            refreshed_client, refreshed_model = _refresh_nous_auxiliary_client(
-                cache_provider=resolved_provider or "nous",
+            refreshed_client, refreshed_model = _refresh_clara_auxiliary_client(
+                cache_provider=resolved_provider or "clara",
                 model=final_model,
                 async_mode=True,
                 base_url=resolved_base_url,
@@ -11604,7 +11604,7 @@ async def _async_call_llm_impl(
             )
             if refreshed_client is not None:
                 logger.info(
-                    "Auxiliary %s (async): refreshed Nous runtime credentials after paid account check, retrying",
+                    "Auxiliary %s (async): refreshed Clara runtime credentials after paid account check, retrying",
                     task or "call",
                 )
                 if refreshed_model and refreshed_model != kwargs.get("model"):
@@ -11627,9 +11627,9 @@ async def _async_call_llm_impl(
                         raise
                     first_err = retry_err
 
-        if _is_auth_error(first_err) and client_is_nous:
-            refreshed_client, refreshed_model = _refresh_nous_auxiliary_client(
-                cache_provider=resolved_provider or "nous",
+        if _is_auth_error(first_err) and client_is_clara:
+            refreshed_client, refreshed_model = _refresh_clara_auxiliary_client(
+                cache_provider=resolved_provider or "clara",
                 model=final_model,
                 async_mode=True,
                 base_url=resolved_base_url,
@@ -11638,7 +11638,7 @@ async def _async_call_llm_impl(
                 is_vision=(task == "vision"),
             )
             if refreshed_client is not None:
-                logger.info("Auxiliary %s (async): refreshed Nous runtime credentials after 401, retrying",
+                logger.info("Auxiliary %s (async): refreshed Clara runtime credentials after 401, retrying",
                             task or "call")
                 if refreshed_model and refreshed_model != kwargs.get("model"):
                     kwargs["model"] = refreshed_model
@@ -11655,7 +11655,7 @@ async def _async_call_llm_impl(
             resolved_provider, _client_base)
         if (_is_auth_error(first_err)
                 and auth_refresh_provider not in {"auto", "", None}
-                and not client_is_nous):
+                and not client_is_clara):
             if _refresh_provider_credentials(auth_refresh_provider):
                 if auth_refresh_provider != _normalize_aux_provider(resolved_provider):
                     # The stale client is cached under the route label

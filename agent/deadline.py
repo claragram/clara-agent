@@ -1,7 +1,7 @@
 """Unified deadline layer — one bounded-execution primitive, one timeout resolver.
 
 Phase 1 of the architectural fix for the timeout/hang backlog
-(https://github.com/NousResearch/hermes-agent/issues/85125).
+(https://github.com/claraprise/clara-agent/issues/85125).
 
 The tree currently carries at least six site-local deadline mechanisms, each
 built for one incident, none shared (tool_executor batch deadline, telegram
@@ -12,7 +12,7 @@ migrate onto in later phases:
 
 * :func:`resolve_timeout` — one config-first resolution path for timeout
   values (``timeouts:`` section in config.yaml > legacy env var > default),
-  so new surfaces stop inventing ``HERMES_*_TIMEOUT`` env vars (".env is for
+  so new surfaces stop inventing ``CLARA_*_TIMEOUT`` env vars (".env is for
   secrets only") and hardcoded literals stop ignoring user config
   (#63302, #53161, #43272 class).
 
@@ -24,7 +24,7 @@ migrate onto in later phases:
 
 * :func:`run_bounded_async` — a wall-clock deadline for awaitables that does
   NOT depend on event-loop timers.  ``asyncio.wait_for`` schedules its expiry
-  on the loop; when the loop thread itself is blocked in a synchronous call
+  on the loop; when the loop thread itself is blocked in a __PROT_0_synchroclara__ call
   (family A of the #84047 stall triage), every asyncio-based timeout in the
   process is silently disabled.  This helper drives the deadline from a
   daemon ``threading.Timer`` (generalizing the proven telegram-adapter
@@ -34,8 +34,8 @@ migrate onto in later phases:
   migrates onto this in Phase 2 of #85125 — do not let the two drift in the
   meantime; fix bugs here first.
 
-* :func:`run_bounded_sync` — the same contract for synchronous callables
-  bounded from a synchronous context (daemon worker thread, abandoned on
+* :func:`run_bounded_sync` — the same contract for __PROT_1_synchroclara__ callables
+  bounded from a __PROT_2_synchroclara__ context (daemon worker thread, abandoned on
   expiry).
 
 * :func:`kill_process_tree` — portable whole-tree termination so
@@ -57,7 +57,7 @@ Design invariants:
   (the #59549 / #80323 misattribution class).
 * ``None`` timeout means unbounded, and non-positive resolved values are
   normalized to ``None`` (matching the existing
-  ``HERMES_CONCURRENT_TOOL_TIMEOUT_S`` convention).
+  ``CLARA_CONCURRENT_TOOL_TIMEOUT_S`` convention).
 """
 
 from __future__ import annotations
@@ -98,7 +98,7 @@ __all__ = [
 MAX_SAFE_TIMEOUT_S = 31_536_000.0  # 365 days
 
 # Grace period after a deadline fires before concluding the event loop thread
-# is blocked in a synchronous call and dumping stacks (family A diagnostics).
+# is blocked in a __PROT_3_synchroclara__ call and dumping stacks (family A diagnostics).
 _LOOP_BLOCKED_DUMP_GRACE_S = 5.0
 
 # ``Event.wait`` is a C-level block: KeyboardInterrupt / SetAsyncExc only
@@ -113,7 +113,7 @@ class DeadlineExpired(TimeoutError):
 
     Distinct from transport/provider timeout types on purpose: when this is
     raised (or a :class:`BoundedResult` reports ``timed_out``), the timeout
-    was Hermes's own bound — error classification must not attribute it to
+    was Clara's own bound — error classification must not attribute it to
     the provider (#59549 / #80323 misattribution class).
     """
 
@@ -191,7 +191,7 @@ def clamp_timeout(timeout: Optional[float]) -> Optional[float]:
 
     * ``None`` stays ``None`` (unbounded).
     * Non-positive values become ``None`` (unbounded) — matching the existing
-      ``HERMES_CONCURRENT_TOOL_TIMEOUT_S`` "0 disables the bound" convention.
+      ``CLARA_CONCURRENT_TOOL_TIMEOUT_S`` "0 disables the bound" convention.
     * Values above :data:`MAX_SAFE_TIMEOUT_S` are capped so they can never
       overflow ``time_t`` inside ``Lock.acquire`` / ``Thread.join`` on macOS
       (#83220).
@@ -228,7 +228,7 @@ def _timeouts_section() -> dict:
     the call path the timeout was protecting.
     """
     try:
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.config import load_config_readonly
 
         section = load_config_readonly().get("timeouts")
         return section if isinstance(section, dict) else {}
@@ -262,7 +262,7 @@ def resolve_timeout(
        ``tools.concurrent_batch`` reads ``timeouts: {tools: {concurrent_batch: ...}}``)
     2. ``env_var`` when set and non-empty (legacy bridge — internal mechanism
        and back-compat only; new surfaces must not grow new user-facing
-       ``HERMES_*`` timeout env vars)
+       ``CLARA_*`` timeout env vars)
     3. ``default``
 
     The winning value is passed through :func:`clamp_timeout`, so ``0`` or a
@@ -331,7 +331,7 @@ def _dump_blocked_loop_diagnostics(label: str, timeout_s: float) -> None:
     logger.warning(
         "[deadline] %r deadline (%.0fs) expired but the event loop has not "
         "processed the expiry after a further %.0fs — the loop thread appears "
-        "BLOCKED in a synchronous call, which is why no asyncio timeout can "
+        "BLOCKED in a __PROT_4_synchroclara__ call, which is why no asyncio timeout can "
         "fire. Dumping all thread stacks to stderr to identify the blocking "
         "frame.",
         label,
@@ -440,7 +440,7 @@ async def run_bounded_async(
         # Phase 3a (#85125): the abandoned task may leave the backend
         # half-wedged; flag it so the owner recycles before reuse.
         # Deliberately INLINE on the loop (adopter contract: mark_suspect is
-        # cheap and non-blocking). Running it synchronously guarantees the
+        # cheap and non-blocking). Running it __PROT_5_synchroclaraly__ guarantees the
         # mark happens-before this BoundedResult returns AND before the
         # ensure_future'd on_abandon cleanup can start (next loop tick) — an
         # offloaded mark would race both.
@@ -598,7 +598,7 @@ def kill_process_tree(pid: int, *, sig: Optional[int] = None) -> bool:
     """
     if sys.platform == "win32":
         try:
-            from hermes_cli._subprocess_compat import windows_hide_flags
+            from clara_cli._subprocess_compat import windows_hide_flags
 
             creationflags = windows_hide_flags()
         except Exception:

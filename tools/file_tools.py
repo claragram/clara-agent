@@ -36,14 +36,14 @@ def _expand_tilde(path: str) -> str:
 
     In-process file tools share the gateway process's HOME, which may differ
     from the profile-specific HOME that interactive CLI sessions use.  This
-    mirrors ``hermes_constants.get_subprocess_home()`` so that ``~`` resolves
+    mirrors ``clara_constants.get_subprocess_home()`` so that ``~`` resolves
     consistently regardless of whether the tool runs interactively or inside a
     gateway-driven cron job (#48552).
     """
     if not path or "~" not in path:
         return path
     try:
-        from hermes_constants import get_subprocess_home
+        from clara_constants import get_subprocess_home
 
         home = get_subprocess_home()
     except Exception:
@@ -77,7 +77,7 @@ def _get_max_read_chars() -> int:
     if _max_read_chars_cached is not None:
         return _max_read_chars_cached
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
         cfg = load_config()
         val = cfg.get("file_read_max_chars")
         if isinstance(val, (int, float)) and val > 0:
@@ -93,7 +93,7 @@ def _truncate_to_char_budget(content: str, max_chars: int) -> tuple[str, int, bo
     """Trim line-numbered ``read_file`` content to fit a char budget.
 
     Ported in spirit from nearai/ironclaw#5029 (dual line/byte cap on
-    ``read_file``). Where hermes previously hard-rejected an oversized read
+    ``read_file``). Where clara previously hard-rejected an oversized read
     (forcing the model to guess a smaller ``limit`` and burn a round-trip
     returning nothing), this trims the content to the last *complete line*
     that fits within ``max_chars`` and reports how many lines were kept so
@@ -202,7 +202,7 @@ def _terminal_env_type_for_task(task_id: str = "default") -> str:
                 return "modal"
             if "daytona" in name:
                 return "daytona"
-            stamped = getattr(env, "_hermes_backend_name", None)
+            stamped = getattr(env, "_clara_backend_name", None)
             if isinstance(stamped, str) and stamped:
                 return stamped
         cfg = _get_env_config()
@@ -453,7 +453,7 @@ def _path_resolution_warning(filepath: str, resolved: Path, task_id: str = "defa
 
 
 def _file_ops_uses_host_paths(file_ops) -> bool:
-    """Return True when *file_ops* targets the same host filesystem as Hermes.
+    """Return True when *file_ops* targets the same host filesystem as Clara.
 
     Only then may we rewrite V4A header paths to resolved host-absolute
     paths: a container/remote backend has its own filesystem namespace where
@@ -664,25 +664,25 @@ _SENSITIVE_PATH_PREFIXES = (
 )
 _SENSITIVE_EXACT_PATHS = {"/var/run/docker.sock", "/run/docker.sock"}
 
-_hermes_config_resolved: str | None = None
-_hermes_config_resolved_loaded = False
+_clara_config_resolved: str | None = None
+_clara_config_resolved_loaded = False
 
 
-def _get_hermes_config_resolved() -> str | None:
-    """Return the resolved absolute path of the Hermes config file (cached)."""
-    global _hermes_config_resolved, _hermes_config_resolved_loaded
-    if _hermes_config_resolved_loaded:
-        return _hermes_config_resolved
-    _hermes_config_resolved_loaded = True
+def _get_clara_config_resolved() -> str | None:
+    """Return the resolved absolute path of the Clara config file (cached)."""
+    global _clara_config_resolved, _clara_config_resolved_loaded
+    if _clara_config_resolved_loaded:
+        return _clara_config_resolved
+    _clara_config_resolved_loaded = True
     try:
-        from hermes_cli.config import get_config_path
-        _hermes_config_resolved = str(get_config_path().resolve())
+        from clara_cli.config import get_config_path
+        _clara_config_resolved = str(get_config_path().resolve())
     except Exception:
         try:
-            _hermes_config_resolved = str(Path(_expand_tilde("~/.hermes/config.yaml")).resolve())
+            _clara_config_resolved = str(Path(_expand_tilde("~/.clara/config.yaml")).resolve())
         except Exception:
-            _hermes_config_resolved = None
-    return _hermes_config_resolved
+            _clara_config_resolved = None
+    return _clara_config_resolved
 
 
 def _check_sensitive_path(filepath: str, task_id: str = "default") -> str | None:
@@ -701,16 +701,16 @@ def _check_sensitive_path(filepath: str, task_id: str = "default") -> str | None
             return _err
     if resolved in _SENSITIVE_EXACT_PATHS or normalized in _SENSITIVE_EXACT_PATHS:
         return _err
-    # Prevent agents from modifying the Hermes config file directly.
+    # Prevent agents from modifying the Clara config file directly.
     # approvals.mode and other security settings live here; a malicious or
     # prompt-injected agent could silently disable exec approval by writing to
     # this file.
-    hermes_config = _get_hermes_config_resolved()
-    if hermes_config and (resolved == hermes_config or normalized == hermes_config):
+    clara_config = _get_clara_config_resolved()
+    if clara_config and (resolved == clara_config or normalized == clara_config):
         return (
-            f"Refusing to write to Hermes config file: {filepath}\n"
+            f"Refusing to write to Clara config file: {filepath}\n"
             "Agent cannot modify security-sensitive configuration. "
-            "Edit ~/.hermes/config.yaml directly or use 'hermes config' instead."
+            "Edit ~/.clara/config.yaml directly or use 'clara config' instead."
         )
     return None
 
@@ -720,7 +720,7 @@ def _check_sensitive_path(filepath: str, task_id: str = "default") -> str | None
 # ---------------------------------------------------------------------------
 # Files that steer FUTURE agent behavior are a prompt-injection persistence
 # vector: an injected instruction that edits AGENTS.md / CLAUDE.md / SOUL.md /
-# .cursorrules (or a project-local .hermes config tree) outlives the current
+# .cursorrules (or a project-local .clara config tree) outlives the current
 # turn and poisons every later session that loads it. Writes to these files
 # therefore ALWAYS require human approval — even under --yolo / auto-approve —
 # and fail closed when no human channel exists.
@@ -741,25 +741,25 @@ _PROTECTED_INSTRUCTION_BASENAMES = frozenset({
     "agents.md", "claude.md", "soul.md", ".cursorrules",
 })
 
-_real_hermes_home_cached: str | None = None
-_real_hermes_home_loaded = False
+_real_clara_home_cached: str | None = None
+_real_clara_home_loaded = False
 
 
-def _get_real_hermes_home() -> str | None:
-    """Return the realpath of the authoritative Hermes home (cached)."""
-    global _real_hermes_home_cached, _real_hermes_home_loaded
-    if _real_hermes_home_loaded:
-        return _real_hermes_home_cached
-    _real_hermes_home_loaded = True
+def _get_real_clara_home() -> str | None:
+    """Return the realpath of the authoritative Clara home (cached)."""
+    global _real_clara_home_cached, _real_clara_home_loaded
+    if _real_clara_home_loaded:
+        return _real_clara_home_cached
+    _real_clara_home_loaded = True
     try:
-        from hermes_constants import get_hermes_home
-        _real_hermes_home_cached = os.path.realpath(str(get_hermes_home()))
+        from clara_constants import get_clara_home
+        _real_clara_home_cached = os.path.realpath(str(get_clara_home()))
     except Exception:
         try:
-            _real_hermes_home_cached = os.path.realpath(_expand_tilde("~/.hermes"))
+            _real_clara_home_cached = os.path.realpath(_expand_tilde("~/.clara"))
         except Exception:
-            _real_hermes_home_cached = None
-    return _real_hermes_home_cached
+            _real_clara_home_cached = None
+    return _real_clara_home_cached
 
 
 def _protected_instruction_config() -> tuple[bool, list[str]]:
@@ -776,7 +776,7 @@ def _protected_instruction_config() -> tuple[bool, list[str]]:
           protected_instruction_extra_patterns: []  # fnmatch on basename
     """
     try:
-        from hermes_cli.config import load_config, cfg_get
+        from clara_cli.config import load_config, cfg_get
         cfg = load_config()
         enabled = cfg_get(cfg, "security", "protected_instruction_files",
                           default=True)
@@ -813,12 +813,12 @@ def _protected_instruction_reason(filepath: str, task_id: str = "default",
     except (OSError, ValueError, RuntimeError):
         resolved = os.path.realpath(normalized)
 
-    # The authoritative ~/.hermes home is governed by its own guards
+    # The authoritative ~/.clara home is governed by its own guards
     # (config.yaml hard-block, cross-profile guard, write_approval); this
     # gate targets PROJECT-LOCAL instruction files only. Checked before the
-    # ``.hermes`` component rule below, which would otherwise match the
+    # ``.clara`` component rule below, which would otherwise match the
     # home directory itself.
-    real_home = _get_real_hermes_home()
+    real_home = _get_real_clara_home()
     if real_home and (resolved == real_home
                       or resolved.startswith(real_home + os.sep)):
         return None
@@ -832,14 +832,14 @@ def _protected_instruction_reason(filepath: str, task_id: str = "default",
         for pattern in extra_patterns:
             if fnmatch.fnmatch(base_lower, pattern.lower()):
                 return base
-        # Project-local .hermes config dirs (e.g. <repo>/.hermes/config.yaml)
+        # Project-local .clara config dirs (e.g. <repo>/.clara/config.yaml)
         # are loaded as project context and steer behavior the same way.
-        # Scope: the file's IMMEDIATE parent must be ``.hermes`` — matching
-        # any ancestor named .hermes would gate every write inside a
-        # checkout that happens to live under ~/.hermes (e.g. the
-        # hermes-agent repo itself at ~/.hermes/hermes-agent).
+        # Scope: the file's IMMEDIATE parent must be ``.clara`` — matching
+        # any ancestor named .clara would gate every write inside a
+        # checkout that happens to live under ~/.clara (e.g. the
+        # clara-agent repo itself at ~/.clara/clara-agent).
         parts = candidate.replace("\\", "/").rstrip("/").split("/")
-        if len(parts) >= 2 and parts[-2] == ".hermes":
+        if len(parts) >= 2 and parts[-2] == ".clara":
             return candidate
     return None
 
@@ -1034,7 +1034,7 @@ def _check_approval_required_write(paths: list[str],
 
 
 def _get_container_mirror_prefix_for_task(task_id: str = "default") -> str | None:
-    """Return the container-side Hermes mirror prefix for Docker file tools."""
+    """Return the container-side Clara mirror prefix for Docker file tools."""
     try:
         from tools.terminal_tool import (
             _active_environments,
@@ -1055,7 +1055,7 @@ def _get_container_mirror_prefix_for_task(task_id: str = "default") -> str | Non
             if env.__class__.__name__ == "DockerEnvironment" and bool(
                 getattr(env, "_persistent", False)
             ):
-                return "/root/.hermes"
+                return "/root/.clara"
             return None
 
         config = _get_env_config()
@@ -1063,17 +1063,17 @@ def _get_container_mirror_prefix_for_task(task_id: str = "default") -> str | Non
         return None
 
     if config.get("env_type") == "docker" and config.get("container_persistent", True):
-        return "/root/.hermes"
+        return "/root/.clara"
     return None
 
 
 def _check_cross_profile_path(filepath: str, task_id: str = "default") -> str | None:
     """Return a soft-guard warning when ``filepath`` lands on a host-side
     sandbox-mirror of authoritative profile state, or the Docker
-    container's sandbox mirror of Hermes state.
+    container's sandbox mirror of Clara state.
 
     Two detectors (both #32049): these catch writes that would be
-    SILENTLY LOST — the host Hermes process never reads the mirror, so
+    SILENTLY LOST — the host Clara process never reads the mirror, so
     the write succeeds but changes nothing. That is a lost-work guard,
     not profile isolation.
 
@@ -1085,7 +1085,7 @@ def _check_cross_profile_path(filepath: str, task_id: str = "default") -> str | 
     steering. ``cross_profile=True`` still bypasses the mirror guards
     (name kept for replay/transcript compat).
 
-    Returns ``None`` when the write is in-scope or outside Hermes scope.
+    Returns ``None`` when the write is in-scope or outside Clara scope.
     """
     try:
         from agent.file_safety import (
@@ -1769,11 +1769,11 @@ def read_file_tool(path: str, offset: int = 1, limit: int = 2000, task_id: str =
                 "Use vision_analyze for images, or terminal to inspect binary files."
             )
 
-        # ── Hermes internal path guard ────────────────────────────────
+        # ── Clara internal path guard ────────────────────────────────
         # Prevent prompt injection via catalog or hub metadata files,
-        # and block credential stores under HERMES_HOME.  Pass the
+        # and block credential stores under CLARA_HOME.  Pass the
         # already-resolved path so a relative-path read against
-        # TERMINAL_CWD == HERMES_HOME (e.g. "auth.json") still hits the
+        # TERMINAL_CWD == CLARA_HOME (e.g. "auth.json") still hits the
         # denylist — get_read_block_error's own resolve() runs against
         # the Python process cwd, which can differ.
         block_error = get_read_block_error(str(_resolved))
@@ -2786,7 +2786,7 @@ def _is_openai_family_main() -> bool:
 
     Provider-family-coarse on purpose (no per-model training-diet table to
     go stale): direct OpenAI providers always qualify; on aggregators
-    (openrouter/nous/azure...) the MODEL slug decides (gpt-*/o-series/
+    (openrouter/clara/azure...) the MODEL slug decides (gpt-*/o-series/
     codex). Fail-closed to the universal replace-only schema.
     """
     try:
@@ -2842,7 +2842,7 @@ def _handle_write_file(args, **kw):
             "write_file: missing required field 'content'. The tool call included a "
             "path but no content argument — this is almost always a dropped-arg bug "
             "under context pressure. Re-emit the tool call with the full content "
-            "payload, or use execute_code with hermes_tools.write_file() for very "
+            "payload, or use execute_code with clara_tools.write_file() for very "
             "large files."
         )
     if not isinstance(args["content"], str):

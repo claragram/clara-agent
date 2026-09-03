@@ -10,7 +10,7 @@ from unittest.mock import patch, MagicMock, AsyncMock
 import pytest
 
 from agent.auxiliary_client import (
-    _NOUS_MODEL,
+    _CLARA_MODEL,
     CodexAuxiliaryClient,
     get_text_auxiliary_client,
     get_available_vision_backends,
@@ -26,7 +26,7 @@ from agent.auxiliary_client import (
     _is_rate_limit_error,
     _is_model_not_found_error,
     _is_model_incompatible_error,
-    _refresh_nous_recommended_model,
+    _refresh_clara_recommended_model,
     _normalize_aux_provider,
     _try_payment_fallback,
     _try_openrouter,
@@ -65,7 +65,7 @@ def _clean_env(monkeypatch):
     """Strip provider env vars so each test starts clean."""
     for key in (
         "OPENROUTER_API_KEY", "OPENAI_BASE_URL", "OPENAI_API_KEY",
-        "OPENAI_MODEL", "LLM_MODEL", "NOUS_INFERENCE_BASE_URL",
+        "OPENAI_MODEL", "LLM_MODEL", "CLARA_INFERENCE_BASE_URL",
         "ANTHROPIC_API_KEY", "ANTHROPIC_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN",
         "NVIDIA_API_KEY", "NVIDIA_BASE_URL",
     ):
@@ -112,7 +112,7 @@ class TestResolveTaskProviderModel:
         [
             "anthropic",
             "minimax-oauth",
-            "nous",
+            "clara",
             "openai-codex",
             "qwen-oauth",
             "xai-oauth",
@@ -173,11 +173,11 @@ class TestResolveTaskProviderModel:
         }
         monkeypatch.setattr("agent.auxiliary_client._get_auxiliary_task_config", lambda task: {})
         monkeypatch.setattr(
-            "hermes_cli.moa_config.resolve_moa_preset",
+            "clara_cli.moa_config.resolve_moa_preset",
             lambda cfg, name: preset,
         )
-        monkeypatch.setattr("hermes_cli.config.load_config", lambda: {"moa": {}})
-        monkeypatch.setattr("hermes_cli.config.load_config_readonly", lambda: {"moa": {}})
+        monkeypatch.setattr("clara_cli.config.load_config", lambda: {"moa": {}})
+        monkeypatch.setattr("clara_cli.config.load_config_readonly", lambda: {"moa": {}})
 
         resolved_provider, model, base_url, api_key, api_mode = _resolve_task_provider_model(
             task="title_generation",
@@ -209,11 +209,11 @@ class TestResolveTaskProviderModel:
             lambda task: {"provider": "moa", "model": "opus-gpt"} if task == "title_generation" else {},
         )
         monkeypatch.setattr(
-            "hermes_cli.moa_config.resolve_moa_preset",
+            "clara_cli.moa_config.resolve_moa_preset",
             lambda cfg, name: preset,
         )
-        monkeypatch.setattr("hermes_cli.config.load_config", lambda: {"moa": {}})
-        monkeypatch.setattr("hermes_cli.config.load_config_readonly", lambda: {"moa": {}})
+        monkeypatch.setattr("clara_cli.config.load_config", lambda: {"moa": {}})
+        monkeypatch.setattr("clara_cli.config.load_config_readonly", lambda: {"moa": {}})
 
         resolved_provider, model, base_url, api_key, api_mode = _resolve_task_provider_model(
             task="title_generation",
@@ -231,11 +231,11 @@ class TestResolveTaskProviderModel:
         (literal "moa") rather than crash resolve_provider_client() harder."""
         monkeypatch.setattr("agent.auxiliary_client._get_auxiliary_task_config", lambda task: {})
         monkeypatch.setattr(
-            "hermes_cli.moa_config.resolve_moa_preset",
+            "clara_cli.moa_config.resolve_moa_preset",
             lambda cfg, name: (_ for _ in ()).throw(KeyError("gone-preset")),
         )
-        monkeypatch.setattr("hermes_cli.config.load_config", lambda: {"moa": {}})
-        monkeypatch.setattr("hermes_cli.config.load_config_readonly", lambda: {"moa": {}})
+        monkeypatch.setattr("clara_cli.config.load_config", lambda: {"moa": {}})
+        monkeypatch.setattr("clara_cli.config.load_config_readonly", lambda: {"moa": {}})
 
         resolved_provider, model, base_url, api_key, api_mode = _resolve_task_provider_model(
             task="title_generation",
@@ -268,7 +268,7 @@ class TestResolveTaskProviderModel:
 class TestMoaAggregatorSharedResolution:
     """The shared MoA→aggregator helper and the layers that consume it.
 
-    Real-config tests: write an actual config.yaml under a temp HERMES_HOME
+    Real-config tests: write an actual config.yaml under a temp CLARA_HOME
     and exercise the genuine load_config() → resolve_moa_preset() boundary —
     no mocking of the configuration-resolution chain.
     """
@@ -277,7 +277,7 @@ class TestMoaAggregatorSharedResolution:
     def _write_moa_config(tmp_path, monkeypatch, default_preset="opus-gpt"):
         import yaml
 
-        home = tmp_path / ".hermes"
+        home = tmp_path / ".clara"
         home.mkdir(exist_ok=True)
         (home / "config.yaml").write_text(
             yaml.safe_dump(
@@ -295,14 +295,14 @@ class TestMoaAggregatorSharedResolution:
                                     "model": "anthropic/claude-opus-4.8",
                                 },
                             },
-                            "nous-mix": {
+                            "clara-mix": {
                                 "enabled": True,
                                 "reference_models": [
-                                    {"provider": "nous", "model": "hermes-4-70b"}
+                                    {"provider": "clara", "model": "clara-4-70b"}
                                 ],
                                 "aggregator": {
-                                    "provider": "nous",
-                                    "model": "hermes-4-405b",
+                                    "provider": "clara",
+                                    "model": "clara-4-405b",
                                 },
                             },
                         },
@@ -310,7 +310,7 @@ class TestMoaAggregatorSharedResolution:
                 }
             )
         )
-        monkeypatch.setenv("HERMES_HOME", str(home))
+        monkeypatch.setenv("CLARA_HOME", str(home))
         return home
 
     def test_real_config_explicit_task_provider_moa(self, tmp_path, monkeypatch):
@@ -399,7 +399,7 @@ class TestBuildCallKwargsMaxTokens:
             ("zai", "glm-5.2", "https://api.z.ai/api/coding/paas/v4", "max_tokens"),
             ("openrouter", "deepseek/deepseek-v4-flash:nitro", "https://openrouter.ai/api/v1", "max_tokens"),
             ("copilot", "gpt-5.5", "https://api.githubcopilot.com", "max_completion_tokens"),
-            ("nous", "hermes-4", "https://inference-api.nousresearch.com/v1", "max_tokens"),
+            ("clara", "clara-4", "https://inference-api.claraprise.com/v1", "max_tokens"),
         ],
     )
     def test_moa_task_sends_max_tokens_on_openai_compatible(self, provider, model, base_url, expected_key):
@@ -467,24 +467,24 @@ class TestBuildCallKwargsMaxTokens:
 
 
 
-class TestNousTagsScoping:
-    def test_tags_injected_when_provider_is_nous(self, monkeypatch):
+class TestClaraTagsScoping:
+    def test_tags_injected_when_provider_is_clara(self, monkeypatch):
         import agent.auxiliary_client as aux
 
-        monkeypatch.setattr(aux, "auxiliary_is_nous", False)
+        monkeypatch.setattr(aux, "auxiliary_is_clara", False)
 
         kwargs = aux._build_call_kwargs(
-            provider="nous",
-            model="hermes-4",
+            provider="clara",
+            model="clara-4",
             messages=[{"role": "user", "content": "hi"}],
         )
 
-        assert kwargs["extra_body"]["tags"] == aux._nous_portal_tags()
+        assert kwargs["extra_body"]["tags"] == aux._clara_portal_tags()
 
-    def test_tags_not_injected_for_gemini_when_main_is_nous(self, monkeypatch):
+    def test_tags_not_injected_for_gemini_when_main_is_clara(self, monkeypatch):
         import agent.auxiliary_client as aux
 
-        monkeypatch.setattr(aux, "auxiliary_is_nous", True)
+        monkeypatch.setattr(aux, "auxiliary_is_clara", True)
 
         kwargs = aux._build_call_kwargs(
             provider="gemini",
@@ -509,9 +509,9 @@ class TestNormalizeAuxProvider:
 
 class TestReadCodexAccessToken:
     def test_valid_auth_store(self, tmp_path, monkeypatch):
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir(parents=True, exist_ok=True)
-        (hermes_home / "auth.json").write_text(json.dumps({
+        clara_home = tmp_path / "clara"
+        clara_home.mkdir(parents=True, exist_ok=True)
+        (clara_home / "auth.json").write_text(json.dumps({
             "version": 1,
             "providers": {
                 "openai-codex": {
@@ -519,7 +519,7 @@ class TestReadCodexAccessToken:
                 },
             },
         }))
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        monkeypatch.setenv("CLARA_HOME", str(clara_home))
         result = _read_codex_access_token()
         assert result == "tok-123"
 
@@ -540,9 +540,9 @@ class TestReadCodexAccessToken:
         payload = base64.urlsafe_b64encode(payload_data).rstrip(b"=").decode()
         expired_jwt = f"{header}.{payload}.fakesig"
 
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir(parents=True, exist_ok=True)
-        (hermes_home / "auth.json").write_text(json.dumps({
+        clara_home = tmp_path / "clara"
+        clara_home.mkdir(parents=True, exist_ok=True)
+        (clara_home / "auth.json").write_text(json.dumps({
             "version": 1,
             "providers": {
                 "openai-codex": {
@@ -550,7 +550,7 @@ class TestReadCodexAccessToken:
                 },
             },
         }))
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        monkeypatch.setenv("CLARA_HOME", str(clara_home))
         with patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)):
             result = _read_codex_access_token()
         assert result is None, "Expired JWT should return None"
@@ -565,9 +565,9 @@ class TestReadCodexAccessToken:
         payload = base64.urlsafe_b64encode(payload_data).rstrip(b"=").decode()
         valid_jwt = f"{header}.{payload}.fakesig"
 
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir(parents=True, exist_ok=True)
-        (hermes_home / "auth.json").write_text(json.dumps({
+        clara_home = tmp_path / "clara"
+        clara_home.mkdir(parents=True, exist_ok=True)
+        (clara_home / "auth.json").write_text(json.dumps({
             "version": 1,
             "providers": {
                 "openai-codex": {
@@ -575,7 +575,7 @@ class TestReadCodexAccessToken:
                 },
             },
         }))
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        monkeypatch.setenv("CLARA_HOME", str(clara_home))
         result = _read_codex_access_token()
         assert result == valid_jwt
 
@@ -585,21 +585,21 @@ class TestResolveXaiOAuthForAux:
     def test_uses_pool_backed_credentials_without_singleton(self, tmp_path, monkeypatch):
         """Auxiliary xAI OAuth must see pool-only credentials.
 
-        ``hermes auth status`` already reports these as logged in; compression
+        ``clara auth status`` already reports these as logged in; compression
         should not fall through to "no auxiliary provider configured" just
         because the singleton auth-store entry is absent.
         """
         from agent.credential_pool import AUTH_TYPE_OAUTH, PooledCredential, load_pool
-        from hermes_cli.auth import DEFAULT_XAI_OAUTH_BASE_URL
+        from clara_cli.auth import DEFAULT_XAI_OAUTH_BASE_URL
 
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir(parents=True, exist_ok=True)
-        (hermes_home / "auth.json").write_text(json.dumps({
+        clara_home = tmp_path / "clara"
+        clara_home.mkdir(parents=True, exist_ok=True)
+        (clara_home / "auth.json").write_text(json.dumps({
             "version": 1,
             "providers": {},
         }))
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
-        monkeypatch.delenv("HERMES_XAI_BASE_URL", raising=False)
+        monkeypatch.setenv("CLARA_HOME", str(clara_home))
+        monkeypatch.delenv("CLARA_XAI_BASE_URL", raising=False)
         monkeypatch.delenv("XAI_BASE_URL", raising=False)
 
         pool = load_pool("xai-oauth")
@@ -622,16 +622,16 @@ class TestResolveXaiOAuthForAux:
 
     def test_pool_backed_credentials_honor_base_url_env_override(self, tmp_path, monkeypatch):
         from agent.credential_pool import AUTH_TYPE_OAUTH, PooledCredential, load_pool
-        from hermes_cli.auth import DEFAULT_XAI_OAUTH_BASE_URL
+        from clara_cli.auth import DEFAULT_XAI_OAUTH_BASE_URL
 
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir(parents=True, exist_ok=True)
-        (hermes_home / "auth.json").write_text(json.dumps({
+        clara_home = tmp_path / "clara"
+        clara_home.mkdir(parents=True, exist_ok=True)
+        (clara_home / "auth.json").write_text(json.dumps({
             "version": 1,
             "providers": {},
         }))
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
-        monkeypatch.setenv("HERMES_XAI_BASE_URL", "https://example.x.ai/v1/")
+        monkeypatch.setenv("CLARA_HOME", str(clara_home))
+        monkeypatch.setenv("CLARA_XAI_BASE_URL", "https://example.x.ai/v1/")
 
         pool = load_pool("xai-oauth")
         pool.add_entry(PooledCredential(
@@ -784,7 +784,7 @@ class TestResolveProviderClientUniversalModelFallback:
 
     Aux tasks (title generation, vision, session search, etc.) routinely
     reach this function without an explicit model — the user's main
-    provider was picked via ``hermes model``, no per-task override is
+    provider was picked via ``clara model``, no per-task override is
     set, and the expectation is "just use my main model for side tasks
     too."  The resolver fills in ``model`` from a 3-step universal
     fallback before any provider branch runs:
@@ -797,7 +797,7 @@ class TestResolveProviderClientUniversalModelFallback:
     ``(None, None)`` on an empty model — both lack a catalog default
     because their accepted-model lists drift on the backend.  That
     silent failure caused ``_resolve_auto`` to drop to its Step-2
-    fallback chain (OpenRouter / Nous / etc.), so aux tasks billed
+    fallback chain (OpenRouter / Clara / etc.), so aux tasks billed
     against the wrong subscription.
     """
 
@@ -874,9 +874,9 @@ class TestExpiredCodexFallback:
         payload = base64.urlsafe_b64encode(payload_data).rstrip(b"=").decode()
         expired_jwt = f"{header}.{payload}.fakesig"
 
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir(parents=True, exist_ok=True)
-        (hermes_home / "auth.json").write_text(json.dumps({
+        clara_home = tmp_path / "clara"
+        clara_home.mkdir(parents=True, exist_ok=True)
+        (clara_home / "auth.json").write_text(json.dumps({
             "version": 1,
             "providers": {
                 "openai-codex": {
@@ -884,7 +884,7 @@ class TestExpiredCodexFallback:
                 },
             },
         }))
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        monkeypatch.setenv("CLARA_HOME", str(clara_home))
 
         # Set up Anthropic as fallback
         monkeypatch.setenv("ANTHROPIC_TOKEN", "sk-ant-oat01-test-fallback")
@@ -917,9 +917,9 @@ class TestExpiredCodexFallback:
         payload = base64.urlsafe_b64encode(payload_data).rstrip(b"=").decode()
         expired_jwt = f"{header}.{payload}.fakesig"
 
-        hermes_home = tmp_path / "hermes"
-        hermes_home.mkdir(parents=True, exist_ok=True)
-        (hermes_home / "auth.json").write_text(json.dumps({
+        clara_home = tmp_path / "clara"
+        clara_home.mkdir(parents=True, exist_ok=True)
+        (clara_home / "auth.json").write_text(json.dumps({
             "version": 1,
             "providers": {
                 "openai-codex": {
@@ -927,7 +927,7 @@ class TestExpiredCodexFallback:
                 },
             },
         }))
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        monkeypatch.setenv("CLARA_HOME", str(clara_home))
         monkeypatch.setenv("OPENROUTER_API_KEY", "or-test-key")
 
         with patch("agent.auxiliary_client.OpenAI") as mock_openai:
@@ -1003,7 +1003,7 @@ class TestOpenRouterPaidLaneGuard:
         """
         monkeypatch.setenv("OPENROUTER_API_KEY", "or-key")
         with patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)), \
-             patch("hermes_cli.config.load_config_readonly", return_value={"auxiliary": {"free_only": True}}), \
+             patch("clara_cli.config.load_config_readonly", return_value={"auxiliary": {"free_only": True}}), \
              patch("agent.auxiliary_client.OpenAI") as mock_openai:
             mock_client = MagicMock(name="openrouter_client")
             mock_openai.return_value = mock_client
@@ -1015,7 +1015,7 @@ class TestOpenRouterPaidLaneGuard:
         """free_only=true + user-configured PAID model → OpenRouter skipped."""
         monkeypatch.setenv("OPENROUTER_API_KEY", "or-key")
         with patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)), \
-             patch("hermes_cli.config.load_config_readonly",
+             patch("clara_cli.config.load_config_readonly",
                    return_value={"auxiliary": {"free_only": True,
                                                "openrouter_model": "google/gemini-3.6-flash"}}), \
              patch("agent.auxiliary_client.OpenAI") as mock_openai:
@@ -1028,7 +1028,7 @@ class TestOpenRouterPaidLaneGuard:
         """free_only=true + :free model → OpenRouter used with that model."""
         monkeypatch.setenv("OPENROUTER_API_KEY", "or-key")
         with patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)), \
-             patch("hermes_cli.config.load_config_readonly",
+             patch("clara_cli.config.load_config_readonly",
                    return_value={"auxiliary": {"free_only": True,
                                               "openrouter_model": "nvidia/nemotron-3-ultra-550b-a55b:free"}}), \
              patch("agent.auxiliary_client.OpenAI") as mock_openai:
@@ -1042,7 +1042,7 @@ class TestOpenRouterPaidLaneGuard:
         """auxiliary.openrouter_model replaces _OPENROUTER_MODEL."""
         monkeypatch.setenv("OPENROUTER_API_KEY", "or-key")
         with patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)), \
-             patch("hermes_cli.config.load_config_readonly",
+             patch("clara_cli.config.load_config_readonly",
                    return_value={"auxiliary": {"openrouter_model": "some/vendor-model"}}), \
              patch("agent.auxiliary_client.OpenAI") as mock_openai:
             mock_client = MagicMock(name="openrouter_client")
@@ -1055,7 +1055,7 @@ class TestOpenRouterPaidLaneGuard:
         """Auxiliary.<task>.model (explicit) is also gated by free_only."""
         monkeypatch.setenv("OPENROUTER_API_KEY", "or-key")
         with patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)), \
-             patch("hermes_cli.config.load_config_readonly", return_value={"auxiliary": {"free_only": True}}), \
+             patch("clara_cli.config.load_config_readonly", return_value={"auxiliary": {"free_only": True}}), \
              patch("agent.auxiliary_client.OpenAI") as mock_openai:
             client, model = _try_openrouter(model="google/gemini-3.6-flash")
         assert client is None
@@ -1066,7 +1066,7 @@ class TestOpenRouterPaidLaneGuard:
         """The concrete OpenRouter route gates the caller's model, not its default."""
         monkeypatch.setenv("OPENROUTER_API_KEY", "or-key")
         with patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)), \
-             patch("hermes_cli.config.load_config_readonly",
+             patch("clara_cli.config.load_config_readonly",
                    return_value={"auxiliary": {"free_only": True}}), \
              patch("agent.auxiliary_client.OpenAI") as mock_openai:
             mock_client = MagicMock(name="openrouter_client")
@@ -1081,7 +1081,7 @@ class TestOpenRouterPaidLaneGuard:
     def test_free_only_gate_does_not_mark_openrouter_unhealthy(self, monkeypatch):
         monkeypatch.setenv("OPENROUTER_API_KEY", "or-key")
         with patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)), \
-             patch("hermes_cli.config.load_config_readonly",
+             patch("clara_cli.config.load_config_readonly",
                    return_value={"auxiliary": {"free_only": True}}), \
              patch("agent.auxiliary_client._mark_provider_unhealthy") as mark_unhealthy:
             client, model = resolve_provider_client(
@@ -1097,7 +1097,7 @@ class TestOpenRouterPaidLaneGuard:
 
         monkeypatch.setenv("OPENROUTER_API_KEY", "or-key")
         with patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)), \
-             patch("hermes_cli.config.load_config_readonly",
+             patch("clara_cli.config.load_config_readonly",
                    return_value={"auxiliary": {"free_only": True}}), \
              caplog.at_level(logging.WARNING, logger="agent.auxiliary_client"):
             resolve_provider_client("openrouter", model="google/gemini-3.6-flash")
@@ -1120,7 +1120,7 @@ class TestOpenRouterPaidLaneGuard:
         _paid_lane_warned.discard(_paid_model)
         monkeypatch.setenv("OPENROUTER_API_KEY", "or-key")
         with patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)), \
-             patch("hermes_cli.config.load_config_readonly", return_value=_paid_cfg), \
+             patch("clara_cli.config.load_config_readonly", return_value=_paid_cfg), \
              patch("agent.auxiliary_client.OpenAI") as mock_openai:
             mock_client = MagicMock(name="openrouter_client")
             mock_openai.return_value = mock_client
@@ -1131,7 +1131,7 @@ class TestOpenRouterPaidLaneGuard:
         assert any("PAID lane engaged" in r.getMessage() for r in caplog.records)
         # Second call logs nothing new.
         with patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)), \
-             patch("hermes_cli.config.load_config_readonly", return_value=_paid_cfg), \
+             patch("clara_cli.config.load_config_readonly", return_value=_paid_cfg), \
              patch("agent.auxiliary_client.OpenAI") as mock_openai:
             caplog.clear()
             with caplog.at_level(logging.WARNING, logger="agent.auxiliary_client"):
@@ -1168,7 +1168,7 @@ class TestGetTextAuxiliaryClient:
         with (
             patch("agent.auxiliary_client.load_pool", return_value=_Pool()),
             patch("agent.auxiliary_client.OpenAI"),
-            patch("hermes_cli.auth._read_codex_tokens", side_effect=AssertionError("legacy codex store should not run")),
+            patch("clara_cli.auth._read_codex_tokens", side_effect=AssertionError("legacy codex store should not run")),
         ):
             from agent.auxiliary_client import _build_codex_client
 
@@ -1183,7 +1183,7 @@ class TestGetTextAuxiliaryClient:
         monkeypatch.delenv("OPENAI_BASE_URL", raising=False)
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-        with patch("agent.auxiliary_client._read_nous_auth", return_value=None), \
+        with patch("agent.auxiliary_client._read_clara_auth", return_value=None), \
              patch("agent.auxiliary_client._read_codex_access_token", return_value=None), \
              patch("agent.auxiliary_client._resolve_api_key_provider", return_value=(None, None)):
             client, model = get_text_auxiliary_client()
@@ -1193,8 +1193,8 @@ class TestGetTextAuxiliaryClient:
     def test_custom_endpoint_uses_codex_wrapper_when_runtime_requests_responses_api(self):
         with patch("agent.auxiliary_client._resolve_custom_runtime",
                    return_value=("https://api.openai.com/v1", "sk-test", "codex_responses")), \
-             patch("agent.auxiliary_client._read_nous_auth", return_value=None), \
-             patch("agent.auxiliary_client._resolve_nous_runtime_api", return_value=None), \
+             patch("agent.auxiliary_client._read_clara_auth", return_value=None), \
+             patch("agent.auxiliary_client._resolve_clara_runtime_api", return_value=None), \
              patch("agent.auxiliary_client._read_main_model", return_value="gpt-5.3-codex"), \
              patch("agent.auxiliary_client.OpenAI") as mock_openai:
             client, model = get_text_auxiliary_client()
@@ -1213,7 +1213,7 @@ class TestVisionClientFallback:
         """Active provider appears in available backends when credentials exist."""
         monkeypatch.setenv("ANTHROPIC_API_KEY", "***")
         with (
-            patch("agent.auxiliary_client._read_nous_auth", return_value=None),
+            patch("agent.auxiliary_client._read_clara_auth", return_value=None),
             patch("agent.auxiliary_client._read_main_provider", return_value="anthropic"),
             patch("agent.auxiliary_client._read_main_model", return_value="claude-sonnet-4"),
             patch("agent.anthropic_adapter.build_anthropic_client", return_value=MagicMock()),
@@ -1259,7 +1259,7 @@ class TestVisionClientFallback:
 
 class TestAuxiliaryPoolAwareness:
 
-    def test_try_nous_refreshes_stale_pool_entry(self):
+    def test_try_clara_refreshes_stale_pool_entry(self):
         stale_token = _jwt_with_claims({
             "scope": "inference:invoke",
             "exp": int(time.time() - 60),
@@ -1294,15 +1294,15 @@ class TestAuxiliaryPoolAwareness:
         with (
             patch("agent.auxiliary_client.load_pool", return_value=pool),
             patch("agent.auxiliary_client.OpenAI") as mock_openai,
-            patch("hermes_cli.models.get_nous_recommended_aux_model", return_value=None),
+            patch("clara_cli.models.get_clara_recommended_aux_model", return_value=None),
         ):
-            from agent.auxiliary_client import _try_nous
+            from agent.auxiliary_client import _try_clara
 
-            client, model = _try_nous()
+            client, model = _try_clara()
 
         assert pool.refreshed is True
         assert client is not None
-        assert model == _NOUS_MODEL
+        assert model == _CLARA_MODEL
         assert mock_openai.call_args.kwargs["api_key"] == fresh_token
         assert mock_openai.call_args.kwargs["base_url"] == "https://inference.pool.example/v1"
 
@@ -1310,24 +1310,24 @@ class TestAuxiliaryPoolAwareness:
 
 
 
-    def test_call_llm_retries_nous_after_401(self):
+    def test_call_llm_retries_clara_after_401(self):
         class _Auth401(Exception):
             status_code = 401
 
         stale_client = MagicMock()
-        stale_client.base_url = "https://inference-api.nousresearch.com/v1"
-        stale_client.chat.completions.create.side_effect = _Auth401("stale nous key")
+        stale_client.base_url = "https://inference-api.claraprise.com/v1"
+        stale_client.chat.completions.create.side_effect = _Auth401("stale clara key")
 
         fresh_client = MagicMock()
-        fresh_client.base_url = "https://inference-api.nousresearch.com/v1"
+        fresh_client.base_url = "https://inference-api.claraprise.com/v1"
         fresh_client.chat.completions.create.return_value = {"ok": True}
 
         with (
-            patch("agent.auxiliary_client._resolve_task_provider_model", return_value=("nous", "nous-model", None, None, None)),
-            patch("agent.auxiliary_client._get_cached_client", return_value=(stale_client, "nous-model")),
+            patch("agent.auxiliary_client._resolve_task_provider_model", return_value=("clara", "clara-model", None, None, None)),
+            patch("agent.auxiliary_client._get_cached_client", return_value=(stale_client, "clara-model")),
             patch("agent.auxiliary_client.OpenAI", return_value=fresh_client),
             patch("agent.auxiliary_client._validate_llm_response", side_effect=lambda resp, _task, **_kw: resp),
-            patch("agent.auxiliary_client._resolve_nous_runtime_api", return_value=("fresh-agent-key", "https://inference-api.nousresearch.com/v1")),
+            patch("agent.auxiliary_client._resolve_clara_runtime_api", return_value=("fresh-agent-key", "https://inference-api.claraprise.com/v1")),
         ):
             result = call_llm(
                 task="compression",
@@ -1426,9 +1426,9 @@ class TestIsModelNotFoundError:
     """_is_model_not_found_error detects stale/invalid model 404s, distinct
     from payment errors."""
 
-    def test_nous_openrouter_catalog_404(self):
+    def test_clara_openrouter_catalog_404(self):
         """The exact incident error: a Portal-recommended model dropped from
-        the Nous → OpenRouter catalog."""
+        the Clara → OpenRouter catalog."""
         exc = Exception(
             "Model 'gpt-5.4-mini' not found. The requested model does not "
             "exist in our configuration or OpenRouter catalog."
@@ -1496,8 +1496,8 @@ class TestIsModelIncompatibleError:
 
 
 
-class TestRefreshNousRecommendedModel:
-    """_refresh_nous_recommended_model picks a fresh model after a stale 404."""
+class TestRefreshClaraRecommendedModel:
+    """_refresh_clara_recommended_model picks a fresh model after a stale 404."""
 
 
 
@@ -1505,20 +1505,20 @@ class TestRefreshNousRecommendedModel:
         def _boom(**kw):
             raise RuntimeError("portal down")
         monkeypatch.setattr(
-            "hermes_cli.models.get_nous_recommended_aux_model", _boom)
-        out = _refresh_nous_recommended_model(
+            "clara_cli.models.get_clara_recommended_aux_model", _boom)
+        out = _refresh_clara_recommended_model(
             vision=False, stale_model="some/dead-model")
-        assert out == _NOUS_MODEL
+        assert out == _CLARA_MODEL
 
     def test_returns_none_when_no_distinct_alternative(self, monkeypatch):
         """When the failed model IS the default and the Portal has nothing
         else, there's no usable alternative."""
         monkeypatch.setattr(
-            "hermes_cli.models.get_nous_recommended_aux_model",
-            lambda **kw: _NOUS_MODEL,
+            "clara_cli.models.get_clara_recommended_aux_model",
+            lambda **kw: _CLARA_MODEL,
         )
-        out = _refresh_nous_recommended_model(
-            vision=False, stale_model=_NOUS_MODEL)
+        out = _refresh_clara_recommended_model(
+            vision=False, stale_model=_CLARA_MODEL)
         assert out is None
 
 
@@ -1554,7 +1554,7 @@ class TestGetProviderChain:
         chain = _get_provider_chain()
         assert len(chain) == 4
         labels = [label for label, _ in chain]
-        assert labels == ["openrouter", "nous", "local/custom", "api-key"]
+        assert labels == ["openrouter", "clara", "local/custom", "api-key"]
         # Codex is deliberately NOT in this chain — see _get_provider_chain
         # docstring. ChatGPT-account Codex has a shifting model allow-list;
         # guessing a model to fall back on breaks more often than it helps.
@@ -1588,23 +1588,23 @@ class TestTryPaymentFallback:
     def test_skips_failed_provider(self):
         mock_client = MagicMock()
         with patch("agent.auxiliary_client._try_openrouter", return_value=(None, None)), \
-             patch("agent.auxiliary_client._try_nous", return_value=(mock_client, "nous-model")), \
+             patch("agent.auxiliary_client._try_clara", return_value=(mock_client, "clara-model")), \
              patch("agent.auxiliary_client._read_main_provider", return_value="openrouter"):
             client, model, label = _try_payment_fallback("openrouter", task="compression")
         assert client is mock_client
-        assert model == "nous-model"
-        assert label == "nous"
+        assert model == "clara-model"
+        assert label == "clara"
 
 
 
     def test_codex_not_in_fallback_chain(self):
         """Codex is deliberately NOT a fallback rung (shifting model allow-list).
 
-        When OR/Nous/custom/api-key all fail, payment-fallback returns None —
+        When OR/Clara/custom/api-key all fail, payment-fallback returns None —
         Codex is never tried with a guessed model.
         """
         with patch("agent.auxiliary_client._try_openrouter", return_value=(None, None)), \
-             patch("agent.auxiliary_client._try_nous", return_value=(None, None)), \
+             patch("agent.auxiliary_client._try_clara", return_value=(None, None)), \
              patch("agent.auxiliary_client._try_custom_endpoint", return_value=(None, None)), \
              patch("agent.auxiliary_client._resolve_api_key_provider", return_value=(None, None)), \
              patch("agent.auxiliary_client._read_main_provider", return_value="openrouter"):
@@ -1925,7 +1925,7 @@ class TestAuxiliaryFallbackLayering:
 
 
     def test_fallback_entry_openai_codex_uses_oauth_pool_without_inline_key(self):
-        """Configured Codex fallback resolves through Hermes auth / credential pool."""
+        """Configured Codex fallback resolves through Clara auth / credential pool."""
         from agent.auxiliary_client import _resolve_fallback_entry
 
         pool_entry = MagicMock()
@@ -1991,7 +1991,7 @@ class TestTryMainAgentModelFallback:
 def test_resolve_api_key_provider_skips_unconfigured_anthropic(monkeypatch):
     """_resolve_api_key_provider must not try anthropic when user never configured it."""
     from collections import OrderedDict
-    from hermes_cli.auth import ProviderConfig
+    from clara_cli.auth import ProviderConfig
 
     # Build a minimal registry with only "anthropic" so the loop is guaranteed
     # to reach it without being short-circuited by earlier providers.
@@ -2012,9 +2012,9 @@ def test_resolve_api_key_provider_skips_unconfigured_anthropic(monkeypatch):
         return None, None
 
     monkeypatch.setattr("agent.auxiliary_client._try_anthropic", mock_try_anthropic)
-    monkeypatch.setattr("hermes_cli.auth.PROVIDER_REGISTRY", fake_registry)
+    monkeypatch.setattr("clara_cli.auth.PROVIDER_REGISTRY", fake_registry)
     monkeypatch.setattr(
-        "hermes_cli.auth.is_provider_explicitly_configured",
+        "clara_cli.auth.is_provider_explicitly_configured",
         lambda pid: False,
     )
 
@@ -2161,7 +2161,7 @@ class TestTransientTransportRetry:
 
 class TestAuxClientNoSdkRetries:
     """Auxiliary OpenAI clients are constructed with SDK-internal retries
-    disabled so Hermes owns the retry/timeout budget (issue #54465). The SDK
+    disabled so Clara owns the retry/timeout budget (issue #54465). The SDK
     default (max_retries=2 → 3 attempts) silently triples the effective wall
     time of every aux call against a slow/hung endpoint.
     """
@@ -2332,7 +2332,7 @@ class TestAuxiliaryTaskExtraBody:
             }
         }
 
-        with patch("hermes_cli.config.load_config", return_value=config), patch("hermes_cli.config.load_config_readonly", return_value=config), patch(
+        with patch("clara_cli.config.load_config", return_value=config), patch("clara_cli.config.load_config_readonly", return_value=config), patch(
             "agent.auxiliary_client._get_cached_client",
             return_value=(client, "glm-4.5-air"),
         ):
@@ -2363,7 +2363,7 @@ class TestAuxiliaryTaskExtraBody:
             }
         }
 
-        with patch("hermes_cli.config.load_config", return_value=config), patch("hermes_cli.config.load_config_readonly", return_value=config), patch(
+        with patch("clara_cli.config.load_config", return_value=config), patch("clara_cli.config.load_config_readonly", return_value=config), patch(
             "agent.auxiliary_client._get_cached_client",
             return_value=(client, "glm-4.5-air"),
         ):
@@ -2389,7 +2389,7 @@ class TestAuxiliaryTaskExtraBody:
         from agent.auxiliary_client import _get_task_extra_body
 
         config = {"auxiliary": {moa_task: {"reasoning_effort": "xhigh"}}}
-        with patch("hermes_cli.config.load_config", return_value=config), patch("hermes_cli.config.load_config_readonly", return_value=config), \
+        with patch("clara_cli.config.load_config", return_value=config), patch("clara_cli.config.load_config_readonly", return_value=config), \
              caplog.at_level(logging.WARNING, logger="agent.auxiliary_client"):
             result = _get_task_extra_body(moa_task)
 
@@ -2731,9 +2731,9 @@ class TestAuxiliaryPoolRotationRetry:
 
 
 class TestAnthropicAuxiliaryReasoningTranslation:
-    """Native Anthropic aux adapters must receive normalized Hermes reasoning.
+    """Native Anthropic aux adapters must receive normalized Clara reasoning.
 
-    MoA slot reasoning is carried through call_llm as a Hermes
+    MoA slot reasoning is carried through call_llm as a Clara
     ``reasoning_config``. The native Anthropic Messages path cannot consume the
     generic OpenAI-style ``extra_body.reasoning`` fallback, so assert the final
     ``messages.create`` kwargs contain Anthropic's provider-aware wire shape.
@@ -3214,7 +3214,7 @@ class TestVisionAutoSkipsKimiCoding:
         def fake_strict(provider, model=None):
             if provider == "openrouter":
                 return fake_or_client, "google/gemini-3-flash-preview"
-            if provider == "nous":
+            if provider == "clara":
                 return None, None
             raise AssertionError(
                 f"strict vision backend should not be called for {provider!r} "
@@ -3621,7 +3621,7 @@ class TestAuxiliaryClientPoisonedCacheEviction:
     Otherwise the next auxiliary call (compression retry, memory flush,
     background review) reuses the closed httpx transport and fails with
     ``Connection error`` even though the main provider route is healthy.
-    See https://github.com/NousResearch/hermes-agent/issues/23432.
+    See https://github.com/claraprise/clara-agent/issues/23432.
     """
 
 
@@ -3723,7 +3723,7 @@ class TestBuildCallKwargsToolDedup:
     Providers like Google Vertex, Azure, and Bedrock reject requests with
     duplicate tool names (HTTP 400).  This guard converts a hard failure into
     a warning log so agent turns succeed even if an upstream injection path
-    regresses.  See: https://github.com/NousResearch/hermes-agent/issues/18478
+    regresses.  See: https://github.com/claraprise/clara-agent/issues/18478
     """
 
     def _make_tool(self, name: str) -> dict:
@@ -3784,7 +3784,7 @@ class TestNvidiaBillingHeaders:
         assert model == "nvidia/test-model"
         call_kwargs = mock_openai.call_args[1]
         headers = call_kwargs["default_headers"]
-        assert headers["X-BILLING-INVOKE-ORIGIN"] == "HermesAgent"
+        assert headers["X-BILLING-INVOKE-ORIGIN"] == "ClaraAgent"
 
     def test_resolve_provider_client_local_nim_skips_billing_origin_header(self, monkeypatch):
         monkeypatch.setenv("NVIDIA_API_KEY", "nvidia-key")
@@ -3871,14 +3871,14 @@ class TestOpenRouterExplicitApiKey:
             )
 
 
-def test_pool_runtime_base_url_uses_nous_env_override(monkeypatch):
+def test_pool_runtime_base_url_uses_clara_env_override(monkeypatch):
     entry = SimpleNamespace(
-        provider="nous",
-        runtime_base_url="https://inference-api.nousresearch.com/v1",
-        inference_base_url="https://inference-api.nousresearch.com/v1",
-        base_url="https://inference-api.nousresearch.com/v1",
+        provider="clara",
+        runtime_base_url="https://inference-api.claraprise.com/v1",
+        inference_base_url="https://inference-api.claraprise.com/v1",
+        base_url="https://inference-api.claraprise.com/v1",
     )
-    monkeypatch.setenv("NOUS_INFERENCE_BASE_URL", "https://ai.wildebeest-newton.ts.net/v1")
+    monkeypatch.setenv("CLARA_INFERENCE_BASE_URL", "https://ai.wildebeest-newton.ts.net/v1")
 
     assert _pool_runtime_base_url(entry) == "https://ai.wildebeest-newton.ts.net/v1"
 
@@ -3979,18 +3979,18 @@ class TestAuxUnhealthyCache:
             _try_payment_fallback,
             _mark_provider_unhealthy,
         )
-        nous_client = MagicMock()
+        clara_client = MagicMock()
         # Mark BOTH the failed provider (openrouter) and a sibling (custom)
-        # unhealthy. The chain should still find nous.
+        # unhealthy. The chain should still find clara.
         _mark_provider_unhealthy("local/custom")
         with patch("agent.auxiliary_client._read_main_provider", return_value="openrouter"), \
              patch("agent.auxiliary_client._try_openrouter") as or_try, \
-             patch("agent.auxiliary_client._try_nous", return_value=(nous_client, "n-model")), \
+             patch("agent.auxiliary_client._try_clara", return_value=(clara_client, "n-model")), \
              patch("agent.auxiliary_client._try_custom_endpoint") as custom_try, \
              patch("agent.auxiliary_client._resolve_api_key_provider", return_value=(None, None)):
             client, model, label = _try_payment_fallback("openrouter", task="compression")
-        assert client is nous_client
-        assert label == "nous"
+        assert client is clara_client
+        assert label == "clara"
         # OR is skipped via skip_chain_labels (failed provider), custom via unhealthy cache.
         or_try.assert_not_called()
         custom_try.assert_not_called()
@@ -4013,17 +4013,17 @@ class TestAuxUnhealthyCache:
         err.status_code = 402
         primary_client.chat.completions.create.side_effect = err
 
-        nous_client = MagicMock()
-        nous_resp = MagicMock()
-        nous_resp.choices = [MagicMock(message=MagicMock(content="ok"))]
-        nous_client.chat.completions.create.return_value = nous_resp
+        clara_client = MagicMock()
+        clara_resp = MagicMock()
+        clara_resp.choices = [MagicMock(message=MagicMock(content="ok"))]
+        clara_client.chat.completions.create.return_value = clara_resp
 
         with patch("agent.auxiliary_client._get_cached_client",
                     return_value=(primary_client, "google/gemini-3-flash-preview")), \
              patch("agent.auxiliary_client._resolve_task_provider_model",
                     return_value=("auto", "google/gemini-3-flash-preview", None, None, None)), \
              patch("agent.auxiliary_client._try_payment_fallback",
-                    return_value=(nous_client, "n-model", "nous")), \
+                    return_value=(clara_client, "n-model", "clara")), \
              patch("agent.auxiliary_client._build_call_kwargs",
                     return_value={"model": "n-model", "messages": [{"role": "user", "content": "hi"}]}):
             assert _is_provider_unhealthy("openrouter") is False
@@ -4051,7 +4051,7 @@ class TestAuxiliaryMaxTokensParam:
         with (
             patch("agent.auxiliary_client._current_custom_base_url",
                   return_value="https://openrouter.ai/api/v1"),
-            patch("agent.auxiliary_client._read_nous_auth", return_value=None),
+            patch("agent.auxiliary_client._read_clara_auth", return_value=None),
         ):
             assert auxiliary_max_tokens_param(4096) == {"max_tokens": 4096}
 
@@ -4065,7 +4065,7 @@ class TestAuxiliaryMaxTokensParam:
         with (
             patch("agent.auxiliary_client._current_custom_base_url",
                   return_value="https://my-gateway.example.com/v1"),
-            patch("agent.auxiliary_client._read_nous_auth", return_value=None),
+            patch("agent.auxiliary_client._read_clara_auth", return_value=None),
         ):
             assert auxiliary_max_tokens_param(4096, model="") == {"max_tokens": 4096}
             assert auxiliary_max_tokens_param(4096, model=None) == {"max_tokens": 4096}
@@ -4253,7 +4253,7 @@ class TestCustomEndpointApiKeyInheritance:
             captured.update(kwargs)
             return MagicMock()
 
-        with patch("hermes_cli.config.load_config", return_value=fake_config), patch("hermes_cli.config.load_config_readonly", return_value=fake_config), \
+        with patch("clara_cli.config.load_config", return_value=fake_config), patch("clara_cli.config.load_config_readonly", return_value=fake_config), \
              patch.object(ac, "_create_openai_client", side_effect=_capture_create):
             client, model = resolve_provider_client(
                 "custom",
@@ -4281,7 +4281,7 @@ class TestCustomEndpointApiKeyInheritance:
             captured.update(kwargs)
             return MagicMock()
 
-        with patch("hermes_cli.config.load_config", return_value=fake_config), patch("hermes_cli.config.load_config_readonly", return_value=fake_config), \
+        with patch("clara_cli.config.load_config", return_value=fake_config), patch("clara_cli.config.load_config_readonly", return_value=fake_config), \
              patch.object(ac, "_create_openai_client", side_effect=_capture_create):
             client, model = resolve_provider_client(
                 "custom",
@@ -4308,7 +4308,7 @@ class TestCustomEndpointApiKeyInheritance:
 
         with patch.object(ac, "_RUNTIME_MAIN_API_KEY", "sk-runtime-key"), \
              patch.object(ac, "_RUNTIME_MAIN_BASE_URL", "https://gw.example.com/v1"), \
-             patch("hermes_cli.config.load_config", return_value={"model": {}}), patch("hermes_cli.config.load_config_readonly", return_value={"model": {}}), \
+             patch("clara_cli.config.load_config", return_value={"model": {}}), patch("clara_cli.config.load_config_readonly", return_value={"model": {}}), \
              patch.object(ac, "_create_openai_client", side_effect=_capture_create):
             client, model = resolve_provider_client(
                 "custom",
@@ -4340,7 +4340,7 @@ class TestCustomEndpointApiKeyInheritance:
             captured.update(kwargs)
             return MagicMock()
 
-        with patch("hermes_cli.config.load_config", return_value=fake_config), patch("hermes_cli.config.load_config_readonly", return_value=fake_config), \
+        with patch("clara_cli.config.load_config", return_value=fake_config), patch("clara_cli.config.load_config_readonly", return_value=fake_config), \
              patch.object(ac, "_create_openai_client", side_effect=_capture_create):
             client, model = resolve_provider_client(
                 "custom",
@@ -4393,7 +4393,7 @@ class TestMoaAggregatorStreamingBypass:
         relay_stream.assert_not_called()
 
 
-class TestSynchronousFallbackCachePlans:
+class TestSynchroclaraFallbackCachePlans:
     @staticmethod
     def _run_configured_fallback(monkeypatch, entry):
         from agent.auxiliary_client import (
@@ -4486,7 +4486,7 @@ class TestSynchronousFallbackCachePlans:
 
 
 
-class TestAsynchronousFallbackCachePlans:
+class TestAsynchroclaraFallbackCachePlans:
     @pytest.mark.asyncio
     async def test_async_fallback_replans_cache_sections_like_sync(self, monkeypatch):
         """Async mirror parity: per-destination cache replan, not verbatim pass-through."""
@@ -4639,8 +4639,8 @@ class TestFastModelTier:
             "~openai/gpt-mini-latest": {},
             "stepfun/step-3.7-flash:free": {},
         }
-        with patch("hermes_cli.models.fetch_models_with_pricing", return_value=catalog):
-            assert ac._fast_model_from_catalog("nous") == "~openai/gpt-mini-latest"
+        with patch("clara_cli.models.fetch_models_with_pricing", return_value=catalog):
+            assert ac._fast_model_from_catalog("clara") == "~openai/gpt-mini-latest"
 
     def test_catalog_match_skips_reasoning_batch_and_embedding_lookalikes(self):
         """Substring matching must not pick a thinker, a queue, or an encoder."""
@@ -4652,8 +4652,8 @@ class TestFastModelTier:
             "sentence-transformers/all-minilm-l6-v2": {},
             "google/gemini-3.6-flash": {},
         }
-        with patch("hermes_cli.models.fetch_models_with_pricing", return_value=catalog):
-            assert ac._fast_model_from_catalog("nous") == "google/gemini-3.6-flash"
+        with patch("clara_cli.models.fetch_models_with_pricing", return_value=catalog):
+            assert ac._fast_model_from_catalog("clara") == "google/gemini-3.6-flash"
 
     def test_catalog_match_skips_the_non_chat_siblings_of_a_chat_model(self):
         """A provider names its speech and image endpoints after the chat model
@@ -4666,8 +4666,8 @@ class TestFastModelTier:
             "openai/gpt-4o-mini-search-preview": {},
             "openai/gpt-4o-mini": {},
         }
-        with patch("hermes_cli.models.fetch_models_with_pricing", return_value=catalog):
-            assert ac._fast_model_from_catalog("nous") == "openai/gpt-4o-mini"
+        with patch("clara_cli.models.fetch_models_with_pricing", return_value=catalog):
+            assert ac._fast_model_from_catalog("clara") == "openai/gpt-4o-mini"
 
     def test_catalog_match_takes_the_newest_of_a_family(self):
         """The bare family rungs must land on the current generation.
@@ -4683,8 +4683,8 @@ class TestFastModelTier:
             "openai/gpt-9-mini": {},
             "openai/gpt-10-mini": {},
         }
-        with patch("hermes_cli.models.fetch_models_with_pricing", return_value=catalog):
-            assert ac._fast_model_from_catalog("nous") == "openai/gpt-10-mini"
+        with patch("clara_cli.models.fetch_models_with_pricing", return_value=catalog):
+            assert ac._fast_model_from_catalog("clara") == "openai/gpt-10-mini"
 
     def test_catalog_fetch_is_authenticated(self):
         """Most /v1/models endpoints need a key; anonymously they 401.
@@ -4695,10 +4695,10 @@ class TestFastModelTier:
         from agent import auxiliary_client as ac
 
         with patch(
-            "hermes_cli.auth.resolve_api_key_provider_credentials",
+            "clara_cli.auth.resolve_api_key_provider_credentials",
             return_value={"api_key": "sk-test", "base_url": "https://api.example.com/v1"},
         ), patch(
-            "hermes_cli.models.fetch_models_with_pricing", return_value={}
+            "clara_cli.models.fetch_models_with_pricing", return_value={}
         ) as fetch:
             ac._fast_model_from_catalog("openai")
 
@@ -4720,7 +4720,7 @@ class TestFastModelTier:
         from agent import auxiliary_client as ac
 
         with patch.object(ac, "_fast_model_from_catalog") as spy:
-            ac._get_aux_model_for_provider("nous")
+            ac._get_aux_model_for_provider("clara")
         spy.assert_not_called()
 
     def test_only_titling_is_in_the_fast_tier(self):

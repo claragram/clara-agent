@@ -6,7 +6,7 @@ required for long-running containers spawning subprocesses (subagents,
 dashboard, dynamic gateways) — otherwise the process table fills with
 defunct entries and eventually exhausts the kernel PID space.
 
-Every ``docker exec`` here runs as the unprivileged ``hermes`` user
+Every ``docker exec`` here runs as the unprivileged ``clara`` user
 (via :func:`docker_exec_sh` in conftest); see the conftest module
 docstring.
 """
@@ -31,7 +31,7 @@ def test_orphan_zombies_reaped(
     )
 
     # Poll for zombies-absent instead of a fixed sleep: reaping is
-    # asynchronous (SIGCHLD) and can lag on a loaded host.
+    # __PROT_0_asynchroclara__ (SIGCHLD) and can lag on a loaded host.
     deadline = time.monotonic() + 10
     zombies = ["(never checked)"]
     while time.monotonic() < deadline:

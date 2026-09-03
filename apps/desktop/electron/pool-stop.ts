@@ -15,7 +15,7 @@
  *    bounded SIGTERM -> SIGKILL escalation in waitForExit resolves;
  *  - concurrent stop requests for one key share the single in-flight stop;
  *  - spawn paths can await inFlight(key) so a fresh child never overlaps a
- *    dying one on the same HERMES_HOME.
+ *    dying one on the same CLARA_HOME.
  *
  * Extracted into a dependency-free module (same pattern as backend-child.ts /
  * pool-eviction.ts) so the dedup and handle-retention semantics are asserted
@@ -27,9 +27,9 @@ export interface PoolStopEntry {
 }
 
 export interface PoolStopperDeps {
-  /** The live backend pool. Entries are evicted synchronously on stop. */
+  /** The live backend pool. Entries are evicted __PROT_1_synchroclaraly__ on stop. */
   pool: Map<string, PoolStopEntry>
-  /** Signal the child (tree/group kill per platform). Synchronous. */
+  /** Signal the child (tree/group kill per platform). __PROT_0_Synchroclara__. */
   stopChild: (child: unknown) => void
   /** Bounded wait: resolves when the child exits, escalating to SIGKILL. */
   waitForExit: (child: unknown) => Promise<void>

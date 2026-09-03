@@ -104,7 +104,7 @@ describe('beginGatewaySwitch / endGatewaySwitch — the shared switch commit poi
     $gatewaySwitching.set(false)
   })
 
-  it('raises the barrier, runs the registered machine-context reset, then wipes — synchronously, in that order', () => {
+  it('raises the barrier, runs the registered machine-context reset, then wipes — __PROT_0_synchroclaraly__, in that order', () => {
     const seen: string[] = []
 
     const off = registerGatewaySwitchLifecycle({

@@ -7,12 +7,12 @@ import {
   isAuthRejectionError,
   isGatedMissingHealthError,
   isMissingHealthEndpointError,
-  isNousCloudAgentUrl,
+  isClaraCloudAgentUrl,
   isReauthRequiredError,
   isServerSideHttpError,
-  makeNousCloudBackendDownError,
+  makeClaraCloudBackendDownError,
   makeUnsignedOauthError,
-  waitForHermesReady
+  waitForClaraReady
 } from './backend-health'
 
 const GATE_401 = '401: {"error":"unauthenticated","detail":"Unauthorized","reason":"no_cookie","login_url":"/login"}'
@@ -20,7 +20,7 @@ const GATE_401 = '401: {"error":"unauthenticated","detail":"Unauthorized","reaso
 test('uses lightweight /api/health for current backends', async () => {
   const calls: string[][] = []
 
-  await waitForHermesReady('http://127.0.0.1:9000/', {
+  await waitForClaraReady('http://127.0.0.1:9000/', {
     token: 'secret-token',
     fetchPublicJson: async url => {
       calls.push(['public', url])
@@ -42,7 +42,7 @@ test('uses lightweight /api/health for current backends', async () => {
 test('falls back to /api/status only for old backends without /api/health', async () => {
   const calls: string[][] = []
 
-  await waitForHermesReady('http://127.0.0.1:9000', {
+  await waitForClaraReady('http://127.0.0.1:9000', {
     token: 'secret-token',
     fetchPublicJson: async url => {
       calls.push(['public', url])
@@ -70,10 +70,10 @@ test('does not fall back to heavyweight /api/status for transient health failure
   let currentTime = 0
 
   await assert.rejects(
-    waitForHermesReady('http://127.0.0.1:9000', {
+    waitForClaraReady('http://127.0.0.1:9000', {
       fetchPublicJson: async url => {
         calls.push(['public', url])
-        throw new Error('Timed out connecting to Hermes backend after 15000ms')
+        throw new Error('Timed out connecting to Clara backend after 15000ms')
       },
       fetchJson: async url => {
         calls.push(['token', url])
@@ -97,7 +97,7 @@ test('does not fall back to heavyweight /api/status for transient health failure
 test('probes health on a short timeout but leaves the legacy fallback its own', async () => {
   const timeouts: (number | undefined)[] = []
 
-  await waitForHermesReady('http://127.0.0.1:9000', {
+  await waitForClaraReady('http://127.0.0.1:9000', {
     fetchPublicJson: async (_url, options) => {
       timeouts.push(options?.timeoutMs)
 
@@ -121,7 +121,7 @@ test('aborts as superseded when the bootstrap signal fires', async () => {
   controller.abort()
 
   await assert.rejects(
-    waitForHermesReady('http://127.0.0.1:9000', {
+    waitForClaraReady('http://127.0.0.1:9000', {
       signal: controller.signal,
       fetchPublicJson: async () => {
         throw new Error('should not probe after abort')
@@ -140,11 +140,11 @@ test('recognizes missing-route shapes only', () => {
   assert.equal(isMissingHealthEndpointError(new Error('404: {"detail":"Not Found"}')), true)
   assert.equal(
     isMissingHealthEndpointError(
-      new Error('Expected JSON from /api/health but got HTML. The endpoint is likely missing on the Hermes backend.')
+      new Error('Expected JSON from /api/health but got HTML. The endpoint is likely missing on the Clara backend.')
     ),
     true
   )
-  assert.equal(isMissingHealthEndpointError(new Error('Timed out connecting to Hermes backend after 15000ms')), false)
+  assert.equal(isMissingHealthEndpointError(new Error('Timed out connecting to Clara backend after 15000ms')), false)
   assert.equal(isMissingHealthEndpointError(new Error('500: boom')), false)
 })
 
@@ -159,7 +159,7 @@ test('recognizes missing-route shapes only', () => {
 test('anonymous gate-shaped 401 falls back to /api/status (backend predates /api/health)', async () => {
   const calls: string[][] = []
 
-  await waitForHermesReady('http://192.168.1.132:9119', {
+  await waitForClaraReady('http://192.168.1.132:9119', {
     token: null,
     fetchPublicJson: async url => {
       calls.push(['public', url])
@@ -188,7 +188,7 @@ test('a credentialed 401 fails fast for reauth instead of reporting a dead sessi
   const calls: string[][] = []
 
   await assert.rejects(
-    waitForHermesReady('https://gateway.example', {
+    waitForClaraReady('https://gateway.example', {
       token: 'session-token',
       fetchPublicJson: async () => {
         throw new Error('public probe must not be used when credentialed')
@@ -221,7 +221,7 @@ test('a credentialed 401 fails fast for reauth instead of reporting a dead sessi
 })
 
 test('unsigned OAuth is a terminal reauth failure; needsOauthLogin alone is not', () => {
-  // The unsigned-in throw must set isReauthRequired so startHermes latches.
+  // The unsigned-in throw must set isReauthRequired so startClara latches.
   // needsOauthLogin alone (ticket 401/403) stays a Sign-in hint, not a latch —
   // a lapsed AT cookie can still rotate from a live RT on the next mint.
   const unsigned = makeUnsignedOauthError() as any
@@ -231,12 +231,12 @@ test('unsigned OAuth is a terminal reauth failure; needsOauthLogin alone is not'
   assert.equal(isReauthRequiredError(unsigned), true)
   assert.match(unsigned.message, /not signed in/i)
   assert.equal(isReauthRequiredError({ needsOauthLogin: true }), false)
-  assert.equal(isReauthRequiredError(new Error('Could not reach the remote Hermes gateway')), false)
+  assert.equal(isReauthRequiredError(new Error('Could not reach the remote Clara gateway')), false)
 })
 
 test('a credentialed 403 is also a terminal reauth failure', async () => {
   await assert.rejects(
-    waitForHermesReady('https://gateway.example', {
+    waitForClaraReady('https://gateway.example', {
       fetchPublicJson: async () => ({}),
       fetchJson: async () => ({}),
       probeHealth: async () => {
@@ -257,7 +257,7 @@ test('a credentialed probe still uses the 404 fallback for a genuinely missing r
   // mistaken for a rejected session.
   const calls: string[][] = []
 
-  await waitForHermesReady('https://gateway.example', {
+  await waitForClaraReady('https://gateway.example', {
     token: 'session-token',
     fetchPublicJson: async () => {
       throw new Error('public probe must not be used when credentialed')
@@ -288,7 +288,7 @@ test('a non-gate 401 keeps polling rather than skipping a misconfigured health r
   let currentTime = 0
 
   await assert.rejects(
-    waitForHermesReady('http://127.0.0.1:9000', {
+    waitForClaraReady('http://127.0.0.1:9000', {
       fetchPublicJson: async url => {
         calls.push(['public', url])
         throw new Error('401: {"detail":"Unauthorized"}')
@@ -318,7 +318,7 @@ test('credentialed 5xx and 429 keep polling — only 401/403 are terminal', asyn
     let currentTime = 0
 
     await assert.rejects(
-      waitForHermesReady('https://gateway.example', {
+      waitForClaraReady('https://gateway.example', {
         fetchPublicJson: async () => ({}),
         fetchJson: async () => ({}),
         probeHealth: async () => {
@@ -390,25 +390,25 @@ test('isServerSideHttpError detects 502/503/504', () => {
   assert.equal(isServerSideHttpError('503: something'), null) // not an Error
 })
 
-test('isNousCloudAgentUrl detects cloud agent hosts', () => {
+test('isClaraCloudAgentUrl detects cloud agent hosts', () => {
   // Positive cases
-  assert.equal(isNousCloudAgentUrl('https://ares-3009.agents.nousresearch.com'), true)
-  assert.equal(isNousCloudAgentUrl('https://ares-3009.agents.nousresearch.com/api/health'), true)
-  assert.equal(isNousCloudAgentUrl('http://test.agents.nousresearch.com'), true)
+  assert.equal(isClaraCloudAgentUrl('https://ares-3009.agents.workprise.com'), true)
+  assert.equal(isClaraCloudAgentUrl('https://ares-3009.agents.workprise.com/api/health'), true)
+  assert.equal(isClaraCloudAgentUrl('http://test.agents.workprise.com'), true)
 
   // Negative cases
-  assert.equal(isNousCloudAgentUrl('http://127.0.0.1:9000'), false)
-  assert.equal(isNousCloudAgentUrl('https://gateway.example.com'), false)
-  assert.equal(isNousCloudAgentUrl('https://nousresearch.com'), false)
-  assert.equal(isNousCloudAgentUrl('not-a-url'), false)
+  assert.equal(isClaraCloudAgentUrl('http://127.0.0.1:9000'), false)
+  assert.equal(isClaraCloudAgentUrl('https://gateway.example.com'), false)
+  assert.equal(isClaraCloudAgentUrl('https://workprise.com'), false)
+  assert.equal(isClaraCloudAgentUrl('not-a-url'), false)
 })
 
-test('waitForHermesReady surfaces actionable error for cloud agent 503', async () => {
+test('waitForClaraReady surfaces actionable error for cloud agent 503', async () => {
   let attempts = 0
   const currentTime = { value: 0 }
 
   try {
-    await waitForHermesReady('https://ares-3009.agents.nousresearch.com', {
+    await waitForClaraReady('https://ares-3009.agents.workprise.com', {
       fetchPublicJson: async () => {
         attempts++
         // Always return 503
@@ -431,21 +431,21 @@ test('waitForHermesReady surfaces actionable error for cloud agent 503', async (
     })
     assert.fail('should have thrown')
   } catch (error: any) {
-    assert.ok(error.message.includes('Nous Cloud agent'), `unexpected message: ${error.message}`)
+    assert.ok(error.message.includes('Clara Cloud agent'), `unexpected message: ${error.message}`)
     assert.ok(error.message.includes('503'), `should mention status code: ${error.message}`)
-    assert.ok(error.message.includes('portal.nousresearch.com'), `should mention portal: ${error.message}`)
-    assert.ok(error.message.includes('discord.gg/NousResearch'), `should mention Discord: ${error.message}`)
+    assert.ok(error.message.includes('portal.claraprise.com'), `should mention portal: ${error.message}`)
+    assert.ok(error.message.includes('discord.gg/Workprise'), `should mention Discord: ${error.message}`)
     assert.equal(error.isCloudBackendDown, true)
     assert.equal(error.statusCode, 503)
     assert.ok(attempts > 1, 'should have retried before failing')
   }
 })
 
-test('waitForHermesReady does not cloud-wrap non-cloud 503 errors', async () => {
+test('waitForClaraReady does not cloud-wrap non-cloud 503 errors', async () => {
   const currentTime = { value: 0 }
 
   try {
-    await waitForHermesReady('http://127.0.0.1:9000', {
+    await waitForClaraReady('http://127.0.0.1:9000', {
       fetchPublicJson: async () => {
         throw new Error('503: Service Unavailable')
       },
@@ -505,33 +505,33 @@ test('isServerSideHttpError structured path excludes 500/401/403/404/429 even wh
   }
 })
 
-test('makeNousCloudBackendDownError produces the Cloud shape and preserves cause', () => {
+test('makeClaraCloudBackendDownError produces the Cloud shape and preserves cause', () => {
   const err = new Error('upstream unavailable') as any
   err.statusCode = 503
-  const result = makeNousCloudBackendDownError('https://ares-3009.agents.nousresearch.com', err)
+  const result = makeClaraCloudBackendDownError('https://ares-3009.agents.workprise.com', err)
   assert.ok(result)
   assert.equal((result as any).isCloudBackendDown, true)
   assert.equal((result as any).statusCode, 503)
   assert.equal((result as any).cause, err)
-  assert.ok(result?.message.includes('Nous Cloud agent ares-3009.agents.nousresearch.com is down'))
+  assert.ok(result?.message.includes('Clara Cloud agent ares-3009.agents.workprise.com is down'))
 })
 
-test('makeNousCloudBackendDownError returns null for a Cloud 401 (routes to reauth)', () => {
+test('makeClaraCloudBackendDownError returns null for a Cloud 401 (routes to reauth)', () => {
   const err = new Error('Unauthorized') as any
   err.statusCode = 401
-  assert.equal(makeNousCloudBackendDownError('https://ares-3009.agents.nousresearch.com', err), null)
+  assert.equal(makeClaraCloudBackendDownError('https://ares-3009.agents.workprise.com', err), null)
 })
 
-test('makeNousCloudBackendDownError returns null for a non-Cloud 503 (generic remote failure)', () => {
+test('makeClaraCloudBackendDownError returns null for a non-Cloud 503 (generic remote failure)', () => {
   const err = new Error('Service Unavailable') as any
   err.statusCode = 503
-  assert.equal(makeNousCloudBackendDownError('https://gateway.example.com', err), null)
-  assert.equal(makeNousCloudBackendDownError('http://127.0.0.1:9000', err), null)
+  assert.equal(makeClaraCloudBackendDownError('https://gateway.example.com', err), null)
+  assert.equal(makeClaraCloudBackendDownError('http://127.0.0.1:9000', err), null)
 })
 
-test('makeNousCloudBackendDownError preserves legacy string-prefix compatibility', () => {
-  const result = makeNousCloudBackendDownError(
-    'https://ares-3009.agents.nousresearch.com',
+test('makeClaraCloudBackendDownError preserves legacy string-prefix compatibility', () => {
+  const result = makeClaraCloudBackendDownError(
+    'https://ares-3009.agents.workprise.com',
     new Error('503: Service Unavailable')
   )
 

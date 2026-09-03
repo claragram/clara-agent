@@ -19,9 +19,9 @@ Semantics are otherwise identical (initializer/initargs, work queue,
 idle-thread reuse), plus context propagation: ``submit`` snapshots the
 submitting context with ``copy_context()`` and runs each work item inside
 it.  Stdlib ``ThreadPoolExecutor`` only does this from Python 3.14; on the
-3.11-3.13 runtimes Hermes ships, a bare pool worker starts with an EMPTY
+3.11-3.13 runtimes Clara ships, a bare pool worker starts with an EMPTY
 Context and silently drops contextvar-based state (profile secret scope,
-HERMES_HOME override) — under the multiplexed gateway a credential read in
+CLARA_HOME override) — under the multiplexed gateway a credential read in
 such a worker fails closed with ``UnscopedSecretError``.  Propagating by
 default makes every consumer safe even when it forgets
 ``propagate_context_to_thread``.  Use it for any pool whose work is
@@ -51,9 +51,9 @@ class DaemonThreadPoolExecutor(ThreadPoolExecutor):
 
         Python 3.14's ``ThreadPoolExecutor`` snapshots the submitting
         context with ``copy_context()`` and runs each work item inside it;
-        3.11-3.13 (the runtimes Hermes ships) do not, so a pool worker
+        3.11-3.13 (the runtimes Clara ships) do not, so a pool worker
         starts with an empty Context and loses the multiplexed profile
-        secret scope / HERMES_HOME override.  Do it here unconditionally so
+        secret scope / CLARA_HOME override.  Do it here unconditionally so
         the daemon pool behaves identically on every runtime; on 3.14+ the
         inner ``ctx.run`` re-applies the same immutable context and is a
         no-op.

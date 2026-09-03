@@ -16,7 +16,7 @@ Built-in TTS providers:
 
 Custom command providers:
 - Users can declare any number of named providers with ``type: command``
-  under ``tts.providers.<name>`` in ``~/.hermes/config.yaml``. Hermes
+  under ``tts.providers.<name>`` in ``~/.clara/config.yaml``. Clara
   writes the input text to a temp file and runs the configured shell
   command, which must produce the audio file at the expected path.
   See the Local Command section of ``website/docs/user-guide/features/tts.md``.
@@ -25,7 +25,7 @@ Output formats:
 - Opus (.ogg) for Telegram voice bubbles (requires ffmpeg for Edge TTS)
 - MP3 (.mp3) for everything else (CLI, Discord, WhatsApp)
 
-Configuration is loaded from ~/.hermes/config.yaml under the 'tts:' key.
+Configuration is loaded from ~/.clara/config.yaml under the 'tts:' key.
 The user chooses the provider and voice; the model just sends text.
 
 Usage:
@@ -57,19 +57,19 @@ from pathlib import Path
 from typing import Callable, Dict, Any, Iterator, List, Optional, Tuple
 from urllib.parse import urljoin, urlparse
 
-from hermes_cli._subprocess_compat import windows_hide_flags
-from hermes_constants import display_hermes_home
+from clara_cli._subprocess_compat import windows_hide_flags
+from clara_constants import display_clara_home
 
 logger = logging.getLogger(__name__)
 def get_env_value(name, default=None):
     """Read env values through the live config module.
 
-    Tests may monkeypatch and later restore ``hermes_cli.config.get_env_value``
+    Tests may monkeypatch and later restore ``clara_cli.config.get_env_value``
     before this module is imported. Resolve the helper at call time so TTS does
     not keep a stale imported function for the rest of the test process.
     """
     try:
-        from hermes_cli.config import get_env_value as _get_env_value
+        from clara_cli.config import get_env_value as _get_env_value
     except ImportError:
         return os.getenv(name, default)
     value = _get_env_value(name)
@@ -81,7 +81,7 @@ def _resolve_provider_key(env_var: str, provider_id: str) -> str:
 
     Delegates to ``tools.tool_backend_helpers.resolve_provider_secret`` —
     the single owner of STT/TTS key resolution (config > env/.env > the
-    credential pool populated by ``hermes auth add <provider_id>``).
+    credential pool populated by ``clara auth add <provider_id>``).
     Resolved at call time so tests that reload the helpers module see the
     live function.
     """
@@ -93,14 +93,14 @@ def _resolve_provider_key(env_var: str, provider_id: str) -> str:
 
 from tools.managed_tool_gateway import resolve_managed_tool_gateway
 from tools.tool_backend_helpers import (
-    NOUS_MANAGED_PROVIDER,
-    managed_nous_tools_enabled,
-    nous_tool_gateway_unavailable_message,
+    CLARA_MANAGED_PROVIDER,
+    managed_clara_tools_enabled,
+    clara_tool_gateway_unavailable_message,
     read_selection,
     resolve_openai_audio_api_key,
     selection_error,
 )
-from tools.xai_http import hermes_xai_user_agent
+from tools.xai_http import clara_xai_user_agent
 
 # ---------------------------------------------------------------------------
 # Lazy imports -- providers are imported only when actually used to avoid
@@ -214,7 +214,7 @@ DEFAULT_ELEVENLABS_VOICE_ID = "pNInz6obpgDQGcFmaJgB"  # Adam
 DEFAULT_ELEVENLABS_MODEL_ID = "eleven_multilingual_v2"
 DEFAULT_ELEVENLABS_STREAMING_MODEL_ID = "eleven_flash_v2_5"
 DEFAULT_OPENAI_MODEL = "gpt-4o-mini-tts"
-# The managed OpenAI audio gateway (Nous portal proxy) only proxies these speech
+# The managed OpenAI audio gateway (Clara portal proxy) only proxies these speech
 # models. A user's tts.openai.model set for *direct* OpenAI (e.g. "tts-1-hd")
 # is rejected with a 400 "Unsupported managed OpenAI speech model", so it must be
 # coerced to a supported model when routing through the gateway.
@@ -252,7 +252,7 @@ DEFAULT_GEMINI_TTS_VOICE = "Kore"
 DEFAULT_GEMINI_TTS_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
 DEFAULT_GEMINI_AUDIO_TAGS = False
 GEMINI_AUDIO_TAG_REWRITE_TASK = "tts_audio_tags"
-# Base URL now resolved via hermes_cli.models.deepinfra_base_url (shared).
+# Base URL now resolved via clara_cli.models.deepinfra_base_url (shared).
 DEFAULT_DEEPINFRA_TTS_VOICE = "default"
 # PCM output specs for Gemini TTS (fixed by the API)
 GEMINI_TTS_SAMPLE_RATE = 24000
@@ -262,8 +262,8 @@ TTS_RESPONSE_BODY_LIMIT_BYTES = 16 * 1024 * 1024
 TTS_RESPONSE_BODY_CHUNK_BYTES = 64 * 1024
 
 def _get_default_output_dir() -> str:
-    from hermes_constants import get_hermes_dir
-    return str(get_hermes_dir("cache/audio", "audio_cache"))
+    from clara_constants import get_clara_dir
+    return str(get_clara_dir("cache/audio", "audio_cache"))
 
 DEFAULT_OUTPUT_DIR = _get_default_output_dir()
 _DEFAULT_OUTPUT_DIR_AT_IMPORT = DEFAULT_OUTPUT_DIR
@@ -274,13 +274,13 @@ def _default_output_dir() -> str:
     Same bug class as skills_tool (f8723c478) and skills_sync (#65828):
     long-lived multi-profile runtimes (dashboard console, TUI/Desktop backend,
     cron, kanban workers) import this module once under the launch
-    HERMES_HOME and later scope requests to a different profile via
-    ``hermes_constants.set_hermes_home_override()`` — a frozen module
+    CLARA_HOME and later scope requests to a different profile via
+    ``clara_constants.set_clara_home_override()`` — a frozen module
     constant keeps writing synthesized audio into the launch profile's
     cache instead of the active profile's (#98749). Keep the legacy
     ``DEFAULT_OUTPUT_DIR`` module attribute for tests and external patchers;
     when it has not been patched, re-resolve from the live profile-scoped
-    HERMES_HOME on every call.
+    CLARA_HOME on every call.
     """
     configured = DEFAULT_OUTPUT_DIR
     if configured != _DEFAULT_OUTPUT_DIR_AT_IMPORT:
@@ -646,21 +646,21 @@ def _pack_audio_files_for_delivery(
 
 
 # ===========================================================================
-# Config loader -- reads tts: section from ~/.hermes/config.yaml
+# Config loader -- reads tts: section from ~/.clara/config.yaml
 # ===========================================================================
 def _load_tts_config() -> Dict[str, Any]:
     """
-    Load TTS configuration from ~/.hermes/config.yaml.
+    Load TTS configuration from ~/.clara/config.yaml.
 
     Returns a dict with provider settings. Falls back to defaults
     for any missing fields.
     """
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
         config = load_config()
         return config.get("tts") or {}
     except ImportError:
-        logger.debug("hermes_cli.config not available, using default TTS config")
+        logger.debug("clara_cli.config not available, using default TTS config")
         return {}
     except Exception as e:
         logger.warning("Failed to load TTS config: %s", e, exc_info=True)
@@ -672,14 +672,14 @@ def _get_provider(tts_config: Dict[str, Any]) -> str:
 
     Inference credentials do not imply consent to paid speech generation.
     Users opt into cloud TTS by setting ``tts.provider`` (normally through
-    ``hermes tools``); otherwise the historical Edge backend remains active.
+    ``clara tools``); otherwise the historical Edge backend remains active.
 
-    The managed "Nous Subscription" selection (``tts.provider: nous``) is
+    The managed "Clara Subscription" selection (``tts.provider: clara``) is
     serviced by the OpenAI provider implementation, routed through the
     managed openai-audio gateway by ``_resolve_openai_audio_client_config``.
     """
     provider = (tts_config.get("provider") or DEFAULT_PROVIDER).lower().strip()
-    if provider == NOUS_MANAGED_PROVIDER:
+    if provider == CLARA_MANAGED_PROVIDER:
         return "openai"
     return provider
 
@@ -772,7 +772,7 @@ def _resolve_minimax_tts_runtime(
 #
 # Users can declare any number of command-type providers alongside the
 # built-ins so they can plug any local CLI (Piper, VoxCPM, Kokoro CLIs,
-# custom voice-cloning scripts, etc.) into Hermes without any Python code
+# custom voice-cloning scripts, etc.) into Clara without any Python code
 # changes. The config shape is::
 #
 #     tts:
@@ -783,7 +783,7 @@ def _resolve_minimax_tts_runtime(
 #           command: "piper -m ~/model.onnx -f {output_path} < {input_path}"
 #           output_format: wav
 #
-# Hermes writes the input text to a temp UTF-8 file, runs the command with
+# Clara writes the input text to a temp UTF-8 file, runs the command with
 # placeholder substitution, and reads the audio file the command wrote to
 # ``{output_path}``. Supported placeholders: ``{input_path}``,
 # ``{text_path}`` (alias for input_path), ``{output_path}``, ``{format}``,
@@ -938,7 +938,7 @@ def _dispatch_to_plugin_provider(
         return None
     try:
         from agent.tts_registry import get_provider
-        from hermes_cli.plugins import _ensure_plugins_discovered
+        from clara_cli.plugins import _ensure_plugins_discovered
 
         _ensure_plugins_discovered()
         plugin_provider = get_provider(key)
@@ -1122,7 +1122,7 @@ def _render_command_tts_template(
 
     def replace_match(match: re.Match[str]) -> str:
         name = match.group("double") or match.group("single")
-        token = f"__HERMES_TTS_PLACEHOLDER_{len(replacements)}__"
+        token = f"__CLARA_TTS_PLACEHOLDER_{len(replacements)}__"
         replacements.append((
             token,
             _quote_command_tts_placeholder(
@@ -1195,7 +1195,7 @@ def _command_provider_env_passthrough(config: Dict[str, Any]) -> list:
     """Return the provider's ``env_passthrough`` allowlist (opt-out of scrub).
 
     Command providers legitimately reference their own API keys in the shell
-    template (curl one-liners). The child env is scrubbed of Hermes secrets by
+    template (curl one-liners). The child env is scrubbed of Clara secrets by
     default; ``env_passthrough: [MY_API_KEY, ...]`` copies the named variables
     back from the parent environment so a trusted template keeps working.
     """
@@ -1212,13 +1212,13 @@ def _run_command_tts(
 ) -> subprocess.CompletedProcess:
     """Run a command-provider shell command with process-tree idle cleanup.
 
-    Child env is scrubbed of Hermes secrets (salvage of #56332) while still
+    Child env is scrubbed of Clara secrets (salvage of #56332) while still
     propagating delegated-child lineage markers when applicable.
     """
     from agent.delegation_context import delegated_child_subprocess_env
-    from tools.environments.local import hermes_subprocess_env
+    from tools.environments.local import clara_subprocess_env
 
-    scrubbed = hermes_subprocess_env(inherit_credentials=False)
+    scrubbed = clara_subprocess_env(inherit_credentials=False)
     for key in env_passthrough or []:
         value = os.environ.get(key)
         if value is not None:
@@ -1953,7 +1953,7 @@ def _generate_openai_tts(
 # DeepInfra serves TTS over an OpenAI-compatible /v1/openai/audio/speech
 # endpoint. Models are discovered live via the shared catalog helper
 # (filtered by the ``tts`` surface tag) — no hardcoded model ids in this
-# file, so retired models disappear from hermes the next time the
+# file, so retired models disappear from clara the next time the
 # catalog is fetched without a patch.
 
 
@@ -1963,13 +1963,13 @@ def _generate_deepinfra_tts(text: str, output_path: str, tts_config: Dict[str, A
     DeepInfra's audio endpoint is OpenAI-compatible, so there's no need
     to duplicate the SDK call — we just pass an explicit api_key /
     base_url / model / voice through. Model ids and the base URL come from
-    the shared ``hermes_cli.models`` helpers so every DeepInfra surface
+    the shared ``clara_cli.models`` helpers so every DeepInfra surface
     resolves them identically.
     """
     api_key = _resolve_provider_key("DEEPINFRA_API_KEY", "deepinfra")
     if not api_key:
         raise ValueError(
-            "DEEPINFRA_API_KEY not set. Run `hermes setup` to configure, "
+            "DEEPINFRA_API_KEY not set. Run `clara setup` to configure, "
             "or set the env var directly."
         )
 
@@ -1980,7 +1980,7 @@ def _generate_deepinfra_tts(text: str, output_path: str, tts_config: Dict[str, A
     if not isinstance(di_config, dict):
         di_config = {}
 
-    from hermes_cli.models import deepinfra_base_url, deepinfra_model_ids
+    from clara_cli.models import deepinfra_base_url, deepinfra_model_ids
 
     model = di_config.get("model")
     if not isinstance(model, str) or not model.strip():
@@ -2134,7 +2134,7 @@ def _generate_xai_tts(text: str, output_path: str, tts_config: Dict[str, Any]) -
     creds = resolve_xai_http_credentials(prefer_api_key=True)
     api_key = str(creds.get("api_key") or "").strip()
     if not api_key:
-        raise ValueError("No xAI credentials found. Configure xAI OAuth in `hermes model` or set XAI_API_KEY.")
+        raise ValueError("No xAI credentials found. Configure xAI OAuth in `clara model` or set XAI_API_KEY.")
 
     xai_config = tts_config.get("xai") or {}
     voice_id = str(xai_config.get("voice_id", DEFAULT_XAI_VOICE_ID)).strip() or DEFAULT_XAI_VOICE_ID
@@ -2189,7 +2189,7 @@ def _generate_xai_tts(text: str, output_path: str, tts_config: Dict[str, Any]) -
         ).strip().rstrip("/")
 
     # Match the documented minimal POST /v1/tts shape by default. Only send
-    # output_format when Hermes actually needs a non-default format/override.
+    # output_format when Clara actually needs a non-default format/override.
     codec = "wav" if output_path.endswith(".wav") else "mp3"
     payload: Dict[str, Any] = {
         "text": text,
@@ -2228,7 +2228,7 @@ def _generate_xai_tts(text: str, output_path: str, tts_config: Dict[str, Any]) -
         headers={
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "User-Agent": hermes_xai_user_agent(),
+            "User-Agent": clara_xai_user_agent(),
         },
         json=payload,
         timeout=60,
@@ -2481,8 +2481,8 @@ def _resolve_gemini_persona_prompt_path(gemini_config: Dict[str, Any]) -> Option
     path = Path(expanded).expanduser()
     if not path.is_absolute():
         try:
-            from hermes_constants import get_hermes_home
-            path = get_hermes_home() / path
+            from clara_constants import get_clara_home
+            path = get_clara_home() / path
         except Exception:
             path = Path.cwd() / path
     return path
@@ -2695,15 +2695,15 @@ def _generate_gemini_tts(text: str, output_path: str, tts_config: Dict[str, Any]
     headers = {"Content-Type": "application/json"}
     if urlparse(base_url).hostname == "generativelanguage.googleapis.com":
         try:
-            import hermes_cli as _hermes_cli
+            import clara_cli as _clara_cli
 
-            _hermes_version = str(_hermes_cli.__version__)
+            _clara_version = str(_clara_cli.__version__)
         except Exception:
-            _hermes_version = "0.0.0"
-        # Include Hermes client context following Gemini's partner
+            _clara_version = "0.0.0"
+        # Include Clara client context following Gemini's partner
         # integration guidance:
         # https://ai.google.dev/gemini-api/docs/partner-integration
-        headers["X-Goog-Api-Client"] = f"hermes-agent/{_hermes_version}"
+        headers["X-Goog-Api-Client"] = f"clara-agent/{_clara_version}"
 
     endpoint = f"{base_url}/models/{model}:generateContent"
     response = requests.post(
@@ -2997,7 +2997,7 @@ def _signal_user_tts_provider(name: str, tts_config: Dict[str, Any], hook: str) 
             threading.Thread(target=_run, name=f"tts-{hook}-{name}", daemon=True).start()
             return hook
         from agent.tts_registry import get_provider
-        from hermes_cli.plugins import _ensure_plugins_discovered
+        from clara_cli.plugins import _ensure_plugins_discovered
 
         _ensure_plugins_discovered()
         plugin_provider = get_provider(name)
@@ -3159,13 +3159,13 @@ def _check_piper_available() -> bool:
 
 
 def _get_piper_voices_dir() -> Path:
-    """Return the directory where Hermes caches Piper voice models.
+    """Return the directory where Clara caches Piper voice models.
 
-    Resolves to ``~/.hermes/cache/piper-voices/`` under the active
-    HERMES_HOME so voice downloads follow profile boundaries.
+    Resolves to ``~/.clara/cache/piper-voices/`` under the active
+    CLARA_HOME so voice downloads follow profile boundaries.
     """
-    from hermes_constants import get_hermes_dir
-    root = Path(get_hermes_dir("cache/piper-voices", "piper_voices_cache"))
+    from clara_constants import get_clara_dir
+    root = Path(get_clara_dir("cache/piper-voices", "piper_voices_cache"))
     root.mkdir(parents=True, exist_ok=True)
     return root
 
@@ -3475,7 +3475,7 @@ def _text_to_speech_single(
     # ElevenLabs can produce Opus natively (no ffmpeg needed). Edge TTS
     # always outputs MP3 and needs ffmpeg for conversion.
     from gateway.session_context import get_session_env
-    platform = get_session_env("HERMES_SESSION_PLATFORM", "").lower()
+    platform = get_session_env("CLARA_SESSION_PLATFORM", "").lower()
     want_opus = platform in OPUS_VOICE_PLATFORMS
 
     # Determine output path
@@ -3607,7 +3607,7 @@ def _text_to_speech_single(
                 return json.dumps({
                     "success": False,
                     "error": "Mistral provider selected but 'mistralai' package not installed. "
-                             "Run `hermes setup` to install Mistral support."
+                             "Run `clara setup` to install Mistral support."
                 }, ensure_ascii=False)
             logger.info("Generating speech with Mistral Voxtral TTS...")
             _generate_mistral_tts(text, file_str, tts_config)
@@ -3621,7 +3621,7 @@ def _text_to_speech_single(
                 return json.dumps({
                     "success": False,
                     "error": "NeuTTS provider selected but neutts is not installed. "
-                             "Run hermes setup and choose NeuTTS, or install espeak-ng and run python -m pip install -U neutts[all]."
+                             "Run clara setup and choose NeuTTS, or install espeak-ng and run python -m pip install -U neutts[all]."
                 }, ensure_ascii=False)
             logger.info("Generating speech with NeuTTS (local)...")
             _generate_neutts(text, file_str, tts_config)
@@ -3633,7 +3633,7 @@ def _text_to_speech_single(
                 return json.dumps({
                     "success": False,
                     "error": "KittenTTS provider selected but 'kittentts' package not installed. "
-                             "Run 'hermes setup tts' and choose KittenTTS, or install manually: "
+                             "Run 'clara setup tts' and choose KittenTTS, or install manually: "
                              "pip install https://github.com/KittenML/KittenTTS/releases/download/0.8.1/kittentts-0.8.1-py3-none-any.whl"
                 }, ensure_ascii=False)
             logger.info("Generating speech with KittenTTS (local, ~25MB)...")
@@ -3646,7 +3646,7 @@ def _text_to_speech_single(
                 return json.dumps({
                     "success": False,
                     "error": "Piper provider selected but 'piper-tts' package not installed. "
-                             "Run 'hermes tools' and select Piper under TTS, or install manually: "
+                             "Run 'clara tools' and select Piper under TTS, or install manually: "
                              "pip install piper-tts",
                 }, ensure_ascii=False)
             logger.info("Generating speech with Piper (local)...")
@@ -3844,7 +3844,7 @@ def text_to_speech_tool(
         )
 
     from gateway.session_context import get_session_env
-    platform = get_session_env("HERMES_SESSION_PLATFORM", "").lower()
+    platform = get_session_env("CLARA_SESSION_PLATFORM", "").lower()
     want_opus = platform in OPUS_VOICE_PLATFORMS
     delivery_profile = _resolve_audio_delivery_profile(platform, tts_config)
 
@@ -4055,7 +4055,7 @@ def check_tts_requirements() -> bool:
 
     try:
         from agent.tts_registry import get_provider
-        from hermes_cli.plugins import _ensure_plugins_discovered
+        from clara_cli.plugins import _ensure_plugins_discovered
 
         _ensure_plugins_discovered()
         plugin = get_provider(provider)
@@ -4067,13 +4067,13 @@ def check_tts_requirements() -> bool:
 def _resolve_openai_audio_client_config() -> tuple[str, str, bool]:
     """Return ``(api_key, base_url, is_managed)`` for the OpenAI audio client.
 
-    ``is_managed`` is True when the config resolves to the Nous managed audio
+    ``is_managed`` is True when the config resolves to the Clara managed audio
     gateway (a restricted proxy), so callers can coerce the request to what the
     gateway supports.
 
     Strict selection semantics (switch on the stored ``tts`` provider
     string):
-    - ``"nous"`` (or legacy ``use_gateway: true``) → managed gateway ONLY;
+    - ``"clara"`` (or legacy ``use_gateway: true``) → managed gateway ONLY;
       unentitled/unreachable is a selection-naming error.
     - any other stored tts provider → direct credentials ONLY
       (``tts.openai.api_key`` then ``VOICE_TOOLS_OPENAI_KEY``/
@@ -4089,17 +4089,17 @@ def _resolve_openai_audio_client_config() -> tuple[str, str, bool]:
 
     selected = read_selection("tts")
 
-    if selected == NOUS_MANAGED_PROVIDER:
+    if selected == CLARA_MANAGED_PROVIDER:
         managed_gateway = resolve_managed_tool_gateway("openai-audio")
         if managed_gateway is None:
             raise ValueError(selection_error(
                 "tts",
-                NOUS_MANAGED_PROVIDER,
-                "the Nous Tool Gateway is not available (not entitled or "
+                CLARA_MANAGED_PROVIDER,
+                "the Clara Tool Gateway is not available (not entitled or "
                 "unreachable)",
             ))
         return (
-            managed_gateway.nous_user_token,
+            managed_gateway.clara_user_token,
             urljoin(f"{managed_gateway.gateway_origin.rstrip('/')}/", "v1"),
             True,
         )
@@ -4132,17 +4132,17 @@ def _resolve_openai_audio_client_config() -> tuple[str, str, bool]:
             "Neither tts.openai.api_key in config nor "
             "VOICE_TOOLS_OPENAI_KEY/OPENAI_API_KEY is set"
         )
-        if managed_nous_tools_enabled():
+        if managed_clara_tools_enabled():
             message += (
                 ". "
-                + nous_tool_gateway_unavailable_message(
+                + clara_tool_gateway_unavailable_message(
                     "managed OpenAI audio for TTS",
                 )
             )
         raise ValueError(message)
 
     return (
-        managed_gateway.nous_user_token,
+        managed_gateway.clara_user_token,
         urljoin(f"{managed_gateway.gateway_origin.rstrip('/')}/", "v1"),
         True,
     )
@@ -4782,7 +4782,7 @@ TTS_SCHEMA = {
             },
             "output_path": {
                 "type": "string",
-                "description": f"Optional custom file path to save the audio. Defaults to {display_hermes_home()}/audio_cache/<timestamp>.mp3"
+                "description": f"Optional custom file path to save the audio. Defaults to {display_clara_home()}/audio_cache/<timestamp>.mp3"
             },
             "speed": {
                 "type": "number",

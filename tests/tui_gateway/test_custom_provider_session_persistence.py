@@ -9,7 +9,7 @@ or ``_reset_session_agent``, ``_stored_session_runtime_overrides`` fed
 provider="custom" back into ``_make_agent`` →
 ``resolve_runtime_provider(requested="custom")``, which cannot match an entry
 named "mimo-v2.5-pro". Depending on config the rebuild either raised
-"No LLM provider configured. Run `hermes model`..." (resume failed) or
+"No LLM provider configured. Run `clara model`..." (resume failed) or
 silently resolved placeholder credentials ("no-key-required") against the
 patched-back base_url.
 
@@ -27,8 +27,8 @@ import json
 import types
 from unittest.mock import MagicMock, patch
 
-import hermes_cli.runtime_provider as rp
-from hermes_state import SessionDB
+import clara_cli.runtime_provider as rp
+from clara_state import SessionDB
 
 MIMO_URL = "https://token-plan-cn.xiaomimimo.com/v1"
 MIMO_KEY = "sk-mimo-entry-key"
@@ -109,7 +109,7 @@ def _make_agent_with_override(override, monkeypatch, config, model_cfg=None):
     patched config, returning the kwargs AIAgent was constructed with."""
     monkeypatch.setattr(rp, "load_config", lambda: config)
     monkeypatch.setattr(rp, "_get_model_config", lambda: model_cfg or {})
-    # Keep credential-pool resolution off the developer's real HERMES home.
+    # Keep credential-pool resolution off the developer's real CLARA home.
     monkeypatch.setattr(rp, "_try_resolve_from_custom_pool", lambda *a, **k: None)
 
     fake_cfg = {"agent": {"system_prompt": ""}, "model": {"default": "unused"}}
@@ -299,10 +299,10 @@ class TestBareCustomNoBaseUrlHealsFromConfig:
 #
 # The config-provider fallback above only heals when ``config.model.provider``
 # still points at the custom entry. A user whose global default is a built-in
-# provider (e.g. Nous) but who switched THIS session to a self-hosted model
+# provider (e.g. Clara) but who switched THIS session to a self-hosted model
 # gets no heal: the bare provider is dropped, resume falls back to the default
 # provider, and the default provider's endpoint 404s with "Model '<x>' not
-# found" (the b200/hermes-ultra-sft report). The stored MODEL NAME is the one
+# found" (the b200/clara-ultra-sft report). The stored MODEL NAME is the one
 # session-scoped fact that still identifies the entry — these tests lock the
 # model-name recovery tier.
 
@@ -311,24 +311,24 @@ ULTRA_URL = "http://b200-cluster:30090/v1"
 ULTRA_CONFIG = {
     # Global default deliberately points at a BUILT-IN provider — the config
     # fallback must not fire; only the model lookup can recover the entry.
-    "model": {"default": "some-nous-model", "provider": "nous"},
+    "model": {"default": "some-clara-model", "provider": "clara"},
     "providers": {
-        "hermes-ultra": {
+        "clara-ultra": {
             "api": ULTRA_URL,
             "api_key": "sk-ultra",
-            "models": ["hermes-ultra-sft"],
+            "models": ["clara-ultra-sft"],
         }
     },
 }
 
 ULTRA_LEGACY_CONFIG = {
-    "model": {"default": "some-nous-model", "provider": "nous"},
+    "model": {"default": "some-clara-model", "provider": "clara"},
     "custom_providers": [
         {
-            "name": "hermes-ultra",
+            "name": "clara-ultra",
             "base_url": ULTRA_URL,
             "api_key": "sk-ultra",
-            "model": "hermes-ultra-sft",
+            "model": "clara-ultra-sft",
         }
     ],
 }
@@ -339,8 +339,8 @@ class TestModelNameRecoversEntryIdentity:
         monkeypatch.setattr(rp, "load_config", lambda: ULTRA_CONFIG)
 
         assert (
-            rp.find_custom_provider_identity_by_model("hermes-ultra-sft")
-            == "custom:hermes-ultra"
+            rp.find_custom_provider_identity_by_model("clara-ultra-sft")
+            == "custom:clara-ultra"
         )
 
 
@@ -475,7 +475,7 @@ class TestOverridesHaveRoutableProvider:
 # Room plumbing sessions are per-member scratch conversations inside a group
 # chat (desktop Bot Mode). They must ALWAYS rebuild from the member profile's
 # current config: restoring the stored model/provider pin from an old row is
-# what left room bots stuck on a stale provider (e.g. "out of Nous credits"
+# what left room bots stuck on a stale provider (e.g. "out of Clara credits"
 # after the profile was switched to ollama-cloud) while the same bots worked
 # fine in DMs. The stored-runtime restore stays intact for normal 1:1 chats.
 #
@@ -484,7 +484,7 @@ class TestOverridesHaveRoutableProvider:
 # "Group:" title shape kept as a legacy fallback for rows created by older
 # desktop builds that never sent the marker.
 #
-# Regression: GH #89497 (room bots hang then report "out of Nous credits").
+# Regression: GH #89497 (room bots hang then report "out of Clara credits").
 
 
 class TestRoomPlumbingRuntimeOverrides:
@@ -495,9 +495,9 @@ class TestRoomPlumbingRuntimeOverrides:
 
         row = {
             "model": "openai/gpt-5.6-luna-pro",
-            "billing_provider": "nous",
+            "billing_provider": "clara",
             "model_config": json.dumps(
-                {"model": "openai/gpt-5.6-luna-pro", "provider": "nous", "room_plumbing": True}
+                {"model": "openai/gpt-5.6-luna-pro", "provider": "clara", "room_plumbing": True}
             ),
         }
         assert _stored_session_runtime_overrides(row) == {}
@@ -507,7 +507,7 @@ class TestRoomPlumbingRuntimeOverrides:
 
         row = {
             "model": "openai/gpt-5.6-luna-pro",
-            "model_config": {"model": "openai/gpt-5.6-luna-pro", "provider": "nous", "room_plumbing": True},
+            "model_config": {"model": "openai/gpt-5.6-luna-pro", "provider": "clara", "room_plumbing": True},
         }
         assert _stored_session_runtime_overrides(row) == {}
 
@@ -520,8 +520,8 @@ class TestRoomPlumbingRuntimeOverrides:
             "title": "Group: Ceo, Product Designer, Cfo, COO, CTO, Coding",
             "hidden": 1,
             "model": "openai/gpt-5.6-luna-pro",
-            "billing_provider": "nous",
-            "model_config": json.dumps({"model": "openai/gpt-5.6-luna-pro", "provider": "nous"}),
+            "billing_provider": "clara",
+            "model_config": json.dumps({"model": "openai/gpt-5.6-luna-pro", "provider": "clara"}),
         }
         assert _stored_session_runtime_overrides(row) == {}
 
@@ -566,7 +566,7 @@ class TestRoomPlumbingRuntimeOverrides:
 # explicit ``follow_profile_config`` contract so resume ALWAYS rebuilds from
 # the member profile's CURRENT config — restoring the stored model/provider
 # pin from an old row is what left bot DMs stuck on a stale provider (e.g.
-# "out of Nous credits" after the profile was switched to ollama-cloud) while
+# "out of Clara credits" after the profile was switched to ollama-cloud) while
 # the same bot worked fine in rooms. Normal 1:1 user chats keep the
 # stored-runtime restore (opening an older chat must show the model it
 # actually used).
@@ -581,11 +581,11 @@ class TestFollowProfileConfigRuntimeOverrides:
 
         row = {
             "model": "openai/gpt-5.6-luna-pro",
-            "billing_provider": "nous",
+            "billing_provider": "clara",
             "model_config": json.dumps(
                 {
                     "model": "openai/gpt-5.6-luna-pro",
-                    "provider": "nous",
+                    "provider": "clara",
                     "follow_profile_config": True,
                 }
             ),
@@ -600,7 +600,7 @@ class TestFollowProfileConfigRuntimeOverrides:
             "model": "openai/gpt-5.6-luna-pro",
             "model_config": {
                 "model": "openai/gpt-5.6-luna-pro",
-                "provider": "nous",
+                "provider": "clara",
                 "follow_profile_config": True,
             },
         }
@@ -613,14 +613,14 @@ class TestFollowProfileConfigRuntimeOverrides:
 
         row = {
             "model": "openai/gpt-5.6-luna-pro",
-            "billing_provider": "nous",
+            "billing_provider": "clara",
             "model_config": json.dumps(
-                {"model": "openai/gpt-5.6-luna-pro", "provider": "nous"}
+                {"model": "openai/gpt-5.6-luna-pro", "provider": "clara"}
             ),
         }
         overrides = _stored_session_runtime_overrides(row)
         assert overrides["model_override"]["model"] == "openai/gpt-5.6-luna-pro"
-        assert overrides["model_override"]["provider"] == "nous"
+        assert overrides["model_override"]["provider"] == "clara"
 
     def test_legacy_bot_chat_title_backfills_contract(self):
         """Canonical Bot Chats created BEFORE the marker existed carry no
@@ -635,9 +635,9 @@ class TestFollowProfileConfigRuntimeOverrides:
                 "title": "Bot Chat",
                 "hidden": hidden,
                 "model": "openai/gpt-5.6-luna-pro",
-                "billing_provider": "nous",
+                "billing_provider": "clara",
                 "model_config": json.dumps(
-                    {"model": "openai/gpt-5.6-luna-pro", "provider": "nous"}
+                    {"model": "openai/gpt-5.6-luna-pro", "provider": "clara"}
                 ),
             }
             assert _stored_session_runtime_overrides(row) == {}
@@ -714,7 +714,7 @@ class TestFollowProfileConfigRuntimeOverrides:
 # _persist_live_session_runtime updated the model column separately. Resume
 # then read the fresh model from the column but the STALE provider/endpoint
 # from model_config, silently routing the chat to the wrong provider (e.g. a
-# VeniceAI/empero endpoint under a model that should run on Nous). The sibling
+# VeniceAI/empero endpoint under a model that should run on Clara). The sibling
 # CLI path (_persist_model_switch_to_session) already deletes stale keys with
 # or-None; the gateway writer must drop them too, not merely omit the write.
 
@@ -754,12 +754,12 @@ class TestRuntimeModelConfigDropsStaleKeys:
         old model as its own."""
         from tui_gateway.server import _runtime_model_config
 
-        agent = _agent_like(model="", provider="nous")
-        existing = {"model": "meituan/longcat-2.0:free", "provider": "nous"}
+        agent = _agent_like(model="", provider="clara")
+        existing = {"model": "meituan/longcat-2.0:free", "provider": "clara"}
         config = _runtime_model_config(agent, existing)
 
         assert "model" not in config, config
-        assert config["provider"] == "nous"
+        assert config["provider"] == "clara"
 
     def test_truthy_provider_overwrites_stale_existing(self):
         from tui_gateway.server import _runtime_model_config
@@ -769,9 +769,9 @@ class TestRuntimeModelConfigDropsStaleKeys:
             "provider": "stealth-ox-alpha",
             "base_url": "https://api.venice.ai/api/v1",
         }
-        config = _runtime_model_config(_agent_like(provider="nous"), existing)
+        config = _runtime_model_config(_agent_like(provider="clara"), existing)
 
-        assert config["provider"] == "nous"
+        assert config["provider"] == "clara"
         assert config["model"] == "deepseek/deepseek-v4-flash-0731"
 
     def test_resume_overrides_get_no_stale_provider(self):
@@ -793,20 +793,20 @@ class TestRuntimeModelConfigDropsStaleKeys:
         row = {
             "model": "deepseek/deepseek-v4-flash-0731",
             "model_config": json.dumps(config),
-            "billing_provider": "nous",
+            "billing_provider": "clara",
         }
         overrides = _stored_session_runtime_overrides(row)
 
         assert overrides["model_override"]["model"] == "deepseek/deepseek-v4-flash-0731"
         # The stale endpoint identity is gone; resume routes through the
         # billing fallback to the profile's real provider.
-        assert overrides["model_override"]["provider"] == "nous"
-        assert overrides["provider_override"] == "nous"
+        assert overrides["model_override"]["provider"] == "clara"
+        assert overrides["provider_override"] == "clara"
 
     def test_real_db_persist_heals_desynced_row(self, tmp_path, monkeypatch):
         """A row already desynced (fresh model column + stale model_config
         provider) self-heals on the next live metadata persist."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+        monkeypatch.setenv("CLARA_HOME", str(tmp_path / ".clara"))
         db = SessionDB(db_path=tmp_path / "state.db")
         db.create_session(session_id="desync1", source="desktop", model="old-model")
         db.update_session_meta(
@@ -842,8 +842,8 @@ class TestRuntimeModelConfigDropsStaleKeys:
         crash on the None existing_config."""
         from tui_gateway.server import _runtime_model_config
 
-        config = _runtime_model_config(_agent_like(provider="nous"), None)
+        config = _runtime_model_config(_agent_like(provider="clara"), None)
 
-        assert config == {"model": "deepseek/deepseek-v4-flash-0731", "provider": "nous"}
+        assert config == {"model": "deepseek/deepseek-v4-flash-0731", "provider": "clara"}
 
 

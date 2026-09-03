@@ -6,7 +6,7 @@ import { type WatchHolder, watchInPage } from './watch-in-page'
  *  positioned. Give elements a plausible box the way the act-engine tests do. */
 beforeEach(() => {
   // Never run the callback: the tracking loop re-arms itself every frame, so a
-  // stub that invokes synchronously recurses until the stack gives out. The
+  // stub that invokes __PROT_0_synchroclaraly__ recurses until the stack gives out. The
   // first pass happens on the direct call, which is the one worth asserting on.
   vi.stubGlobal('requestAnimationFrame', () => 1)
   vi.stubGlobal('cancelAnimationFrame', () => {})
@@ -17,18 +17,18 @@ beforeEach(() => {
 
   document.body.replaceChildren()
   // The host hangs off documentElement, so clearing body does not reach it.
-  document.querySelector('hermes-watch')?.remove()
-  delete (window as unknown as Record<string, unknown>).__hermesWatch
+  document.querySelector('clara-watch')?.remove()
+  delete (window as unknown as Record<string, unknown>).__claraWatch
 })
 
 /** The overlay lives in a closed shadow root, so a test can only see the host. */
-const host = () => document.querySelector('hermes-watch')
+const host = () => document.querySelector('clara-watch')
 
 /** …except through the parts the engine parks on the window for its own reuse,
  *  which is the only way to inspect what the overlay actually drew. */
 const drawn = () =>
-  (window as unknown as { __hermesWatch: { parts: Record<string, HTMLElement> & { shadow: ShadowRoot } } })
-    .__hermesWatch.parts
+  (window as unknown as { __claraWatch: { parts: Record<string, HTMLElement> & { shadow: ShadowRoot } } })
+    .__claraWatch.parts
 
 /** Everything the overlay drew for this action. The cursor is the only fixed
  *  layer — every box and pin is a mark that comes and goes. */
@@ -44,7 +44,7 @@ describe('watchInPage', () => {
     watchInPage(document, holder, 'aim')
     watchInPage(document, holder, 'strike')
 
-    expect(document.querySelectorAll('hermes-watch')).toHaveLength(1)
+    expect(document.querySelectorAll('clara-watch')).toHaveLength(1)
     expect(host()?.parentElement).toBe(document.documentElement)
   })
 
@@ -220,8 +220,8 @@ describe('watchInPage', () => {
     watchInPage(document, { field: few }, 'sweep')
     expect(marks().every(mark => mark.textContent)).toBe(true)
 
-    document.querySelector('hermes-watch')?.remove()
-    delete (window as unknown as Record<string, unknown>).__hermesWatch
+    document.querySelector('clara-watch')?.remove()
+    delete (window as unknown as Record<string, unknown>).__claraWatch
 
     const many = Array.from({ length: 40 }, () => document.createElement('button'))
     document.body.append(...many)
@@ -345,7 +345,7 @@ describe('watchInPage', () => {
     document.body.append(target)
 
     const stamp = (value: number) => {
-      ;(window as unknown as Record<string, unknown>).__hermesWatchTag = value
+      ;(window as unknown as Record<string, unknown>).__claraWatchTag = value
     }
 
     stamp(1)
@@ -363,7 +363,7 @@ describe('watchInPage', () => {
 
     expect(drawn().host).not.toBe(first)
     // …and the old one goes with it, rather than stacking a second overlay.
-    expect(document.querySelectorAll('hermes-watch')).toHaveLength(1)
+    expect(document.querySelectorAll('clara-watch')).toHaveLength(1)
   })
 
   it('clear releases the target so the tracking loop can stop', () => {

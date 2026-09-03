@@ -1,17 +1,17 @@
 ---
 sidebar_position: 1
 title: "Messaging Gateway"
-description: "Chat with Hermes from Telegram, Discord, Slack, WhatsApp, Signal, SMS, Email, Home Assistant, Mattermost, Matrix, DingTalk, Yuanbao, Microsoft Teams, LINE, Raft, Webhooks, or any OpenAI-compatible frontend via the API server — architecture and setup overview"
+description: "Chat with Clara from Telegram, Discord, Slack, WhatsApp, Signal, SMS, Email, Home Assistant, Mattermost, Matrix, DingTalk, Yuanbao, Microsoft Teams, LINE, Raft, Webhooks, or any OpenAI-compatible frontend via the API server — architecture and setup overview"
 ---
 
 # Messaging Gateway
 
-Chat with Hermes from Telegram, Discord, Slack, WhatsApp, Signal, SMS, Email, Home Assistant, Mattermost, Matrix, DingTalk, Feishu/Lark, WeCom, Weixin, BlueBubbles (iMessage), QQ, Yuanbao, Microsoft Teams, LINE, ntfy, or your browser. The gateway is a single background process that connects to all your configured platforms, handles sessions, runs cron jobs, and delivers voice messages.
+Chat with Clara from Telegram, Discord, Slack, WhatsApp, Signal, SMS, Email, Home Assistant, Mattermost, Matrix, DingTalk, Feishu/Lark, WeCom, Weixin, BlueBubbles (iMessage), QQ, Yuanbao, Microsoft Teams, LINE, ntfy, or your browser. The gateway is a single background process that connects to all your configured platforms, handles sessions, runs cron jobs, and delivers voice messages.
 
-For the full voice feature set — including CLI microphone mode, spoken replies in messaging, and Discord voice-channel conversations — see [Voice Mode](/user-guide/features/voice-mode) and [Use Voice Mode with Hermes](/guides/use-voice-mode-with-hermes).
+For the full voice feature set — including CLI microphone mode, spoken replies in messaging, and Discord voice-channel conversations — see [Voice Mode](/user-guide/features/voice-mode) and [Use Voice Mode with Clara](/guides/use-voice-mode-with-clara).
 
 :::tip
-Bots need both a model provider and tool providers (TTS, web). A [Nous Portal](/integrations/nous-portal) subscription bundles all of them.
+Bots need both a model provider and tool providers (TTS, web). A [Clara Portal](/integrations/clara-portal) subscription bundles all of them.
 :::
 
 ## Platform Comparison
@@ -49,15 +49,15 @@ Bots need both a model provider and tool providers (TTS, web). A [Nous Portal](/
 
 **Voice** = TTS audio replies and/or voice message transcription. **Images** = send/receive images. **Files** = send/receive file attachments. **Threads** = threaded conversations. **Reactions** = emoji reactions on messages. **Typing** = typing indicator while processing. **Streaming** = progressive message updates via editing.
 
-:::note Hermes Relay
-[Hermes Relay](/user-guide/messaging/relay) (experimental) is not a chat platform itself — it is a connector system that fronts platforms like Discord, Telegram, Slack, and WhatsApp through an external connector that owns the platform credentials. Capabilities (media, native approval/clarify prompts, reactions, threads, typing, streaming) are negotiated per connector at handshake rather than fixed in the table above.
+:::note Clara Relay
+[Clara Relay](/user-guide/messaging/relay) (experimental) is not a chat platform itself — it is a connector system that fronts platforms like Discord, Telegram, Slack, and WhatsApp through an external connector that owns the platform credentials. Capabilities (media, native approval/clarify prompts, reactions, threads, typing, streaming) are negotiated per connector at handshake rather than fixed in the table above.
 :::
 
 ## Architecture
 
 ```mermaid
 flowchart TB
-    subgraph Gateway["Hermes Gateway"]
+    subgraph Gateway["Clara Gateway"]
         subgraph Adapters["Platform adapters"]
             tg[Telegram]
             dc[Discord]
@@ -118,7 +118,7 @@ Each platform adapter receives messages, routes them through a per-chat session 
 
 ## Intentional Silence Tokens
 
-For group chats, hooks, and automation flows, Hermes supports explicit silence tokens. If the agent's final response is exactly one supported token, the gateway suppresses outbound delivery and sends nothing to the chat.
+For group chats, hooks, and automation flows, Clara supports explicit silence tokens. If the agent's final response is exactly one supported token, the gateway suppresses outbound delivery and sends nothing to the chat.
 
 Supported tokens:
 
@@ -129,7 +129,7 @@ Supported tokens:
 
 Whitespace and case are normalized, but the whole final response must be the token. A sentence like "Use `[SILENT]` when nothing changed" is delivered normally.
 
-Silence is a delivery decision only. Hermes keeps the assistant silence turn in the session transcript, so the conversation still alternates normally:
+Silence is a delivery decision only. Clara keeps the assistant silence turn in the session transcript, so the conversation still alternates normally:
 
 ```text
 user: side-channel chatter
@@ -137,14 +137,14 @@ assistant: [SILENT]   # stored, not delivered
 user: next message
 ```
 
-Failed turns still surface as errors; Hermes does not hide failures just because the text resembles a silence token.
+Failed turns still surface as errors; Clara does not hide failures just because the text resembles a silence token.
 
 ## Quick Setup
 
 The easiest way to configure messaging platforms is the interactive wizard:
 
 ```bash
-hermes gateway setup        # Interactive setup for all messaging platforms
+clara gateway setup        # Interactive setup for all messaging platforms
 ```
 
 This walks you through configuring each platform with arrow-key selection, shows which platforms are already configured, and offers to start/restart the gateway when done.
@@ -152,14 +152,14 @@ This walks you through configuring each platform with arrow-key selection, shows
 ## Gateway Commands
 
 ```bash
-hermes gateway              # Run in foreground
-hermes gateway setup        # Configure messaging platforms interactively
-hermes gateway install      # Install as a user service (Linux) / launchd service (macOS)
-sudo hermes gateway install --system   # Linux only: install a boot-time system service
-hermes gateway start        # Start the default service
-hermes gateway stop         # Stop the default service
-hermes gateway status       # Check default service status
-hermes gateway status --system         # Linux only: inspect the system service explicitly
+clara gateway              # Run in foreground
+clara gateway setup        # Configure messaging platforms interactively
+clara gateway install      # Install as a user service (Linux) / launchd service (macOS)
+sudo clara gateway install --system   # Linux only: install a boot-time system service
+clara gateway start        # Start the default service
+clara gateway stop         # Stop the default service
+clara gateway status       # Check default service status
+clara gateway status --system         # Linux only: inspect the system service explicitly
 ```
 
 ### Optional Linux event-loop watchdog
@@ -168,7 +168,7 @@ A systemd-managed gateway can opt into process recovery when Python's asyncio
 event loop stops receiving scheduling time. This covers whole-process stalls
 that also prevent platform-specific liveness tasks from running:
 
-```yaml title="~/.hermes/config.yaml"
+```yaml title="~/.clara/config.yaml"
 gateway:
   systemd_watchdog_seconds: 120
 ```
@@ -176,11 +176,11 @@ gateway:
 Regenerate the service unit after changing this setting:
 
 ```bash
-hermes gateway install --force
+clara gateway install --force
 ```
 
 A positive value makes the generated unit use `Type=notify`,
-`NotifyAccess=main`, and the matching `WatchdogSec`. Hermes sends heartbeats
+`NotifyAccess=main`, and the matching `WatchdogSec`. Clara sends heartbeats
 only while its event loop is making timely progress; systemd restarts the
 process when they stop. The default `0` keeps the existing `Type=simple`
 behavior. This setting is Linux/systemd-only and does not treat an ordinary
@@ -213,7 +213,7 @@ platform network disconnect as an event-loop failure.
 | `/bg <prompt>` | Run a prompt in a separate background session |
 | `/btw <question>` | Ask a side question about the current conversation without interrupting it |
 | `/reload-mcp` | Reload MCP servers from config |
-| `/update` | Update Hermes Agent to the latest version |
+| `/update` | Update Clara Agent to the latest version |
 | `/help` | Show available commands |
 | `/<skill-name>` | Invoke any installed skill |
 
@@ -256,7 +256,7 @@ old behavior: in-flight responses are lost on crash).
 
 **By default sessions never auto-reset** — context lives until you `/reset`
 manually or context compression kicks in. If you want automatic resets, opt in
-with the `session_reset` section in `~/.hermes/config.yaml`:
+with the `session_reset` section in `~/.clara/config.yaml`:
 
 ```yaml
 session_reset:
@@ -281,7 +281,7 @@ guard. Set it to `0` to disable the cutoff (any live process blocks reset, the
 old behavior), or raise it if you run legitimate multi-day jobs whose liveness
 should keep the conversation open.
 
-Configure per-platform overrides in `~/.hermes/gateway.json`:
+Configure per-platform overrides in `~/.clara/gateway.json`:
 
 ```json
 {
@@ -294,7 +294,7 @@ Configure per-platform overrides in `~/.hermes/gateway.json`:
 
 ## Per-Channel Model & System Prompt Overrides
 
-Different channels can run different models and personas from a **single gateway** — e.g. a cheap fast model in `#daily` and a frontier model with a specialist prompt in `#dev`. Configure `channel_overrides` under the platform in `~/.hermes/gateway-config.yaml`:
+Different channels can run different models and personas from a **single gateway** — e.g. a cheap fast model in `#daily` and a frontier model with a specialist prompt in `#dev`. Configure `channel_overrides` under the platform in `~/.clara/gateway-config.yaml`:
 
 ```yaml
 platforms:
@@ -349,11 +349,11 @@ Instead of manually configuring user IDs, unknown users receive a one-time pairi
 ```bash
 # The user sees: "Pairing code: XKGH5N7P"
 # You approve them with:
-hermes pairing approve telegram XKGH5N7P
+clara pairing approve telegram XKGH5N7P
 
 # Other pairing commands:
-hermes pairing list          # View pending + approved users
-hermes pairing revoke telegram 123456789  # Remove access
+clara pairing list          # View pending + approved users
+clara pairing revoke telegram 123456789  # Remove access
 ```
 
 Pairing codes expire after 1 hour, are rate-limited, and use cryptographic randomness.
@@ -416,7 +416,7 @@ display:
   busy_ack_enabled: true   # set to false to suppress the ⚡/⏳/⏩ chat reply entirely
 ```
 
-The first time you message a busy agent on any platform, Hermes appends a one-line reminder to the busy-ack explaining the knob (`"💡 First-time tip — …"`). The reminder fires once per install — a flag under `onboarding.seen.busy_input_prompt` latches it. Delete that key to see the tip again.
+The first time you message a busy agent on any platform, Clara appends a one-line reminder to the busy-ack explaining the knob (`"💡 First-time tip — …"`). The reminder fires once per install — a flag under `onboarding.seen.busy_input_prompt` latches it. Delete that key to see the tip again.
 
 If you find the busy acknowledgment noisy, set `display.busy_ack_enabled: false`. Input handling is unchanged; only the confirmation message is hidden.
 
@@ -431,7 +431,7 @@ Single-select prompts behave as before: pick one option by number, button, or te
 
 ## Tool Progress Notifications
 
-Control how much tool activity is displayed in `~/.hermes/config.yaml`:
+Control how much tool activity is displayed in `~/.clara/config.yaml`:
 
 ```yaml
 display:
@@ -446,19 +446,19 @@ display:
 
 ### `log` mode — audit file instead of chat messages
 
-Setting `display.tool_progress: log` sends **no** progress bubbles to chat. Instead, each tool call is appended as a line to `~/.hermes/logs/tool_calls.log` — a rotating audit file (5 MB × 3 backups) run through the same secret-redacting formatter as regular logs, so credentials never land on disk. Use it when you want a full tool-call trail without any chat noise.
+Setting `display.tool_progress: log` sends **no** progress bubbles to chat. Instead, each tool call is appended as a line to `~/.clara/logs/tool_calls.log` — a rotating audit file (5 MB × 3 backups) run through the same secret-redacting formatter as regular logs, so credentials never land on disk. Use it when you want a full tool-call trail without any chat noise.
 
 ### Configurable status phrases
 
-Long-running gateway status lines ("still working…"-style heartbeats) draw from a phrase catalog. Built-in defaults ship in `gateway/assets/status_phrases.yaml`; you can add your own with profile-portable files under `HERMES_HOME`:
+Long-running gateway status lines ("still working…"-style heartbeats) draw from a phrase catalog. Built-in defaults ship in `gateway/assets/status_phrases.yaml`; you can add your own with profile-portable files under `CLARA_HOME`:
 
-- `~/.hermes/status_phrases.yaml` or any `*.yaml` in `~/.hermes/status_phrases/` (conventional paths, auto-loaded), or
+- `~/.clara/status_phrases.yaml` or any `*.yaml` in `~/.clara/status_phrases/` (conventional paths, auto-loaded), or
 - point config at a relative path:
 
 ```yaml
 display:
   status_phrases:
-    path: status_phrases/whatsapp.yaml  # relative to HERMES_HOME
+    path: status_phrases/whatsapp.yaml  # relative to CLARA_HOME
     mode: append                        # append (default) or replace
 ```
 
@@ -466,7 +466,7 @@ Phrase files map a surface (`status`, `generic`) to a list of strings (max 80 ph
 
 ### Message timestamps in model context
 
-Off by default. When enabled, Hermes prepends a human-readable timestamp
+Off by default. When enabled, Clara prepends a human-readable timestamp
 (e.g. `[Tue 2026-04-28 13:40:53 CEST]`) onto each **user** message *in the
 model's context* so the agent knows when messages were sent — useful for
 temporal reasoning ("you asked this morning…", noticing a long gap). It is
@@ -499,7 +499,7 @@ Run a prompt in a separate background session so the agent works on it independe
 /bg Check all servers in the cluster and report any that are down
 ```
 
-Hermes confirms immediately:
+Clara confirms immediately:
 
 ```
 🔄 Background task started: "Check all servers in the cluster..."
@@ -517,7 +517,7 @@ Each `/bg` prompt spawns a **separate agent instance** that runs asynchronously:
 
 ### Background Process Notifications
 
-When the agent running a background session uses `terminal(background=true)` to start long-running processes (servers, builds, etc.), the gateway can push status updates to your chat. Control this with `display.background_process_notifications` in `~/.hermes/config.yaml`:
+When the agent running a background session uses `terminal(background=true)` to start long-running processes (servers, builds, etc.), the gateway can push status updates to your chat. Control this with `display.background_process_notifications` in `~/.clara/config.yaml`:
 
 ```yaml
 display:
@@ -535,7 +535,7 @@ display:
 You can also set this via environment variable:
 
 ```bash
-HERMES_BACKGROUND_NOTIFICATIONS=result
+CLARA_BACKGROUND_NOTIFICATIONS=result
 ```
 
 ### Use Cases
@@ -554,73 +554,73 @@ Background tasks on messaging platforms are fire-and-forget — you don't need t
 ### Linux (systemd)
 
 ```bash
-hermes gateway install               # Install as user service
-hermes gateway start                 # Start the service
-hermes gateway stop                  # Stop the service
-hermes gateway status                # Check status
-journalctl --user -u hermes-gateway -f  # View logs
+clara gateway install               # Install as user service
+clara gateway start                 # Start the service
+clara gateway stop                  # Stop the service
+clara gateway status                # Check status
+journalctl --user -u clara-gateway -f  # View logs
 
 # Enable lingering (keeps running after logout)
 sudo loginctl enable-linger $USER
 
 # Or install a boot-time system service that still runs as your user
-sudo hermes gateway install --system
-sudo hermes gateway start --system
-sudo hermes gateway status --system
-journalctl -u hermes-gateway -f
+sudo clara gateway install --system
+sudo clara gateway start --system
+sudo clara gateway status --system
+journalctl -u clara-gateway -f
 ```
 
 Use the user service on laptops and dev boxes. Use the system service on VPS or headless hosts that should come back at boot without relying on systemd linger.
 
 :::danger Don't add a custom `ExecStopPost` kill drop-in
-The unit Hermes installs already shuts the gateway down cleanly with `KillMode=mixed` + `KillSignal=SIGTERM`, and uses `Restart=always` with `RestartForceExitStatus` so updates and `/restart` respawn correctly. Do **not** add a systemd drop-in such as `ExecStopPost=/bin/kill -9 $MAINPID` — `ExecStopPost` fires on *every* stop, including clean restarts, so it `SIGKILL`s the freshly spawned instance before it stabilizes and `Restart=always` immediately respawns it. The result is an infinite restart loop (and, on Telegram, a flood of restart messages). If you've added such a drop-in, remove it: `systemctl --user edit hermes-gateway` (or `sudo systemctl edit hermes-gateway` for a system service) and delete the `ExecStopPost` line, then `systemctl --user daemon-reload`.
+The unit Clara installs already shuts the gateway down cleanly with `KillMode=mixed` + `KillSignal=SIGTERM`, and uses `Restart=always` with `RestartForceExitStatus` so updates and `/restart` respawn correctly. Do **not** add a systemd drop-in such as `ExecStopPost=/bin/kill -9 $MAINPID` — `ExecStopPost` fires on *every* stop, including clean restarts, so it `SIGKILL`s the freshly spawned instance before it stabilizes and `Restart=always` immediately respawns it. The result is an infinite restart loop (and, on Telegram, a flood of restart messages). If you've added such a drop-in, remove it: `systemctl --user edit clara-gateway` (or `sudo systemctl edit clara-gateway` for a system service) and delete the `ExecStopPost` line, then `systemctl --user daemon-reload`.
 :::
 
 :::tip Headless VMs: user service + linger avoids root prompts
-A system service needs root for every restart — including the automatic gateway restart at the end of `hermes update`. When `hermes update` runs as a non-root user, it tries passwordless `sudo systemctl`; if that's unavailable, it skips the restart and prints the manual `sudo systemctl restart hermes-gateway` command (it never blocks on an interactive password prompt).
+A system service needs root for every restart — including the automatic gateway restart at the end of `clara update`. When `clara update` runs as a non-root user, it tries passwordless `sudo systemctl`; if that's unavailable, it skips the restart and prints the manual `sudo systemctl restart clara-gateway` command (it never blocks on an interactive password prompt).
 
 For a headless VM you never log into, a **user** service with lingering enabled gives you the same start-at-boot behavior with zero root involvement:
 
 ```bash
-hermes gateway install          # user service
+clara gateway install          # user service
 sudo loginctl enable-linger $USER   # one-time: start at boot, survive logout
 ```
 
-After that, `hermes update` can restart the gateway without any privileges. If you prefer to keep the system service, either run updates with `sudo hermes update`, or grant the service account passwordless sudo for systemctl, e.g. in `sudo visudo -f /etc/sudoers.d/hermes-gateway`:
+After that, `clara update` can restart the gateway without any privileges. If you prefer to keep the system service, either run updates with `sudo clara update`, or grant the service account passwordless sudo for systemctl, e.g. in `sudo visudo -f /etc/sudoers.d/clara-gateway`:
 
 ```
-hermes ALL=(root) NOPASSWD: /usr/bin/systemctl --no-ask-password reset-failed hermes-gateway*, /usr/bin/systemctl --no-ask-password start hermes-gateway*, /usr/bin/systemctl --no-ask-password restart hermes-gateway*
+clara ALL=(root) NOPASSWD: /usr/bin/systemctl --no-ask-password reset-failed clara-gateway*, /usr/bin/systemctl --no-ask-password start clara-gateway*, /usr/bin/systemctl --no-ask-password restart clara-gateway*
 ```
 :::
 
-Avoid keeping both the user and system gateway units installed at once unless you really mean to. Hermes will warn if it detects both because start/stop/status behavior gets ambiguous.
+Avoid keeping both the user and system gateway units installed at once unless you really mean to. Clara will warn if it detects both because start/stop/status behavior gets ambiguous.
 
 :::info Multiple installations
-If you run multiple Hermes installations on the same machine (with different `HERMES_HOME` directories), each gets its own systemd service name. The default `~/.hermes` uses `hermes-gateway`; other installations use `hermes-gateway-<hash>`. The `hermes gateway` commands automatically target the correct service for your current `HERMES_HOME`.
+If you run multiple Clara installations on the same machine (with different `CLARA_HOME` directories), each gets its own systemd service name. The default `~/.clara` uses `clara-gateway`; other installations use `clara-gateway-<hash>`. The `clara gateway` commands automatically target the correct service for your current `CLARA_HOME`.
 :::
 
 ### macOS (launchd)
 
 ```bash
-hermes gateway install               # Install as launchd agent
-hermes gateway start                 # Start the service
-hermes gateway stop                  # Stop the service
-hermes gateway status                # Check status
-tail -f ~/.hermes/logs/gateway.log   # View logs
+clara gateway install               # Install as launchd agent
+clara gateway start                 # Start the service
+clara gateway stop                  # Stop the service
+clara gateway status                # Check status
+tail -f ~/.clara/logs/gateway.log   # View logs
 ```
 
-The generated plist lives at `~/Library/LaunchAgents/ai.hermes.gateway.plist`. It includes three environment variables:
+The generated plist lives at `~/Library/LaunchAgents/ai.clara.gateway.plist`. It includes three environment variables:
 
 - **PATH** — your full shell PATH at install time, with the venv `bin/` and `node_modules/.bin` prepended. This ensures user-installed tools (Node.js, ffmpeg, etc.) are available to gateway subprocesses like the WhatsApp bridge.
 - **VIRTUAL_ENV** — points to the Python virtualenv so tools can resolve packages correctly.
-- **HERMES_HOME** — scopes the gateway to your Hermes installation.
+- **CLARA_HOME** — scopes the gateway to your Clara installation.
 
 :::tip PATH changes after install
-launchd plists are static — if you install new tools (e.g. a new Node.js version via nvm, or ffmpeg via Homebrew) after setting up the gateway, run `hermes gateway install` again to capture the updated PATH. The gateway will detect the stale plist and reload automatically.
+launchd plists are static — if you install new tools (e.g. a new Node.js version via nvm, or ffmpeg via Homebrew) after setting up the gateway, run `clara gateway install` again to capture the updated PATH. The gateway will detect the stale plist and reload automatically.
 :::
 
 :::info Multiple installations
-Like the Linux systemd service, each `HERMES_HOME` directory gets its own launchd label. The default `~/.hermes` uses `ai.hermes.gateway`; other installations use `ai.hermes.gateway-<suffix>`.
+Like the Linux systemd service, each `CLARA_HOME` directory gets its own launchd label. The default `~/.clara` uses `ai.clara.gateway`; other installations use `ai.clara.gateway-<suffix>`.
 :::
 
 ## Platform-Specific Toolsets
@@ -629,31 +629,31 @@ Each platform has its own toolset:
 
 | Platform | Toolset | Capabilities |
 |----------|---------|--------------|
-| CLI | `hermes-cli` | Full access |
-| Telegram | `hermes-telegram` | Full tools including terminal |
-| Discord | `hermes-discord` | Full tools including terminal |
-| WhatsApp | `hermes-whatsapp` | Full tools including terminal |
-| WhatsApp Cloud API | `hermes-whatsapp` | Full tools including terminal (shares toolset with the Baileys bridge) |
-| Slack | `hermes-slack` | Full tools including terminal |
-| Google Chat | `hermes-google_chat` | Full tools including terminal |
-| Signal | `hermes-signal` | Full tools including terminal |
-| SMS | `hermes-sms` | Full tools including terminal |
-| Email | `hermes-email` | Full tools including terminal |
-| Home Assistant | `hermes-homeassistant` | Full tools + HA device control (ha_list_entities, ha_get_state, ha_call_service, ha_list_services) |
-| Mattermost | `hermes-mattermost` | Full tools including terminal |
-| Matrix | `hermes-matrix` | Full tools including terminal |
-| DingTalk | `hermes-dingtalk` | Full tools including terminal |
-| Feishu/Lark | `hermes-feishu` | Full tools including terminal |
-| WeCom | `hermes-wecom` | Full tools including terminal |
-| WeCom Callback | `hermes-wecom-callback` | Full tools including terminal |
-| Weixin | `hermes-weixin` | Full tools including terminal |
-| BlueBubbles | `hermes-bluebubbles` | Full tools including terminal |
-| QQBot | `hermes-qqbot` | Full tools including terminal |
-| Yuanbao | `hermes-yuanbao` | Full tools including terminal |
-| Microsoft Teams | `hermes-teams` | Full tools including terminal |
-| API Server | `hermes-api-server` | Full tools (drops `clarify`, `text_to_speech` — programmatic access doesn't have an interactive user) |
-| Webhooks | `hermes-webhook` | Full tools including terminal |
-| Raft | `hermes-raft` | Wake-only channel; agent uses Raft CLI for message I/O |
+| CLI | `clara-cli` | Full access |
+| Telegram | `clara-telegram` | Full tools including terminal |
+| Discord | `clara-discord` | Full tools including terminal |
+| WhatsApp | `clara-whatsapp` | Full tools including terminal |
+| WhatsApp Cloud API | `clara-whatsapp` | Full tools including terminal (shares toolset with the Baileys bridge) |
+| Slack | `clara-slack` | Full tools including terminal |
+| Google Chat | `clara-google_chat` | Full tools including terminal |
+| Signal | `clara-signal` | Full tools including terminal |
+| SMS | `clara-sms` | Full tools including terminal |
+| Email | `clara-email` | Full tools including terminal |
+| Home Assistant | `clara-homeassistant` | Full tools + HA device control (ha_list_entities, ha_get_state, ha_call_service, ha_list_services) |
+| Mattermost | `clara-mattermost` | Full tools including terminal |
+| Matrix | `clara-matrix` | Full tools including terminal |
+| DingTalk | `clara-dingtalk` | Full tools including terminal |
+| Feishu/Lark | `clara-feishu` | Full tools including terminal |
+| WeCom | `clara-wecom` | Full tools including terminal |
+| WeCom Callback | `clara-wecom-callback` | Full tools including terminal |
+| Weixin | `clara-weixin` | Full tools including terminal |
+| BlueBubbles | `clara-bluebubbles` | Full tools including terminal |
+| QQBot | `clara-qqbot` | Full tools including terminal |
+| Yuanbao | `clara-yuanbao` | Full tools including terminal |
+| Microsoft Teams | `clara-teams` | Full tools including terminal |
+| API Server | `clara-api-server` | Full tools (drops `clarify`, `text_to_speech` — programmatic access doesn't have an interactive user) |
+| Webhooks | `clara-webhook` | Full tools including terminal |
+| Raft | `clara-raft` | Wake-only channel; agent uses Raft CLI for message I/O |
 
 ## Operating a multi-platform gateway
 
@@ -675,13 +675,13 @@ See also the broader status summary command [`/platforms`](../../reference/slash
 
 ### Disabling a platform whose credentials are still in `.env`
 
-`platforms.<name>.enabled: false` in `~/.hermes/config.yaml` is authoritative.
+`platforms.<name>.enabled: false` in `~/.clara/config.yaml` is authoritative.
 Credentials for that platform left in the environment (`TELEGRAM_BOT_TOKEN`,
 `WEIXIN_TOKEN`, `HASS_TOKEN`, `EMAIL_*`, `TWILIO_ACCOUNT_SID`, ...) are still
 wired into the platform's config so send-only tooling keeps working, but they
 no longer start the adapter:
 
-```yaml title="~/.hermes/config.yaml"
+```yaml title="~/.clara/config.yaml"
 platforms:
   weixin:
     enabled: false   # wins over WEIXIN_TOKEN in .env
@@ -713,7 +713,7 @@ sees — a local Clash/V2Ray listener that isn't running yet — and log
 `Cannot connect to host 127.0.0.1:7890` on every poll. Turn the inherited
 proxy off for all adapters at once:
 
-```yaml title="~/.hermes/config.yaml"
+```yaml title="~/.clara/config.yaml"
 gateway:
   trust_env: false
 ```
@@ -731,7 +731,7 @@ The breaker does **not** auto-resume — it stays open until you run `/platform 
 
 When an adapter is paused, check:
 
-1. **Gateway log** (`~/.hermes/logs/gateway.log` or the systemd / launchd unit log). Search for the platform name and `circuit breaker`, `paused`, or `disabled`. The trip event includes the failure count and the last error.
+1. **Gateway log** (`~/.clara/logs/gateway.log` or the systemd / launchd unit log). Search for the platform name and `circuit breaker`, `paused`, or `disabled`. The trip event includes the failure count and the last error.
 2. **`/platform list`** output — shows the current state and last reason.
 3. **The provider's status page** (Telegram bot API status, Discord status, etc.). The breaker tripped because the platform was unhealthy; don't try to resume until it's back.
 

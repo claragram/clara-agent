@@ -1,16 +1,16 @@
-"""OpenRouter-compatible image generation backend (OpenRouter + Nous Portal).
+"""OpenRouter-compatible image generation backend (OpenRouter + Clara Portal).
 
-Both OpenRouter and the Nous Portal inference endpoint speak the same
+Both OpenRouter and the Clara Portal inference endpoint speak the same
 OpenAI-style ``/chat/completions`` image-generation protocol: send
 ``modalities: ["image", "text"]`` with an image-output model (e.g.
 ``google/gemini-3-pro-image``), pass reference images as ``image_url``
 content parts for grounding, and read the generated images back from
 ``choices[0].message.images[].image_url.url`` (a ``data:image/...;base64`` URI).
 
-Nous Portal proxies OpenRouter, so one implementation services both — we only
+Clara Portal proxies OpenRouter, so one implementation services both — we only
 swap the resolved ``(base_url, api_key)``. Credentials are resolved through the
-agent's existing :func:`~hermes_cli.runtime_provider.resolve_runtime_provider`,
-which already understands OpenRouter's key pool and the Nous OAuth device-code
+agent's existing :func:`~clara_cli.runtime_provider.resolve_runtime_provider`,
+which already understands OpenRouter's key pool and the Clara OAuth device-code
 token, so this plugin never reinvents auth.
 
 Reference grounding is the reason pet sprite generation cares about this
@@ -54,9 +54,9 @@ On the Image API path the request gains exact per-model aspect ratios plus
 ``resolution`` / ``quality`` / ``background`` / ``seed`` / ``n`` /
 ``output_compression``, and up to 16 reference images instead of 3.
 
-The Image API is OpenRouter-only: Nous Portal proxies the chat-completions
+The Image API is OpenRouter-only: Clara Portal proxies the chat-completions
 protocol and has no ``/images/generations`` route, so the second surface is
-enabled per provider (see ``supports_image_api``) and stays off for Nous.
+enabled per provider (see ``supports_image_api``) and stays off for Clara.
 """
 
 from __future__ import annotations
@@ -89,7 +89,7 @@ logger = logging.getLogger(__name__)
 # is access-gated / unavailable / times out on this endpoint.
 #
 # Explicit override (OPENROUTER_IMAGE_MODEL, image_gen.<provider>.model, or
-# image_gen.model from ``hermes tools``): use exactly that model (no auto
+# image_gen.model from ``clara tools``): use exactly that model (no auto
 # fallback), so power users keep full control.
 DEFAULT_MODEL = "openai/gpt-5.4-image-2"
 _FALLBACK_MODEL = "google/gemini-3-pro-image"
@@ -116,7 +116,7 @@ _REQUEST_TIMEOUT = 300.0
 def _load_image_gen_config() -> Dict[str, Any]:
     """Read the ``image_gen`` section from config.yaml (``{}`` on failure)."""
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
 
         cfg = load_config()
         section = cfg.get("image_gen") if isinstance(cfg, dict) else None
@@ -795,7 +795,7 @@ def _save_image_api_entry(entry: Dict[str, Any], prefix: str) -> Optional[str]:
 class OpenRouterCompatImageProvider(ImageGenProvider):
     """Image generation over an OpenRouter-compatible chat-completions endpoint.
 
-    Instantiated once per backend (OpenRouter, Nous Portal). The two differ only
+    Instantiated once per backend (OpenRouter, Clara Portal). The two differ only
     in which runtime provider supplies ``(base_url, api_key)`` and in the config
     namespace used for the model override.
     """
@@ -819,7 +819,7 @@ class OpenRouterCompatImageProvider(ImageGenProvider):
         self._setup_schema = setup_schema
         self._live_models_cache: Optional[tuple] = None
         self._image_api_models_cache: Optional[tuple] = None
-        # OpenRouter only: Nous Portal proxies the chat-completions protocol
+        # OpenRouter only: Clara Portal proxies the chat-completions protocol
         # and has no /images/generations route, so routing a model there would
         # turn a working setup into a 404.
         self._supports_image_api = supports_image_api
@@ -834,7 +834,7 @@ class OpenRouterCompatImageProvider(ImageGenProvider):
 
     def _resolve_runtime(self) -> Dict[str, Any]:
         """Resolve ``(base_url, api_key)`` via the shared runtime resolver."""
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from clara_cli.runtime_provider import resolve_runtime_provider
 
         return resolve_runtime_provider(requested=self._runtime_name)
 
@@ -870,7 +870,7 @@ class OpenRouterCompatImageProvider(ImageGenProvider):
         dedicated ``GET /images/models`` catalog (40+ models: Seedream, Flux,
         Recraft, Qwen, MAI, Krea, ...) and the chat-completions image models,
         so every image model the endpoint serves — including ones released
-        after this code shipped — is selectable in ``hermes tools``. Nous
+        after this code shipped — is selectable in ``clara tools``. Clara
         Portal (no ``/images`` route) lists the chat-completions catalog only.
         Offline fallback: the static default chain plus the curated Image API
         snapshot.
@@ -1002,7 +1002,7 @@ class OpenRouterCompatImageProvider(ImageGenProvider):
         Precedence: explicit caller override (the ``model`` kwarg) → the
         provider's ``*_IMAGE_MODEL`` env override → scoped
         ``image_gen.<provider>.model`` → top-level ``image_gen.model`` (written
-        by ``hermes tools``) → the quality-first default chain.
+        by ``clara tools``) → the quality-first default chain.
 
         Any explicit user/model selection means "use this exact model", so no
         fallback. Only the bare default chain carries a Gemini fallback.
@@ -1232,7 +1232,7 @@ class OpenRouterCompatImageProvider(ImageGenProvider):
             return error_response(
                 error=(
                     f"No {self._display} credentials found. "
-                    f"Configure {self._display} in `hermes tools` → Image Generation."
+                    f"Configure {self._display} in `clara tools` → Image Generation."
                 ),
                 error_type="missing_api_key",
                 provider=self._name,
@@ -1263,9 +1263,9 @@ class OpenRouterCompatImageProvider(ImageGenProvider):
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            # OpenRouter attribution headers (harmless against Nous Portal).
-            "HTTP-Referer": "https://github.com/NousResearch/hermes-agent",
-            "X-Title": "Hermes Agent",
+            # OpenRouter attribution headers (harmless against Clara Portal).
+            "HTTP-Referer": "https://github.com/claraprise/clara-agent",
+            "X-Title": "Clara Agent",
         }
         last_error: Optional[Dict[str, Any]] = None
         for i, model_id in enumerate(model_chain):
@@ -1463,23 +1463,23 @@ def _build_providers() -> List[OpenRouterCompatImageProvider]:
             },
         ),
         OpenRouterCompatImageProvider(
-            provider_name="nous",
-            display_name="Nous Portal",
-            runtime_name="nous",
-            config_key="nous",
-            model_env_var="NOUS_IMAGE_MODEL",
+            provider_name="clara",
+            display_name="Clara Portal",
+            runtime_name="clara",
+            config_key="clara",
+            model_env_var="CLARA_IMAGE_MODEL",
             setup_schema={
-                "name": "Nous Portal (image)",
+                "name": "Clara Portal (image)",
                 "badge": "subscription",
-                "tag": "Reference-grounded image generation via Nous Portal (OpenRouter-backed)",
+                "tag": "Reference-grounded image generation via Clara Portal (OpenRouter-backed)",
                 "env_vars": [],
-                "requires_nous_auth": True,
+                "requires_clara_auth": True,
             },
         ),
     ]
 
 
 def register(ctx: Any) -> None:
-    """Register the OpenRouter + Nous Portal image gen providers."""
+    """Register the OpenRouter + Clara Portal image gen providers."""
     for provider in _build_providers():
         ctx.register_image_gen_provider(provider)

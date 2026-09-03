@@ -2,11 +2,11 @@
 name: manim-video
 description: "Manim CE animations: 3Blue1Brown math/algo videos."
 version: 1.0.0
-author: SHL0MS, Hermes Agent
+author: SHL0MS, Clara Agent
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  hermes:
+  clara:
     tags: [Manim, Animation, Math, Video]
     related_skills: []
 ---

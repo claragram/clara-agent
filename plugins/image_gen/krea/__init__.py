@@ -83,7 +83,7 @@ _MODELS: Dict[str, Dict[str, Any]] = {
 
 DEFAULT_MODEL = "krea-2-medium"
 
-# Hermes uses 3 abstract aspect ratios. Map to Krea's enum (which is wider).
+# Clara uses 3 abstract aspect ratios. Map to Krea's enum (which is wider).
 # Krea accepts: 1:1, 4:3, 3:2, 16:9, 2.35:1, 4:5, 2:3, 9:16
 _ASPECT_MAP = {
     "landscape": "16:9",
@@ -133,7 +133,7 @@ _ENHANCE_SCALE_FACTOR = 2
 def _load_krea_config() -> Dict[str, Any]:
     """Read ``image_gen.krea`` (with fallthrough to ``image_gen``) from config.yaml."""
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
 
         cfg = load_config()
         section = cfg.get("image_gen") if isinstance(cfg, dict) else None
@@ -179,7 +179,7 @@ def _resolve_managed_krea_gateway():
     """Return managed Krea gateway config when the user is on the managed path.
 
     Strict selection model: the managed Krea gateway is used when the stored
-    ``image_gen`` selection is ``nous`` (or legacy ``use_gateway: true``), or
+    ``image_gen`` selection is ``clara`` (or legacy ``use_gateway: true``), or
     on a never-configured install when no direct ``KREA_API_KEY`` exists.
     An explicit vendor selection (``krea``, ``fal``, ...) pins the direct
     path. Returns ``None`` (direct/BYO path) otherwise, and never raises —
@@ -188,7 +188,7 @@ def _resolve_managed_krea_gateway():
     try:
         from tools.managed_tool_gateway import resolve_managed_tool_gateway
         from tools.tool_backend_helpers import (
-            NOUS_MANAGED_PROVIDER,
+            CLARA_MANAGED_PROVIDER,
             read_selection,
         )
     except Exception as exc:  # noqa: BLE001
@@ -199,7 +199,7 @@ def _resolve_managed_krea_gateway():
         selected = read_selection("image_gen")
     except Exception:  # noqa: BLE001
         selected = None
-    if selected is not None and selected != NOUS_MANAGED_PROVIDER:
+    if selected is not None and selected != CLARA_MANAGED_PROVIDER:
         # Explicit vendor selection: direct credentials only.
         return None
     if selected is None and get_secret("KREA_API_KEY"):
@@ -254,7 +254,7 @@ def _poll_krea_job(
     job_url = f"{base_url}/jobs/{job_id}"
     headers = {
         "Authorization": f"Bearer {auth_token}",
-        "User-Agent": "Hermes-Agent/1.0 (krea-image-gen)",
+        "User-Agent": "Clara-Agent/1.0 (krea-image-gen)",
     }
     interval = _POLL_INITIAL_INTERVAL
     deadline = time.monotonic() + timeout_seconds
@@ -321,7 +321,7 @@ def _enhance_image(
     headers = {
         "Authorization": f"Bearer {auth_token}",
         "Content-Type": "application/json",
-        "User-Agent": "Hermes-Agent/1.0 (krea-image-gen)",
+        "User-Agent": "Clara-Agent/1.0 (krea-image-gen)",
     }
     if managed:
         headers["x-idempotency-key"] = str(uuid.uuid4())
@@ -370,8 +370,8 @@ class KreaImageGenProvider(ImageGenProvider):
         return "Krea"
 
     def is_available(self) -> bool:
-        # Available with a direct Krea key OR via the managed Nous gateway
-        # (Nous Subscription), so portal users with no Krea key can still
+        # Available with a direct Krea key OR via the managed Clara gateway
+        # (Clara Subscription), so portal users with no Krea key can still
         # reach Krea 2 through the gateway.
         return bool(get_secret("KREA_API_KEY")) or _managed_krea_gateway_ready()
 
@@ -394,7 +394,7 @@ class KreaImageGenProvider(ImageGenProvider):
         return {
             "name": "Krea",
             "badge": "paid",
-            "tag": "Krea 2 foundation model — Medium ($0.03), Large ($0.06), Medium Turbo ($0.015). Style transfer, moodboards, reference-guided generation. Direct key or managed Nous Subscription gateway.",
+            "tag": "Krea 2 foundation model — Medium ($0.03), Large ($0.06), Medium Turbo ($0.015). Style transfer, moodboards, reference-guided generation. Direct key or managed Clara Subscription gateway.",
             "env_vars": [
                 {
                     "key": "KREA_API_KEY",
@@ -472,26 +472,26 @@ class KreaImageGenProvider(ImageGenProvider):
                 aspect_ratio=aspect,
             )
 
-        # Route through the managed Nous gateway (Nous Subscription) when the
+        # Route through the managed Clara gateway (Clara Subscription) when the
         # user is on the managed path; otherwise use the direct Krea API with a
         # BYO ``KREA_API_KEY``. The gateway owns the shared Krea credential and
-        # meters/bills per generation, so the caller token is the Nous access
+        # meters/bills per generation, so the caller token is the Clara access
         # token, not a Krea key.
         managed = _resolve_managed_krea_gateway()
         if managed is not None:
             base_url = managed.gateway_origin.rstrip("/")
-            auth_token = managed.nous_user_token
+            auth_token = managed.clara_user_token
         else:
             base_url = BASE_URL
             auth_token = get_secret("KREA_API_KEY")
             if not auth_token:
                 return error_response(
                     error=(
-                        "KREA_API_KEY not set. Run `hermes tools` → Image "
+                        "KREA_API_KEY not set. Run `clara tools` → Image "
                         "Generation → Krea to configure, get a key at "
                         "https://www.krea.ai/settings/api-tokens, or sign in to "
-                        "a Nous account with the managed Krea gateway enabled "
-                        "(`hermes setup`)."
+                        "a Clara account with the managed Krea gateway enabled "
+                        "(`clara setup`)."
                     ),
                     error_type="auth_required",
                     provider="krea",
@@ -509,7 +509,7 @@ class KreaImageGenProvider(ImageGenProvider):
             if isinstance(kwargs.get("styles"), list) and kwargs.get("styles"):
                 return error_response(
                     error=(
-                        "Managed Krea (Nous Subscription) does not support "
+                        "Managed Krea (Clara Subscription) does not support "
                         "trained styles (LoRAs). Set KREA_API_KEY to use Krea "
                         "directly, or omit `styles`."
                     ),
@@ -522,7 +522,7 @@ class KreaImageGenProvider(ImageGenProvider):
             if isinstance(kwargs.get("moodboards"), list) and kwargs.get("moodboards"):
                 return error_response(
                     error=(
-                        "Managed Krea (Nous Subscription) does not support "
+                        "Managed Krea (Clara Subscription) does not support "
                         "moodboards. Set KREA_API_KEY to use Krea directly, or "
                         "omit `moodboards`."
                     ),
@@ -574,7 +574,7 @@ class KreaImageGenProvider(ImageGenProvider):
         headers = {
             "Authorization": f"Bearer {auth_token}",
             "Content-Type": "application/json",
-            "User-Agent": "Hermes-Agent/1.0 (krea-image-gen)",
+            "User-Agent": "Clara-Agent/1.0 (krea-image-gen)",
         }
         if managed is not None:
             # The gateway derives the per-generation billing idempotency
@@ -608,7 +608,7 @@ class KreaImageGenProvider(ImageGenProvider):
             logger.error("Krea submit failed (%d): %s", status, err_msg)
             # On a managed 4xx, surface actionable remediation mirroring the
             # FAL managed gateway path: the model may not be enabled/priced on
-            # the Nous Portal, or the gateway's shared Krea key hit its
+            # the Clara Portal, or the gateway's shared Krea key hit its
             # concurrency cap (429).
             if managed is not None and 400 <= status < 500:
                 hint = (
@@ -616,14 +616,14 @@ class KreaImageGenProvider(ImageGenProvider):
                     if status == 429
                     else (
                         f"Model '{model_id}' may not be enabled/priced on the "
-                        "Nous Portal's Krea gateway. Set KREA_API_KEY to use "
+                        "Clara Portal's Krea gateway. Set KREA_API_KEY to use "
                         "Krea directly, or pick a different model via "
-                        "`hermes tools` → Image Generation."
+                        "`clara tools` → Image Generation."
                     )
                 )
                 return error_response(
                     error=(
-                        f"Nous Subscription Krea gateway rejected '{model_id}' "
+                        f"Clara Subscription Krea gateway rejected '{model_id}' "
                         f"(HTTP {status}): {err_msg}. {hint}"
                     ),
                     error_type="api_error",
@@ -684,11 +684,11 @@ class KreaImageGenProvider(ImageGenProvider):
 
         # 2. Poll for completion. Status/result polling is bound to the same
         # principal at the gateway, so the managed path polls the gateway's
-        # ``/jobs/{id}`` with the Nous token (404 on cross-user/unknown jobs).
+        # ``/jobs/{id}`` with the Clara token (404 on cross-user/unknown jobs).
         job_url = f"{base_url}/jobs/{job_id}"
         poll_headers = {
             "Authorization": f"Bearer {auth_token}",
-            "User-Agent": "Hermes-Agent/1.0 (krea-image-gen)",
+            "User-Agent": "Clara-Agent/1.0 (krea-image-gen)",
         }
         interval = _POLL_INITIAL_INTERVAL
         deadline = time.monotonic() + _POLL_TIMEOUT_SECONDS

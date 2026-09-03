@@ -2,7 +2,7 @@
 Channel directory -- cached map of reachable channels/contacts per platform.
 
 Built on gateway startup, refreshed periodically (every 5 min), and saved to
-~/.hermes/channel_directory.json.  The send_message tool reads this file for
+~/.clara/channel_directory.json.  The send_message tool reads this file for
 action="list" and for resolving human-friendly channel names to numeric IDs.
 """
 
@@ -14,7 +14,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from hermes_cli.config import get_hermes_home
+from clara_cli.config import get_clara_home
 from utils import atomic_json_write
 
 logger = logging.getLogger(__name__)
@@ -43,11 +43,11 @@ CHANNEL_ALIASES_PATH: Optional[Path] = None
 
 
 def _directory_path() -> Path:
-    return DIRECTORY_PATH or get_hermes_home() / "channel_directory.json"
+    return DIRECTORY_PATH or get_clara_home() / "channel_directory.json"
 
 
 def _aliases_path() -> Path:
-    return CHANNEL_ALIASES_PATH or get_hermes_home() / "channel_aliases.json"
+    return CHANNEL_ALIASES_PATH or get_clara_home() / "channel_aliases.json"
 
 
 def _load_channel_aliases() -> Dict[str, Dict[str, str]]:
@@ -455,7 +455,7 @@ def _build_from_sessions_db(platform_name: str) -> List[Dict[str, str]]:
     """Pull channels/contacts from state.db gateway session rows."""
     entries: List[Dict[str, str]] = []
     try:
-        from hermes_state import get_shared_session_db, release_or_close
+        from clara_state import get_shared_session_db, release_or_close
         db = get_shared_session_db()
         try:
             lister = getattr(db, "list_gateway_sessions", None)
@@ -501,7 +501,7 @@ def _build_from_sessions_db(platform_name: str) -> List[Dict[str, str]]:
 
 def _build_from_sessions_json(platform_name: str) -> List[Dict[str, str]]:
     """Legacy fallback: pull channels/contacts from sessions.json origin data."""
-    sessions_path = get_hermes_home() / "sessions" / "sessions.json"
+    sessions_path = get_clara_home() / "sessions" / "sessions.json"
     if not sessions_path.exists():
         return []
 
@@ -619,7 +619,7 @@ def format_directory_for_display(platforms: Optional[Dict[str, Any]] = None) -> 
     """Format the channel directory as a human-readable list for the model.
 
     ``platforms`` overrides the on-disk directory when provided (used by
-    ``hermes send --list`` to merge in configured-but-undiscovered
+    ``clara send --list`` to merge in configured-but-undiscovered
     platforms). Platforms present with an empty channel list are rendered
     with a "(no channels discovered yet)" hint instead of being hidden —
     a configured platform is a valid send target even before discovery.

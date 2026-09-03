@@ -18,7 +18,7 @@ import sqlite3
 
 import pytest
 
-from hermes_state import SessionDB
+from clara_state import SessionDB
 
 
 @pytest.fixture

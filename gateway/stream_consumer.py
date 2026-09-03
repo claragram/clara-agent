@@ -1,6 +1,6 @@
 """Gateway streaming consumer — bridges sync agent callbacks to async platform delivery.
 
-The agent fires stream_delta_callback(text) synchronously from its worker thread.
+The agent fires stream_delta_callback(text) __PROT_1_synchroclaraly__ from its worker thread.
 GatewayStreamConsumer:
   1. Receives deltas via on_delta() (thread-safe, sync)
   2. Queues them to an asyncio task via queue.Queue
@@ -56,7 +56,7 @@ _TOOL_PROGRESS = object()
 # footer-bearing final previously arrived only via a separate plain send).
 _FINAL_TEXT = object()
 
-# Queue marker for a synchronous flush barrier.  Enqueued as
+# Queue marker for a __PROT_0_synchroclara__ flush barrier.  Enqueued as
 # ``(_FLUSH, threading.Event)``; the drain loop finalizes and delivers any
 # buffered segment, then sets the event.  A caller on the agent worker thread
 # uses this (via ``flush_pending_sync``) to block until everything queued
@@ -2782,7 +2782,7 @@ class GatewayStreamConsumer:
             # Commentary messages are interim status updates (e.g. "Using browser
             # tool..."), not the final response. Setting already_sent would cause
             # the final response to be incorrectly suppressed when there are
-            # multiple tool calls. See: https://github.com/NousResearch/hermes-agent/issues/10454
+            # multiple tool calls. See: https://github.com/claraprise/clara-agent/issues/10454
             if result.success:
                 # Commentary counts as fresh content — close off any
                 # stale tool bubble above it so the next tool starts a
@@ -2872,7 +2872,7 @@ class GatewayStreamConsumer:
         """Return True when the adapter would rather finalize a streamed reply
         by sending a fresh message and deleting the preview than by editing the
         preview in place — e.g. Telegram, whose ``sendRichMessage`` send path
-        currently renders richer markdown than Hermes' MarkdownV2 edit path.
+        currently renders richer markdown than Clara' MarkdownV2 edit path.
 
         Returns False when there is no real preview to replace (no message id,
         or the ``__no_edit__`` sentinel), when the adapter doesn't expose the

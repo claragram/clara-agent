@@ -20,13 +20,13 @@ Usage:
     response = agent.run_conversation("Tell me about the latest Python updates")
 """
 
-# IMPORTANT: hermes_bootstrap must be the very first import — UTF-8 stdio
-# on Windows.  No-op on POSIX.  See hermes_bootstrap.py for full rationale.
+# IMPORTANT: clara_bootstrap must be the very first import — UTF-8 stdio
+# on Windows.  No-op on POSIX.  See clara_bootstrap.py for full rationale.
 try:
-    import hermes_bootstrap  # noqa: F401
+    import clara_bootstrap  # noqa: F401
 except ModuleNotFoundError:
-    # Graceful fallback when hermes_bootstrap isn't registered in the venv
-    # yet — happens during partial ``hermes update`` where git-reset landed
+    # Graceful fallback when clara_bootstrap isn't registered in the venv
+    # yet — happens during partial ``clara update`` where git-reset landed
     # new code but ``uv pip install -e .`` didn't finish.  Missing bootstrap
     # means UTF-8 stdio setup is skipped on Windows; POSIX is unaffected.
     pass
@@ -63,14 +63,14 @@ from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
-from hermes_constants import get_hermes_home
+from clara_constants import get_clara_home
 
 
 def _launch_cwd_for_session(source: str) -> Optional[str]:
     """Working directory to stamp on a new session row, or None.
 
     Only local CLI sessions get a recorded cwd: the directory the process was
-    launched from is meaningful for ``hermes -c`` / ``--resume`` (relaunch
+    launched from is meaningful for ``clara -c`` / ``--resume`` (relaunch
     where you left off). Gateway/cron/remote-backend sessions have no stable
     host cwd to restore, so they record nothing.
 
@@ -94,9 +94,9 @@ def _session_source_for_agent(platform: Optional[str]) -> str:
     try:
         from gateway.session_context import get_session_env
 
-        source = get_session_env("HERMES_SESSION_SOURCE", "")
+        source = get_session_env("CLARA_SESSION_SOURCE", "")
     except Exception:
-        source = os.environ.get("HERMES_SESSION_SOURCE", "")
+        source = os.environ.get("CLARA_SESSION_SOURCE", "")
     source = str(source or "").strip()
     if source:
         return source
@@ -134,7 +134,7 @@ def _gateway_origin_json(agent: "AIAgent") -> Optional[str]:
     profile = getattr(agent, "_profile_name", None)
     if not profile:
         try:
-            from hermes_cli.profiles import get_active_profile_name
+            from clara_cli.profiles import get_active_profile_name
             profile = get_active_profile_name()
             if profile == "default":
                 profile = None
@@ -163,15 +163,15 @@ from agent.iteration_budget import IterationBudget
 from agent.interrupt_compat import request_hard_interrupt
 
 
-from hermes_cli.env_loader import load_hermes_dotenv
-from hermes_cli.timeouts import (
+from clara_cli.env_loader import load_clara_dotenv
+from clara_cli.timeouts import (
     get_provider_request_timeout,
     get_provider_stale_timeout,
 )
 
-_hermes_home = get_hermes_home()
+_clara_home = get_clara_home()
 _project_env = Path(__file__).parent / '.env'
-_loaded_env_paths = load_hermes_dotenv(hermes_home=_hermes_home, project_env=_project_env)
+_loaded_env_paths = load_clara_dotenv(clara_home=_clara_home, project_env=_project_env)
 if _loaded_env_paths:
     for _env_path in _loaded_env_paths:
         logger.info("Loaded environment variables from %s", _env_path)
@@ -325,7 +325,7 @@ _MAX_TOOL_WORKERS = 8
 #
 # CONTRACT (#92231): the marker asserts "this dict's CONTENT is durable as
 # written". Loaded rows are stamped at materialization time
-# (hermes_state._rows_to_conversation), so any code that mutates a loaded or
+# (clara_state._rows_to_conversation), so any code that mutates a loaded or
 # flushed dict's content in place and needs the change persisted MUST pop the
 # marker (and invalidate _db_flush_scan_prefix if the dict may sit inside the
 # bounded-scan prefix) — see agent/turn_finalizer.py (fill-empty-tail) and
@@ -355,10 +355,10 @@ _QWEN_CODE_VERSION = "0.14.1"
 
 def _routermint_headers() -> dict:
     """Return the User-Agent RouterMint needs to avoid Cloudflare 1010 blocks."""
-    from hermes_cli import __version__ as _HERMES_VERSION
+    from clara_cli import __version__ as _CLARA_VERSION
 
     return {
-        "User-Agent": f"HermesAgent/{_HERMES_VERSION}",
+        "User-Agent": f"ClaraAgent/{_CLARA_VERSION}",
     }
 
 
@@ -404,8 +404,8 @@ def _safe_session_filename_component(session_id: str) -> str:
     """Return a stable, path-safe filename component for a session ID.
 
     Session IDs can originate from untrusted input (e.g. the
-    ``X-Hermes-Session-Id`` API header) and are otherwise interpolated raw
-    into on-disk artifact filenames under ``~/.hermes/sessions/``.  Without
+    ``X-Clara-Session-Id`` API header) and are otherwise interpolated raw
+    into on-disk artifact filenames under ``~/.clara/sessions/``.  Without
     sanitization, a traversal-shaped ID such as ``../../../../etc/pwned``
     would let a caller write the session snapshot / request dump outside the
     sessions directory.  This collapses every non ``[A-Za-z0-9_-]`` character
@@ -473,7 +473,7 @@ class AIAgent:
     """
 
     _TOOL_CALL_ARGUMENTS_CORRUPTION_MARKER = (
-        "[hermes-agent: tool call arguments were corrupted in this session and "
+        "[clara-agent: tool call arguments were corrupted in this session and "
         "have been dropped to keep the conversation alive. See issue #15236.]"
     )
 
@@ -679,7 +679,7 @@ class AIAgent:
         if self._session_db is not None:
             return self._session_db
         try:
-            from hermes_state import get_shared_session_db
+            from clara_state import get_shared_session_db
 
             self._session_db = get_shared_session_db()
             # We opened it here, so nothing else holds a reference — this agent
@@ -699,7 +699,7 @@ class AIAgent:
         source = _session_source_for_agent(self.platform)
         try:
             try:
-                from hermes_cli.profiles import get_active_profile_name
+                from clara_cli.profiles import get_active_profile_name
                 _profile_for_session = get_active_profile_name()
                 # Persist the profile name EXPLICITLY, including "default".
                 # NULL used to stand in for the default profile, but the
@@ -713,7 +713,7 @@ class AIAgent:
             # Carry the live YOLO bypass into the creation-time model_config so
             # a session whose /yolo was toggled BEFORE the row existed (the row
             # is created lazily on the first turn) still persists the flag for
-            # `hermes --resume`. set_session_yolo() no-ops on a missing row, so
+            # `clara --resume`. set_session_yolo() no-ops on a missing row, so
             # this is the only chance to record a pre-first-turn toggle.
             _init_model_config = self._session_init_model_config
             try:
@@ -961,7 +961,7 @@ class AIAgent:
             logger.debug("LM Studio explicit preload skipped: lmstudio_load_mode=jit")
             return None
 
-        from hermes_cli.models import ensure_lmstudio_model_loaded
+        from clara_cli.models import ensure_lmstudio_model_loaded
 
         if config_context_length is None:
             config_context_length = getattr(self, "_config_context_length", None)
@@ -1027,7 +1027,7 @@ class AIAgent:
         all non-forced output is suppressed.
 
         ``suppress_status_output`` is a stricter CLI automation mode used by
-        parseable single-query flows such as ``hermes chat -q``. In that mode,
+        parseable single-query flows such as ``clara chat -q``. In that mode,
         all status/diagnostic prints routed through ``_vprint`` are suppressed
         so stdout stays machine-readable.
         """
@@ -1067,7 +1067,7 @@ class AIAgent:
         quiet mode to be truly silent.
 
         ``suppress_status_output`` (the strict machine-readable mode used by
-        ``hermes chat -Q``) always wins: those flows neutralize the rendering
+        ``clara chat -Q``) always wins: those flows neutralize the rendering
         callbacks, and without this gate the "no callback owns rendering"
         fallback would print ``[tool]``/``[done]`` spinner lines into the
         captured stdout it exists to keep clean (#93220).
@@ -1525,19 +1525,19 @@ class AIAgent:
         Priority:
           1. ``providers.<id>.models.<model>.timeout_seconds`` (per-model override)
           2. ``providers.<id>.request_timeout_seconds`` (provider-wide)
-          3. ``HERMES_API_TIMEOUT`` env var (legacy escape hatch)
+          3. ``CLARA_API_TIMEOUT`` env var (legacy escape hatch)
           4. 1800.0s default
 
         Used by OpenAI-wire chat completions (streaming and non-streaming) so
         the per-provider config knob wins over the 1800s default.  Without this
-        helper, the hardcoded ``HERMES_API_TIMEOUT`` fallback would always be
+        helper, the hardcoded ``CLARA_API_TIMEOUT`` fallback would always be
         passed as a per-call ``timeout=`` kwarg, overriding the client-level
         timeout the AIAgent.__init__ path configured.
         """
         cfg = get_provider_request_timeout(self.provider, self.model)
         if cfg is not None:
             return cfg
-        return env_float("HERMES_API_TIMEOUT", 1800.0)
+        return env_float("CLARA_API_TIMEOUT", 1800.0)
 
     def _resolved_api_call_stale_timeout_base(self) -> tuple[float, bool]:
         """Resolve the base non-stream stale timeout and whether it is implicit.
@@ -1545,7 +1545,7 @@ class AIAgent:
         Priority:
           1. ``providers.<id>.models.<model>.stale_timeout_seconds``
           2. ``providers.<id>.stale_timeout_seconds``
-          3. ``HERMES_API_CALL_STALE_TIMEOUT`` env var
+          3. ``CLARA_API_CALL_STALE_TIMEOUT`` env var
           4. 90.0s default (time-to-first-byte for non-streaming / Codex
              internal-streaming requests; lowered from 300s in May 2026 so
              fallback providers kick in faster when upstream providers
@@ -1561,7 +1561,7 @@ class AIAgent:
         if cfg is not None:
             return cfg, False
 
-        env_timeout = os.getenv("HERMES_API_CALL_STALE_TIMEOUT")
+        env_timeout = os.getenv("CLARA_API_CALL_STALE_TIMEOUT")
         if env_timeout is not None:
             return float(env_timeout), False
 
@@ -1623,13 +1623,13 @@ class AIAgent:
         """True when the user explicitly configured the non-stream stale timeout.
 
         Explicit = provider/model ``stale_timeout_seconds`` in config.yaml or
-        the ``HERMES_API_CALL_STALE_TIMEOUT`` env var. Reasoning-model floors
+        the ``CLARA_API_CALL_STALE_TIMEOUT`` env var. Reasoning-model floors
         and the 90s default are implicit — they yield to the wall-clock run
         budget cap; explicit user configuration never does.
         """
         if get_provider_stale_timeout(self.provider, self.model) is not None:
             return True
-        return os.getenv("HERMES_API_CALL_STALE_TIMEOUT") is not None
+        return os.getenv("CLARA_API_CALL_STALE_TIMEOUT") is not None
 
     def _codex_silent_hang_hint(self, model: Optional[str] = None) -> Optional[str]:
         """Return an actionable hint when this request matches a known
@@ -1644,7 +1644,7 @@ class AIAgent:
         This helper substitutes an actionable hint into the stale-timeout
         warning when the request matches a known silent-reject pattern.
         Currently flagged: ``gpt-5.5`` family on the Codex backend.  See
-        hermes-agent #21444 for the symptom history.  The upstream backend
+        clara-agent #21444 for the symptom history.  The upstream backend
         behavior has historically come and gone with ChatGPT entitlement
         changes — the heuristic stays in place as future-proofing even when
         the symptom is dormant.
@@ -1675,7 +1675,7 @@ class AIAgent:
             "Workaround: try `gpt-5.4` on the same OAuth profile, or `gpt-5.3-codex`, "
             "or switch to a different model/provider in your fallback chain. "
             "Some ChatGPT Codex accounts do not support `gpt-5.4-codex`. "
-            "See hermes-agent#21444 for symptom history."
+            "See clara-agent#21444 for symptom history."
         )
 
     def _is_openrouter_url(self) -> bool:
@@ -1766,9 +1766,9 @@ class AIAgent:
     ) -> bool:
         """Return True when this provider/model pair should use Responses API."""
         normalized_provider = (provider or "").strip().lower()
-        # Nous serves GPT-5.x models via its OpenAI-compatible chat
+        # Clara serves GPT-5.x models via its OpenAI-compatible chat
         # completions endpoint; its /v1/responses endpoint returns 404.
-        if normalized_provider == "nous":
+        if normalized_provider == "clara":
             return False
         if normalized_provider == "custom":
             # Generic custom endpoints are conservative by default. They may
@@ -1777,7 +1777,7 @@ class AIAgent:
             return False
         if normalized_provider == "copilot":
             try:
-                from hermes_cli.models import _should_use_copilot_responses_api
+                from clara_cli.models import _should_use_copilot_responses_api
                 return _should_use_copilot_responses_api(model)
             except Exception:
                 # Fall back to the generic GPT-5 rule if Copilot-specific
@@ -2668,7 +2668,7 @@ class AIAgent:
             # before it is swallowed into a bare ``False`` — classify it here
             # so the turn-end explanation can distinguish lock contention
             # ("storage was busy, send it again") from disk-full/read-only.
-            from hermes_state import (
+            from clara_state import (
                 CompressionSessionClosedError,
                 StateDbCorruptError,
                 StateDbReplacedError,
@@ -2889,7 +2889,7 @@ class AIAgent:
         That body covers several real causes we cannot distinguish without
         more info from xAI.  The most common (and least obvious) one is
         that **X Premium+ does NOT include API access** — only standalone
-        SuperGrok subscribers can use Hermes against xai-oauth.  Lots of
+        SuperGrok subscribers can use Clara against xai-oauth.  Lots of
         users see Grok in their X app, assume it works here too, and hit
         this 403 with no idea why.  Lead the hint with that.
 
@@ -2990,7 +2990,7 @@ class AIAgent:
                 for marker in network_resolution_markers
             ):
                 return (
-                    "Hermes can't reach the model provider. You may be offline. "
+                    "Clara can't reach the model provider. You may be offline. "
                     "Check your internet connection and try again."
                 )
             current = current.__cause__ or current.__context__
@@ -3126,7 +3126,7 @@ class AIAgent:
 
     @staticmethod
     def _hook_payload_max_chars() -> int:
-        raw = os.getenv("HERMES_PLUGIN_PAYLOAD_MAX_CHARS", "50000")
+        raw = os.getenv("CLARA_PLUGIN_PAYLOAD_MAX_CHARS", "50000")
         try:
             return max(1000, int(raw))
         except (TypeError, ValueError):
@@ -3343,7 +3343,7 @@ class AIAgent:
         # dispatch at this call site. After first call the import is a
         # ``sys.modules`` dict lookup, so retries don't repay any real cost.
         try:
-            from hermes_cli import lifecycle as _lifecycle
+            from clara_cli import lifecycle as _lifecycle
 
             if not _lifecycle.has_hook("api_request_error"):
                 return
@@ -3408,7 +3408,7 @@ class AIAgent:
         parts. Image / binary parts are left untouched; only text fields are
         passed through ``redact_sensitive_text``.
 
-        Respects ``HERMES_REDACT_SECRETS`` via ``redact_sensitive_text`` —
+        Respects ``CLARA_REDACT_SECRETS`` via ``redact_sensitive_text`` —
         when disabled the helper is effectively a no-op.
         """
         if content is None:
@@ -3433,7 +3433,7 @@ class AIAgent:
 
         Gated by ``sessions.write_json_snapshots`` (default False).  state.db
         is the canonical message store; this writer exists only for users
-        whose external tooling consumes ``~/.hermes/sessions/session_{sid}.json``
+        whose external tooling consumes ``~/.clara/sessions/session_{sid}.json``
         directly.  When the flag is off this is a fast no-op.
 
         When enabled, rewrites the snapshot after every persistence point with
@@ -3453,7 +3453,7 @@ class AIAgent:
         # session-id changes land in the right file without any re-point
         # bookkeeping at the call sites.  Sanitize the session ID into a
         # single traversal-free path segment — session IDs can come from
-        # untrusted input (X-Hermes-Session-Id header) and must not escape
+        # untrusted input (X-Clara-Session-Id header) and must not escape
         # the sessions directory.
         try:
             safe_sid = _safe_session_filename_component(self.session_id)
@@ -3474,7 +3474,7 @@ class AIAgent:
                 # Defence-in-depth: redact credentials from every message
                 # content before persistence. Catches PATs / API keys / Bearer
                 # tokens that may have leaked into assistant responses, tool
-                # output, or user paste. Respects HERMES_REDACT_SECRETS via
+                # output, or user paste. Respects CLARA_REDACT_SECRETS via
                 # redact_sensitive_text — no-op when disabled. (#19798, #19845)
                 if "content" in msg:
                     msg = dict(msg)
@@ -3750,7 +3750,7 @@ class AIAgent:
             self._pending_redirect = None
 
         # Codex app-server owns its model/tool loop and watches a private
-        # interrupt event rather than Hermes' per-thread flag.
+        # interrupt event rather than Clara' per-thread flag.
         if getattr(self, "api_mode", None) == "codex_app_server":
             _codex_session = getattr(self, "_codex_session", None)
             _request_interrupt = getattr(_codex_session, "request_interrupt", None)
@@ -3944,7 +3944,7 @@ class AIAgent:
     def redirect(self, text: str) -> bool:
         """Redirect the active turn without converting it into a new task.
 
-        During a normal Hermes model request this cancels only that request;
+        During a normal Clara model request this cancels only that request;
         the conversation loop retains completed messages/tool results, records
         the displayed partial reasoning as plain assistant context, appends the
         correction as a real user message, and retries. During tool execution
@@ -4099,7 +4099,7 @@ class AIAgent:
             if changed is not None:
                 changed.update(landed_paths)
             # Feed the checkpoint agent-write ledger so /rollback's safe mode
-            # can tell Hermes-authored content from later user hand-edits.
+            # can tell Clara-authored content from later user hand-edits.
             mgr = getattr(self, "_checkpoint_mgr", None)
             if mgr is not None and getattr(mgr, "enabled", False):
                 for _p in landed_paths:
@@ -4126,7 +4126,7 @@ class AIAgent:
         """Check whether the per-turn file-mutation verifier footer is on.
 
         Config path: ``display.file_mutation_verifier`` (bool, default True).
-        ``HERMES_FILE_MUTATION_VERIFIER`` env var overrides config.  Exposed
+        ``CLARA_FILE_MUTATION_VERIFIER`` env var overrides config.  Exposed
         as a method so tests can patch a single seam without reaching into
         the private ``_turn_failed_file_mutations`` state dict.
 
@@ -4138,7 +4138,7 @@ class AIAgent:
         """
         try:
             import os as _os
-            env = _os.environ.get("HERMES_FILE_MUTATION_VERIFIER")
+            env = _os.environ.get("CLARA_FILE_MUTATION_VERIFIER")
             if env is not None:
                 return env.strip().lower() not in {"0", "false", "no", "off"}
             cached = getattr(self, "_file_mutation_verifier_enabled_cache", None)
@@ -4147,7 +4147,7 @@ class AIAgent:
             # Read from the persisted config.yaml so gateway and CLI share
             # the same setting.  Import lazily to avoid a startup-time cycle.
             try:
-                from hermes_cli.config import load_config as _load_config
+                from clara_cli.config import load_config as _load_config
                 _cfg = _load_config() or {}
             except Exception:
                 _cfg = {}
@@ -4203,7 +4203,7 @@ class AIAgent:
         path and any path echoed inside the tool's error preview — is
         backtick-wrapped via ``_neutralize_footer_paths`` so the gateway's
         bare-path media extractor can never auto-attach a protected file
-        (e.g. ``~/.hermes/config.yaml``) to a messaging channel (#35584).
+        (e.g. ``~/.clara/config.yaml``) to a messaging channel (#35584).
         """
         if not failed:
             return ""
@@ -4236,7 +4236,7 @@ class AIAgent:
         """Check whether the end-of-turn completion explainer footer is on.
 
         Config path: ``display.turn_completion_explainer`` (bool, default
-        True).  ``HERMES_TURN_COMPLETION_EXPLAINER`` env var overrides
+        True).  ``CLARA_TURN_COMPLETION_EXPLAINER`` env var overrides
         config.  Exposed as a method so tests can patch a single seam,
         mirroring ``_file_mutation_verifier_enabled``.
 
@@ -4248,7 +4248,7 @@ class AIAgent:
         """
         try:
             import os as _os
-            env = _os.environ.get("HERMES_TURN_COMPLETION_EXPLAINER")
+            env = _os.environ.get("CLARA_TURN_COMPLETION_EXPLAINER")
             if env is not None:
                 return env.strip().lower() not in {"0", "false", "no", "off"}
             cached = getattr(self, "_turn_completion_explainer_enabled_cache", None)
@@ -4257,7 +4257,7 @@ class AIAgent:
             # Read from the persisted config.yaml so gateway and CLI share
             # the same setting.  Import lazily to avoid a startup-time cycle.
             try:
-                from hermes_cli.config import load_config as _load_config
+                from clara_cli.config import load_config as _load_config
                 _cfg = _load_config() or {}
             except Exception:
                 _cfg = {}
@@ -4398,7 +4398,7 @@ class AIAgent:
             if cause == "turn_lease":
                 return (
                     prefix
-                    + "the turn was stopped because another Hermes process "
+                    + "the turn was stopped because another Clara process "
                     "took over this session. Your reply was not saved — wait "
                     "for the other process to finish, then send your message "
                     "again."
@@ -4407,7 +4407,7 @@ class AIAgent:
                 return (
                     prefix
                     + "the turn was stopped because session storage was busy "
-                    "(another Hermes process was writing to the state "
+                    "(another Clara process was writing to the state "
                     "database). Your message should already be saved — "
                     "please send it again in a moment."
                 )
@@ -4416,7 +4416,7 @@ class AIAgent:
                     prefix
                     + "the turn was stopped because the state database file "
                     "was replaced underneath this process. Do not run "
-                    "`hermes doctor --fix` or in-place FTS repair — stop "
+                    "`clara doctor --fix` or in-place FTS repair — stop "
                     "the process, restore the intended state.db, then "
                     "restart. Unwritten messages were diverted to "
                     "sessions/<session_id>.jsonl and, on the gateway, "
@@ -4429,10 +4429,10 @@ class AIAgent:
                     "reported structural corruption (the transcript would "
                     "have been lost on restart). Freeing disk space will "
                     "not help. Recovery options:\n"
-                    "1. Run `hermes doctor --fix`\n"
-                    "2. Salvage with: sqlite3 ~/.hermes/state.db \".recover\" "
+                    "1. Run `clara doctor --fix`\n"
+                    "2. Salvage with: sqlite3 ~/.clara/state.db \".recover\" "
                     "(then replace state.db)\n"
-                    "3. Restore from a backup in ~/.hermes/backups/\n"
+                    "3. Restore from a backup in ~/.clara/backups/\n"
                     "Then send your message again."
                 )
             if cause == "disk":
@@ -4448,7 +4448,7 @@ class AIAgent:
                 prefix
                 + "the turn was stopped because session storage could not be "
                 "written (the transcript would have been lost on restart). "
-                "Check the state database health (`hermes doctor`), then "
+                "Check the state database health (`clara doctor`), then "
                 "send your message again."
             )
         # Unknown/diagnostic-only reasons (e.g. "unknown", guardrail_halt
@@ -4492,7 +4492,7 @@ class AIAgent:
         revalidate it at the commit point.
 
         Also bridges to the kanban board's heartbeat fields when this
-        process is a dispatcher-spawned worker (HERMES_KANBAN_TASK set),
+        process is a dispatcher-spawned worker (CLARA_KANBAN_TASK set),
         so the dispatcher watchdog doesn't reclaim an actively-running
         worker as stale (#31752). Bridge is rate-limited (60s) and
         best-effort — it never raises into the agent loop.
@@ -4536,7 +4536,7 @@ class AIAgent:
             # mutation edge instead of publishing against a generation the
             # turn has already left behind.
             self._turn_liveness_abort_claim = None
-        if os.environ.get("HERMES_KANBAN_TASK"):
+        if os.environ.get("CLARA_KANBAN_TASK"):
             try:
                 from tools.kanban_tools import (
                     heartbeat_current_worker_from_env,
@@ -4661,14 +4661,14 @@ class AIAgent:
         self._capture_credits(http_response)
 
     def _capture_credits(self, http_response: Any) -> None:
-        """Parse x-nous-credits-* headers, cache CreditsState, fire threshold notices.
+        """Parse x-clara-credits-* headers, cache CreditsState, fire threshold notices.
 
         Fail-open throughout — header issues never break the agent loop. The PARSE is
         swallowed (any error → treated as a miss → keep last-known). The notice
         EVALUATION/EMIT is a SEPARATE block that WARNS on failure (R1-M2): a bug in the
         depletion-notice path must not vanish silently under the parse swallow.
         """
-        # Dev test fixture (HERMES_DEV_CREDITS_FIXTURE): inject a chosen notice state
+        # Dev test fixture (CLARA_DEV_CREDITS_FIXTURE): inject a chosen notice state
         # each turn for repeatable testing, bypassing real headers. Throwaway scaffolding.
         try:
             from agent.credits_tracker import dev_fixture_credits_state
@@ -4688,7 +4688,7 @@ class AIAgent:
             _used = _fixture.used_fraction
             logger.info(
                 "credits ▸ [FIXTURE] remaining=%d (%s) · paid=%s · denom=%s · used=%s "
-                "(real headers bypassed — `echo clear` / unset HERMES_DEV_CREDITS_FIXTURE to restore)",
+                "(real headers bypassed — `echo clear` / unset CLARA_DEV_CREDITS_FIXTURE to restore)",
                 _fixture.remaining_micros,
                 _fixture.remaining_usd or "?",
                 _fixture.paid_access,
@@ -4702,7 +4702,7 @@ class AIAgent:
         headers = getattr(http_response, "headers", None)
         if not headers:
             return
-        _dev = is_truthy_value(os.environ.get("HERMES_DEV_CREDITS"))
+        _dev = is_truthy_value(os.environ.get("CLARA_DEV_CREDITS"))
 
         # ── Parse (fail-open → miss; never overwrite good state with None) ──
         try:
@@ -4713,8 +4713,8 @@ class AIAgent:
         if state is None:
             if _dev:
                 logger.info(
-                    "credits ▸ response had no valid x-nous-credits-* headers "
-                    "(miss — producer off / non-Nous path / >TTL stale)"
+                    "credits ▸ response had no valid x-clara-credits-* headers "
+                    "(miss — producer off / non-Clara path / >TTL stale)"
                 )
             return
 
@@ -4724,8 +4724,8 @@ class AIAgent:
         if self._credits_session_start_micros is None:
             self._credits_session_start_micros = state.remaining_micros
         if _dev:
-            # HERMES_DEV_CREDITS: stream each capture to agent.log — watch live with
-            # `hermes logs -f` (grep 'credits ▸'). Dev-only; silent for normal users.
+            # CLARA_DEV_CREDITS: stream each capture to agent.log — watch live with
+            # `clara logs -f` (grep 'credits ▸'). Dev-only; silent for normal users.
             spent = self.get_credits_spent_micros()
             used = state.used_fraction
             logger.info(
@@ -4795,7 +4795,7 @@ class AIAgent:
             return cached
         enabled = True
         try:
-            from hermes_cli.config import load_config as _load_config
+            from clara_cli.config import load_config as _load_config
             _cfg = _load_config() or {}
             _display = _cfg.get("display") if isinstance(_cfg, dict) else None
             if isinstance(_display, dict) and "credits_notices" in _display:
@@ -5098,7 +5098,7 @@ class AIAgent:
 
         # 4. Release the session-owned computer-use backend.  This ends the
         # exact cua-driver session, drops typed-browser refs/grants, and stops
-        # a private embedded daemon when Hermes YOLO selected unrestricted
+        # a private embedded daemon when Clara YOLO selected unrestricted
         # mode.  The import is lazy so sessions without computer_use retain
         # the narrow core footprint.
         try:
@@ -5171,7 +5171,7 @@ class AIAgent:
         # heap pages immediately instead of retaining the process RSS high-water
         # mark until exit.  This helper is a safe no-op on other allocators.
         try:
-            from hermes_cli.mem_trim import trim_memory
+            from clara_cli.mem_trim import trim_memory
             trim_memory(force=True, reason="agent close")
         except Exception:
             pass
@@ -5208,7 +5208,7 @@ class AIAgent:
                 self._owns_session_db = False
                 # Shared instances no-op on close(); release the refcount
                 # so the registry can close when the last caller is done (#90837).
-                from hermes_state import release_or_close
+                from clara_state import release_or_close
                 release_or_close(session_db)
         except Exception:
             pass
@@ -5897,7 +5897,7 @@ class AIAgent:
         return any(_contains_image(item) for item in candidates)
 
     def _copilot_headers_for_request(self, *, is_vision: bool) -> dict:
-        from hermes_cli.copilot_auth import copilot_request_headers
+        from clara_cli.copilot_auth import copilot_request_headers
 
         return copilot_request_headers(is_agent_turn=True, is_vision=is_vision)
 
@@ -6325,7 +6325,7 @@ class AIAgent:
         # Guard against silent account swap.
         #
         # When an agent is using a non-singleton credential — e.g. a manual
-        # pool entry (``hermes auth add xai-oauth``) whose tokens belong to
+        # pool entry (``clara auth add xai-oauth``) whose tokens belong to
         # a different account than the device_code singleton, or an agent
         # constructed with an explicit ``api_key=`` arg — force-refreshing
         # the singleton here and adopting its tokens silently re-routes the
@@ -6336,13 +6336,13 @@ class AIAgent:
         # MUST only fire when the agent really is on singleton tokens.
         try:
             if self.provider == "openai-codex":
-                from hermes_cli.auth import resolve_codex_runtime_credentials
+                from clara_cli.auth import resolve_codex_runtime_credentials
 
                 singleton_now = resolve_codex_runtime_credentials(
                     refresh_if_expiring=False,
                 )
             else:
-                from hermes_cli.auth import resolve_xai_oauth_runtime_credentials
+                from clara_cli.auth import resolve_xai_oauth_runtime_credentials
 
                 singleton_now = resolve_xai_oauth_runtime_credentials(
                     refresh_if_expiring=False,
@@ -6364,12 +6364,12 @@ class AIAgent:
 
         try:
             if self.provider == "openai-codex":
-                from hermes_cli.auth import resolve_codex_runtime_credentials
+                from clara_cli.auth import resolve_codex_runtime_credentials
 
                 old_key = str(self.api_key or "").strip()
                 creds = resolve_codex_runtime_credentials(force_refresh=force)
             else:
-                from hermes_cli.auth import resolve_xai_oauth_runtime_credentials
+                from clara_cli.auth import resolve_xai_oauth_runtime_credentials
 
                 old_key = str(self.api_key or "").strip()
                 creds = resolve_xai_oauth_runtime_credentials(force_refresh=force)
@@ -6407,12 +6407,12 @@ class AIAgent:
 
         return True
 
-    def _try_refresh_nous_client_credentials(
+    def _try_refresh_clara_client_credentials(
         self,
         *,
         force: bool = True,
     ) -> bool:
-        if self.provider != "nous":
+        if self.provider != "clara":
             return False
         # Portal serves anthropic/* on the native Messages route, so a session
         # can be holding either client kind when its short-lived invoke JWT
@@ -6421,14 +6421,14 @@ class AIAgent:
             return False
 
         try:
-            from hermes_cli.auth import resolve_nous_runtime_credentials
+            from clara_cli.auth import resolve_clara_runtime_credentials
 
-            creds = resolve_nous_runtime_credentials(
-                timeout_seconds=env_float("HERMES_NOUS_TIMEOUT_SECONDS", 15),
+            creds = resolve_clara_runtime_credentials(
+                timeout_seconds=env_float("CLARA_CLARA_TIMEOUT_SECONDS", 15),
                 force_refresh=force,
             )
         except Exception as exc:
-            logger.debug("Nous credential refresh failed: %s", exc)
+            logger.debug("Clara credential refresh failed: %s", exc)
             return False
 
         api_key = creds.get("api_key")
@@ -6449,18 +6449,18 @@ class AIAgent:
 
         self._client_kwargs["api_key"] = self.api_key
         self._client_kwargs["base_url"] = self.base_url
-        # Nous requests should not inherit OpenRouter-only attribution headers.
+        # Clara requests should not inherit OpenRouter-only attribution headers.
         self._client_kwargs.pop("default_headers", None)
 
-        if not self._replace_primary_openai_client(reason="nous_credential_refresh"):
+        if not self._replace_primary_openai_client(reason="clara_credential_refresh"):
             return False
 
         return True
 
     def _try_refresh_env_client_credentials(self) -> bool:
-        """Adopt ~/.hermes/.env credential/base-url edits at the turn boundary.
+        """Adopt ~/.clara/.env credential/base-url edits at the turn boundary.
 
-        A Settings save (desktop ``PUT /api/env``, ``hermes setup``) updates
+        A Settings save (desktop ``PUT /api/env``, ``clara setup``) updates
         ``.env`` and the *saving* process's os.environ, but a live session
         worker keeps the base_url/api_key captured at agent init until it
         restarts — so an open chat silently keeps calling the old endpoint
@@ -6489,7 +6489,7 @@ class AIAgent:
             return False
         try:
             from agent.credential_pool import get_env_prefer_dotenv
-            from hermes_cli.auth import PROVIDER_REGISTRY
+            from clara_cli.auth import PROVIDER_REGISTRY
         except ImportError:
             return False
 
@@ -6513,13 +6513,13 @@ class AIAgent:
             default_base = (pconfig.inference_base_url or "").strip().rstrip("/")
             base_url = env_url or default_base
             if self.provider == "kimi-coding":
-                from hermes_cli.auth import _resolve_kimi_base_url
+                from clara_cli.auth import _resolve_kimi_base_url
 
                 base_url = _resolve_kimi_base_url(
                     api_key, pconfig.inference_base_url, env_url
                 ).rstrip("/")
             elif self.provider == "zai":
-                from hermes_cli.auth import _resolve_zai_base_url
+                from clara_cli.auth import _resolve_zai_base_url
 
                 base_url = _resolve_zai_base_url(
                     api_key, pconfig.inference_base_url, env_url
@@ -6532,7 +6532,7 @@ class AIAgent:
             # ``key_env`` (inline ``api_key``, pool-backed) have no
             # env-sourced credential to watch.
             try:
-                from hermes_cli.runtime_provider import _get_named_custom_provider
+                from clara_cli.runtime_provider import _get_named_custom_provider
             except ImportError:
                 return False
             custom_provider = _get_named_custom_provider(
@@ -6594,7 +6594,7 @@ class AIAgent:
             self._env_creds_seen = resolved
             return False
 
-        from hermes_cli.route_identity import normalize_route_base_url
+        from clara_cli.route_identity import normalize_route_base_url
 
         route_changed = normalize_route_base_url(self.base_url) != normalize_route_base_url(
             base_url
@@ -6699,7 +6699,7 @@ class AIAgent:
             return False
 
         try:
-            from hermes_cli.copilot_auth import (
+            from clara_cli.copilot_auth import (
                 resolve_copilot_token,
                 get_copilot_api_token,
                 evict_cached_exchanged_token,
@@ -6763,7 +6763,7 @@ class AIAgent:
             return False
 
         try:
-            from hermes_cli.copilot_auth import (
+            from clara_cli.copilot_auth import (
                 resolve_copilot_token,
                 get_copilot_api_token,
                 evict_cached_exchanged_token,
@@ -6880,7 +6880,7 @@ class AIAgent:
         elif base_url_host_matches(base_url, "api.routermint.com"):
             self._client_kwargs["default_headers"] = _routermint_headers()
         elif base_url_host_matches(base_url, "githubcopilot.com"):
-            from hermes_cli.models import copilot_default_headers
+            from clara_cli.models import copilot_default_headers
 
             self._client_kwargs["default_headers"] = copilot_default_headers()
         elif base_url_host_matches(base_url, "api.kimi.com"):
@@ -6895,9 +6895,9 @@ class AIAgent:
             )
         elif base_url_host_matches(base_url, "x.ai"):
             # Cover both provider=xai and provider=xai-oauth (api.x.ai).
-            from tools.xai_http import hermes_xai_default_headers
+            from tools.xai_http import clara_xai_default_headers
 
-            self._client_kwargs["default_headers"] = hermes_xai_default_headers()
+            self._client_kwargs["default_headers"] = clara_xai_default_headers()
         else:
             # No URL-specific headers — check profile.default_headers before clearing.
             _ph_headers = None
@@ -6924,7 +6924,7 @@ class AIAgent:
         # SECURITY: values may carry credentials — never log them.
         if self.api_mode not in ("anthropic_messages", "bedrock_converse"):
             try:
-                from hermes_cli.config import (
+                from clara_cli.config import (
                     apply_custom_provider_extra_headers_to_client_kwargs,
                 )
 
@@ -6968,7 +6968,7 @@ class AIAgent:
         runtime_key = getattr(entry, "runtime_api_key", None) or getattr(entry, "access_token", "")
         runtime_base = getattr(entry, "runtime_base_url", None) or getattr(entry, "base_url", None) or self.base_url
         self._credential_pool_entry_id = getattr(entry, "id", None)
-        from hermes_cli.route_identity import normalize_route_base_url
+        from clara_cli.route_identity import normalize_route_base_url
 
         route_changed = normalize_route_base_url(self.base_url) != normalize_route_base_url(
             runtime_base
@@ -7013,7 +7013,7 @@ class AIAgent:
         self._client_kwargs.pop("ssl_verify", None)
         self._client_kwargs.pop("ssl_ca_cert", None)
         try:
-            from hermes_cli.config import (
+            from clara_cli.config import (
                 apply_custom_provider_tls_to_client_kwargs,
                 get_compatible_custom_providers,
                 load_config_readonly,
@@ -7071,7 +7071,7 @@ class AIAgent:
             prefer_stream=not bool(getattr(self, "_disable_streaming", False)),
             # Rate-limit + credits state live in response headers, which the
             # parsed Message drops. No-ops on providers that don't send the
-            # matching header families (x-ratelimit-* / x-nous-credits-*).
+            # matching header families (x-ratelimit-* / x-clara-credits-*).
             on_response=self._capture_anthropic_response_headers,
         )
 
@@ -7744,7 +7744,7 @@ class AIAgent:
         misclassified as non-vision and have their images stripped.
         """
         try:
-            from hermes_cli.config import load_config
+            from clara_cli.config import load_config
             from agent.image_routing import _lookup_supports_vision
             cfg = load_config()
             provider = (getattr(self, "provider", "") or "").strip()
@@ -8166,9 +8166,9 @@ class AIAgent:
 
         OpenRouter forwards unknown extra_body fields to upstream providers.
         Some providers/routes reject `reasoning` with 400s, so gate it to
-        known reasoning-capable model families and direct Nous Portal.
+        known reasoning-capable model families and direct Clara Portal.
         """
-        if base_url_host_matches(self._base_url_lower, "nousresearch.com"):
+        if base_url_host_matches(self._base_url_lower, "workprise.com"):
             return True
         if base_url_host_matches(self._base_url_lower, "ai-gateway.vercel.sh"):
             return True
@@ -8177,7 +8177,7 @@ class AIAgent:
             or base_url_host_matches(self._base_url_lower, "githubcopilot.com")
         ):
             try:
-                from hermes_cli.models import github_model_reasoning_efforts
+                from clara_cli.models import github_model_reasoning_efforts
 
                 return bool(github_model_reasoning_efforts(self.model))
             except Exception:
@@ -8209,7 +8209,7 @@ class AIAgent:
         # cached; unknown (catalog unreachable / unlisted model) falls back
         # to the static list.
         try:
-            from hermes_cli.models import (
+            from clara_cli.models import (
                 openrouter_model_reasoning_capabilities,
                 warm_openrouter_reasoning_caps_async,
             )
@@ -8261,7 +8261,7 @@ class AIAgent:
             if opts or (_time.monotonic() - ts) < 60:
                 return opts
         try:
-            from hermes_cli.models import lmstudio_model_reasoning_options
+            from clara_cli.models import lmstudio_model_reasoning_options
             opts = lmstudio_model_reasoning_options(
                 self.model, self.base_url, getattr(self, "api_key", ""),
             )
@@ -8292,7 +8292,7 @@ class AIAgent:
             if supported is not None or (_time.monotonic() - ts) < 60:
                 return bool(supported)
         try:
-            from hermes_cli.models import ollama_model_supports_thinking
+            from clara_cli.models import ollama_model_supports_thinking
             supported = ollama_model_supports_thinking(
                 self.model, self.base_url, getattr(self, "api_key", "")
             )
@@ -8317,7 +8317,7 @@ class AIAgent:
     def _github_models_reasoning_extra_body(self) -> dict | None:
         """Format reasoning payload for GitHub Models/OpenAI-compatible routes."""
         try:
-            from hermes_cli.models import github_model_reasoning_efforts
+            from clara_cli.models import github_model_reasoning_efforts
         except Exception:
             return None
 
@@ -8408,7 +8408,7 @@ class AIAgent:
     def _read_reasoning_echo_from_config() -> bool:
         """Read ``model.reasoning_echo`` from config; False on any error."""
         try:
-            from hermes_cli.config import load_config_readonly
+            from clara_cli.config import load_config_readonly
             return bool(
                 (load_config_readonly().get("model") or {}).get("reasoning_echo")
             )
@@ -8917,12 +8917,12 @@ class AIAgent:
                         # so both lists need the post-publish marker sync.
                         _sync_persisted_markers(session_messages, result_messages)
             # compress_context ran on a daemon pool worker thread; the session
-            # id rotation updated hermes_logging._session_context (a
+            # id rotation updated clara_logging._session_context (a
             # threading.local) on the WORKER thread, not this one. Propagate
             # the current session_id back so subsequent log lines on this
             # thread carry the rotated id (#34089).
             try:
-                from hermes_logging import set_session_context
+                from clara_logging import set_session_context
                 set_session_context(self.session_id)
             except Exception:
                 pass
@@ -8931,7 +8931,7 @@ class AIAgent:
             # never sees — and get_session_env() prefers an already-bound
             # ContextVar over os.environ. Rebind in the CALLER's context so
             # post-compression tools/subprocesses on this thread resolve
-            # HERMES_SESSION_ID to the child id after an out-of-place
+            # CLARA_SESSION_ID to the child id after an out-of-place
             # rotation (idempotent when no rotation happened).
             try:
                 from gateway.session_context import set_current_session_id
@@ -9251,7 +9251,7 @@ class AIAgent:
             set_conversation_context,
         )
         from agent.prompt_cache_scope import declared_conversation_scope_safe
-        from hermes_cli.observability.relay_shared_metrics import (
+        from clara_cli.observability.relay_shared_metrics import (
             finish_task_run,
             start_task_run,
         )
@@ -9324,7 +9324,7 @@ class AIAgent:
 
         try:
             _review_queue.note_turn_started()
-            # Serialize the full load -> run -> flush region across Hermes
+            # Serialize the full load -> run -> flush region across Clara
             # processes. Gateway's asyncio lease closes alias routing inside one
             # process; this durable lease covers Desktop, CLI resume, gateway,
             # and background delivery processes sharing state.db (#84234).
@@ -9379,12 +9379,12 @@ class AIAgent:
                     _lease_waited = True
                     if elapsed < 1.0:
                         self._emit_status(
-                            "⏳ Another Hermes process is using this session; "
+                            "⏳ Another Clara process is using this session; "
                             "waiting for it to finish before starting your turn..."
                         )
                     else:
                         self._emit_status(
-                            "⏳ Still waiting for the other Hermes process on "
+                            "⏳ Still waiting for the other Clara process on "
                             f"this session ({int(elapsed)}s)..."
                         )
 
@@ -9403,7 +9403,7 @@ class AIAgent:
                         )
                         relay_outcome = "cancelled"
                         interrupt_msg = (
-                            "Stopped waiting for another Hermes process on "
+                            "Stopped waiting for another Clara process on "
                             "this session. Your message was not processed."
                         )
                         interrupt_result = {
@@ -9433,7 +9433,7 @@ class AIAgent:
                     # enter load/run/flush, and surface a resend notice instead
                     # of a bare TimeoutError that looks like a hang.
                     timeout_msg = (
-                        "⏳ Another Hermes process kept this session busy too "
+                        "⏳ Another Clara process kept this session busy too "
                         "long. Your message was not processed - wait for the "
                         "other process to finish, then send it again."
                     )
@@ -9510,7 +9510,7 @@ class AIAgent:
                 # config.yaml settings, wire the commit/deactivate callbacks
                 # that own turn-lease state, and start the thread.
                 try:
-                    from hermes_cli.config import (
+                    from clara_cli.config import (
                         load_config_readonly as _liveness_load_config,
                     )
                     _liveness_config = _liveness_load_config() or {}
@@ -9713,7 +9713,7 @@ class AIAgent:
                     parent_session_id=getattr(self, "_parent_session_id", None) or "",
                 )
                 task_started = True
-            # Publish the conversation id for ambient Nous Portal tagging. Every
+            # Publish the conversation id for ambient Clara Portal tagging. Every
             # LLM call made inside this turn — main loop, compression, vision,
             # web_extract, session_search, MoA slots, background-review forks
             # (which copy this Context into their thread) — inherits the

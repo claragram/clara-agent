@@ -1,7 +1,7 @@
 """Per-turn terminal scope: profile-scoped TERMINAL_* policy.
 
 The multiplexing gateway (and the unified dashboard/TUI, and cron) serve
-several Hermes profiles from one process. Terminal settings were historically
+several Clara profiles from one process. Terminal settings were historically
 mirrored into the process-global ``os.environ`` (first writer wins), so the
 first profile to touch the terminal after startup pinned its backend — and
 every other setting — onto all later turns: a ``local`` profile silently
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 # process-env behavior (single-process CLI/TUI, unaffected surfaces).
 # A dict = the active profile's complete effective terminal policy.
 # A TerminalPolicyRefusal = resolution failed; terminal execution must refuse.
-_terminal_scope_var: ContextVar = ContextVar("hermes_terminal_scope", default=None)
+_terminal_scope_var: ContextVar = ContextVar("clara_terminal_scope", default=None)
 
 
 class TerminalPolicyUnavailable(Exception):
@@ -125,7 +125,7 @@ def terminal_env(name: str, default: str = "") -> str:
     return default
 
 
-def build_profile_terminal_scope(hermes_home: "Any") -> Dict[str, str]:
+def build_profile_terminal_scope(clara_home: "Any") -> Dict[str, str]:
     """Build the COMPLETE effective ``TERMINAL_*`` policy for a profile home.
 
     Projection order: defined defaults (``DEFAULT_CONFIG['terminal']``) ← the
@@ -135,9 +135,9 @@ def build_profile_terminal_scope(hermes_home: "Any") -> Dict[str, str]:
     ambient process authority. Raises :class:`TerminalPolicyUnavailable` when
     either file exists but cannot be read/parsed (fail closed).
     """
-    home = Path(hermes_home)
+    home = Path(clara_home)
 
-    from hermes_cli.config_defaults import DEFAULT_CONFIG
+    from clara_cli.config_defaults import DEFAULT_CONFIG
 
     defaults = DEFAULT_CONFIG.get("terminal") if isinstance(
         DEFAULT_CONFIG, dict) else None
@@ -154,7 +154,7 @@ def build_profile_terminal_scope(hermes_home: "Any") -> Dict[str, str]:
     defaults.setdefault("ssh_key", "")
     defaults.setdefault("docker_orphan_reaper", True)
     defaults.setdefault("docker_persist_across_processes", True)
-    defaults.setdefault("sandbox_dir", "")    # tool derives HERMES_HOME path
+    defaults.setdefault("sandbox_dir", "")    # tool derives CLARA_HOME path
     defaults.setdefault("lifetime_seconds", 300)
     defaults.setdefault("docker_shared_container_key", "")
     defaults.setdefault("home_mode", "auto")
@@ -168,7 +168,7 @@ def build_profile_terminal_scope(hermes_home: "Any") -> Dict[str, str]:
         # later; they are not a policy value.
         if cfg_key == "cwd" and str(value).strip() in {".", "auto", "cwd"}:
             return
-        from hermes_cli.config import TERMINAL_CONFIG_ENV_MAP
+        from clara_cli.config import TERMINAL_CONFIG_ENV_MAP
 
         env_var = TERMINAL_CONFIG_ENV_MAP.get(cfg_key)
         if env_var:
@@ -199,18 +199,18 @@ def build_profile_terminal_scope(hermes_home: "Any") -> Dict[str, str]:
                 scope[key] = str(value)
 
     # 3) The profile's config.yaml explicit terminal keys. Read through the
-    #    HERMES_HOME override so the profile's own file is consulted; a
+    #    CLARA_HOME override so the profile's own file is consulted; a
     #    present-but-unparseable file fails closed (matches the gateway's
     #    _warn_config_parse_failure posture of refusing to guess policy).
-    from hermes_constants import (
-        get_hermes_home_override,
-        reset_hermes_home_override,
-        set_hermes_home_override,
+    from clara_constants import (
+        get_clara_home_override,
+        reset_clara_home_override,
+        set_clara_home_override,
     )
 
     override_token = None
-    if get_hermes_home_override() != str(home):
-        override_token = set_hermes_home_override(home)
+    if get_clara_home_override() != str(home):
+        override_token = set_clara_home_override(home)
     try:
         config_path = home / "config.yaml"
         if config_path.exists():
@@ -219,7 +219,7 @@ def build_profile_terminal_scope(hermes_home: "Any") -> Dict[str, str]:
             # "unparseable" into the same {} result. Here the file's existence
             # is already established, so {} can only mean a parse failure —
             # which must fail closed rather than silently projecting defaults.
-            from hermes_cli.config import fast_safe_load
+            from clara_cli.config import fast_safe_load
 
             try:
                 with open(config_path, encoding="utf-8") as f:
@@ -240,12 +240,12 @@ def build_profile_terminal_scope(hermes_home: "Any") -> Dict[str, str]:
         ) from exc
     finally:
         if override_token is not None:
-            reset_hermes_home_override(override_token)
+            reset_clara_home_override(override_token)
 
     return scope
 
 
-def install_profile_terminal_scope(hermes_home: "Any") -> Token:
+def install_profile_terminal_scope(clara_home: "Any") -> Token:
     """Build AND install a profile's policy in one call.
 
     The single entry point for every profile boundary (gateway turn, TUI/
@@ -257,7 +257,7 @@ def install_profile_terminal_scope(hermes_home: "Any") -> Token:
     Returns the token for ``reset_terminal_scope``.
     """
     try:
-        return set_terminal_scope(build_profile_terminal_scope(hermes_home))
+        return set_terminal_scope(build_profile_terminal_scope(clara_home))
     except TerminalPolicyUnavailable as exc:
         logger.warning("terminal policy unavailable: %s", exc)
         return install_refusal_scope(str(exc))
@@ -281,7 +281,7 @@ def enforce_no_refusal() -> None:
 
 @contextmanager
 def install_and_reset_profile_terminal_scope(
-    hermes_home: "Any",
+    clara_home: "Any",
 ) -> Iterator[None]:
     """Install the profile's terminal policy for a bounded turn/fire.
 
@@ -291,7 +291,7 @@ def install_and_reset_profile_terminal_scope(
     same duration — terminal execution inside the block raises (fail closed)
     instead of inheriting the launch process's ambient policy. Never raises.
     """
-    token = install_profile_terminal_scope(hermes_home)
+    token = install_profile_terminal_scope(clara_home)
     try:
         yield
     finally:

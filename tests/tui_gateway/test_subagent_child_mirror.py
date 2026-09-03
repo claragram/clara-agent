@@ -1,6 +1,6 @@
 """Tests for the gateway's child-session live mirror.
 
-A delegated child runs synchronously inside the parent's turn; its activity
+A delegated child runs __PROT_0_synchroclaraly__ inside the parent's turn; its activity
 reaches the gateway only as relayed ``subagent.*`` events on the PARENT sid
 (tagged with ``child_session_id``). When a UI resumes the child's own session
 (desktop open-in-new-window), ``_mirror_subagent_to_child`` translates those
@@ -22,12 +22,12 @@ def server():
     with patch.dict(
         "sys.modules",
         {
-            "hermes_constants": MagicMock(
-                get_hermes_home=MagicMock(return_value="/tmp/hermes_test_child_mirror")
+            "clara_constants": MagicMock(
+                get_clara_home=MagicMock(return_value="/tmp/clara_test_child_mirror")
             ),
-            "hermes_cli.env_loader": MagicMock(),
-            "hermes_cli.banner": MagicMock(),
-            "hermes_state": MagicMock(),
+            "clara_cli.env_loader": MagicMock(),
+            "clara_cli.banner": MagicMock(),
+            "clara_state": MagicMock(),
         },
     ):
         import importlib

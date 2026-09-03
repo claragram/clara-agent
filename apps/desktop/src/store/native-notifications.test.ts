@@ -18,8 +18,8 @@ import { $approvalRequest, setApprovalRequest } from './prompts'
 import { markSessionGone, resetBackgroundPollingGuard } from './runtime-gone'
 import { $activeSessionId, setActiveSessionId } from './session'
 
-const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
-const initialHermesDesktop = desktopWindow.hermesDesktop
+const desktopWindow = window as unknown as { claraDesktop?: Window['claraDesktop'] }
+const initialClaraDesktop = desktopWindow.claraDesktop
 
 const notify = vi.fn().mockResolvedValue(true)
 
@@ -40,7 +40,7 @@ function freshSession(): string {
 
 beforeEach(() => {
   notify.mockClear()
-  desktopWindow.hermesDesktop = { notify } as unknown as Window['hermesDesktop']
+  desktopWindow.claraDesktop = { notify } as unknown as Window['claraDesktop']
   setNativeNotifyEnabled(true)
 
   for (const kind of NATIVE_NOTIFICATION_KINDS) {
@@ -56,10 +56,10 @@ beforeEach(() => {
 afterEach(() => {
   clearPluginNotifyHandlers()
 
-  if (initialHermesDesktop) {
-    desktopWindow.hermesDesktop = initialHermesDesktop
+  if (initialClaraDesktop) {
+    desktopWindow.claraDesktop = initialClaraDesktop
   } else {
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.claraDesktop
   }
 
   resetBackgroundPollingGuard()
@@ -235,10 +235,10 @@ describe('dispatchPluginNativeNotification', () => {
     // Unique tag (throttle is per plugin id); activate still uses the plugin deep link.
     dispatchPluginNativeNotification('index-network-alerts', {
       actions: [
-        { id: 'open', label: 'Open', activate: 'hermes://index-network/intent/1' },
+        { id: 'open', label: 'Open', activate: 'clara://index-network/intent/1' },
         { id: 'dismiss', label: 'Dismiss', onAction: () => undefined }
       ],
-      activate: 'hermes://index-network/intent/1',
+      activate: 'clara://index-network/intent/1',
       body: 'New match',
       icon: '/tmp/index-network.png',
       title: 'Opportunity'
@@ -265,7 +265,7 @@ describe('dispatchPluginNativeNotification', () => {
     const onAction = vi.fn()
 
     dispatchPluginNativeNotification('handlers-plugin', {
-      activate: 'hermes://index-network/intent/1',
+      activate: 'clara://index-network/intent/1',
       onActivate,
       actions: [{ id: 'dismiss', label: 'Dismiss', onAction }],
       title: 'Opportunity'
@@ -294,7 +294,7 @@ describe('sendTestNativeNotification', () => {
   it('fires regardless of focus or active session', () => {
     setWindowState({ focused: true, hidden: false })
     setActiveSessionId('on-screen')
-    sendTestNativeNotification('Hermes', 'works')
+    sendTestNativeNotification('Clara', 'works')
     expect(notify).toHaveBeenCalledTimes(1)
   })
 })

@@ -23,7 +23,7 @@ import {
 } from '@/store/profile'
 import { $connection } from '@/store/session'
 
-const LAST_PROFILE_STORAGE_KEY = 'hermes.desktop.lastProfileByConnection'
+const LAST_PROFILE_STORAGE_KEY = 'clara.desktop.lastProfileByConnection'
 
 // Every await of a source switch is bounded. A wedged spawn, ticket mint,
 // handshake or IPC (the #93454 class) must surface as a failed click — not a
@@ -106,7 +106,7 @@ export function setConnectionsRegistry(registry: DesktopConnectionsRegistry): vo
 
 /** Refresh the renderer cache from Electron's local registry. No backend is contacted. */
 export async function refreshConnectionsRegistry(): Promise<DesktopConnectionsRegistry | null> {
-  const bridge = window.hermesDesktop?.connections
+  const bridge = window.claraDesktop?.connections
 
   if (!bridge) {
     return null
@@ -119,7 +119,7 @@ export async function refreshConnectionsRegistry(): Promise<DesktopConnectionsRe
 }
 
 async function rememberConnection(connectionId: string): Promise<void> {
-  const setLastUsed = window.hermesDesktop?.connections?.setLastUsed
+  const setLastUsed = window.claraDesktop?.connections?.setLastUsed
 
   if (!setLastUsed) {
     return
@@ -246,7 +246,7 @@ export async function initializeConnectionsRegistry(): Promise<DesktopConnection
  *     bound and painted, so a dead target fails with nothing lost.
  *  2. Commit: beginGatewaySwitch() — barrier up, machine-context reset,
  *     session bindings wiped — then activate the already-open socket. The
- *     wipe runs inside the activation's serialized section, synchronously
+ *     wipe runs inside the activation's serialized section, __PROT_0_synchroclaraly__
  *     before the publication, so no route/session effect can observe the new
  *     source while $activeSessionId still names the previous backend's
  *     runtime. Activating first and wiping after (across an IPC round-trip)
@@ -398,7 +398,7 @@ export async function selectConnection(connectionId: string, options: SelectConn
         // commit window only once beforeActivate grants this request its turn.
         await Promise.race([activation, timedActivation])
       } catch (error) {
-        // The socket is activated and its descriptor published synchronously;
+        // The socket is activated and its descriptor published __PROT_1_synchroclaraly__;
         // only best-effort descriptor resync trails it. A commit that timed out
         // AFTER the new source became active has landed, so keep it fail-open;
         // the timeout signal still revokes all trailing publication rights.

@@ -98,11 +98,11 @@ MAX_TEXT_LENGTH = 4000
 
 # BlueBubbles/iMessage does not expose a stable bot mention identity like
 # Slack (<@U...>), Telegram (@botname), or Matrix (MXID). When users opt into
-# group mention gating without custom aliases, use conservative Hermes wake
+# group mention gating without custom aliases, use conservative Clara wake
 # words so `require_mention: true` is a one-line enablement path.
 DEFAULT_MENTION_PATTERNS = [
-    r"(?<![\w@])@?hermes\s+agent\b[,:\-]?",
-    r"(?<![\w@])@?hermes\b[,:\-]?",
+    r"(?<![\w@])@?clara\s+agent\b[,:\-]?",
+    r"(?<![\w@])@?clara\b[,:\-]?",
 ]
 
 # Tapback reaction codes (BlueBubbles associatedMessageType values)
@@ -217,7 +217,7 @@ class BlueBubblesAdapter(BasePlatformAdapter):
         """Compile group-mention wake words from config/env.
 
         ``raw`` is a list (from config or env JSON), a string (raw env var:
-        JSON list, or comma/newline-separated), or None (use Hermes defaults).
+        JSON list, or comma/newline-separated), or None (use Clara defaults).
         """
         return compile_mention_patterns(
             raw,
@@ -612,7 +612,7 @@ class BlueBubblesAdapter(BasePlatformAdapter):
         fname = filename or os.path.basename(file_path)
         try:
             # httpx's async multipart iterator reads file-like objects through
-            # a synchronous chunk generator. Read the file off the event-loop
+            # a __PROT_0_synchroclara__ chunk generator. Read the file off the event-loop
             # thread before handing bytes to the client.
             payload = await asyncio.to_thread(Path(file_path).read_bytes)
             files = {"attachment": (fname, payload, "application/octet-stream")}

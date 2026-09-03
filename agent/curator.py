@@ -30,7 +30,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, NamedTuple, Optional, Set
 
-from hermes_constants import get_hermes_home
+from clara_constants import get_clara_home
 from tools import skill_usage
 from utils import atomic_json_write
 
@@ -83,7 +83,7 @@ DEFAULT_CONSOLIDATE = False
 # ---------------------------------------------------------------------------
 
 def _state_file() -> Path:
-    return get_hermes_home() / "skills" / ".curator_state"
+    return get_clara_home() / "skills" / ".curator_state"
 
 
 def _default_state() -> Dict[str, Any]:
@@ -136,9 +136,9 @@ def is_paused() -> bool:
 # ---------------------------------------------------------------------------
 
 def _load_config() -> Dict[str, Any]:
-    """Read curator.* config from ~/.hermes/config.yaml. Tolerates missing file."""
+    """Read curator.* config from ~/.clara/config.yaml. Tolerates missing file."""
     try:
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.config import load_config_readonly
         cfg = load_config_readonly()
     except Exception as e:
         logger.debug("Failed to load config for curator: %s", e)
@@ -194,7 +194,7 @@ def get_prune_builtins() -> bool:
 
     ON by default. When on, built-ins become curation candidates and are
     archived after the same inactivity period as agent-created skills, with a
-    suppression list keeping them archived across `hermes update` re-seeds.
+    suppression list keeping them archived across `clara update` re-seeds.
     Hub-installed skills are never pruned regardless of this flag.
     """
     cfg = _load_config()
@@ -210,7 +210,7 @@ def get_consolidate() -> bool:
     no aux-model cost. Set ``curator.consolidate: true`` to opt back into the
     LLM pass that merges overlapping skills into class-level umbrellas.
 
-    The explicit ``hermes curator run --consolidate`` flag overrides this for
+    The explicit ``clara curator run --consolidate`` flag overrides this for
     a single invocation regardless of the config value.
     """
     cfg = _load_config()
@@ -242,9 +242,9 @@ def should_run_now(now: Optional[datetime] = None) -> bool:
     install that predates the curator), we DO NOT run immediately. The
     curator is designed to run after at least ``interval_hours`` (7 days by
     default) of skill activity, not on the first background tick after
-    ``hermes update``. On first observation we seed ``last_run_at`` to "now"
+    ``clara update``. On first observation we seed ``last_run_at`` to "now"
     and defer the first real pass by one full interval. Users who want to
-    run it sooner can always invoke ``hermes curator run`` (with or without
+    run it sooner can always invoke ``clara curator run`` (with or without
     ``--dry-run``) explicitly — that path bypasses this gate.
 
     The idle check (min_idle_hours) is applied at the call site where we know
@@ -268,7 +268,7 @@ def should_run_now(now: Optional[datetime] = None) -> bool:
             state["last_run_at"] = now.isoformat()
             state["last_run_summary"] = (
                 "deferred first run — curator seeded, will run after one "
-                "interval; use `hermes curator run --dry-run` to preview now"
+                "interval; use `clara curator run --dry-run` to preview now"
             )
             save_state(state)
         except Exception as e:  # pragma: no cover — best-effort persistence
@@ -418,7 +418,7 @@ CURATOR_DRY_RUN_BANNER = (
     "produce on a live run — but describe the actions you WOULD take, "
     "not actions you took. A downstream reviewer will read the report "
     "and decide whether to approve a live run with "
-    "`hermes curator run` (no flag).\n"
+    "`clara curator run` (no flag).\n"
     "\n"
     "If you accidentally take a mutating action, say so explicitly in "
     "the summary so the reviewer can revert it.\n"
@@ -427,7 +427,7 @@ CURATOR_DRY_RUN_BANNER = (
 
 
 CURATOR_REVIEW_PROMPT = (
-    "You are running as Hermes' background skill CURATOR. This is an "
+    "You are running as Clara' background skill CURATOR. This is an "
     "UMBRELLA-BUILDING consolidation pass, not a passive audit and not a "
     "duplicate-finder.\n\n"
     "The goal of the skill collection is a LIBRARY OF CLASS-LEVEL "
@@ -448,7 +448,7 @@ CURATOR_REVIEW_PROMPT = (
     "to local curator-managed skills only; external skills are externally "
     "owned and read-only to this background curator.\n"
     "2. DO NOT delete any skill. Archiving (moving the skill's directory "
-    "into ~/.hermes/skills/.archive/) is the maximum destructive action. "
+    "into ~/.clara/skills/.archive/) is the maximum destructive action. "
     "Archives are recoverable; deletion is not.\n"
     "3. DO NOT touch skills shown as pinned=yes. Skip them entirely.\n"
     "3b. DO NOT archive, delete, consolidate, move, or otherwise modify any "
@@ -477,7 +477,7 @@ CURATOR_REVIEW_PROMPT = (
     "How to work — not optional:\n"
     "1. Scan the full candidate list. Identify PREFIX CLUSTERS (skills "
     "sharing a first word or domain keyword). Examples you are likely "
-    "to find: hermes-config-*, hermes-dashboard-*, gateway-*, codex-*, "
+    "to find: clara-config-*, clara-dashboard-*, gateway-*, codex-*, "
     "ollama-*, anthropic-*, gemini-*, mcp-*, salvage-*, pr-*, "
     "competitor-*, python-*, security-*, etc. Expect 10-25 clusters.\n"
     "2. For each cluster with 2+ members, do NOT ask 'are these pairs "
@@ -512,7 +512,7 @@ CURATOR_REVIEW_PROMPT = (
     "then `skill_manage action=delete` on the source. Never a terminal move "
     "— a shell mv/cp writes the same bytes with no ledger entry, so the "
     "archive that follows snapshots an already-stripped package and "
-    "`hermes curator rollback` restores a hollow skill (issue #96962).\n\n"
+    "`clara curator rollback` restores a hollow skill (issue #96962).\n\n"
     "Package integrity — not optional:\n"
     "Before demoting or archiving a skill, inspect it as a COMPLETE "
     "directory package, not just SKILL.md. A skill root may include "
@@ -602,18 +602,18 @@ CURATOR_REVIEW_PROMPT = (
 def _reports_root() -> Path:
     """Directory where curator run reports are written.
 
-    Lives under the profile-aware logs dir (``~/.hermes/logs/curator/``)
+    Lives under the profile-aware logs dir (``~/.clara/logs/curator/``)
     alongside ``agent.log`` and ``gateway.log`` so it's found by anyone
     looking for operational telemetry, not mixed in with the user's
-    authored skill data in ``~/.hermes/skills/``.
+    authored skill data in ``~/.clara/skills/``.
 
-    ``ensure_hermes_home()`` pre-creates this dir on every CLI launch and
+    ``ensure_clara_home()`` pre-creates this dir on every CLI launch and
     the v22→v23 migration backfills it for existing profiles, but we
     still mkdir here as a belt-and-suspenders so the curator works even
     from an odd entry path (e.g. gateway-only install, bare library use)
     that bypasses both.
     """
-    root = get_hermes_home() / "logs" / "curator"
+    root = get_clara_home() / "logs" / "curator"
     try:
         root.mkdir(parents=True, exist_ok=True)
     except OSError as e:
@@ -795,7 +795,7 @@ def _parse_structured_summary(
 
     body = match.group(1)
 
-    # Prefer PyYAML when available — every hermes install already has it
+    # Prefer PyYAML when available — every clara install already has it
     # (config.yaml loader). Fall back to a hand parser for paranoia.
     try:
         import yaml  # type: ignore
@@ -1047,8 +1047,8 @@ def _build_rename_summary(
           • docx-extraction → document-tools
           • flaky-thing — pruned (stale)
           • old-utility → spreadsheet-ops
-        full report: hermes curator status
-        keep an umbrella stable: hermes curator pin document-tools
+        full report: clara curator status
+        keep an umbrella stable: clara curator pin document-tools
 
     Cap is 10 entries so a 50-skill consolidation doesn't blow up
     agent.log; the full list is always in REPORT.md. The pin hint only
@@ -1101,7 +1101,7 @@ def _build_rename_summary(
         shown += 1
     if total > SHOW:
         lines.append(f"  … and {total - SHOW} more")
-    lines.append("full report: hermes curator status")
+    lines.append("full report: clara curator status")
     # Pin hint — only surface it when there's actually a destination skill
     # worth pinning. The umbrella skills that absorbed content are the natural
     # candidates: pinning one tells future curator runs to leave it alone.
@@ -1111,7 +1111,7 @@ def _build_rename_summary(
         if umbrellas:
             example = umbrellas[0]
             lines.append(
-                f"keep an umbrella stable: hermes curator pin {example}"
+                f"keep an umbrella stable: clara curator pin {example}"
             )
     return "\n".join(lines)
 
@@ -1352,7 +1352,7 @@ def _render_report_markdown(p: Dict[str, Any]) -> str:
     lines.append("")
 
     # Consolidated list — content absorbed into an umbrella. The directory
-    # on disk still lives under ~/.hermes/skills/.archive/ (every removal is
+    # on disk still lives under ~/.clara/skills/.archive/ (every removal is
     # recoverable by design), but the "live" content for these skills
     # continues to exist inside the destination umbrella.
     consolidated = p.get("consolidated") or []
@@ -1361,8 +1361,8 @@ def _render_report_markdown(p: Dict[str, Any]) -> str:
         lines.append(
             "_These skills were **absorbed into another skill** during this run — "
             "their content still lives, just under a different name. "
-            "The original directory was moved to `~/.hermes/skills/.archive/` for "
-            "safety and can be restored via `hermes curator restore <name>` if the "
+            "The original directory was moved to `~/.clara/skills/.archive/` for "
+            "safety and can be restored via `clara curator restore <name>` if the "
             "consolidation was wrong._\n"
         )
         SHOW = 50
@@ -1397,8 +1397,8 @@ def _render_report_markdown(p: Dict[str, Any]) -> str:
         lines.append(
             "_These skills were archived without being merged into an umbrella "
             "(e.g. stale, unused, or judged irrelevant). "
-            "Directories live under `~/.hermes/skills/.archive/`. "
-            "Restore any via `hermes curator restore <name>`._\n"
+            "Directories live under `~/.clara/skills/.archive/`. "
+            "Restore any via `clara curator restore <name>`._\n"
         )
         SHOW = 50
         for entry in pruned[:SHOW]:
@@ -1483,8 +1483,8 @@ def _render_report_markdown(p: Dict[str, Any]) -> str:
 
     # Recovery footer
     lines.append("## Recovery\n")
-    lines.append("- Restore an archived skill: `hermes curator restore <name>`")
-    lines.append("- All archives live under `~/.hermes/skills/.archive/` and are recoverable by `mv`")
+    lines.append("- Restore an archived skill: `clara curator restore <name>`")
+    lines.append("- All archives live under `~/.clara/skills/.archive/` and are recoverable by `mv`")
     lines.append("- See `run.json` in this directory for the full machine-readable record.")
     lines.append("")
 
@@ -1520,7 +1520,7 @@ def _render_candidate_list() -> str:
 
 def run_curator_review(
     on_summary: Optional[Callable[[str], None]] = None,
-    synchronous: bool = False,
+    __PROT_0_synchroclara__: bool = False,
     dry_run: bool = False,
     consolidate: Optional[bool] = None,
 ) -> Dict[str, Any]:
@@ -1534,13 +1534,13 @@ def run_curator_review(
       3. Update .curator_state with last_run_at and a one-line summary.
       4. Invoke *on_summary* with a user-visible description.
 
-    If *synchronous* is True, the LLM review runs in the calling thread; the
+    If *__PROT_1_synchroclara__* is True, the LLM review runs in the calling thread; the
     default is to spawn a daemon thread so the caller returns immediately.
 
     *consolidate* gates the LLM umbrella-building pass. ``None`` (the default)
     reads ``curator.consolidate`` from config (OFF by default). Passing
     ``True``/``False`` overrides the config for this invocation — used by the
-    ``hermes curator run --consolidate`` flag. When consolidation is off, only
+    ``clara curator run --consolidate`` flag. When consolidation is off, only
     the deterministic inactivity prune runs and the forked aux-model review is
     skipped entirely (no aux-model cost).
 
@@ -1599,7 +1599,7 @@ def run_curator_review(
     # Persist state before the LLM pass so a crash mid-review still records
     # the run and doesn't immediately re-trigger. In dry-run we do NOT bump
     # last_run_at or run_count — a preview shouldn't push the next scheduled
-    # real pass out. We still record a summary so `hermes curator status`
+    # real pass out. We still record a summary so `clara curator status`
     # shows that a preview ran.
     state = load_state()
     if not dry_run:
@@ -1692,7 +1692,7 @@ def run_curator_review(
                         "rule #1 for bundled skills ONLY. Hub-installed skills "
                         "remain strictly off-limits. Treat a stale built-in the "
                         "same as a stale agent-created skill: archive it (never "
-                        "delete). It will be restored on `hermes update` only if "
+                        "delete). It will be restored on `clara update` only if "
                         "the user explicitly restores it."
                     )
                 if dry_run:
@@ -1742,7 +1742,7 @@ def run_curator_review(
 
         # Write the per-run report. Runs in a best-effort try so a
         # reporting bug never breaks the curator itself. Report path is
-        # recorded in state so `hermes curator status` can point at it.
+        # recorded in state so `clara curator status` can point at it.
         try:
             after_report = skill_usage.curated_report()
         except Exception:
@@ -1771,7 +1771,7 @@ def run_curator_review(
             except Exception:
                 pass
 
-    if synchronous:
+    if __PROT_2_synchroclara__:
         _llm_pass()
     else:
         t = threading.Thread(target=_llm_pass, daemon=True, name="curator-review")
@@ -1836,7 +1836,7 @@ def _resolve_review_model(cfg: Dict[str, Any]) -> tuple[str, str]:
     """Pick (provider, model) for the curator review fork.
 
     Curator is a regular auxiliary task slot — ``auxiliary.curator.{provider,model}``
-    — so it participates in the canonical aux-model plumbing (``hermes model`` →
+    — so it participates in the canonical aux-model plumbing (``clara model`` →
     auxiliary picker, the dashboard Models tab, ``auxiliary.curator.{timeout,
     base_url,api_key,extra_body}``). ``provider: "auto"`` with an empty model
     means "use the main chat model" — same default as every other aux task.
@@ -1888,7 +1888,7 @@ def _run_llm_review(prompt: str) -> Dict[str, Any]:
     # providers and for pool-backed credentials.
     #
     # `_resolve_review_runtime()` honors `auxiliary.curator.{provider,model,...}`
-    # (canonical aux-task slot, wired through `hermes model` → auxiliary
+    # (canonical aux-task slot, wired through `clara model` → auxiliary
     # picker and the dashboard Models tab), with a legacy fallback to
     # `curator.auxiliary.{provider,model,...}`. See docs/user-guide/features/curator.md.
     _api_key = None
@@ -1902,8 +1902,8 @@ def _run_llm_review(prompt: str) -> Dict[str, Any]:
     _acp_args = None
     _model_name = ""
     try:
-        from hermes_cli.config import load_config_readonly
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from clara_cli.config import load_config_readonly
+        from clara_cli.runtime_provider import resolve_runtime_provider
         _cfg = load_config_readonly()
         _binding = _resolve_review_runtime(_cfg)
         _provider, _model_name = _binding.provider, _binding.model
@@ -1954,7 +1954,7 @@ def _run_llm_review(prompt: str) -> Dict[str, Any]:
             # ``terminal`` was deliberately removed from this fork (issue
             # #96962): a terminal ``mv``/``cp``/``rm`` under the skills tree
             # writes the same bytes with NO ledger entry, so the archive that
-            # followed snapshotted an already-stripped package and ``hermes
+            # followed snapshotted an already-stripped package and ``clara
             # curator rollback`` restored a hollow skill. Every mutation this
             # fork needs has a ledgered skill_manage action (write_file /
             # remove_file / delete), and reading works through skill_view.
@@ -1989,7 +1989,7 @@ def _run_llm_review(prompt: str) -> Dict[str, Any]:
         # runs so its tool-call chatter doesn't pollute the foreground
         # terminal. The background-thread runner also hides it; this
         # belt-and-suspenders path matters when a caller invokes
-        # run_curator_review(synchronous=True) from the CLI.
+        # run_curator_review(__PROT_3_synchroclara__=True) from the CLI.
         with open(os.devnull, "w", encoding="utf-8") as _devnull, \
              contextlib.redirect_stdout(_devnull), \
              contextlib.redirect_stderr(_devnull):

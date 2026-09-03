@@ -1,10 +1,10 @@
 """Regression test: /config must show the LIVE agent credential.
 
-HermesCLI.__init__ seeds ``self.api_key`` from OPENAI_API_KEY /
+ClaraCLI.__init__ seeds ``self.api_key`` from OPENAI_API_KEY /
 OPENROUTER_API_KEY env vars before provider resolution runs. On any
-non-OpenAI provider (Nous, Anthropic, ...) the constructor value is a
+non-OpenAI provider (Clara, Anthropic, ...) the constructor value is a
 different vendor's key than the one actually used for requests, so
-``/config`` displayed e.g. an ``sk-proj-...`` OpenAI key next to a Nous
+``/config`` displayed e.g. an ``sk-proj-...`` OpenAI key next to a Clara
 base URL. ``show_config`` must prefer ``self.agent.api_key`` when an
 agent exists.
 """
@@ -12,11 +12,11 @@ agent exists.
 from datetime import datetime
 from types import SimpleNamespace
 
-from cli import HermesCLI
+from cli import ClaraCLI
 
 
 def _run_show_config(stand_in, capsys):
-    HermesCLI.show_config(stand_in)
+    ClaraCLI.show_config(stand_in)
     return capsys.readouterr().out
 
 
@@ -37,10 +37,10 @@ def _make_stand_in(cli_key, agent_key):
 class TestShowConfigCredentialSource:
     def test_prefers_live_agent_key(self, capsys):
         out = _run_show_config(
-            _make_stand_in(cli_key="sk-proj-WRONGVENDORKEY1234", agent_key="nous-REALKEY-abcdef9876"),
+            _make_stand_in(cli_key="sk-proj-WRONGVENDORKEY1234", agent_key="clara-REALKEY-abcdef9876"),
             capsys,
         )
-        assert "nous-REA" in out
+        assert "clara-REA" in out
         assert "sk-proj-" not in out
 
     def test_falls_back_to_cli_key_without_agent(self, capsys):

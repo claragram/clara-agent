@@ -121,7 +121,7 @@ export interface Translations {
       loadingSessions: string
       retryingRemoteBackend: string
       startingDesktopConnection: string
-      startingHermesDesktop: string
+      startingClaraDesktop: string
     }
     errors: {
       backgroundExited: string
@@ -179,7 +179,7 @@ export interface Translations {
     backendOutOfDateTitle: string
     backendOutOfDateMessage: string
     installMethodUnsupportedTitle: string
-    updateHermes: string
+    updateClara: string
     updateReadyTitle: string
     updateReadyMessage: (count: number) => string
     updateReadyMessageUnknown: string
@@ -246,7 +246,7 @@ export interface Translations {
   }
 
   billingBlock: {
-    titleNous: string
+    titleClara: string
     titleProvider: (provider: string) => string
     fallbackMessage: string
     openBilling: string
@@ -830,9 +830,9 @@ export interface Translations {
       sshPortDesc: string
       sshKeyTitle: string
       sshKeyDesc: string
-      sshHermesPathTitle: string
-      sshHermesPathDesc: string
-      sshHermesPathPlaceholder: string
+      sshClaraPathTitle: string
+      sshClaraPathDesc: string
+      sshClaraPathPlaceholder: string
       sshTestConnection: string
       sshConnect: string
       sshButtonsHint: string
@@ -1154,13 +1154,13 @@ export interface Translations {
       activeBackend: string
       activeBackendHint: string
       useBackend: string
-      nousIncluded: string
-      nousAuthNeededTitle: string
-      nousAuthNeededMessage: (provider: string) => string
-      nousAuthSignIn: string
-      nousAuthDoneTitle: string
-      nousAuthDoneMessage: string
-      nousAuthFailed: string
+      claraIncluded: string
+      claraAuthNeededTitle: string
+      claraAuthNeededMessage: (provider: string) => string
+      claraAuthSignIn: string
+      claraAuthDoneTitle: string
+      claraAuthDoneMessage: string
+      claraAuthFailed: string
       noApiKeyRequired: string
       postSetupHint: (step: string) => string
       postSetupInstalledHint: string
@@ -1482,11 +1482,11 @@ export interface Translations {
     noSessions: string
     gatewayRunning: string
     gatewayStopped: string
-    hermesActiveSessions: (version: string, count: number) => string
+    claraActiveSessions: (version: string, count: number) => string
     restartGateway: string
     openBrowser: string
     gatewayRestartFailed: string
-    updateHermes: string
+    updateClara: string
     reloadWindow: string
     actionRunning: string
     actionDone: string

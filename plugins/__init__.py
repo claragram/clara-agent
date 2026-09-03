@@ -1,1 +1,1 @@
-# Hermes plugins package
+# Clara plugins package

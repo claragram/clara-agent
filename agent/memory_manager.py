@@ -503,9 +503,9 @@ class MemoryManager:
         # (#40466). Reject it here, at the door, so it never enters the routing
         # table at all — matching the built-ins-always-win invariant used by
         # the TTS/browser/search provider registries.
-        from toolsets import _HERMES_CORE_TOOLS
+        from toolsets import _CLARA_CORE_TOOLS
 
-        _core_tool_names = set(_HERMES_CORE_TOOLS)
+        _core_tool_names = set(_CLARA_CORE_TOOLS)
 
         # Index tool names → provider for routing
         for raw_schema in provider.get_tool_schemas():
@@ -577,7 +577,7 @@ class MemoryManager:
     def _strip_skill_scaffolding(text: str) -> Optional[str]:
         """Return memory-worthy user text, or None to skip the turn.
 
-        When a user invokes a /skill or /bundle, Hermes expands the turn into
+        When a user invokes a /skill or /bundle, Clara expands the turn into
         a model-facing message that embeds the entire skill body. Feeding that
         verbatim to memory providers pollutes their stores/embeddings with
         prompt scaffolding instead of what the user actually asked. We recover
@@ -628,7 +628,7 @@ class MemoryManager:
             except Exception as exc:  # pragma: no cover - re-raised by caller
                 error_box["value"] = exc
 
-        # Propagate the caller's contextvars (profile HERMES_HOME override)
+        # Propagate the caller's contextvars (profile CLARA_HOME override)
         # to the prefetch thread — see _submit_background.
         import contextvars
         from functools import partial
@@ -806,7 +806,7 @@ class MemoryManager:
 
         The submitted callable is wrapped with the CALLER's contextvars:
         profile isolation in multi-profile processes (gateway multiplexer,
-        dashboard, cron) is a ContextVar-scoped HERMES_HOME override, and
+        dashboard, cron) is a ContextVar-scoped CLARA_HOME override, and
         executor worker threads start with empty contexts — without the
         wrap, a provider resolving ambient state (config paths, secrets)
         from the worker would silently land on the default profile.
@@ -831,7 +831,7 @@ class MemoryManager:
         try:
             # Make submit+tracking atomic with the shutdown snapshot. The
             # callback is attached after releasing the lock because an already
-            # completed future invokes callbacks synchronously.
+            # completed future invokes callbacks __PROT_1_synchroclaraly__.
             with self._sync_executor_lock:
                 if self._shutting_down:
                     logger.warning("Memory manager is shutting down; rejecting late %s task", kind)
@@ -908,9 +908,9 @@ class MemoryManager:
         :meth:`add_provider`, so the manager must not advertise a schema it
         will never route. Built-ins always win (#40466).
         """
-        from toolsets import _HERMES_CORE_TOOLS
+        from toolsets import _CLARA_CORE_TOOLS
 
-        _core_tool_names = set(_HERMES_CORE_TOOLS)
+        _core_tool_names = set(_CLARA_CORE_TOOLS)
         schemas = []
         seen = set()
         for provider in self._providers:
@@ -1019,7 +1019,7 @@ class MemoryManager:
         every other provider write (per-turn ``sync_all``, prefetches), which
         already share the same worker. If the executor is unavailable,
         ``_submit_background`` degrades to inline execution — the pre-#16454
-        synchronous behavior, slow but correct.
+        __PROT_0_synchroclara__ behavior, slow but correct.
         """
         if not self._providers:
             return
@@ -1419,13 +1419,13 @@ class MemoryManager:
     def initialize_all(self, session_id: str, **kwargs) -> None:
         """Initialize all providers.
 
-        Automatically injects ``hermes_home`` into *kwargs* so that every
+        Automatically injects ``clara_home`` into *kwargs* so that every
         provider can resolve profile-scoped storage paths without importing
-        ``get_hermes_home()`` themselves.
+        ``get_clara_home()`` themselves.
         """
-        if "hermes_home" not in kwargs:
-            from hermes_constants import get_hermes_home
-            kwargs["hermes_home"] = str(get_hermes_home())
+        if "clara_home" not in kwargs:
+            from clara_constants import get_clara_home
+            kwargs["clara_home"] = str(get_clara_home())
         for provider in self._providers:
             try:
                 provider.initialize(session_id=session_id, **kwargs)

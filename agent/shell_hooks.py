@@ -10,19 +10,19 @@ zero changes to call sites.
 Design notes
 ------------
 * Python plugins and shell hooks compose naturally: both flow through
-  :func:`hermes_cli.plugins.invoke_hook` and its aggregators.  Python
+  :func:`clara_cli.plugins.invoke_hook` and its aggregators.  Python
   plugins are registered first (via ``discover_and_load()``) so their
   block decisions win ties over shell-hook blocks.
 * Subprocess execution uses ``shlex.split(os.path.expanduser(command))``
   with ``shell=False`` — no shell injection footguns.  Users that need
   pipes/redirection wrap their logic in a script.
 * First-use consent is gated by the allowlist under
-  ``~/.hermes/shell-hooks-allowlist.json``.  Non-TTY callers must pass
+  ``~/.clara/shell-hooks-allowlist.json``.  Non-TTY callers must pass
   ``accept_hooks=True`` (resolved from ``--accept-hooks``,
-  ``HERMES_ACCEPT_HOOKS``, or ``hooks_auto_accept: true`` in config)
+  ``CLARA_ACCEPT_HOOKS``, or ``hooks_auto_accept: true`` in config)
   for registration to succeed without a prompt.
 * Registration is idempotent — safe to invoke from both the CLI entry
-  point (``hermes_cli/main.py``) and the gateway entry point
+  point (``clara_cli/main.py``) and the gateway entry point
   (``gateway/run.py``).
 
 Wire protocol
@@ -42,12 +42,12 @@ Wire protocol
 
     # Block a pre_tool_call (either shape accepted; normalised internally):
     {"decision": "block", "reason":  "Forbidden command"}   # Claude-Code-style
-    {"action":   "block", "message": "Forbidden command"}   # Hermes-canonical
+    {"action":   "block", "message": "Forbidden command"}   # Clara-canonical
 
     # Inject context for pre_llm_call:
     {"context": "Today is Friday"}
 
-    # Modify tool input for pre_tool_call (Hermes-canonical):
+    # Modify tool input for pre_tool_call (Clara-canonical):
     {"action": "modify", "args": {"new_string": "fixed content"}}
 
     # Modify tool input for pre_tool_call (Claude-Code-style):
@@ -151,14 +151,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple
 
-from hermes_cli._subprocess_compat import IS_WINDOWS, kill_process_tree, windows_hide_flags
+from clara_cli._subprocess_compat import IS_WINDOWS, kill_process_tree, windows_hide_flags
 
 try:
     import fcntl  # POSIX only; Windows falls back to best-effort without flock.
 except ImportError:  # pragma: no cover
     fcntl = None  # type: ignore[assignment]
 
-from hermes_constants import get_hermes_home
+from clara_constants import get_clara_home
 from utils import atomic_replace
 
 logger = logging.getLogger(__name__)
@@ -173,7 +173,7 @@ _DEFAULT_BLOCK_MESSAGE = "Blocked by shell hook."
 BLOCK_EXIT_CODE = 2
 
 # Events whose block directive is actually honored downstream (see
-# hermes_cli.plugins.get_pre_tool_call_block_message / _get_pre_tool_call_
+# clara_cli.plugins.get_pre_tool_call_block_message / _get_pre_tool_call_
 # directive_details).  Exit-code-2 blocking and ``fail_closed`` only make
 # sense for these.
 _BLOCKING_EVENTS = frozenset({"pre_tool_call"})
@@ -187,7 +187,7 @@ _STDERR_MESSAGE_LIMIT = 400
 # the same script can legitimately register for different matchers under
 # the same event (e.g. one entry per tool the user wants to gate). Home is
 # part of the key so a multiplexed gateway's secondary profiles — each with
-# their own plugin manager (see hermes_cli.plugins.get_plugin_manager) — can
+# their own plugin manager (see clara_cli.plugins.get_plugin_manager) — can
 # register identical hook triples without the first profile's registration
 # silently shadowing the rest.
 # Second registration attempts for the exact same tuple become no-ops
@@ -255,13 +255,13 @@ def register_from_config(
 ) -> List[ShellHookSpec]:
     """Register every configured shell hook on the plugin manager.
 
-    ``cfg`` is the full parsed config dict (``hermes_cli.config.load_config``
+    ``cfg`` is the full parsed config dict (``clara_cli.config.load_config``
     output).  The ``hooks:`` key is read out of it.  Missing, empty, or
     non-dict ``hooks`` is treated as zero configured hooks.
 
     ``accept_hooks=True`` skips the TTY consent prompt — the caller is
     promising that the user has opted in via a flag, env var, or config
-    setting.  ``HERMES_ACCEPT_HOOKS=1`` and ``hooks_auto_accept: true`` are
+    setting.  ``CLARA_ACCEPT_HOOKS=1`` and ``hooks_auto_accept: true`` are
     also honored inside this function so either CLI or gateway call sites
     pick them up.
 
@@ -272,13 +272,13 @@ def register_from_config(
     if not isinstance(cfg, dict):
         return []
 
-    # Safe mode (--safe-mode / HERMES_SAFE_MODE=1): shell hooks are user
+    # Safe mode (--safe-mode / CLARA_SAFE_MODE=1): shell hooks are user
     # customizations too — skip registration entirely so a troubleshooting
     # run fires zero user-configured code (plugins, MCP, AND hooks).
     from utils import env_var_enabled
 
-    if env_var_enabled("HERMES_SAFE_MODE"):
-        logger.info("HERMES_SAFE_MODE=1 — shell-hook registration skipped")
+    if env_var_enabled("CLARA_SAFE_MODE"):
+        logger.info("CLARA_SAFE_MODE=1 — shell-hook registration skipped")
         return []
 
     effective_accept = _resolve_effective_accept(cfg, accept_hooks)
@@ -290,10 +290,10 @@ def register_from_config(
     registered: List[ShellHookSpec] = []
 
     # Import lazily — avoids circular imports at module-load time.
-    from hermes_cli.plugins import get_plugin_manager
+    from clara_cli.plugins import get_plugin_manager
 
     manager = get_plugin_manager()
-    home_key = str(get_hermes_home().expanduser().resolve())
+    home_key = str(get_clara_home().expanduser().resolve())
 
     # Idempotence + allowlist read happen under the lock; the TTY
     # prompt runs outside so other threads aren't parked on a blocking
@@ -312,7 +312,7 @@ def register_from_config(
             ):
                 logger.warning(
                     "shell hook for %s (%s) not allowlisted — skipped. "
-                    "Use --accept-hooks / HERMES_ACCEPT_HOOKS=1 / "
+                    "Use --accept-hooks / CLARA_ACCEPT_HOOKS=1 / "
                     "hooks_auto_accept: true, or approve at the TTY "
                     "prompt next run.",
                     spec.event, spec.command,
@@ -337,7 +337,7 @@ def register_from_config(
 
 def iter_configured_hooks(cfg: Optional[Dict[str, Any]]) -> List[ShellHookSpec]:
     """Return the parsed ``ShellHookSpec`` entries from config without
-    registering anything.  Used by ``hermes hooks list`` and ``doctor``."""
+    registering anything.  Used by ``clara hooks list`` and ``doctor``."""
     if not isinstance(cfg, dict):
         return []
     return _parse_hooks_block(cfg.get("hooks"))
@@ -354,7 +354,7 @@ def re_register_config_hooks() -> None:
     are wired again (#60036 / PR #60267; tracking #64178 — salvaged from
     PR #64188).
 
-    Only the idempotence keys for the *current* Hermes home are cleared —
+    Only the idempotence keys for the *current* Clara home are cleared —
     ``discover_and_load(force=True)`` only unloads the manager scoped to
     that one home, so clearing every home's keys would make a force-reload
     in profile A drop profile B's still-live registration from the ledger
@@ -363,12 +363,12 @@ def re_register_config_hooks() -> None:
     Commands already allowlisted stay allowlisted, so this never re-prompts
     at a TTY for hooks the user previously approved.
     """
-    home_key = str(get_hermes_home().expanduser().resolve())
+    home_key = str(get_clara_home().expanduser().resolve())
     with _registered_lock:
         _registered.difference_update(
             {key for key in _registered if key[0] == home_key}
         )
-    from hermes_cli.config import load_config
+    from clara_cli.config import load_config
 
     register_from_config(load_config())
 
@@ -389,7 +389,7 @@ def _parse_hooks_block(hooks_cfg: Any) -> List[ShellHookSpec]:
     Malformed entries warn-and-skip — we never raise from config parsing
     because a broken hook must not crash the agent.
     """
-    from hermes_cli.plugins import SHELL_UNSUPPORTED_HOOKS, VALID_HOOKS
+    from clara_cli.plugins import SHELL_UNSUPPORTED_HOOKS, VALID_HOOKS
 
     if not isinstance(hooks_cfg, dict):
         return []
@@ -564,7 +564,7 @@ def _spawn(spec: ShellHookSpec, stdin_json: str) -> Dict[str, Any]:
     }
     try:
         # Windows-safe: plain shlex.split eats backslashes in paths (#78293).
-        from hermes_cli._subprocess_compat import split_command_line
+        from clara_cli._subprocess_compat import split_command_line
 
         argv = split_command_line(os.path.expanduser(spec.command))
     except ValueError as exc:
@@ -678,7 +678,7 @@ def _evaluate_result(
       block instead of silently contributing nothing.
 
     Shared by the live callback path (:func:`_make_callback`) and the CLI
-    test helper (:func:`run_once`) so ``hermes hooks test`` reflects
+    test helper (:func:`run_once`) so ``clara hooks test`` reflects
     production behaviour exactly.
     """
     blocking_event = spec.event in _BLOCKING_EVENTS
@@ -784,12 +784,12 @@ def _block_message(primary: Any, secondary: Any) -> str:
 
 
 def _parse_response(event: str, stdout: str) -> Optional[Dict[str, Any]]:
-    """Translate stdout JSON into a Hermes wire-shape dict.
+    """Translate stdout JSON into a Clara wire-shape dict.
 
     For ``pre_tool_call`` the Claude-Code-style ``{"decision": "block",
-    "reason": "..."}`` payload is translated into the canonical Hermes
+    "reason": "..."}`` payload is translated into the canonical Clara
     ``{"action": "block", "message": "..."}`` shape expected by
-    :func:`hermes_cli.plugins.get_pre_tool_call_block_message`.  This is
+    :func:`clara_cli.plugins.get_pre_tool_call_block_message`.  This is
     the single most important correctness invariant in this module —
     skipping the translation silently breaks every ``pre_tool_call``
     block directive.
@@ -838,7 +838,7 @@ def _parse_response(event: str, stdout: str) -> Optional[Dict[str, Any]]:
         return None
 
     if event == "pre_verify":
-        # "continue" (Hermes) / "block" (Claude-Code Stop: block the stop) both
+        # "continue" (Clara) / "block" (Claude-Code Stop: block the stop) both
         # mean keep going; the message/reason is the follow-up for the model. A
         # continue with no message is a no-op — let the turn finish.
         action = str(data.get("action") or data.get("decision") or "").strip().lower()
@@ -861,7 +861,7 @@ def _parse_response(event: str, stdout: str) -> Optional[Dict[str, Any]]:
 
 def allowlist_path() -> Path:
     """Path to the per-user shell-hook allowlist file."""
-    return get_hermes_home() / ALLOWLIST_FILENAME
+    return get_clara_home() / ALLOWLIST_FILENAME
 
 
 def load_allowlist() -> Dict[str, Any]:
@@ -905,7 +905,7 @@ def save_allowlist(data: Dict[str, Any]) -> None:
             "Failed to persist shell hook allowlist to %s: %s. "
             "The approval is in-memory for this run, but the next "
             "startup will re-prompt (or skip registration on non-TTY "
-            "runs without --accept-hooks / HERMES_ACCEPT_HOOKS).",
+            "runs without --accept-hooks / CLARA_ACCEPT_HOOKS).",
             p, exc,
         )
 
@@ -972,7 +972,7 @@ def _prompt_and_record(
         return False
 
     print(
-        f"\n⚠ Hermes is about to register a shell hook that will run a\n"
+        f"\n⚠ Clara is about to register a shell hook that will run a\n"
         f"  command on your behalf.\n\n"
         f"    Event:   {event}\n"
         f"    Command: {command}\n\n"
@@ -1048,7 +1048,7 @@ def _command_script_path(command: str) -> str:
     common bare-path form.
     """
     try:
-        from hermes_cli._subprocess_compat import split_command_line
+        from clara_cli._subprocess_compat import split_command_line
 
         parts = split_command_line(command)
     except ValueError:
@@ -1075,12 +1075,12 @@ def _resolve_effective_accept(
 
     Precedence (any truthy source flips us on):
       1. ``--accept-hooks`` flag (CLI) / explicit argument
-      2. ``HERMES_ACCEPT_HOOKS`` env var
+      2. ``CLARA_ACCEPT_HOOKS`` env var
       3. ``hooks_auto_accept: true`` in ``cli-config.yaml``
     """
     if accept_hooks_arg:
         return True
-    env = os.environ.get("HERMES_ACCEPT_HOOKS", "").strip().lower()
+    env = os.environ.get("CLARA_ACCEPT_HOOKS", "").strip().lower()
     if env in {"1", "true", "yes", "on"}:
         return True
     cfg_val = cfg.get("hooks_auto_accept", False)
@@ -1092,7 +1092,7 @@ def _resolve_effective_accept(
 
 
 # ---------------------------------------------------------------------------
-# Introspection (used by `hermes hooks` CLI)
+# Introspection (used by `clara hooks` CLI)
 # ---------------------------------------------------------------------------
 
 def allowlist_entry_for(event: str, command: str) -> Optional[Dict[str, Any]]:
@@ -1137,7 +1137,7 @@ def script_is_executable(command: str) -> bool:
     if not os.path.isfile(expanded):
         return False
     try:
-        from hermes_cli._subprocess_compat import split_command_line
+        from clara_cli._subprocess_compat import split_command_line
 
         argv = split_command_line(command)
     except ValueError:
@@ -1151,17 +1151,17 @@ def run_once(
     spec: ShellHookSpec, kwargs: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Fire a single shell-hook invocation with a synthetic payload.
-    Used by ``hermes hooks test`` and ``hermes hooks doctor``.
+    Used by ``clara hooks test`` and ``clara hooks doctor``.
 
-    ``kwargs`` is the same dict that :func:`hermes_cli.plugins.invoke_hook`
+    ``kwargs`` is the same dict that :func:`clara_cli.plugins.invoke_hook`
     would pass at runtime.  It is routed through :func:`_serialize_payload`
     so the synthetic stdin exactly matches what a real hook firing would
-    produce — otherwise scripts tested via ``hermes hooks test`` could
+    produce — otherwise scripts tested via ``clara hooks test`` could
     diverge silently from production behaviour.
 
     Returns the :func:`_spawn` diagnostic dict plus a ``parsed`` field
-    holding the canonical Hermes-wire-shape response — including exit-code-2
-    blocking and ``fail_closed`` semantics, so what ``hermes hooks test``
+    holding the canonical Clara-wire-shape response — including exit-code-2
+    blocking and ``fail_closed`` semantics, so what ``clara hooks test``
     prints is exactly what the dispatcher would receive."""
     stdin_json = _serialize_payload(spec.event, kwargs)
     result = _spawn(spec, stdin_json)

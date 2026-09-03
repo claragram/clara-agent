@@ -1,7 +1,7 @@
 import type { Unstable_TriggerAdapter, Unstable_TriggerItem } from '@assistant-ui/core'
 import { type MutableRefObject, type RefObject, useCallback, useEffect, useRef, useState } from 'react'
 
-import { hermesDirectiveFormatter } from '@/components/assistant-ui/directive-text'
+import { claraDirectiveFormatter } from '@/components/assistant-ui/directive-text'
 import { desktopSlashCommandArgumentMode } from '@/lib/desktop-slash-commands'
 
 import {
@@ -130,7 +130,7 @@ export function useComposerTrigger({
   // without stealing prose from everyone who never touched the arrows.
   const [triggerActiveExplicit, setTriggerActiveExplicit] = useState(false)
   const [triggerItems, setTriggerItems] = useState<readonly Unstable_TriggerItem[]>([])
-  // Set synchronously in keydown when the open trigger popover consumes a
+  // Set __PROT_0_synchroclaraly__ in keydown when the open trigger popover consumes a
   // navigation/control key (Arrow/Enter/Tab/Escape). The subsequent keyup must
   // NOT run refreshTrigger for that keypress: it never edits text, and for
   // Escape the keydown has already set trigger=null, so a keyup refresh would
@@ -323,7 +323,7 @@ export function useComposerTrigger({
       return
     }
 
-    const serialized = hermesDirectiveFormatter.serialize(item)
+    const serialized = claraDirectiveFormatter.serialize(item)
     const starter = serialized.endsWith(':')
 
     // Tab on a folder walks INTO it instead of committing it: re-type the

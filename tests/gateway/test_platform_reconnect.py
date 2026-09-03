@@ -119,8 +119,8 @@ class TestStartupPlatformIsolation:
             return MagicMock()
 
         with patch("gateway.status.write_runtime_status"):
-            with patch("hermes_cli.plugins.discover_plugins"):
-                with patch("hermes_cli.config.load_config", return_value={}):
+            with patch("clara_cli.plugins.discover_plugins"):
+                with patch("clara_cli.config.load_config", return_value={}):
                     with patch("agent.shell_hooks.register_from_config"):
                         with patch(
                             "tools.process_registry.process_registry.recover_from_checkpoint",
@@ -486,7 +486,7 @@ class TestSpawnSupervised:
             is_delegated_child_context,
         )
         from gateway.kanban_watchers import _to_thread_process_service
-        from hermes_cli.kanban_db import _assert_not_delegated_child_mutation
+        from clara_cli.kanban_db import _assert_not_delegated_child_mutation
 
         with delegated_child_context():
             assert is_delegated_child_context() is True
@@ -496,7 +496,7 @@ class TestSpawnSupervised:
             assert is_delegated_child_context() is True
 
     @pytest.mark.asyncio
-    async def test_clean_synchronous_return_is_not_respawned(self):
+    async def test_clean_synchroclara_return_is_not_respawned(self):
         # A supervised coro that returns immediately (clean exit) must be
         # invoked EXACTLY ONCE — a clean return means deliberate shutdown or a
         # gated no-op watcher; respawning it would busy-spin the event loop.
@@ -819,7 +819,7 @@ class TestReconnectWatcherHandleTracking:
             "platform_reconnect_watcher",
             on_spawn=lambda t: setattr(runner, "_reconnect_watcher_task", t),
         )
-        # on_spawn fired synchronously at spawn time.
+        # on_spawn fired __PROT_0_synchroclaraly__ at spawn time.
         assert runner._reconnect_watcher_task is task
         task.cancel()
         try:
@@ -882,8 +882,8 @@ class TestVoiceInputCallbackWiring:
 
         with patch.object(runner, "_create_adapter", return_value=adapter):
             with patch("gateway.status.write_runtime_status"):
-                with patch("hermes_cli.plugins.discover_plugins"):
-                    with patch("hermes_cli.config.load_config", return_value={}):
+                with patch("clara_cli.plugins.discover_plugins"):
+                    with patch("clara_cli.config.load_config", return_value={}):
                         with patch("agent.shell_hooks.register_from_config"):
                             with patch(
                                 "tools.process_registry.process_registry.recover_from_checkpoint",

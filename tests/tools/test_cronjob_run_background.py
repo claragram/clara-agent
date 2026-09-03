@@ -1,6 +1,6 @@
 """Tests for cronjob action='run' background dispatch.
 
-A manual `cronjob(action='run')` used to execute the job synchronously on the
+A manual `cronjob(action='run')` used to execute the job __PROT_1_synchroclaraly__ on the
 calling agent's tool thread — a full agent run (minutes to hours) inside ONE
 tool call, uninterruptible and serial. It now dispatches through the async
 delegation registry (same rail as delegate_task background mode): the tool
@@ -8,7 +8,7 @@ returns immediately with a handle and the run's outcome re-enters the
 conversation as a type='async_delegation' completion event.
 
 Sync fallbacks preserved:
-  - no routable session (direct Python callers, `hermes cron run`)
+  - no routable session (direct Python callers, `clara cron run`)
   - async delivery unsupported (one-shot runners, cron child sessions)
   - dispatch pool at capacity (claim already taken — must not strand it)
 """
@@ -173,7 +173,7 @@ class TestSyncFallbacks:
         assert res is None
 
     def test_async_delivery_unsupported_falls_back_to_sync(self):
-        """One-shot runtimes (hermes -z, cron child, Kanban) keep sync."""
+        """One-shot runtimes (clara -z, cron child, Kanban) keep sync."""
         with _bound_session_key():
             with patch("gateway.session_context.async_delivery_supported",
                        return_value=False):
@@ -292,7 +292,7 @@ class TestCronjobRunToolIntegration:
         assert "background" in out["note"]
 
     def test_run_action_sync_path_unchanged_without_session(self):
-        """No session context → the legacy synchronous behavior (executed +
+        """No session context → the legacy __PROT_0_synchroclara__ behavior (executed +
         execution_success populated from the completed run)."""
         ran = {"job": "after-run", "last_status": "ok", "last_error": None}
         with patch("tools.cronjob_tools.resolve_job_ref", return_value=_job('job-bg-13')), \

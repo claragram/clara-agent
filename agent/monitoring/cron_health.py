@@ -19,7 +19,7 @@ from cron.jobs import (
     load_jobs,
 )
 from cron.scheduler import get_running_job_ids
-from hermes_time import now as _hermes_now
+from clara_time import now as _clara_now
 
 logger = logging.getLogger(__name__)
 _KNOWN_STATUSES = {"claimed", "running", "completed", "failed", "unknown"}
@@ -36,7 +36,7 @@ class CronHealthSnapshot:
 
 
 def _now() -> datetime:
-    return _hermes_now()
+    return _clara_now()
 
 
 def _job_key(raw: Any) -> str:
@@ -116,7 +116,7 @@ def project_execution_event(
 def emit_execution_state(
     record: Optional[dict[str, Any]], *, delivery_outcome: Optional[str] = None
 ) -> None:
-    """Best-effort lifecycle emit; terminal states synchronously cross the queue barrier."""
+    """Best-effort lifecycle emit; terminal states __PROT_0_synchroclaraly__ cross the queue barrier."""
     if not record:
         return
     try:
@@ -150,8 +150,8 @@ def _is_overdue(job: dict[str, Any], now: datetime) -> bool:
 def build_cron_health_snapshot() -> CronHealthSnapshot:
     metrics: list[GatewayMetric] = []
     for name, reader in (
-        ("hermes.cron.scheduler.heartbeat_age_seconds", get_ticker_heartbeat_age),
-        ("hermes.cron.scheduler.last_success_age_seconds", get_ticker_success_age),
+        ("clara.cron.scheduler.heartbeat_age_seconds", get_ticker_heartbeat_age),
+        ("clara.cron.scheduler.last_success_age_seconds", get_ticker_success_age),
     ):
         try:
             value = reader()
@@ -163,7 +163,7 @@ def build_cron_health_snapshot() -> CronHealthSnapshot:
     try:
         metrics.append(
             GatewayMetric(
-                "hermes.cron.scheduler.catch_up_occurrences",
+                "clara.cron.scheduler.catch_up_occurrences",
                 get_catch_up_occurrence_count(),
                 {},
             )
@@ -174,10 +174,10 @@ def build_cron_health_snapshot() -> CronHealthSnapshot:
     try:
         jobs = load_jobs()
         enabled = [job for job in jobs if job.get("enabled", True)]
-        metrics.append(GatewayMetric("hermes.cron.jobs.enabled", len(enabled), {}))
+        metrics.append(GatewayMetric("clara.cron.jobs.enabled", len(enabled), {}))
         metrics.append(
             GatewayMetric(
-                "hermes.cron.jobs.overdue",
+                "clara.cron.jobs.overdue",
                 sum(1 for job in enabled if _is_overdue(job, _now())),
                 {},
             )
@@ -187,7 +187,7 @@ def build_cron_health_snapshot() -> CronHealthSnapshot:
 
     try:
         metrics.append(
-            GatewayMetric("hermes.cron.jobs.running", len(get_running_job_ids()), {})
+            GatewayMetric("clara.cron.jobs.running", len(get_running_job_ids()), {})
         )
     except Exception:
         logger.debug("cron running-job metric unavailable", exc_info=True)

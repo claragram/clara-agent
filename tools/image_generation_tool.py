@@ -3,7 +3,7 @@
 Image Generation Tools Module
 
 Provides image generation via FAL.ai. Multiple FAL models are supported and
-selectable via ``hermes tools`` → Image Generation; the active model is
+selectable via ``clara tools`` → Image Generation; the active model is
 persisted to ``image_gen.model`` in ``config.yaml``.
 
 Architecture:
@@ -66,10 +66,10 @@ from tools.fal_common import (
 )
 from tools.managed_tool_gateway import resolve_managed_tool_gateway
 from tools.tool_backend_helpers import (
-    NOUS_MANAGED_PROVIDER,
+    CLARA_MANAGED_PROVIDER,
     fal_key_is_configured,
-    managed_nous_tools_enabled,
-    nous_tool_gateway_unavailable_message,
+    managed_clara_tools_enabled,
+    clara_tool_gateway_unavailable_message,
     read_selection,
     selection_error,
 )
@@ -207,7 +207,7 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
             "output_format": "png",
             "safety_tolerance": "5",
             # "1K" is the cheapest tier; 4K doubles the per-image cost.
-            # Users on Nous Subscription should stay at 1K for predictable billing.
+            # Users on Clara Subscription should stay at 1K for predictable billing.
             "resolution": "1K",
         },
         "supports": {
@@ -308,7 +308,7 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
             "portrait": "portrait_4_3",       # 768x1024
         },
         "defaults": {
-            # Same quality pinning as gpt-image-1.5: medium keeps Nous
+            # Same quality pinning as gpt-image-1.5: medium keeps Clara
             # Portal billing predictable. "high" is 3-4x the per-image
             # cost at the same size; "low" is too rough for production use.
             "quality": "medium",
@@ -731,13 +731,13 @@ _managed_fal_client_lock = threading.Lock()
 
 
 # ---------------------------------------------------------------------------
-# Managed FAL gateway (Nous Subscription)
+# Managed FAL gateway (Clara Subscription)
 # ---------------------------------------------------------------------------
 def _resolve_managed_fal_gateway():
-    """Resolve the FAL route from the stored `hermes tools` selection.
+    """Resolve the FAL route from the stored `clara tools` selection.
 
     Dispatch is a plain switch on the stored ``image_gen`` provider string:
-    - ``"nous"`` (or legacy ``use_gateway: true``) → managed fal-queue
+    - ``"clara"`` (or legacy ``use_gateway: true``) → managed fal-queue
       gateway ONLY; unentitled/unreachable is a selection-naming error
       (never a silent fall back to FAL_KEY).
     - any other stored provider (``"fal"``, ...) → direct FAL ONLY; a
@@ -751,13 +751,13 @@ def _resolve_managed_fal_gateway():
     selection cannot run.
     """
     selected = read_selection("image_gen")
-    if selected == NOUS_MANAGED_PROVIDER:
+    if selected == CLARA_MANAGED_PROVIDER:
         gateway = resolve_managed_tool_gateway("fal-queue")
         if gateway is None:
             raise ValueError(selection_error(
                 "image_gen",
-                NOUS_MANAGED_PROVIDER,
-                "the Nous Tool Gateway is not available (not entitled or "
+                CLARA_MANAGED_PROVIDER,
+                "the Clara Tool Gateway is not available (not entitled or "
                 "unreachable)",
             ))
         return gateway
@@ -781,7 +781,7 @@ def _get_managed_fal_client(managed_gateway):
 
     client_config = (
         managed_gateway.gateway_origin.rstrip("/"),
-        managed_gateway.nous_user_token,
+        managed_gateway.clara_user_token,
     )
     with _managed_fal_client_lock:
         if _managed_fal_client is not None and _managed_fal_client_config == client_config:
@@ -792,7 +792,7 @@ def _get_managed_fal_client(managed_gateway):
         _load_fal_client()
         _managed_fal_client = _ManagedFalSyncClient(
             fal_client,
-            key=managed_gateway.nous_user_token,
+            key=managed_gateway.clara_user_token,
             queue_run_origin=managed_gateway.gateway_origin,
         )
         _managed_fal_client_config = client_config
@@ -866,17 +866,17 @@ def _submit_fal_request(model: str, arguments: Dict[str, Any]):
             if status in {401, 402, 403}:
                 gateway_message = (
                     "\n\n"
-                    + nous_tool_gateway_unavailable_message(
+                    + clara_tool_gateway_unavailable_message(
                         "managed FAL image generation",
                         force_fresh=True,
                     )
                 )
             raise ValueError(
-                f"Nous Subscription gateway rejected model '{model}' "
+                f"Clara Subscription gateway rejected model '{model}' "
                 f"(HTTP {status}). This model may not yet be enabled on "
-                f"the Nous Portal's FAL proxy. Either:\n"
+                f"the Clara Portal's FAL proxy. Either:\n"
                 f"  • Set FAL_KEY in your environment to use FAL.ai directly, or\n"
-                f"  • Pick a different model via `hermes tools` → Image Generation."
+                f"  • Pick a different model via `clara tools` → Image Generation."
                 f"{gateway_message}"
             ) from exc
         raise
@@ -893,7 +893,7 @@ def _resolve_fal_model() -> tuple:
     """
     model_id = ""
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
         cfg = load_config()
         img_cfg = cfg.get("image_gen") if isinstance(cfg, dict) else None
         if isinstance(img_cfg, dict):
@@ -1120,21 +1120,21 @@ def _agent_cache_base_for_env(env: Any) -> str | None:
 
         remote_home = getattr(env, "_remote_home", None)
         if remote_home:
-            return f"{str(remote_home).rstrip('/')}/.hermes"
+            return f"{str(remote_home).rstrip('/')}/.clara"
 
         env_name = env.__class__.__name__
         if env_name in {"DockerEnvironment", "SingularityEnvironment", "ModalEnvironment"}:
-            return "/root/.hermes"
+            return "/root/.clara"
 
     # If no environment has been created yet, only backends with deterministic
-    # Hermes cache roots can be translated without side effects. SSH can still
+    # Clara cache roots can be translated without side effects. SSH can still
     # use a shell-visible tilde path; its first environment sync will upload
     # the cache file before the first command runs.
     backend = (os.getenv("TERMINAL_ENV") or "local").strip().lower()
     if backend in {"docker", "singularity", "modal"}:
-        return "/root/.hermes"
+        return "/root/.clara"
     if backend == "ssh":
-        return "~/.hermes"
+        return "~/.clara"
     return None
 
 
@@ -1278,7 +1278,7 @@ def image_generate_tool(
                 f"Model '{meta.get('display', model_id)}' ({model_id}) is not "
                 f"capable of image-to-image / editing. Provide a text-only "
                 f"prompt (omit image_url), or switch to an edit-capable model "
-                f"via `hermes tools` → Image Generation."
+                f"via `clara tools` → Image Generation."
             )
 
         aspect_lc = (aspect_ratio or DEFAULT_ASPECT_RATIO).lower().strip()
@@ -1411,7 +1411,7 @@ def image_generate_tool(
 
 
 def check_fal_api_key() -> bool:
-    """True if the FAL backend selected via `hermes tools` (or, on a
+    """True if the FAL backend selected via `clara tools` (or, on a
     never-configured install, any FAL backend) is available.
 
     A stored-but-broken selection reports False here (registry gating);
@@ -1419,7 +1419,7 @@ def check_fal_api_key() -> bool:
     ``_resolve_managed_fal_gateway``.
     """
     selected = read_selection("image_gen")
-    if selected == NOUS_MANAGED_PROVIDER:
+    if selected == CLARA_MANAGED_PROVIDER:
         return bool(resolve_managed_tool_gateway("fal-queue"))
     if selected is not None:
         return fal_key_is_configured()
@@ -1431,19 +1431,19 @@ def _build_no_backend_setup_message() -> str:
 
     Used by the in-tree FAL path. Mentions:
       - FAL_KEY signup link
-      - managed-gateway status (if Nous tools are enabled)
+      - managed-gateway status (if Clara tools are enabled)
       - plugin alternative pointer (so users on a stale ``image_gen.provider``
         know the registry exists and how to inspect it)
     """
     lines = ["Image generation is unavailable in this environment.", ""]
     lines.append("Missing requirements:")
-    if managed_nous_tools_enabled():
+    if managed_clara_tools_enabled():
         lines.append(
             "  - FAL_KEY is not set and the managed FAL gateway is unreachable"
         )
     else:
         lines.append("  - FAL_KEY environment variable is not set")
-        gateway_message = nous_tool_gateway_unavailable_message(
+        gateway_message = clara_tool_gateway_unavailable_message(
             "managed FAL image generation",
         )
         if gateway_message:
@@ -1454,14 +1454,14 @@ def _build_no_backend_setup_message() -> str:
         "  1. Get a free API key at https://fal.ai and set "
         "FAL_KEY=<your-key> (then restart the session)"
     )
-    if managed_nous_tools_enabled():
+    if managed_clara_tools_enabled():
         lines.append(
-            "  2. Sign in to a Nous account that has the managed FAL "
-            "gateway enabled (`hermes setup`)"
+            "  2. Sign in to a Clara account that has the managed FAL "
+            "gateway enabled (`clara setup`)"
         )
     lines.append(
-        "  3. Configure a different image_gen provider via `hermes tools` "
-        "→ Image Generation (run `hermes plugins list` to see installed "
+        "  3. Configure a different image_gen provider via `clara tools` "
+        "→ Image Generation (run `clara plugins list` to see installed "
         "backends)"
     )
     return "\n".join(lines)
@@ -1481,14 +1481,14 @@ def check_image_generation_requirements() -> bool:
         pass
 
     configured = _read_configured_image_provider()
-    if not configured or configured in ("fal", NOUS_MANAGED_PROVIDER):
+    if not configured or configured in ("fal", CLARA_MANAGED_PROVIDER):
         return False
 
     # Probe only the explicitly selected plugin. Merely possessing a cloud
     # provider key must not opt a user into a paid image-generation backend.
     try:
         from agent.image_gen_registry import get_provider
-        from hermes_cli.plugins import _ensure_plugins_discovered
+        from clara_cli.plugins import _ensure_plugins_discovered
 
         _ensure_plugins_discovered()
         provider = get_provider(configured)
@@ -1579,7 +1579,7 @@ IMAGE_GENERATE_SCHEMA = {
 def _read_configured_image_model():
     """Return the value of ``image_gen.model`` from config.yaml, or None."""
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
         cfg = load_config()
         section = cfg.get("image_gen") if isinstance(cfg, dict) else None
         if isinstance(section, dict):
@@ -1603,7 +1603,7 @@ def _read_configured_image_provider():
     issue #26241).
     """
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
         cfg = load_config()
         section = cfg.get("image_gen") if isinstance(cfg, dict) else None
         if isinstance(section, dict):
@@ -1640,9 +1640,9 @@ def _dispatch_to_plugin_provider(
     ignore it via their ``**kwargs`` (the ABC contract).
     """
     configured = _read_configured_image_provider()
-    if not configured or configured in ("fal", NOUS_MANAGED_PROVIDER):
-        # Unset/explicit FAL keeps the legacy FAL path; "nous" (managed
-        # Nous Subscription selection) also runs the legacy pipeline, which
+    if not configured or configured in ("fal", CLARA_MANAGED_PROVIDER):
+        # Unset/explicit FAL keeps the legacy FAL path; "clara" (managed
+        # Clara Subscription selection) also runs the legacy pipeline, which
         # routes through the managed fal-queue gateway.
         return None
 
@@ -1653,7 +1653,7 @@ def _dispatch_to_plugin_provider(
         # Import locally so plugin discovery isn't triggered just by
         # importing this module (tests rely on that).
         from agent.image_gen_registry import get_provider
-        from hermes_cli.plugins import _ensure_plugins_discovered
+        from clara_cli.plugins import _ensure_plugins_discovered
 
         _ensure_plugins_discovered()
         provider = get_provider(configured)
@@ -1677,7 +1677,7 @@ def _dispatch_to_plugin_provider(
             "image": None,
             "error": (
                 f"image_gen.provider='{configured}' is set but no plugin "
-                f"registered that name. Run `hermes plugins list` to see "
+                f"registered that name. Run `clara plugins list` to see "
                 f"available image gen backends."
             ),
             "error_type": "provider_not_registered",
@@ -1718,7 +1718,7 @@ def _dispatch_to_plugin_provider(
                     f"support image-to-image / editing (its generate() "
                     f"signature is out of date with the image_generate schema). "
                     f"Omit image_url for text-to-image, or pick a backend that "
-                    f"supports editing via `hermes tools` → Image Generation."
+                    f"supports editing via `clara tools` → Image Generation."
                 ),
                 "error_type": "modality_unsupported",
             })
@@ -1800,12 +1800,12 @@ def _maybe_route_managed_krea(
     Direct/BYO users (no managed gateway) fall through untouched.
     """
     # Strict selection rule: an explicitly stored ``image_gen.provider``
-    # (other than the managed "nous" selection, which IS a managed-mode
+    # (other than the managed "clara" selection, which IS a managed-mode
     # opt-in) disables the model-driven managed interception — the user's
     # picker choice dispatches normally. Interception is permitted only on
     # never-configured installs or under the managed selection.
     configured_provider = _read_configured_image_provider()
-    if configured_provider is not None and configured_provider != NOUS_MANAGED_PROVIDER:
+    if configured_provider is not None and configured_provider != CLARA_MANAGED_PROVIDER:
         return None
 
     normalized = _normalize_krea_model(_read_configured_image_model())
@@ -1824,7 +1824,7 @@ def _maybe_route_managed_krea(
 
     try:
         from agent.image_gen_registry import get_provider
-        from hermes_cli.plugins import _ensure_plugins_discovered
+        from clara_cli.plugins import _ensure_plugins_discovered
 
         _ensure_plugins_discovered()
         provider = get_provider("krea")
@@ -1978,7 +1978,7 @@ def _handle_image_generate(args, **kw):
 # model up front ("the active model is text-to-image only — image_url will be
 # rejected") saves a wasted turn. Memoized by config.yaml mtime in
 # model_tools.get_tool_definitions(), so it rebuilds when the user switches
-# model/provider via `hermes tools` or `/skills`.
+# model/provider via `clara tools` or `/skills`.
 
 
 _GENERIC_IMAGE_DESCRIPTION = IMAGE_GENERATE_SCHEMA["description"]
@@ -2008,7 +2008,7 @@ def _active_image_capabilities() -> Dict[str, Any]:
     if configured_provider and configured_provider != "fal":
         try:
             from agent.image_gen_registry import get_provider
-            from hermes_cli.plugins import _ensure_plugins_discovered
+            from clara_cli.plugins import _ensure_plugins_discovered
 
             _ensure_plugins_discovered()
             provider = get_provider(configured_provider)

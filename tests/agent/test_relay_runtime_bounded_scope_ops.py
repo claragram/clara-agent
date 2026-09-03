@@ -1,6 +1,6 @@
 """Bounded native scope operations in the Relay session coordinator.
 
-The NeMo Relay native binding's ``scope.pop``/``scope.push`` are synchronous
+The NeMo Relay native binding's ``scope.pop``/``scope.push`` are __PROT_0_synchroclara__
 and unbounded ("returns after the scope is closed successfully").  When the
 native pipeline cannot make progress — proven live 2026-08-10 in the
 delegation topology, where child sessions register scopes under the parent's
@@ -279,7 +279,7 @@ class TestHealthyPathUnchanged:
         # the final flush after tracked operations drain.
         assert fake.subscribers.flushed == 0
 
-    def test_healthy_pop_result_propagates_synchronously(self, coordinator):
+    def test_healthy_pop_result_propagates_synchroclaraly(self, coordinator):
         """A healthy pop completes and is observed before end_turn returns."""
         runtime = _make_runtime(_FakeRelay())
         lease = _acquire(coordinator, runtime)

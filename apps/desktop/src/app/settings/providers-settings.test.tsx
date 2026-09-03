@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfirmHost } from '@/components/confirm-host'
 import { $confirmRequest } from '@/store/confirm'
-import type { EnvVarInfo, OAuthProvider } from '@/types/hermes'
+import type { EnvVarInfo, OAuthProvider } from '@/types/clara'
 
 const listOAuthProviders = vi.fn()
 const disconnectOAuthProvider = vi.fn()
@@ -13,7 +13,7 @@ const startManualProviderOAuth = vi.fn()
 const startManualLocalEndpoint = vi.fn()
 const onboarding = atom({ manual: false })
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/clara', () => ({
   disconnectOAuthProvider: (providerId: string) => disconnectOAuthProvider(providerId),
   getEnvVars: () => getEnvVars(),
   listOAuthProviders: () => listOAuthProviders()
@@ -27,12 +27,12 @@ vi.mock('@/store/onboarding', () => ({
 
 function provider(id: string, loggedIn: boolean, patch: Partial<OAuthProvider> = {}): OAuthProvider {
   return {
-    cli_command: `hermes auth add ${id}`,
+    cli_command: `clara auth add ${id}`,
     disconnectable: true,
     docs_url: '',
     flow: 'device_code',
     id,
-    name: id === 'nous' ? 'Nous Portal' : 'MiniMax',
+    name: id === 'clara' ? 'Clara Portal' : 'MiniMax',
     status: {
       logged_in: loggedIn
     },
@@ -62,9 +62,9 @@ function keyVar(patch: Partial<EnvVarInfo> = {}): EnvVarInfo {
 beforeEach(() => {
   onboarding.set({ manual: false })
   getEnvVars.mockResolvedValue({})
-  disconnectOAuthProvider.mockResolvedValue({ ok: true, provider: 'nous' })
+  disconnectOAuthProvider.mockResolvedValue({ ok: true, provider: 'clara' })
   listOAuthProviders.mockResolvedValue({
-    providers: [provider('nous', true), provider('minimax-oauth', false)]
+    providers: [provider('clara', true), provider('minimax-oauth', false)]
   })
 })
 
@@ -96,7 +96,7 @@ describe('ProvidersSettings', () => {
   it('disconnects a connected provider account and refreshes the accounts list', async () => {
     await renderProvidersSettings()
 
-    const remove = await screen.findByRole('button', { name: 'Remove Nous Portal' })
+    const remove = await screen.findByRole('button', { name: 'Remove Clara Portal' })
     await act(async () => {
       fireEvent.click(remove)
     })
@@ -109,7 +109,7 @@ describe('ProvidersSettings', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Disconnect' }))
     })
 
-    await waitFor(() => expect(disconnectOAuthProvider).toHaveBeenCalledWith('nous'))
+    await waitFor(() => expect(disconnectOAuthProvider).toHaveBeenCalledWith('clara'))
     expect(listOAuthProviders).toHaveBeenCalledTimes(2)
   })
 
@@ -117,7 +117,7 @@ describe('ProvidersSettings', () => {
     await renderProvidersSettings()
 
     await act(async () => {
-      fireEvent.click(await screen.findByRole('button', { name: 'Remove Nous Portal' }))
+      fireEvent.click(await screen.findByRole('button', { name: 'Remove Clara Portal' }))
     })
 
     await act(async () => {
@@ -131,10 +131,10 @@ describe('ProvidersSettings', () => {
     await renderProvidersSettings()
 
     await act(async () => {
-      fireEvent.click(await screen.findByText('Nous Portal'))
+      fireEvent.click(await screen.findByText('Clara Portal'))
     })
 
-    expect(startManualProviderOAuth).toHaveBeenCalledWith('nous')
+    expect(startManualProviderOAuth).toHaveBeenCalledWith('clara')
     expect(disconnectOAuthProvider).not.toHaveBeenCalled()
   })
 
@@ -142,8 +142,8 @@ describe('ProvidersSettings', () => {
     listOAuthProviders.mockResolvedValue({
       providers: [
         provider('qwen-oauth', true, {
-          cli_command: 'hermes auth add qwen-oauth',
-          disconnect_hint: "Use `hermes auth add qwen-oauth` or that provider's CLI to remove it.",
+          cli_command: 'clara auth add qwen-oauth',
+          disconnect_hint: "Use `clara auth add qwen-oauth` or that provider's CLI to remove it.",
           disconnectable: false,
           flow: 'external',
           name: 'Qwen (via Qwen CLI)'

@@ -45,15 +45,15 @@ from utils import base_url_host_matches, base_url_hostname
 import fire
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn, TimeRemainingColumn
 from rich.console import Console
-from hermes_constants import OPENROUTER_BASE_URL, get_hermes_home
+from clara_constants import OPENROUTER_BASE_URL, get_clara_home
 from agent.retry_utils import jittered_backoff
 
-# Load .env from HERMES_HOME first, then project root as a dev fallback.
-from hermes_cli.env_loader import load_hermes_dotenv
+# Load .env from CLARA_HOME first, then project root as a dev fallback.
+from clara_cli.env_loader import load_clara_dotenv
 
-_hermes_home = get_hermes_home()
+_clara_home = get_clara_home()
 _project_env = Path(__file__).parent / ".env"
-load_hermes_dotenv(hermes_home=_hermes_home, project_env=_project_env)
+load_clara_dotenv(clara_home=_clara_home, project_env=_project_env)
 
 
 def _response_finish_reason(response: Any) -> str:
@@ -411,7 +411,7 @@ class TrajectoryCompressor:
             if client is None:
                 raise RuntimeError(
                     f"Provider '{provider}' is not configured. "
-                    f"Check your API key or run: hermes setup")
+                    f"Check your API key or run: clara setup")
             self.client = None  # Not used directly
             self.async_client = None  # Not used directly
         else:
@@ -457,8 +457,8 @@ class TrajectoryCompressor:
         url = self.config.base_url or ""
         if base_url_host_matches(url, "openrouter.ai"):
             return "openrouter"
-        if base_url_host_matches(url, "nousresearch.com"):
-            return "nous"
+        if base_url_host_matches(url, "workprise.com"):
+            return "clara"
         if (
             base_url_hostname(url) == "chatgpt.com"
             and "/backend-api/codex" in url.lower()

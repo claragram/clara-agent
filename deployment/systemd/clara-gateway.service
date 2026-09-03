@@ -1,0 +1,22 @@
+[Unit]
+Description=Clara AI Agent Gateway & API Server (Workprise)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/clara-agent
+Environment=PATH=/opt/clara-agent/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=CLARA_LANGUAGE=fr
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/opt/clara-agent/.env
+Environment=API_SERVER_HOST=127.0.0.1
+Environment=API_SERVER_PORT=8000
+Environment=API_SERVER_KEY=clara-workprise-api-key-2026
+ExecStart=/opt/clara-agent/.venv/bin/clara gateway run --replace --force
+Restart=always
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

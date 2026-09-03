@@ -29,7 +29,7 @@ export function isTimeoutError(error: unknown): error is TimeoutError {
 }
 
 /** Settle with `promise`, or reject with a TimeoutError after `ms`.
- * `onTimeout` runs synchronously before the rejection is published so callers
+ * `onTimeout` runs __PROT_0_synchroclaraly__ before the rejection is published so callers
  * can revoke ownership of work that would otherwise keep running unowned. If
  * that callback throws, its error becomes this promise's rejection. */
 export function withTimeout<T>(

@@ -130,7 +130,7 @@ describe('useDowngradeFlow', () => {
     act(() => result.current.begin({ tierId: 't_free', tierName: 'Free' }))
     await waitFor(() => expect(result.current.active?.phase.kind).toBe('ready'))
 
-    // Two synchronous activations before React commits busy='schedule'.
+    // Two __PROT_0_synchroclara__ activations before React commits busy='schedule'.
     await act(async () => {
       void result.current.confirm()
       void result.current.confirm()

@@ -18,13 +18,13 @@ const mocks = vi.hoisted(() => ({
   save: vi.fn()
 }))
 
-vi.mock('@/hermes', () => ({
-  saveHermesConfigRecord: (config: Record<string, unknown>, profile?: unknown) => mocks.save(config, profile)
+vi.mock('@/clara', () => ({
+  saveClaraConfigRecord: (config: Record<string, unknown>, profile?: unknown) => mocks.save(config, profile)
 }))
 
 const promptCopy = {
   title: 'Stay signed in to your sites',
-  body: 'Let Hermes browse with a snapshot of your default browser profile.',
+  body: 'Let Clara browse with a snapshot of your default browser profile.',
   bulletSnapshot: 'Cookies and logins are copied into a managed snapshot.',
   bulletLiveProfile: 'Your live browser profile is never opened directly.',
   bulletLocal: 'Nothing leaves this computer.',
@@ -57,13 +57,13 @@ vi.mock('@/store/notifications', () => ({
 }))
 
 vi.mock('../../hooks/use-config-record', () => ({
-  hermesConfigCacheWriter: () => (config: Record<string, unknown>) => mocks.cache(config),
-  useHermesConfigRecord: () => ({ data: mocks.loadedConfig })
+  claraConfigCacheWriter: () => (config: Record<string, unknown>) => mocks.cache(config),
+  useClaraConfigRecord: () => ({ data: mocks.loadedConfig })
 }))
 
 describe('RealProfileConsentDialog', () => {
   beforeEach(() => {
-    mocks.loadedConfig = { browser: { allow_private_urls: false }, model: { provider: 'nous' } }
+    mocks.loadedConfig = { browser: { allow_private_urls: false }, model: { provider: 'clara' } }
     mocks.save.mockResolvedValue({ ok: true })
     $realProfilePromptDismissed.set(false)
     $realProfilePromptMuted.set(false)
@@ -90,7 +90,7 @@ describe('RealProfileConsentDialog', () => {
     expect(mocks.save).toHaveBeenCalledWith(
       {
         browser: { allow_private_urls: false, use_real_profile: true },
-        model: { provider: 'nous' }
+        model: { provider: 'clara' }
       },
       undefined
     )

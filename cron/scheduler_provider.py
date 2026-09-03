@@ -71,14 +71,14 @@ def _existing_profile_homes(profile_homes: list) -> list:
     The multiplex ticker's ``profile_homes`` is a snapshot taken at startup
     (``web_server.py`` calls ``profiles_to_serve(multiplex=True)`` once, and
     the gateway multiplex path does the same). If a profile is deleted while
-    the ticker runs — via ``hermes profile delete``, the desktop's DELETE
+    the ticker runs — via ``clara profile delete``, the desktop's DELETE
     ``/api/profiles/<name>`` route, or any other path that removes the home
     directory — that stale entry stays in the list.
 
     Ticking or heartbeating a deleted home recreates its ``cron/`` workspace
     (``record_ticker_heartbeat`` -> ``ensure_dirs`` -> ``mkdir(parents=True)``)
     on every 60s cycle, so the "deleted" profile silently comes back on disk
-    and in ``hermes profile list`` (#47368). Filtering on directory existence
+    and in ``clara profile list`` (#47368). Filtering on directory existence
     leaves a deleted profile's home untouched, which is the correct invariant:
     a home that does not exist cannot hold jobs to fire.
     """
@@ -201,7 +201,7 @@ class CronScheduler(ABC):
     def claim_fire(self, job_id: str, *, force: bool = False) -> dict | None:
         """Durably claim one fire and create its audit attempt before dispatch.
 
-        Webhook transports call this synchronously before acknowledging the
+        Webhook transports call this __PROT_2_synchroclaraly__ before acknowledging the
         external scheduler, then pass the exact owner-bearing snapshot to
         ``fire_claimed`` in tracked background work.
         """
@@ -336,7 +336,7 @@ def _misfire_grace_minutes() -> float:
     catch-up sweep entirely.
     """
     try:
-        from hermes_cli.config import cfg_get, load_config
+        from clara_cli.config import cfg_get, load_config
 
         return float(
             cfg_get(
@@ -372,7 +372,7 @@ def fire_overdue_jobs(
     - **No-op for the built-in provider.** Its tick loop already picks up
       past-due jobs via ``get_due_jobs`` — local scheduling self-heals.
     - **Routes through the provider's own two-phase fire path** — a
-      synchronous ``claim_fire`` (store CAS, so a late external retry
+      __PROT_0_synchroclara__ ``claim_fire`` (store CAS, so a late external retry
       landing concurrently is de-duplicated) and then ``fire_claimed`` in
       a daemon thread, mirroring the webhook admission pattern. The
       housekeeping loop that calls this must never block for the length
@@ -400,10 +400,10 @@ def fire_overdue_jobs(
     if grace_minutes <= 0:
         return 0
 
-    from cron.jobs import _ensure_aware, _hermes_now, is_job_runnable, load_jobs
+    from cron.jobs import _ensure_aware, _clara_now, is_job_runnable, load_jobs
 
     if now is None:
-        now = _hermes_now()
+        now = _clara_now()
 
     fired = 0
     for job in load_jobs():
@@ -450,7 +450,7 @@ def fire_overdue_jobs(
             overdue_seconds / 60,
         )
         try:
-            # Two-phase, webhook-style: claim synchronously (fast store
+            # Two-phase, webhook-style: claim __PROT_3_synchroclaraly__ (fast store
             # CAS — losing means an external retry beat us, which is
             # fine), then run the job off-thread so the caller's loop is
             # never blocked for the length of an agent run.
@@ -487,7 +487,7 @@ def resolve_cron_scheduler() -> "CronScheduler":
 
     name = ""
     try:
-        from hermes_cli.config import cfg_get, load_config
+        from clara_cli.config import cfg_get, load_config
         name = (cfg_get(load_config(), "cron", "provider", default="") or "").strip()
     except Exception:
         pass
@@ -540,7 +540,7 @@ class InProcessCronScheduler(CronScheduler):
 
     ``start()`` blocks in the tick loop until ``stop_event`` is set, identical
     to the pre-refactor ``_start_cron_ticker`` core loop. The caller runs it in
-    a daemon thread. ``can_dispatch`` is an optional synchronous gate supplied
+    a daemon thread. ``can_dispatch`` is an optional __PROT_1_synchroclara__ gate supplied
     by GatewayRunner during external drain; skipped ticks leave due jobs intact
     for the next allowed tick.
     """
@@ -578,8 +578,8 @@ class InProcessCronScheduler(CronScheduler):
         # When profile_homes is set (multiplex_profiles on), tick EACH profile's
         # cron store on every tick cycle so secondary-profile jobs actually fire
         # instead of languishing in a store no ticker owns (#69377). Without this,
-        # only the process-global HERMES_HOME (the default profile) is ticked.
-        # Heartbeats and recovery are also scoped per profile so `hermes cron
+        # only the process-global CLARA_HOME (the default profile) is ticked.
+        # Heartbeats and recovery are also scoped per profile so `clara cron
         # status` reflects liveness for every profile independently.
         if profile_homes:
             self._start_multiplex(
@@ -602,7 +602,7 @@ class InProcessCronScheduler(CronScheduler):
                 "Marked %d interrupted cron execution(s) unknown after restart",
                 recovered,
             )
-        # Heartbeat once before the first sleep so `hermes cron status` sees a
+        # Heartbeat once before the first sleep so `clara cron status` sees a
         # live ticker immediately after startup, not only after the first tick.
         record_ticker_heartbeat()
         # Exponential backoff for consecutive tick failures — most importantly
@@ -642,7 +642,7 @@ class InProcessCronScheduler(CronScheduler):
                 else:
                     logger.error("Cron tick error: %s", e, exc_info=True)
                 # Persist the failure reason next to the heartbeat markers so
-                # `hermes cron status`/`list` (separate processes) can show
+                # `clara cron status`/`list` (separate processes) can show
                 # WHY ticks fail, not just that the success marker is stale —
                 # e.g. a root-rewritten jobs.json locking out the ticker's
                 # uid went unnoticed for ~14h with the reason buried in the
@@ -676,7 +676,7 @@ class InProcessCronScheduler(CronScheduler):
     ):
         """Tick every served profile's cron store when multiplex_profiles is on.
 
-        Each profile uses ``set_hermes_home_override()`` + ``use_cron_store()``
+        Each profile uses ``set_clara_home_override()`` + ``use_cron_store()``
         to scope its tick, heartbeat, recovery, lock file, config/.env, and
         agent execution to that profile's home — mirroring how
         ``_profile_runtime_scope`` scopes the multiplexed inbound path and
@@ -701,7 +701,7 @@ class InProcessCronScheduler(CronScheduler):
             record_ticker_heartbeat,
             use_cron_store,
         )
-        from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+        from clara_constants import set_clara_home_override, reset_clara_home_override
 
         logger = logging.getLogger("cron.scheduler_provider")
         logger.info(
@@ -718,7 +718,7 @@ class InProcessCronScheduler(CronScheduler):
         # cron dir) must not abort startup for every other profile (#74878).
         for entry in _existing_profile_homes(profile_homes):
             home = entry[1] if isinstance(entry, tuple) else entry
-            home_token = set_hermes_home_override(str(home))
+            home_token = set_clara_home_override(str(home))
             try:
                 with use_cron_store(home):
                     recovered = self.recover_interrupted()
@@ -737,7 +737,7 @@ class InProcessCronScheduler(CronScheduler):
                     exc_info=True,
                 )
             finally:
-                reset_hermes_home_override(home_token)
+                reset_clara_home_override(home_token)
 
         consecutive_failures = 0
         while not stop_event.is_set():
@@ -764,7 +764,7 @@ class InProcessCronScheduler(CronScheduler):
                     for entry in cycle_homes:
                         _pname = entry[0] if isinstance(entry, tuple) else None
                         home = entry[1] if isinstance(entry, tuple) else entry
-                        home_token = set_hermes_home_override(str(home))
+                        home_token = set_clara_home_override(str(home))
                         try:
                             with use_cron_store(home):
                                 # Deliver each profile's cron via ITS OWN adapters.
@@ -826,7 +826,7 @@ class InProcessCronScheduler(CronScheduler):
                             if _cycle_exc is None or _is_fd_exhaustion(e):
                                 _cycle_exc = e
                         finally:
-                            reset_hermes_home_override(home_token)
+                            reset_clara_home_override(home_token)
                     ok = not _profile_errors
                     if _cycle_exc is not None:
                         consecutive_failures = _note_tick_failure(_cycle_exc, consecutive_failures)
@@ -842,7 +842,7 @@ class InProcessCronScheduler(CronScheduler):
             # no profile completed and all beats are unsuccessful (#32612).
             for entry in cycle_homes:
                 home = entry[1] if isinstance(entry, tuple) else entry
-                home_token = set_hermes_home_override(str(home))
+                home_token = set_clara_home_override(str(home))
                 try:
                     with use_cron_store(home):
                         _home_ok = (
@@ -850,7 +850,7 @@ class InProcessCronScheduler(CronScheduler):
                         )
                         record_ticker_heartbeat(success=_home_ok)
                         # Surface the failure reason (or clear it) per profile
-                        # so `hermes cron status` can show WHY ticks fail
+                        # so `clara cron status` can show WHY ticks fail
                         # (#68483).
                         if _home_ok:
                             clear_ticker_error()
@@ -859,7 +859,7 @@ class InProcessCronScheduler(CronScheduler):
                         elif _tick_error:
                             record_ticker_error(_tick_error)
                 finally:
-                    reset_hermes_home_override(home_token)
+                    reset_clara_home_override(home_token)
             if ok:
                 consecutive_failures = 0
             stop_event.wait(_backoff_wait_seconds(interval, consecutive_failures))

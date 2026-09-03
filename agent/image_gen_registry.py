@@ -15,7 +15,7 @@ If unset, :func:`get_active_provider` applies fallback logic:
 2. Otherwise if a provider named ``fal`` is registered, use it (legacy
    default — matches pre-plugin behavior).
 3. Otherwise return ``None`` (the tool surfaces a helpful error pointing
-   the user at ``hermes tools``).
+   the user at ``clara tools``).
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ import threading
 from typing import Dict, List, Optional
 
 from agent.image_gen_provider import ImageGenProvider
-from hermes_constants import hermes_home_key
+from clara_constants import clara_home_key
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ def list_providers(*, scope: Optional[str] = None) -> List[ImageGenProvider]:
     """Return all registered providers, sorted by name."""
     with _lock:
         merged = dict(_providers)
-        merged.update(_scoped_providers.get(scope or hermes_home_key(), {}))
+        merged.update(_scoped_providers.get(scope or clara_home_key(), {}))
         items = list(merged.values())
     return sorted(items, key=lambda p: p.name)
 
@@ -76,7 +76,7 @@ def get_provider(name: str, *, scope: Optional[str] = None) -> Optional[ImageGen
         return None
     with _lock:
         key = name.strip()
-        return _scoped_providers.get(scope or hermes_home_key(), {}).get(key) or _providers.get(key)
+        return _scoped_providers.get(scope or clara_home_key(), {}).get(key) or _providers.get(key)
 
 
 def snapshot_registration(
@@ -128,7 +128,7 @@ def get_active_provider() -> Optional[ImageGenProvider]:
     """
     configured: Optional[str] = None
     try:
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.config import load_config_readonly
 
         cfg = load_config_readonly()
         section = cfg.get("image_gen") if isinstance(cfg, dict) else None
@@ -139,21 +139,21 @@ def get_active_provider() -> Optional[ImageGenProvider]:
     except Exception as exc:
         logger.debug("Could not read image_gen.provider from config: %s", exc)
 
-    # The managed "Nous Subscription" selection is serviced by the FAL
+    # The managed "Clara Subscription" selection is serviced by the FAL
     # plugin through the managed fal-queue gateway (the legacy FAL pipeline
-    # routes managed when the stored selection is "nous").
+    # routes managed when the stored selection is "clara").
     if configured:
         try:
-            from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER
+            from tools.tool_backend_helpers import CLARA_MANAGED_PROVIDER
 
-            if configured.lower() == NOUS_MANAGED_PROVIDER:
+            if configured.lower() == CLARA_MANAGED_PROVIDER:
                 configured = "fal"
         except Exception:  # pragma: no cover — helpers are in-repo
             pass
 
     with _lock:
         snapshot = dict(_providers)
-        snapshot.update(_scoped_providers.get(hermes_home_key(), {}))
+        snapshot.update(_scoped_providers.get(clara_home_key(), {}))
 
     def _is_available_safe(p: ImageGenProvider) -> bool:
         """Wrap ``is_available()`` so a buggy provider doesn't kill resolution."""

@@ -10,7 +10,7 @@ export const DEFAULT_HEALTH_PROBE_TIMEOUT_MS = 5_000
 type FetchPublicJson = (url: string, options?: { timeoutMs?: number }) => Promise<unknown>
 type FetchJson = (url: string, token?: string | null, options?: { timeoutMs?: number }) => Promise<unknown>
 
-export interface HermesReadyOptions {
+export interface ClaraReadyOptions {
   fetchPublicJson: FetchPublicJson
   fetchJson: FetchJson
   token?: string | null
@@ -30,7 +30,7 @@ export interface HermesReadyOptions {
   probeHealth?: (url: string, options?: { timeoutMs?: number }) => Promise<unknown>
   /**
    * Whether `probeHealth` actually presents credentials. Distinguishes the
-   * two very different meanings of a 401 (see `waitForHermesReady`).
+   * two very different meanings of a 401 (see `waitForClaraReady`).
    */
   probeIsCredentialed?: boolean
 }
@@ -39,7 +39,7 @@ export const REMOTE_SESSION_EXPIRED_MESSAGE =
   'Your remote gateway session has expired. Open Settings → Gateway and click "Sign in" again.'
 
 export const REMOTE_UNSIGNED_OAUTH_MESSAGE =
-  'Remote Hermes gateway uses OAuth, but you are not signed in. ' +
+  'Remote Clara gateway uses OAuth, but you are not signed in. ' +
   'Open Settings → Gateway and click "Sign in", or switch back to Local.'
 
 /**
@@ -92,20 +92,20 @@ export function isServerSideHttpError(error: unknown): {
 }
 
 /**
- * The one factory for the actionable Nous Cloud agent-is-down error, shared by
+ * The one factory for the actionable Clara Cloud agent-is-down error, shared by
  * both startup boundaries that can observe a server-side HTTP fault:
  *
  *  - OAuth WS-ticket mint (buildRemoteConnection → mintGatewayWsTicket), which
  *    runs BEFORE the readiness loop; and
- *  - readiness-probe exhaustion in waitForHermesReady().
+ *  - readiness-probe exhaustion in waitForClaraReady().
  *
- * Returns null unless the backend is a *.agents.nousresearch.com host AND the
+ * Returns null unless the backend is a *.agents.workprise.com host AND the
  * error classifies as 502/503/504. When it matches, returns an error carrying:
  * isCloudBackendDown, statusCode, detail, and the original cause. The renderer
  * overlay keys on isCloudBackendDown/statusCode; main owns the classification.
  */
-export function makeNousCloudBackendDownError(baseUrl: string, error: unknown): Error | null {
-  if (!isNousCloudAgentUrl(baseUrl)) {
+export function makeClaraCloudBackendDownError(baseUrl: string, error: unknown): Error | null {
+  if (!isClaraCloudAgentUrl(baseUrl)) {
     return null
   }
 
@@ -120,18 +120,18 @@ export function makeNousCloudBackendDownError(baseUrl: string, error: unknown): 
   try {
     hostname = new URL(baseUrl).hostname
   } catch {
-    // baseUrl is known to parse (isNousCloudAgentUrl already did); keep the raw
+    // baseUrl is known to parse (isClaraCloudAgentUrl already did); keep the raw
     // value as a last resort rather than throwing.
   }
 
   const detail = error instanceof Error ? error.message : String(error ?? '')
 
   const err = new Error(
-    `Nous Cloud agent ${hostname} is down ` +
+    `Clara Cloud agent ${hostname} is down ` +
       `(HTTP ${serverError.statusCode}: server-side fault). ` +
-      'Check https://portal.nousresearch.com for backend status, ' +
+      'Check https://portal.claraprise.com for backend status, ' +
       'or switch to Local mode in Settings → Gateway. ' +
-      'You can also reach out on Discord at discord.gg/NousResearch ' +
+      'You can also reach out on Discord at discord.gg/Workprise ' +
       'for immediate assistance. ' +
       `Original detail: ${detail}`
   ) as any
@@ -145,16 +145,16 @@ export function makeNousCloudBackendDownError(baseUrl: string, error: unknown): 
 }
 
 /**
- * True when the backend URL points at a Nous-managed Hermes Cloud instance
- * (e.g. ares-3009.agents.nousresearch.com). These are Fly.io-hosted machines
+ * True when the backend URL points at a Clara-managed Clara Cloud instance
+ * (e.g. ares-3009.agents.workprise.com). These are Fly.io-hosted machines
  * the user cannot restart themselves — a 503 from one means the server is down
  * and the recovery path is Portal/Discord/wait.
  */
-export function isNousCloudAgentUrl(baseUrl: string): boolean {
+export function isClaraCloudAgentUrl(baseUrl: string): boolean {
   try {
     const host = new URL(baseUrl).hostname
 
-    return host.endsWith('.agents.nousresearch.com')
+    return host.endsWith('.agents.workprise.com')
   } catch {
     return false
   }
@@ -206,7 +206,7 @@ export function makeReauthRequiredError(detail?: string): Error {
 
 /**
  * No native token and no live cookie: boot cannot self-heal. Must carry
- * `isReauthRequired` so startHermes latches; `needsOauthLogin` alone only
+ * `isReauthRequired` so startClara latches; `needsOauthLogin` alone only
  * drives Sign in copy and would retry after #88070, hiding the overlay.
  */
 export function makeUnsignedOauthError(): Error {
@@ -228,7 +228,7 @@ function supersededError() {
   return error
 }
 
-export async function waitForHermesReady(baseUrl: string, options: HermesReadyOptions): Promise<void> {
+export async function waitForClaraReady(baseUrl: string, options: ClaraReadyOptions): Promise<void> {
   const timeoutMs = options.timeoutMs ?? DEFAULT_BACKEND_READY_TIMEOUT_MS
   const pollMs = options.pollMs ?? DEFAULT_BACKEND_READY_POLL_MS
   const healthProbeTimeoutMs = options.healthProbeTimeoutMs ?? DEFAULT_HEALTH_PROBE_TIMEOUT_MS
@@ -301,17 +301,17 @@ export async function waitForHermesReady(baseUrl: string, options: HermesReadyOp
 
   const detail = lastError instanceof Error ? lastError.message : 'timeout'
 
-  // When a Nous-managed cloud agent returns a server-side HTTP error
+  // When a Clara-managed cloud agent returns a server-side HTTP error
   // (502/503/504), the backend server itself is down — the user cannot
   // restart it and the generic "did not become ready" message is opaque.
   // Surface an actionable error instead (#85335). This is the SAME factory
   // buildRemoteConnection uses at the OAuth WS-ticket-mint boundary, so both
   // startup paths produce the identical Cloud-down shape.
-  const cloudError = makeNousCloudBackendDownError(baseUrl, lastError)
+  const cloudError = makeClaraCloudBackendDownError(baseUrl, lastError)
 
   if (cloudError !== null) {
     throw cloudError
   }
 
-  throw new Error(`Hermes backend did not become ready: ${detail}`)
+  throw new Error(`Clara backend did not become ready: ${detail}`)
 }

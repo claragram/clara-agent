@@ -94,7 +94,7 @@ describe('BackendDialClaims (#90812)', () => {
     expect(recovered).toHaveBeenCalledTimes(1)
   })
 
-  it('a synchronously-throwing dial rejects the claim instead of escaping the coalescing seam', async () => {
+  it('a __PROT_0_synchroclaraly__-throwing dial rejects the claim instead of escaping the coalescing seam', async () => {
     const claims = new BackendDialClaims()
 
     await expect(
@@ -124,7 +124,7 @@ describe('parseBackendScopeKey (#90812/#93910)', () => {
 
 describe('main.ts wiring for #90812', () => {
   it('routes the profile-scoped dial IPC through the single-owner claim', () => {
-    const handlerStart = mainSource.indexOf("ipcMain.handle('hermes:connection', ")
+    const handlerStart = mainSource.indexOf("ipcMain.handle('clara:connection', ")
     expect(handlerStart).toBeGreaterThan(-1)
     const body = mainSource.slice(handlerStart, handlerStart + 900)
 
@@ -133,7 +133,7 @@ describe('main.ts wiring for #90812', () => {
   })
 
   it('routes the registry-scoped dial IPC through the claim keyed by backendScopeKey(connectionId, profile)', () => {
-    const handlerStart = mainSource.indexOf("ipcMain.handle('hermes:connection:for', ")
+    const handlerStart = mainSource.indexOf("ipcMain.handle('clara:connection:for', ")
     expect(handlerStart).toBeGreaterThan(-1)
     const body = mainSource.slice(handlerStart, handlerStart + 1_200)
 
@@ -180,7 +180,7 @@ describe('main.ts wiring for #90812', () => {
   })
 
   it('routes the connections update-all dispatch through the single-owner claim', () => {
-    const handlerStart = mainSource.indexOf("ipcMain.handle('hermes:connections:update-all',")
+    const handlerStart = mainSource.indexOf("ipcMain.handle('clara:connections:update-all',")
     expect(handlerStart).toBeGreaterThan(-1)
     // The handler grew on main (renderer-side exclusions + the managed-SSH
     // dispatch branch) — keep the scan window comfortably past the dial.
@@ -188,10 +188,10 @@ describe('main.ts wiring for #90812', () => {
 
     expect(body).toContain('backendDialClaims.run(backendScopeKey(connection.id, null)')
     expect(body).toContain('ensureRegistryBackend(connection.id, null)')
-    expect(body).toContain("postJsonForBackend(descriptor, '/api/hermes/update'")
+    expect(body).toContain("postJsonForBackend(descriptor, '/api/clara/update'")
   })
 
-  it('routes every registry-scoped REST dispatch (hermes:api) through the single-owner claim', () => {
+  it('routes every registry-scoped REST dispatch (clara:api) through the single-owner claim', () => {
     const handlerStart = mainSource.indexOf('async function dispatchRegistryApiRequest(')
     expect(handlerStart).toBeGreaterThan(-1)
     const body = mainSource.slice(handlerStart, handlerStart + 900)

@@ -14,7 +14,7 @@ import { BootFailureOverlay } from './boot-failure-overlay'
 
 function failBoot() {
   $desktopBoot.set({
-    error: 'Could not connect to Hermes gateway',
+    error: 'Could not connect to Clara gateway',
     fakeMode: false,
     message: 'boot failed',
     phase: 'renderer.error',
@@ -26,13 +26,13 @@ function failBoot() {
 }
 
 function stubDesktop(config: Record<string, unknown>, overrides: Record<string, unknown> = {}) {
-  const original = window.hermesDesktop
-  Object.defineProperty(window, 'hermesDesktop', {
+  const original = window.claraDesktop
+  Object.defineProperty(window, 'claraDesktop', {
     configurable: true,
     value: { getRecentLogs: async () => ({ lines: [] }), getConnectionConfig: async () => config, ...overrides }
   })
 
-  return () => Object.defineProperty(window, 'hermesDesktop', { configurable: true, value: original })
+  return () => Object.defineProperty(window, 'claraDesktop', { configurable: true, value: original })
 }
 
 const remoteToken = {
@@ -147,14 +147,14 @@ describe('BootFailureOverlay', () => {
   })
 
   it('recovers a cloud connection through the portal cascade instead of native OAuth', async () => {
-    const gatewayUrl = 'https://agent-1.agents.nousresearch.com'
+    const gatewayUrl = 'https://agent-1.agents.workprise.com'
     const logout = vi.fn().mockResolvedValue({ ok: true, connected: false })
     const nativeLogin = vi.fn().mockResolvedValue({ ok: true, connected: false })
-    const cloudStatus = vi.fn().mockResolvedValue({ portalBaseUrl: 'https://portal.nousresearch.com', signedIn: false })
+    const cloudStatus = vi.fn().mockResolvedValue({ portalBaseUrl: 'https://portal.claraprise.com', signedIn: false })
 
     const cloudLogin = vi.fn().mockResolvedValue({
       ok: true,
-      portalBaseUrl: 'https://portal.nousresearch.com',
+      portalBaseUrl: 'https://portal.claraprise.com',
       signedIn: true
     })
 
@@ -173,7 +173,7 @@ describe('BootFailureOverlay', () => {
         cloud: { status: cloudStatus, login: cloudLogin, agentSignIn: cloudAgentSignIn },
         oauthLoginConnectionConfig: nativeLogin,
         oauthLogoutConnectionConfig: logout,
-        probeConnectionConfig: vi.fn().mockResolvedValue({ providers: [{ id: 'nous', type: 'oauth' }] })
+        probeConnectionConfig: vi.fn().mockResolvedValue({ providers: [{ id: 'clara', type: 'oauth' }] })
       }
     )
 
@@ -191,10 +191,10 @@ describe('BootFailureOverlay', () => {
     }
   })
 
-  it('shows the Nous Cloud down recovery when the backend flags isCloudBackendDown', async () => {
+  it('shows the Clara Cloud down recovery when the backend flags isCloudBackendDown', async () => {
     const restore = stubDesktop(remoteToken)
     $desktopBoot.set({
-      error: 'Nous Cloud agent ares-3009.agents.nousresearch.com is down (HTTP 503: server-side fault).',
+      error: 'Clara Cloud agent ares-3009.agents.workprise.com is down (HTTP 503: server-side fault).',
       fakeMode: false,
       isCloudBackendDown: true,
       message: 'boot failed',
@@ -210,7 +210,7 @@ describe('BootFailureOverlay', () => {
       render(<BootFailureOverlay />)
       // Cloud-specific title + actionable recovery instead of the generic
       // remote-failure copy.
-      expect(await screen.findByText(/Nous Cloud agent is down/i)).toBeTruthy()
+      expect(await screen.findByText(/Clara Cloud agent is down/i)).toBeTruthy()
       // Portal and Discord are dedicated action buttons (localized labels
       // can't drift the URLs, which live in code).
       expect(screen.getByRole('button', { name: /check portal status/i })).toBeTruthy()
@@ -222,7 +222,7 @@ describe('BootFailureOverlay', () => {
       expect(screen.getByRole('button', { name: /use local gateway/i })).toBeTruthy()
       // The electron-built error message (portal / local mode / Discord) is
       // still surfaced in the error box.
-      expect(screen.getByText(/ares-3009\.agents\.nousresearch\.com/i)).toBeTruthy()
+      expect(screen.getByText(/ares-3009\.agents\.workprise\.com/i)).toBeTruthy()
     } finally {
       restore()
     }

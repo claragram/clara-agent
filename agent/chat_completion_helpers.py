@@ -27,8 +27,8 @@ import uuid
 from types import SimpleNamespace
 from typing import Any, Dict, Optional
 
-from hermes_cli.timeouts import get_provider_request_timeout, get_provider_stale_timeout
-from hermes_constants import PARTIAL_STREAM_STUB_ID, FINISH_REASON_LENGTH
+from clara_cli.timeouts import get_provider_request_timeout, get_provider_stale_timeout
+from clara_constants import PARTIAL_STREAM_STUB_ID, FINISH_REASON_LENGTH
 from agent.error_classifier import (
     FailoverReason,
     PROVIDER_STREAM_NON_JSON_ERROR_CODE,
@@ -592,28 +592,28 @@ def _prompt_cache_scope_for_agent(agent) -> "str | None":
         return None
 
 
-def _merge_nous_portal_messages_extra_body(agent, anthropic_kwargs: dict) -> dict:
+def _merge_clara_portal_messages_extra_body(agent, anthropic_kwargs: dict) -> dict:
     """Merge Portal ``tags`` / ``session_id`` onto an Anthropic Messages kwargs dict.
 
-    The Nous provider profile is only consulted by the OpenAI-wire transport;
+    The Clara provider profile is only consulted by the OpenAI-wire transport;
     anthropic_messages callers must merge it themselves. Passes ``session_id``
     only — not ``provider_preferences`` (those become a top-level ``provider``
     routing object on the OpenAI wire). Never blocks a turn on tagging.
     """
-    if getattr(agent, "provider", None) not in {"nous", "nous-portal", "nousresearch"}:
+    if getattr(agent, "provider", None) not in {"clara", "clara-portal", "workprise"}:
         return anthropic_kwargs
     try:
         from providers import get_provider_profile
 
-        nous_profile = get_provider_profile("nous")
-        if nous_profile is not None:
+        clara_profile = get_provider_profile("clara")
+        if clara_profile is not None:
             anthropic_kwargs.setdefault("extra_body", {}).update(
-                nous_profile.build_extra_body(
+                clara_profile.build_extra_body(
                     session_id=getattr(agent, "session_id", None)
                 )
             )
     except Exception as exc:  # noqa: BLE001 — never block a turn on tagging
-        logger.debug("Nous Portal extra_body merge failed: %s", exc)
+        logger.debug("Clara Portal extra_body merge failed: %s", exc)
     return anthropic_kwargs
 
 
@@ -804,7 +804,7 @@ def _touch_stale_kill_activity(agent, elapsed: float) -> None:
 def _check_stale_giveup(agent) -> None:
     """Raise immediately when the consecutive-stale streak is past the
     give-up threshold — no network attempt, no stale-timeout wait."""
-    _giveup = env_int("HERMES_STREAM_STALE_GIVEUP", 5)
+    _giveup = env_int("CLARA_STREAM_STALE_GIVEUP", 5)
     _streak = _stale_streak(agent)
     if _giveup > 0 and _streak >= _giveup:
         raise RuntimeError(
@@ -829,7 +829,7 @@ def _derive_stream_stale_timeout(agent, api_kwargs: dict) -> float:
     if _cfg_stale is not None:
         _base = _cfg_stale
     else:
-        _base = env_float("HERMES_STREAM_STALE_TIMEOUT", 180.0)
+        _base = env_float("CLARA_STREAM_STALE_TIMEOUT", 180.0)
     _est_tokens = estimate_request_context_tokens(api_kwargs)
     if _est_tokens > 100_000:
         _timeout = max(_base, 300.0)
@@ -1077,11 +1077,11 @@ def _managed_local_load_notice(agent, api_kwargs: dict) -> "Optional[str]":
         import json as _json
         from urllib.parse import urlparse
 
-        from hermes_cli.local_runtime.load_progress import (
+        from clara_cli.local_runtime.load_progress import (
             get_loading_progress,
             get_prefill_progress,
         )
-        from hermes_cli.local_runtime.supervisor import state_path
+        from clara_cli.local_runtime.supervisor import state_path
 
         state = _json.loads(state_path().read_text(encoding="utf-8"))
         managed = urlparse(str(state.get("base_url", ""))).netloc.lower()
@@ -1114,7 +1114,7 @@ def _resolve_direct_stale_timeout(agent, api_kwargs: dict) -> float:
 
     Same derivation the interrupt-worker path uses for its stale-call
     detector (provider ``stale_timeout_seconds`` →
-    ``HERMES_API_CALL_STALE_TIMEOUT`` → reasoning-model floor → context-size
+    ``CLARA_API_CALL_STALE_TIMEOUT`` → reasoning-model floor → context-size
     scaling, ``inf`` for a local endpoint on the implicit default), so cron and
     delegated turns get exactly the patience every other non-streaming request
     already gets.
@@ -1604,8 +1604,8 @@ def interruptible_api_call(agent, api_kwargs: dict):
     # failure mode emits an opening SSE frame and then stalls forever in SSL
     # read; for that we watch the gap since the last Codex stream event. This
     # matches Codex CLI's stream_idle_timeout model: any valid SSE event is
-    # activity. Operators can tune via HERMES_CODEX_TTFB_TIMEOUT_SECONDS and
-    # HERMES_CODEX_EVENT_STALE_TIMEOUT_SECONDS (0 disables each).
+    # activity. Operators can tune via CLARA_CODEX_TTFB_TIMEOUT_SECONDS and
+    # CLARA_CODEX_EVENT_STALE_TIMEOUT_SECONDS (0 disables each).
     _codex_watchdog_enabled = agent.api_mode == "codex_responses"
     _openai_codex_backend = _is_openai_codex_backend(agent)
     _est_tokens_for_codex_watchdog = estimate_request_context_tokens(api_kwargs)
@@ -1627,9 +1627,9 @@ def interruptible_api_call(agent, api_kwargs: dict):
     # indefinitely. The default sits ABOVE the maximum stale floor (1200s) so
     # it never clamps an intentionally-raised timeout for healthy large
     # requests — it is a backstop against unbounded growth, not a tighter
-    # limit. Tunable via HERMES_CODEX_HARD_TIMEOUT_SECONDS (set to 0 to
+    # limit. Tunable via CLARA_CODEX_HARD_TIMEOUT_SECONDS (set to 0 to
     # disable the ceiling entirely; that restores the pre-fix behavior).
-    _codex_hard_timeout = _env_float("HERMES_CODEX_HARD_TIMEOUT_SECONDS", 1500.0)
+    _codex_hard_timeout = _env_float("CLARA_CODEX_HARD_TIMEOUT_SECONDS", 1500.0)
     if (
         _codex_watchdog_enabled
         and _openai_codex_backend
@@ -1652,14 +1652,14 @@ def interruptible_api_call(agent, api_kwargs: dict):
     # had a chance to emit its first SSE event. Default to 120s — long enough to
     # clear normal backend admission / prompt prefill, short enough to still
     # reconnect promptly when the socket is genuinely wedged. Set
-    # HERMES_CODEX_TTFB_TIMEOUT_SECONDS=0 to disable this watchdog entirely.
+    # CLARA_CODEX_TTFB_TIMEOUT_SECONDS=0 to disable this watchdog entirely.
     _ttfb_enabled = _codex_watchdog_enabled
-    _ttfb_timeout = _env_float("HERMES_CODEX_TTFB_TIMEOUT_SECONDS", 120.0)
+    _ttfb_timeout = _env_float("CLARA_CODEX_TTFB_TIMEOUT_SECONDS", 120.0)
     if _ttfb_timeout <= 0:
         _ttfb_enabled = False
     elif _openai_codex_backend:
-        _ttfb_disable_above = _env_float("HERMES_CODEX_TTFB_DISABLE_ABOVE_TOKENS", 10_000.0)
-        _ttfb_strict = os.environ.get("HERMES_CODEX_TTFB_STRICT", "").strip().lower() in {
+        _ttfb_disable_above = _env_float("CLARA_CODEX_TTFB_DISABLE_ABOVE_TOKENS", 10_000.0)
+        _ttfb_strict = os.environ.get("CLARA_CODEX_TTFB_STRICT", "").strip().lower() in {
             "1", "true", "yes", "on"
         }
         if (
@@ -1672,18 +1672,18 @@ def interruptible_api_call(agent, api_kwargs: dict):
                 logger.info(
                     "Scaling openai-codex no-byte TTFB watchdog from %.0fs to %.0fs "
                     "for large request (context=~%s tokens >= %.0f). "
-                    "Set HERMES_CODEX_TTFB_STRICT=1 to keep the smaller cutoff.",
+                    "Set CLARA_CODEX_TTFB_STRICT=1 to keep the smaller cutoff.",
                     _ttfb_timeout,
                     _large_request_ttfb_timeout,
                     f"{_est_tokens_for_codex_watchdog:,}",
                     _ttfb_disable_above,
                 )
                 _ttfb_timeout = _large_request_ttfb_timeout
-        _ttfb_cap = _env_float("HERMES_CODEX_TTFB_MAX_SECONDS", 120.0)
+        _ttfb_cap = _env_float("CLARA_CODEX_TTFB_MAX_SECONDS", 120.0)
         if _ttfb_cap > 0 and _ttfb_timeout > _ttfb_cap:
             logger.info(
                 "Capping openai-codex no-byte TTFB timeout from %.0fs to %.0fs "
-                "(context=~%s tokens). Set HERMES_CODEX_TTFB_MAX_SECONDS to tune.",
+                "(context=~%s tokens). Set CLARA_CODEX_TTFB_MAX_SECONDS to tune.",
                 _ttfb_timeout,
                 _ttfb_cap,
                 f"{_est_tokens_for_codex_watchdog:,}",
@@ -1692,7 +1692,7 @@ def interruptible_api_call(agent, api_kwargs: dict):
 
     _codex_idle_enabled = _codex_watchdog_enabled
     _codex_idle_timeout = _env_float(
-        "HERMES_CODEX_EVENT_STALE_TIMEOUT_SECONDS",
+        "CLARA_CODEX_EVENT_STALE_TIMEOUT_SECONDS",
         _codex_idle_timeout_default,
     )
     if _codex_idle_timeout <= 0:
@@ -2012,12 +2012,12 @@ def build_api_kwargs(agent, api_messages: list, tools_for_api: list | None = Non
             fast_mode=_request_overrides.get("speed") == "fast",
             drop_context_1m_beta=bool(getattr(agent, "_oauth_1m_beta_disabled", False)),
         )
-        # Nous Portal reads ``tags`` and ``session_id`` as top-level body fields
+        # Clara Portal reads ``tags`` and ``session_id`` as top-level body fields
         # on its Messages route the same way it does on /chat/completions, but
         # the profile hook that produces them is only consulted by the
         # OpenAI-wire transport. Merge them here so Messages traffic keeps
         # product attribution and sticky routing.
-        return _merge_nous_portal_messages_extra_body(agent, anthropic_kwargs)
+        return _merge_clara_portal_messages_extra_body(agent, anthropic_kwargs)
 
     # AWS Bedrock native Converse API — bypasses the OpenAI client entirely.
     # The adapter handles message/tool conversion and boto3 calls directly.
@@ -2172,7 +2172,7 @@ def build_api_kwargs(agent, api_messages: list, tools_for_api: list | None = Non
         base_url_host_matches(agent._base_url_lower, "models.github.ai")
         or base_url_host_matches(agent._base_url_lower, "githubcopilot.com")
     )
-    _is_nous = base_url_host_matches(agent._base_url_lower, "nousresearch.com")
+    _is_clara = base_url_host_matches(agent._base_url_lower, "workprise.com")
     _is_nvidia = base_url_host_matches(agent._base_url_lower, "integrate.api.nvidia.com")
     _is_kimi = (
         base_url_host_matches(agent.base_url, "api.kimi.com")
@@ -2203,7 +2203,7 @@ def build_api_kwargs(agent, api_messages: list, tools_for_api: list | None = Non
     # Anthropic Messages API treats it as mandatory and proxies that omit it
     # (AWS Bedrock, NVIDIA, LiteLLM, vLLM, corporate gateways) default as low
     # as 4096 output tokens — easily exhausted by thinking + large tool calls
-    # like write_file/patch.  OpenRouter/Nous were the only routes covered
+    # like write_file/patch.  OpenRouter/Clara were the only routes covered
     # before; gating on _ANTHROPIC_OUTPUT_LIMITS membership covers them all.
     _ant_max = None
     try:
@@ -2221,7 +2221,7 @@ def build_api_kwargs(agent, api_messages: list, tools_for_api: list | None = Non
     _qwen_meta = None
     if _is_qwen:
         _qwen_meta = {
-            "sessionId": agent.session_id or "hermes",
+            "sessionId": agent.session_id or "clara",
             "promptId": str(uuid.uuid4()),
         }
 
@@ -2292,7 +2292,7 @@ def build_api_kwargs(agent, api_messages: list, tools_for_api: list | None = Non
         cache_scope_id=_cache_scope_id,
         model_lower=(agent.model or "").lower(),
         is_openrouter=_is_or,
-        is_nous=_is_nous,
+        is_clara=_is_clara,
         is_qwen_portal=_is_qwen,
         is_github_models=_is_gh,
         is_nvidia_nim=_is_nvidia,
@@ -2381,7 +2381,7 @@ def build_assistant_message(agent, assistant_message, finish_reason: str) -> dic
     # If the model accidentally inlines a secret in its natural-language
     # response, catch it here at the persistence boundary so it never
     # reaches state.db, session_*.json, gateway delivery, or compression.
-    # Respects HERMES_REDACT_SECRETS via redact_sensitive_text — no-op
+    # Respects CLARA_REDACT_SECRETS via redact_sensitive_text — no-op
     # when disabled. (#19798)
     if isinstance(_san_content, str) and _san_content:
         from agent.redact import redact_sensitive_text
@@ -2615,20 +2615,20 @@ def _fallback_entry_key(fb: dict) -> tuple[str, str, str]:
 def _fallback_entry_unavailable_without_network(agent, fb: dict) -> Optional[str]:
     """Return a skip reason for fallback entries known to be unusable locally."""
     fb_provider = (fb.get("provider") or "").strip().lower()
-    if fb_provider != "nous":
+    if fb_provider != "clara":
         return None
     try:
-        from hermes_cli.auth import get_provider_auth_state
+        from clara_cli.auth import get_provider_auth_state
 
-        state = get_provider_auth_state("nous") or {}
+        state = get_provider_auth_state("clara") or {}
     except Exception as exc:
-        return f"nous_auth_unreadable:{type(exc).__name__}"
+        return f"clara_auth_unreadable:{type(exc).__name__}"
     access_value = state.get("access_token")
     refresh_value = state.get("refresh_token")
     has_access = isinstance(access_value, str) and bool(access_value.strip())
     has_refresh = isinstance(refresh_value, str) and bool(refresh_value.strip())
     if not (has_access or has_refresh):
-        return "nous_token_missing"
+        return "clara_token_missing"
     return None
 
 
@@ -2778,7 +2778,7 @@ def try_activate_fallback(agent, reason: "FailoverReason | None" = None) -> bool
         # Pass base_url and api_key from fallback config so custom
         # endpoints (e.g. Ollama Cloud) resolve correctly instead of
         # falling through to OpenRouter defaults.
-        from hermes_cli.fallback_config import resolve_entry_api_key
+        from clara_cli.fallback_config import resolve_entry_api_key
 
         fb_base_url_hint = (fb.get("base_url") or "").strip() or None
         fb_api_key_hint = resolve_entry_api_key(fb)
@@ -2827,7 +2827,7 @@ def try_activate_fallback(agent, reason: "FailoverReason | None" = None) -> bool
             unavailable.add(fb_key)
             return agent._try_activate_fallback(reason)  # try next in chain
         try:
-            from hermes_cli.model_normalize import normalize_model_for_provider
+            from clara_cli.model_normalize import normalize_model_for_provider
 
             fb_model = normalize_model_for_provider(fb_model, fb_provider)
         except Exception as _norm_err:
@@ -2846,14 +2846,14 @@ def try_activate_fallback(agent, reason: "FailoverReason | None" = None) -> bool
         if not fb_api_mode_explicit and fb_api_mode == "chat_completions":
             if fb_provider == "openai-codex":
                 fb_api_mode = "codex_responses"
-            elif fb_provider in {"nous", "nous-portal", "nousresearch"}:
+            elif fb_provider in {"clara", "clara-portal", "workprise"}:
                 # Portal is dual-wire: anthropic/* must land on /v1/messages.
                 # resolve_provider_client still returns an OpenAI client for
-                # Nous; the anthropic_messages branch below rebuilds the native
+                # Clara; the anthropic_messages branch below rebuilds the native
                 # client from that credential + base_url.
-                from hermes_cli.providers import nous_api_mode
+                from clara_cli.providers import clara_api_mode
 
-                fb_api_mode = nous_api_mode(fb_model)
+                fb_api_mode = clara_api_mode(fb_model)
             elif (
                 fb_base_url.rstrip("/").lower().endswith("/anthropic")
                 or base_url_hostname(fb_base_url) == "api.anthropic.com"
@@ -3038,8 +3038,8 @@ def try_activate_fallback(agent, reason: "FailoverReason | None" = None) -> bool
         # (YAML boolean False = disabled). Wrapped in try/except because a
         # config load failure must not kill the swap.
         try:
-            from hermes_cli.config import load_config
-            from hermes_constants import resolve_reasoning_config
+            from clara_cli.config import load_config
+            from clara_constants import resolve_reasoning_config
 
             agent.reasoning_config = resolve_reasoning_config(
                 load_config() or {}, agent.model
@@ -3153,7 +3153,7 @@ def try_activate_fallback(agent, reason: "FailoverReason | None" = None) -> bool
         )
         return True
     except Exception as e:
-        if fb_provider == "nous":
+        if fb_provider == "clara":
             unavailable.add(fb_key)
         logger.error("Failed to activate fallback %s: %s", fb_model, e)
         return agent._try_activate_fallback(reason)  # try next in chain
@@ -3164,7 +3164,7 @@ def handle_max_iterations(agent, messages: list, api_call_count: int) -> str:
     """Request a summary when max iterations are reached. Returns the final response text."""
     warning = f"⚠️  Reached maximum iterations ({agent.max_iterations}). Requesting summary..."
     if getattr(agent, "suppress_status_output", False):
-        # Strict machine-readable mode (hermes chat -Q, oneshot, background
+        # Strict machine-readable mode (clara chat -Q, oneshot, background
         # review): keep diagnostics out of stdout so wrappers receive only
         # the final assistant content (#93220 class). Note: plain quiet_mode
         # is NOT the right gate — the interactive CLI runs quiet_mode=True by
@@ -3228,12 +3228,12 @@ def handle_max_iterations(agent, messages: list, api_call_count: int) -> str:
             # tool_name (SQLite FTS bookkeeping), the codex_* reasoning carriers,
             # timestamp (preserved on gateway user replay entries for the
             # stale-confirmation expiry check — #47868 rejection class),
-            # and every Hermes-internal underscore-prefixed scaffolding key.
+            # and every Clara-internal underscore-prefixed scaffolding key.
             for schema_foreign in ("tool_name", "codex_reasoning_items", "codex_message_items", "timestamp", "platform_message_id"):
                 api_msg.pop(schema_foreign, None)
             # api_content (the persist-what-you-send sidecar) carries the
             # exact bytes every main-loop call sent for this message —
-            # substitute it before dropping the key (Hermes bookkeeping,
+            # substitute it before dropping the key (Clara bookkeeping,
             # never a provider field), mirroring the loop's api_messages
             # build. Popping without substituting would send CLEAN content
             # here, diverging the summary request's prefix at the EARLIEST
@@ -3298,7 +3298,7 @@ def handle_max_iterations(agent, messages: list, api_call_count: int) -> str:
         )
         _omit_summary_temperature = _raw_summary_temp is _OMIT_TEMP
         _summary_temperature = None if _omit_summary_temperature else _raw_summary_temp
-        _is_nous = "nousresearch" in agent._base_url_lower
+        _is_clara = "workprise" in agent._base_url_lower
         # LM Studio uses top-level `reasoning_effort` (not extra_body.reasoning).
         # Mirror ChatCompletionsTransport.build_kwargs() so the summary path
         # — which calls chat.completions.create() directly without going
@@ -3319,8 +3319,8 @@ def handle_max_iterations(agent, messages: list, api_call_count: int) -> str:
                     "enabled": True,
                     "effort": "medium"
                 }
-        if _is_nous:
-            from agent.portal_tags import nous_portal_tags as _portal_tags
+        if _is_clara:
+            from agent.portal_tags import clara_portal_tags as _portal_tags
             summary_extra_body["tags"] = _portal_tags()
 
         if agent.api_mode == "codex_responses":
@@ -3405,7 +3405,7 @@ def handle_max_iterations(agent, messages: list, api_call_count: int) -> str:
                     preserve_dots=agent._anthropic_preserve_dots(),
                     base_url=getattr(agent, "_anthropic_base_url", None),
                 )
-                _ant_kw = _merge_nous_portal_messages_extra_body(agent, _ant_kw)
+                _ant_kw = _merge_clara_portal_messages_extra_body(agent, _ant_kw)
                 summary_response = _managed_summary_call(
                     _ant_kw,
                     agent._anthropic_messages_create,
@@ -3457,7 +3457,7 @@ def handle_max_iterations(agent, messages: list, api_call_count: int) -> str:
                     preserve_dots=agent._anthropic_preserve_dots(),
                     base_url=getattr(agent, "_anthropic_base_url", None),
                 )
-                _ant_kw2 = _merge_nous_portal_messages_extra_body(agent, _ant_kw2)
+                _ant_kw2 = _merge_clara_portal_messages_extra_body(agent, _ant_kw2)
                 retry_response = _managed_summary_call(
                     _ant_kw2,
                     agent._anthropic_messages_create,
@@ -3910,7 +3910,7 @@ def interruptible_streaming_api_call(agent, api_kwargs: dict, *, on_first_delta=
                     # survive) waits a fresh interval rather than re-firing instantly.
                     _bedrock_last_event["t"] = time.time()
                     # Escalate across turns: raises RuntimeError once the streak
-                    # crosses HERMES_STREAM_STALE_GIVEUP, so a persistently wedged
+                    # crosses CLARA_STREAM_STALE_GIVEUP, so a persistently wedged
                     # Bedrock provider aborts fast instead of re-waiting the timeout.
                     _check_stale_giveup(agent)
                     # Streak still under the give-up threshold: end THIS call with a
@@ -4174,23 +4174,23 @@ def interruptible_streaming_api_call(agent, api_kwargs: dict, *, on_first_delta=
         """Stream a chat completions response."""
         import httpx as _httpx
         # Per-provider / per-model request_timeout_seconds (from config.yaml)
-        # wins over the HERMES_API_TIMEOUT env default if the user set it.
+        # wins over the CLARA_API_TIMEOUT env default if the user set it.
         _provider_timeout_cfg = get_provider_request_timeout(agent.provider, agent.model)
         _base_timeout = (
             _provider_timeout_cfg
             if _provider_timeout_cfg is not None
-            else env_float("HERMES_API_TIMEOUT", 1800.0)
+            else env_float("CLARA_API_TIMEOUT", 1800.0)
         )
         # Read timeout: config wins here too.  Otherwise use
-        # HERMES_STREAM_READ_TIMEOUT (default 120s) for cloud providers.
+        # CLARA_STREAM_READ_TIMEOUT (default 120s) for cloud providers.
         if _provider_timeout_cfg is not None:
             _stream_read_timeout = _provider_timeout_cfg
         else:
-            _stream_read_timeout = env_float("HERMES_STREAM_READ_TIMEOUT", 120.0)
+            _stream_read_timeout = env_float("CLARA_STREAM_READ_TIMEOUT", 120.0)
             # Local providers (Ollama, llama.cpp, vLLM) can take minutes for
             # prefill on large contexts before producing the first token.
             # Auto-increase the httpx read timeout unless the user explicitly
-            # overrode HERMES_STREAM_READ_TIMEOUT.
+            # overrode CLARA_STREAM_READ_TIMEOUT.
             if _stream_read_timeout == 120.0 and agent.base_url and is_local_endpoint(agent.base_url):
                 _stream_read_timeout = _base_timeout
                 logger.debug(
@@ -4276,7 +4276,7 @@ def interruptible_streaming_api_call(agent, api_kwargs: dict, *, on_first_delta=
 
         def _accept_stream_chunk(_chunk: Any) -> bool:
             # A stale-attempt fence can win while Relay is handing an
-            # already-received tool-call chunk back to Hermes. Preserve only
+            # already-received tool-call chunk back to Clara. Preserve only
             # the fact that a tool call was in flight so retry policy does not
             # misclassify the attempt as a partial text response. The chunk
             # itself is still rejected below and never reaches callbacks.
@@ -4374,7 +4374,7 @@ def interruptible_streaming_api_call(agent, api_kwargs: dict, *, on_first_delta=
             )
         )
         if agent.provider == "moa":
-            # Hermes interrupts the managed stream; Relay retains sole
+            # Clara interrupts the managed stream; Relay retains sole
             # ownership of closing the underlying provider stream.
             _set_request_stream_handle(stream)
         pending_text_parts: list[str] = []
@@ -4481,7 +4481,7 @@ def interruptible_streaming_api_call(agent, api_kwargs: dict, *, on_first_delta=
                         ),
                         raw_text=f"{_err_type}: {_err_msg}",
                     )
-                # Nous Portal usage frames often have choices=[] plus
+                # Clara Portal usage frames often have choices=[] plus
                 # lastOne=true and no [DONE]. Treat that as a clean
                 # terminal, not a mid-stream drop (#90848).
                 last_one = getattr(chunk, "lastOne", None)
@@ -4659,7 +4659,7 @@ def interruptible_streaming_api_call(agent, api_kwargs: dict, *, on_first_delta=
             )
 
         # Some OpenAI-compatible adapters accept ``stream=True`` but return a
-        # completed response. Relay records that attempt while Hermes preserves
+        # completed response. Relay records that attempt while Clara preserves
         # its existing switch-to-non-streaming behavior for later calls.
         if stream.final_response is not None:
             final_response = stream.final_response
@@ -4767,7 +4767,7 @@ def interruptible_streaming_api_call(agent, api_kwargs: dict, *, on_first_delta=
         #      upstream dropped/stalled the connection mid tool-call.  This
         #      is NOT an output cap — the model never reported hitting one.
         #      Some dedicated endpoints (e.g. NVIDIA Nemotron Ultra on the
-        #      Nous dedicated endpoint) stall for minutes during large
+        #      Clara dedicated endpoint) stall for minutes during large
         #      tool-arg generation, then close the stream cleanly without a
         #      finish_reason.  Stamping "length" here sends it down the
         #      max_tokens-boost truncation path, which retries 3× to no
@@ -5079,7 +5079,7 @@ def interruptible_streaming_api_call(agent, api_kwargs: dict, *, on_first_delta=
     def _call():
         import httpx as _httpx
 
-        _max_stream_retries = env_int("HERMES_STREAM_RETRIES", 2)
+        _max_stream_retries = env_int("CLARA_STREAM_RETRIES", 2)
 
         try:
             for _stream_attempt in range(_max_stream_retries + 1):
@@ -5420,22 +5420,22 @@ def interruptible_streaming_api_call(agent, api_kwargs: dict, *, on_first_delta=
     if _cfg_stale is not None:
         _stream_stale_timeout_base = _cfg_stale
     else:
-        _stream_stale_timeout_base = env_float("HERMES_STREAM_STALE_TIMEOUT", 180.0)
+        _stream_stale_timeout_base = env_float("CLARA_STREAM_STALE_TIMEOUT", 180.0)
     # Local providers (Ollama, oMLX, llama-cpp) can take 300+ seconds
     # for prefill on large contexts, so tolerate far longer silence than
     # the cloud default — but a wedged local server must EVENTUALLY trip the
     # detector rather than hang forever (an infinite timeout meant a crashed
     # or deadlocked local endpoint stalled the session indefinitely).  900s
     # tolerates slow prefill while still bounding a hung endpoint.  Applies
-    # unless the user explicitly set HERMES_STREAM_STALE_TIMEOUT; override the
-    # local ceiling with HERMES_LOCAL_STREAM_STALE_TIMEOUT (documented in
+    # unless the user explicitly set CLARA_STREAM_STALE_TIMEOUT; override the
+    # local ceiling with CLARA_LOCAL_STREAM_STALE_TIMEOUT (documented in
     # website/docs/reference/environment-variables.md).
     if _stream_stale_timeout_base == 180.0 and agent.base_url and is_local_endpoint(agent.base_url):
         # Read config.yaml ``agent.local_stream_stale_timeout`` (default 900),
-        # env var ``HERMES_LOCAL_STREAM_STALE_TIMEOUT`` overrides for escape-hatch.
+        # env var ``CLARA_LOCAL_STREAM_STALE_TIMEOUT`` overrides for escape-hatch.
         _local_default = 900.0
         try:
-            from hermes_cli.config import load_config_readonly
+            from clara_cli.config import load_config_readonly
 
             _cfg = load_config_readonly()  # read-only consumer — no deepcopy
             _agent_cfg = _cfg.get("agent") if isinstance(_cfg, dict) else None
@@ -5445,7 +5445,7 @@ def interruptible_streaming_api_call(agent, api_kwargs: dict, *, on_first_delta=
                     _local_default = float(_v)
         except Exception:
             pass
-        _stream_stale_timeout = env_float("HERMES_LOCAL_STREAM_STALE_TIMEOUT", _local_default)
+        _stream_stale_timeout = env_float("CLARA_LOCAL_STREAM_STALE_TIMEOUT", _local_default)
         logger.debug(
             "Local provider detected (%s) — stale stream timeout set to %.0fs",
             agent.base_url, _stream_stale_timeout,

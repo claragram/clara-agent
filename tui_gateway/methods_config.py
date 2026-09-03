@@ -9,7 +9,7 @@ are rebound onto server.py's globals at install time — see method_ctx.py.
 
 from .method_ctx import HandlerRegistry
 
-from hermes_constants import DEFAULT_INDICATOR_STYLE, INDICATOR_STYLES
+from clara_constants import DEFAULT_INDICATOR_STYLE, INDICATOR_STYLES
 
 _registry = HandlerRegistry()
 method = _registry.method
@@ -24,7 +24,7 @@ def _(rid, params: dict) -> dict:
         with _profile_db(params) as db:
             if db is None:
                 return _ok(rid, {"repos": []})
-            from hermes_cli import projects_db as pdb
+            from clara_cli import projects_db as pdb
 
             policy = _repo_discovery_policy()
             policy_key = _repo_discovery_policy_key(policy)
@@ -36,7 +36,7 @@ def _(rid, params: dict) -> dict:
                 )
                 # `scan=true` (set by the desktop in remote-gateway mode): run a
                 # backend-side filesystem scan of the policy roots so repos with
-                # zero Hermes sessions still surface. The desktop's native scan
+                # zero Clara sessions still surface. The desktop's native scan
                 # only runs on the local filesystem; on a remote connection it
                 # must ask the host to scan itself (#81723).
                 if params.get("scan") and policy["enabled"]:
@@ -56,7 +56,7 @@ def _(rid, params: dict) -> dict:
     the merged repo list. The native crawl runs on the desktop (local fs); this
     caches the result so later reads are instant instead of re-walking disk."""
     try:
-        from hermes_cli import projects_db as pdb
+        from clara_cli import projects_db as pdb
 
         policy = _repo_discovery_policy()
         policy_key = _repo_discovery_policy_key(policy)
@@ -196,7 +196,7 @@ def _(rid, params: dict) -> dict:
     key = params.get("key", "")
     if key == "provider":
         try:
-            from hermes_cli.models import list_available_providers, normalize_provider
+            from clara_cli.models import list_available_providers, normalize_provider
 
             model = _resolve_model()
             parts = model.split("/", 1)
@@ -213,9 +213,9 @@ def _(rid, params: dict) -> dict:
         except Exception as e:
             return _err(rid, 5013, str(e))
     if key == "profile":
-        from hermes_constants import display_hermes_home
+        from clara_constants import display_clara_home
 
-        return _ok(rid, {"home": str(_hermes_home), "display": display_hermes_home()})
+        return _ok(rid, {"home": str(_clara_home), "display": display_clara_home()})
     if key == "project":
         cfg_terminal = _load_cfg().get("terminal") or {}
         raw = str(params.get("cwd", "") or cfg_terminal.get("cwd", "") or "").strip()
@@ -244,7 +244,7 @@ def _(rid, params: dict) -> dict:
     if key == "personality":
         # Report the EFFECTIVE personality via the single owner — a stale or
         # unknown name in config must not display as active.
-        from hermes_cli.personality import active_personality_name
+        from clara_cli.personality import active_personality_name
 
         return _ok(
             rid,
@@ -376,7 +376,7 @@ def _(rid, params: dict) -> dict:
         display = _load_cfg().get("display")
         return _ok(rid, {"value": _display_mouse_tracking(display)})
     if key == "mtime":
-        cfg_path = _hermes_home / "config.yaml"
+        cfg_path = _clara_home / "config.yaml"
         try:
             mtime = cfg_path.stat().st_mtime if cfg_path.exists() else 0
         except Exception:
@@ -393,7 +393,7 @@ def _readiness_profile_scope(params: dict):
     """Resolve the optional ``profile`` param of the setup readiness RPCs.
 
     Returns ``(profile, scope)`` where ``scope`` is a context manager binding
-    that profile's HERMES_HOME and ``.env`` secret scope (ContextVars, so
+    that profile's CLARA_HOME and ``.env`` secret scope (ContextVars, so
     concurrent checks for different profiles stay isolated). The launch
     profile / no param yields ``("", nullcontext())``. A profile unknown to
     this host raises ``FileNotFoundError`` — a readiness check must never
@@ -404,7 +404,7 @@ def _readiness_profile_scope(params: dict):
     profile = str(params.get("profile") or "").strip() if isinstance(params, dict) else ""
     if not profile:
         return "", contextlib.nullcontext()
-    from hermes_cli import profiles as profiles_mod
+    from clara_cli import profiles as profiles_mod
     from tui_gateway import server as _server
 
     if not profiles_mod.profile_exists(profile):
@@ -419,7 +419,7 @@ def _readiness_profile_scope(params: dict):
 def _(rid, params: dict) -> dict:
     """Loose provider check; ``profile`` (optional) scopes it to that profile's home."""
     try:
-        from hermes_cli.main import _has_any_provider_configured
+        from clara_cli.main import _has_any_provider_configured
         from tui_gateway.methods_config import _readiness_profile_scope
 
         try:
@@ -453,9 +453,9 @@ def _(rid, params: dict) -> dict:
     than reporting the launch profile's readiness.
     """
     try:
-        from hermes_cli.runtime_provider import resolve_runtime_provider
-        from hermes_cli.auth import has_usable_secret
-        from hermes_cli.main import _has_any_provider_configured
+        from clara_cli.runtime_provider import resolve_runtime_provider
+        from clara_cli.auth import has_usable_secret
+        from clara_cli.main import _has_any_provider_configured
         from tui_gateway.methods_config import _readiness_profile_scope
 
         requested = str(params.get("provider") or "").strip() or None
@@ -485,7 +485,7 @@ def _(rid, params: dict) -> dict:
                     "provider": provider,
                     "model": runtime.get("model"),
                     "source": source,
-                    "error": "No Hermes provider is configured.",
+                    "error": "No Clara provider is configured.",
                     **scoped,
                 },
             )
@@ -526,13 +526,13 @@ def _(rid, params: dict) -> dict:
         return _ok(rid, {"ok": False, "error": str(e)})
 
 
-@method("diagnostics.share_nous")
+@method("diagnostics.share_clara")
 def _(rid, params: dict) -> dict:
-    """Upload a redacted debug bundle to Nous-internal diagnostics storage.
+    """Upload a redacted debug bundle to Clara-internal diagnostics storage.
 
     Desktop's "Send Diagnostics" action (error card / diagnostics UI). Same
-    collection + force-redaction pipeline as ``hermes debug share --nous``
-    (collect_share_bundle → build_nous_bundle → share_to_nous); redaction is
+    collection + force-redaction pipeline as ``clara debug share --clara``
+    (collect_share_bundle → build_clara_bundle → share_to_clara); redaction is
     NOT client-controllable — this handler always redacts.
 
     Params (all optional):
@@ -551,12 +551,12 @@ def _(rid, params: dict) -> dict:
     upload failures inline.
     """
     try:
-        from hermes_cli.debug import (
+        from clara_cli.debug import (
             _redact_log_text,
-            build_nous_bundle,
+            build_clara_bundle,
             collect_share_bundle,
         )
-        from hermes_cli.diagnostics_upload import share_to_nous
+        from clara_cli.diagnostics_upload import share_to_clara
 
         log_lines = params.get("log_lines")
         if not isinstance(log_lines, int) or not (10 <= log_lines <= 2000):
@@ -594,8 +594,8 @@ def _(rid, params: dict) -> dict:
                     continue
                 bundle[f"client/{safe_label}"] = _redact_log_text(text[:524_288])
 
-        blob = build_nous_bundle(bundle, redact=True)
-        res = share_to_nous(blob)
+        blob = build_clara_bundle(bundle, redact=True)
+        res = share_to_clara(blob)
         view_url = res.get("viewUrl") or res.get("view_url")
         upload_id = res.get("id")
         if not view_url and not upload_id:

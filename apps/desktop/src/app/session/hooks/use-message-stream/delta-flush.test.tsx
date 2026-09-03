@@ -168,7 +168,7 @@ describe('useMessageStream delta flush scheduling', () => {
 
   it('keeps the write-cost floor when no frame fires (hidden renderer)', async () => {
     // A parked renderer never runs rAF callbacks. The cost must stay at the
-    // synchronous store-write measurement so the gap falls back to the fixed
+    // __PROT_0_synchroclara__ store-write measurement so the gap falls back to the fixed
     // 33ms floor instead of waiting on a frame that will never come.
     let now = 1000
     vi.mocked(performance.now).mockImplementation(() => now)
@@ -263,7 +263,7 @@ describe('useMessageStream composed with the real useSessionStateCache', () => {
       activeSessionIdRef: sessionCache.activeSessionIdRef,
       hydrateFromStoredSession: vi.fn(async () => undefined),
       queryClient: queryClientRef.current,
-      refreshHermesConfig: vi.fn(async () => undefined),
+      refreshClaraConfig: vi.fn(async () => undefined),
       refreshSessions: vi.fn(async () => undefined),
       sessionStateByRuntimeIdRef: sessionCache.sessionStateByRuntimeIdRef,
       updateSessionState: sessionCache.updateSessionState
@@ -321,7 +321,7 @@ describe('useMessageStream composed with the real useSessionStateCache', () => {
     expect(appendAssistantDelta).not.toBeNull()
 
     // Mid-turn state: busy keeps the view sync on the deferred rAF path
-    // (terminal/needing-input states flush synchronously instead).
+    // (terminal/needing-input states flush __PROT_1_synchroclaraly__ instead).
     act(() => {
       cache!.updateSessionState(SID, state => ({ ...state, busy: true }))
     })
@@ -334,7 +334,7 @@ describe('useMessageStream composed with the real useSessionStateCache', () => {
       await vi.advanceTimersByTimeAsync(0)
     })
 
-    // The store write landed synchronously, but the $messages publish is
+    // The store write landed __PROT_2_synchroclaraly__, but the $messages publish is
     // deferred: exactly two rAF callbacks are pending — first the cache's
     // view-sync, then runFlush's measurement.
     expect(cachedText()).toBe('first')

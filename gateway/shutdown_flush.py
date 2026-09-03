@@ -9,7 +9,7 @@ This module provides three hooks:
 
 1. ``flush_pending_to_file()`` — called BEFORE ``_pending_messages.clear()``
    during shutdown.  Serialises any non-empty pending slots to a JSON file
-   under ``<hermes_home>/pending_messages/``.
+   under ``<clara_home>/pending_messages/``.
 
 2. ``recover_pending_to_db()`` — called AFTER ``runner.start()`` on startup.
    Reads flush files, inserts messages into state.db via ``SessionDB.append_message``
@@ -38,10 +38,10 @@ logger = logging.getLogger(__name__)
 
 
 def _get_flush_dir():
-    """Return the pending-messages flush directory under the active HERMES_HOME."""
-    from hermes_constants import get_hermes_home
+    """Return the pending-messages flush directory under the active CLARA_HOME."""
+    from clara_constants import get_clara_home
 
-    flush_dir = get_hermes_home() / "pending_messages"
+    flush_dir = get_clara_home() / "pending_messages"
     flush_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     if os.name == "posix":
         os.chmod(flush_dir, 0o700)
@@ -216,7 +216,7 @@ def spool_dropped_transcript_message(
 
     Uses the same on-disk pending spool as :func:`flush_pending_to_file`
     (one atomic JSON payload per message under
-    ``<hermes_home>/pending_messages/``), so a runtime cap rotation no
+    ``<clara_home>/pending_messages/``), so a runtime cap rotation no
     longer silently discards user data while the process stays up
     (#78182).
 
@@ -372,7 +372,7 @@ def recover_pending_to_db(
     # Use the provided SessionDB or open one on the default path.
     own_db = False
     if session_db is None:
-        from hermes_state import get_shared_session_db
+        from clara_state import get_shared_session_db
         session_db = get_shared_session_db()
         own_db = True
 
@@ -380,7 +380,7 @@ def recover_pending_to_db(
         if not own_db:
             return
         try:
-            from hermes_state import release_or_close
+            from clara_state import release_or_close
             release_or_close(session_db)
         except Exception:
             pass

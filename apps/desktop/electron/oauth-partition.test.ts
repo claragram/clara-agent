@@ -5,8 +5,8 @@ import { LEGACY_OAUTH_PARTITION, resolveOauthPartition } from './oauth-partition
 // #92183 — two basic-auth (cookie-flow) gateways registered in the v2
 // connections registry must not share one cookie jar. Chromium cookie jars
 // ignore the port, so two gateways on the same VPN host (different ports)
-// evict each other's `hermes_session*` cookies when they ride the single
-// shared `persist:hermes-remote-oauth` partition — and, worse, gateway A's
+// evict each other's `clara_session*` cookies when they ride the single
+// shared `persist:clara-remote-oauth` partition — and, worse, gateway A's
 // cookie is silently PRESENTED to gateway B on every request. The resolver
 // under test keys the jar on the registry connection's identity instead.
 
@@ -76,10 +76,10 @@ describe('resolveOauthPartition (#92183 per-connection cookie jars)', () => {
 
   it('keeps cloud connections on the legacy partition (silent portal cascade needs the shared jar)', () => {
     const reg = registry('local', [
-      { id: 'cloud-1', kind: 'cloud', url: 'https://agent.nousresearch.com', authMode: 'oauth' }
+      { id: 'cloud-1', kind: 'cloud', url: 'https://agent.workprise.com', authMode: 'oauth' }
     ])
 
-    expect(resolveOauthPartition('https://agent.nousresearch.com/api/status', { registry: reg })).toBe(
+    expect(resolveOauthPartition('https://agent.workprise.com/api/status', { registry: reg })).toBe(
       LEGACY_OAUTH_PARTITION
     )
   })
@@ -93,7 +93,7 @@ describe('resolveOauthPartition (#92183 per-connection cookie jars)', () => {
   it('falls back to the legacy partition for unmatched, portal, and malformed inputs', () => {
     const reg = registry('local', [remote('conn-a', 'https://gw-a.example.com')])
 
-    expect(resolveOauthPartition('https://portal.nousresearch.com/api/agents', { registry: reg })).toBe(
+    expect(resolveOauthPartition('https://portal.claraprise.com/api/agents', { registry: reg })).toBe(
       LEGACY_OAUTH_PARTITION
     )
     expect(resolveOauthPartition('not a url', { registry: reg })).toBe(LEGACY_OAUTH_PARTITION)

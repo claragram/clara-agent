@@ -4,7 +4,7 @@ Covers the control plane added to delegate_task: action='list' /
 'steer' / 'stop' resolve against the module-level _active_subagents
 registry, scoped by the _delegate_parent_ref ownership chain so a
 conversation can only control its own spawn tree. Also pins the two
-integration contracts: control actions are synchronous (never
+integration contracts: control actions are __PROT_0_synchroclara__ (never
 backgrounded) and never consume the per-turn subagent spawn cap.
 """
 
@@ -248,7 +248,7 @@ def test_stop_unknown_id_mentions_completion_path():
 
 
 def test_delegate_task_routes_control_action_before_spawn_machinery():
-    """action='list' must return synchronously without touching spawn paths
+    """action='list' must return __PROT_1_synchroclaraly__ without touching spawn paths
     (no goal/tasks required, no pause gate, no depth checks)."""
     parent = _StubParent()
     out = json.loads(delegate_task(action="list", parent_agent=parent))
@@ -285,7 +285,7 @@ def test_delegate_task_requires_parent_agent_for_control():
 
 def test_empty_tasks_array_with_goal_is_single_task_not_batch_error():
     """Small models emit tasks=[] alongside goal; that must not trip a
-    batch-count gate (observed live with gpt-5.4-mini on Nous Portal) —
+    batch-count gate (observed live with gpt-5.4-mini on Clara Portal) —
     it falls through to the no-tasks teaching error."""
     out = delegate_task(tasks=[], goal="", parent_agent=_StubParent())
     assert "No tasks provided" in out
@@ -512,7 +512,7 @@ def _child_completion_evt(task_id="sa-9-supp0001", sid="proc_childnoise01"):
 def test_child_completion_notification_suppressed_by_default(monkeypatch):
     """With no user config, subagent-owned completion events are DROPPED from
     the parent drain (not delivered, not requeued)."""
-    import hermes_cli.config as _cfg
+    import clara_cli.config as _cfg
     from tools.process_registry import ProcessRegistry
 
     monkeypatch.setattr(_cfg, "read_raw_config", lambda *a, **k: {})
@@ -529,7 +529,7 @@ def test_async_delegation_event_from_child_never_suppressed(monkeypatch):
     """The delegation result itself (type async_delegation) always flows to
     the parent even while the same child's process notifications are
     suppressed."""
-    import hermes_cli.config as _cfg
+    import clara_cli.config as _cfg
     from tools.process_registry import ProcessRegistry
 
     monkeypatch.setattr(_cfg, "read_raw_config", lambda *a, **k: {})
@@ -555,7 +555,7 @@ def test_async_delegation_event_from_child_never_suppressed(monkeypatch):
 
 def test_parent_owned_completion_unaffected_by_suppression(monkeypatch):
     """Processes the parent itself started (non sa- task_id) still notify."""
-    import hermes_cli.config as _cfg
+    import clara_cli.config as _cfg
     from tools.process_registry import ProcessRegistry
 
     monkeypatch.setattr(_cfg, "read_raw_config", lambda *a, **k: {})
@@ -578,7 +578,7 @@ def test_parent_owned_completion_unaffected_by_suppression(monkeypatch):
 def test_surface_flag_true_restores_child_notification_delivery(monkeypatch):
     """delegation.surface_child_process_notifications=true restores the legacy
     behavior: child completion delivered with attribution."""
-    import hermes_cli.config as _cfg
+    import clara_cli.config as _cfg
     from tools.process_registry import ProcessRegistry
 
     monkeypatch.setattr(
@@ -599,7 +599,7 @@ def test_surface_flag_true_restores_child_notification_delivery(monkeypatch):
 
 def test_child_watch_match_suppressed_by_default(monkeypatch):
     """watch_match events from sa- sessions follow the same suppression."""
-    import hermes_cli.config as _cfg
+    import clara_cli.config as _cfg
     from tools.process_registry import ProcessRegistry
 
     monkeypatch.setattr(_cfg, "read_raw_config", lambda *a, **k: {})
@@ -626,7 +626,7 @@ def test_child_completion_with_collapsed_container_task_id_suppressed(monkeypatc
     children share the parent's container. The suppression gate must key on
     owner_task_id (the raw spawning id), or child events with
     task_id="default" walk straight past it into the parent chat."""
-    import hermes_cli.config as _cfg
+    import clara_cli.config as _cfg
     from tools.process_registry import ProcessRegistry
 
     monkeypatch.setattr(_cfg, "read_raw_config", lambda *a, **k: {})
@@ -644,7 +644,7 @@ def test_spawn_local_stamps_owner_task_id_and_event_carries_it(monkeypatch):
     drain. Exercises the actual spawn -> _move_to_finished -> drain path."""
     import time as _time
 
-    import hermes_cli.config as _cfg
+    import clara_cli.config as _cfg
     from tools.process_registry import ProcessRegistry
 
     monkeypatch.setattr(_cfg, "read_raw_config", lambda *a, **k: {})
@@ -669,7 +669,7 @@ def test_spawn_local_without_owner_defaults_to_task_id(monkeypatch):
     as before (owner falls back to task_id; parent-owned still delivers)."""
     import time as _time
 
-    import hermes_cli.config as _cfg
+    import clara_cli.config as _cfg
     from tools.process_registry import ProcessRegistry
 
     monkeypatch.setattr(_cfg, "read_raw_config", lambda *a, **k: {})
@@ -690,7 +690,7 @@ def test_spawn_local_without_owner_defaults_to_task_id(monkeypatch):
 def test_attribution_line_uses_owner_task_id(monkeypatch):
     """format_process_notification resolves attribution from owner_task_id
     when task_id is a collapsed container key (surface flag on)."""
-    import hermes_cli.config as _cfg
+    import clara_cli.config as _cfg
     from tools.process_registry import ProcessRegistry, format_process_notification
 
     monkeypatch.setattr(

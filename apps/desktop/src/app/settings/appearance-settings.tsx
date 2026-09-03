@@ -7,7 +7,7 @@ import { LanguageSwitcher } from '@/components/language-switcher'
 import { Button } from '@/components/ui/button'
 import { SegmentedControl } from '@/components/ui/segmented-control'
 import type { DesktopMarketplaceSearchItem } from '@/global'
-import { saveHermesConfig } from '@/hermes'
+import { saveClaraConfig } from '@/clara'
 import { useI18n } from '@/i18n'
 import { triggerHaptic } from '@/lib/haptics'
 import { Check, Download, Loader2, Palette, Trash2 } from '@/lib/icons'
@@ -55,7 +55,7 @@ import { installVscodeThemeFromMarketplace } from '@/themes/install'
 import type { DesktopTheme } from '@/themes/types'
 import { $marketplaceInstalls, isUserTheme, removeUserTheme } from '@/themes/user-themes'
 
-import { setHermesConfigCache, useHermesConfigRecord } from '../hooks/use-config-record'
+import { setClaraConfigCache, useClaraConfigRecord } from '../hooks/use-config-record'
 
 import { MODE_OPTIONS } from './constants'
 import { setNested } from './helpers'
@@ -72,7 +72,7 @@ import { useDeepLinkHighlight } from './use-deep-link-highlight'
 function ResumeLastSessionSetting() {
   const { t } = useI18n()
   const a = t.settings.appearance
-  const configQuery = useHermesConfigRecord()
+  const configQuery = useClaraConfigRecord()
   const config = configQuery.data
   const checked = (config?.display as { resume_last_session?: unknown } | undefined)?.resume_last_session !== false
 
@@ -82,15 +82,15 @@ function ResumeLastSessionSetting() {
     }
 
     const next = setNested(config, 'display.resume_last_session', on)
-    setHermesConfigCache(next)
-    void saveHermesConfig(next)
+    setClaraConfigCache(next)
+    void saveClaraConfig(next)
       .then(result => {
         if (!result.ok) {
           throw new Error(t.settings.config.autosaveFailed)
         }
       })
       .catch(error => {
-        setHermesConfigCache(config)
+        setClaraConfigCache(config)
         notifyError(error, t.settings.config.autosaveFailed)
       })
   }
@@ -183,7 +183,7 @@ function MarketplaceThemeResults({
 
   const search = useQuery({
     enabled: debounced.length > 0,
-    queryFn: () => window.hermesDesktop?.themes?.searchMarketplace(debounced) ?? Promise.resolve([]),
+    queryFn: () => window.claraDesktop?.themes?.searchMarketplace(debounced) ?? Promise.resolve([]),
     queryKey: ['marketplace-themes-settings', debounced],
     staleTime: 5 * 60 * 1000
   })

@@ -178,4 +178,4 @@ jobs:
           # test may reach a real provider API.
           OPENROUTER_API_KEY: ""
           OPENAI_API_KEY: ""
-          NOUS_API_KEY: ""
+          CLARA_API_KEY: ""

@@ -1,10 +1,10 @@
-"""Tests for slash command prefix matching in HermesCLI.process_command."""
+"""Tests for slash command prefix matching in ClaraCLI.process_command."""
 from unittest.mock import MagicMock, patch
-from cli import HermesCLI
+from cli import ClaraCLI
 
 
 def _make_cli():
-    cli_obj = HermesCLI.__new__(HermesCLI)
+    cli_obj = ClaraCLI.__new__(ClaraCLI)
     cli_obj.config = {}
     cli_obj.console = MagicMock()
     cli_obj.agent = None

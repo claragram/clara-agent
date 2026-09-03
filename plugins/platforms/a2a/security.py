@@ -86,7 +86,7 @@ def _configured_trusted_peers() -> frozenset[str]:
     if raw:
         return frozenset(p.strip() for p in raw.split(",") if p.strip())
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
 
         cfg = load_config() or {}
         peers = (cfg.get("a2a") or {}).get("trusted_peers", [])
@@ -429,10 +429,10 @@ def is_safe_callback_url(url: str, *, localhost_mode: Optional[bool] = None) -> 
 
 def _audit_path() -> Path:
     try:
-        from hermes_constants import get_hermes_home
-        base = Path(get_hermes_home())
+        from clara_constants import get_clara_home
+        base = Path(get_clara_home())
     except Exception:
-        base = Path(os.path.expanduser("~/.hermes"))
+        base = Path(os.path.expanduser("~/.clara"))
     return base / "a2a_audit.jsonl"
 
 

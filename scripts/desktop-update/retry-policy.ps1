@@ -1,4 +1,4 @@
-function Test-HermesUpdateShouldRetry {
+function Test-ClaraUpdateShouldRetry {
     param(
         [int]$ExitCode,
         [string]$InstallRoot

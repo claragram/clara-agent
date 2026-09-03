@@ -8,8 +8,8 @@ endpoints — CI systems, dashboards, other agents — with zero changes to
 call sites and zero polling on the receiving end.
 
 This is the outbound mirror of the inbound webhook platform
-(``gateway/platforms/webhook.py``): inbound wakes Hermes when the world
-changes; outbound tells the world when Hermes does something.
+(``gateway/platforms/webhook.py``): inbound wakes Clara when the world
+changes; outbound tells the world when Clara does something.
 
 Design notes
 ------------
@@ -19,28 +19,28 @@ Design notes
   enqueue, and return ``None`` immediately.  Outbound targets can never
   block a tool call, inject context, or otherwise influence agent flow.
 * Payloads are signed with HMAC-SHA256 (GitHub-style
-  ``X-Hermes-Signature-256: sha256=<hexdigest>`` over the raw body) when
+  ``X-Clara-Signature-256: sha256=<hexdigest>`` over the raw body) when
   a secret is configured.  Receivers verify exactly like they verify
   GitHub webhooks.
 * No consent prompt: unlike shell hooks, an outbound target executes no
   code on this machine — it POSTs JSON to a URL the user themselves put
-  in config.  ``HERMES_SAFE_MODE=1`` still skips registration, matching
+  in config.  ``CLARA_SAFE_MODE=1`` still skips registration, matching
   plugins / MCP / shell hooks.
 * Registration is idempotent — safe to invoke from both the CLI entry
   point and the gateway entry point.
 
-Config schema (``~/.hermes/config.yaml``)::
+Config schema (``~/.clara/config.yaml``)::
 
     hooks:
       outbound:
-        - url: https://ci.example.com/hermes-events
+        - url: https://ci.example.com/clara-events
           events: [on_session_end, subagent_stop]
           # secret literal (discouraged) or env var name (preferred):
-          secret_env: HERMES_OUTBOUND_WEBHOOK_SECRET
+          secret_env: CLARA_OUTBOUND_WEBHOOK_SECRET
           # optional regex, honored for pre/post_tool_call only:
           matcher: "terminal|delegate_task"
           timeout: 10       # per-attempt seconds, clamped to [1, 60]
-          name: ci-notify   # optional label for logs / `hermes hooks list`
+          name: ci-notify   # optional label for logs / `clara hooks list`
 
 Wire format (POST body)::
 
@@ -58,10 +58,10 @@ Wire format (POST body)::
 Headers::
 
     Content-Type:            application/json
-    User-Agent:              Hermes-Agent-Outbound-Webhook
-    X-Hermes-Event:          <hook event name>
-    X-Hermes-Delivery:       <delivery_id>
-    X-Hermes-Signature-256:  sha256=<hmac hexdigest>   # only when secret set
+    User-Agent:              Clara-Agent-Outbound-Webhook
+    X-Clara-Event:          <hook event name>
+    X-Clara-Delivery:       <delivery_id>
+    X-Clara-Signature-256:  sha256=<hmac hexdigest>   # only when secret set
 """
 
 from __future__ import annotations
@@ -101,7 +101,7 @@ _TOP_LEVEL_PAYLOAD_KEYS = {"tool_name", "args", "session_id", "parent_session_id
 # (home, event, url) triples already wired to the plugin manager in this
 # process. Home is part of the key so a multiplexed gateway's secondary
 # profiles — each with their own plugin manager (see
-# hermes_cli.plugins.get_plugin_manager) — can register identical webhook
+# clara_cli.plugins.get_plugin_manager) — can register identical webhook
 # targets without the first profile's registration shadowing the rest.
 _registered: Set[Tuple[str, str, str]] = set()
 _registered_lock = threading.Lock()
@@ -172,8 +172,8 @@ def register_from_config(cfg: Optional[Dict[str, Any]]) -> List[WebhookTarget]:
 
     from utils import env_var_enabled
 
-    if env_var_enabled("HERMES_SAFE_MODE"):
-        logger.info("HERMES_SAFE_MODE=1 — outbound webhook registration skipped")
+    if env_var_enabled("CLARA_SAFE_MODE"):
+        logger.info("CLARA_SAFE_MODE=1 — outbound webhook registration skipped")
         return []
 
     hooks_cfg = cfg.get("hooks")
@@ -183,11 +183,11 @@ def register_from_config(cfg: Optional[Dict[str, Any]]) -> List[WebhookTarget]:
     if not targets:
         return []
 
-    from hermes_cli.plugins import get_plugin_manager
-    from hermes_constants import get_hermes_home
+    from clara_cli.plugins import get_plugin_manager
+    from clara_constants import get_clara_home
 
     manager = get_plugin_manager()
-    home_key = str(get_hermes_home().expanduser().resolve())
+    home_key = str(get_clara_home().expanduser().resolve())
 
     registered: List[WebhookTarget] = []
     with _registered_lock:
@@ -215,7 +215,7 @@ def register_from_config(cfg: Optional[Dict[str, Any]]) -> List[WebhookTarget]:
 
 def iter_configured_targets(cfg: Optional[Dict[str, Any]]) -> List[WebhookTarget]:
     """Parse ``hooks.outbound`` without registering anything.
-    Used by ``hermes hooks list``."""
+    Used by ``clara hooks list``."""
     if not isinstance(cfg, dict):
         return []
     hooks_cfg = cfg.get("hooks")
@@ -248,10 +248,10 @@ def re_register_config_hooks() -> None:
     keys are cleared so a force-reload in one profile cannot invalidate
     another profile's still-live registration.
     """
-    from hermes_cli.config import load_config
-    from hermes_constants import get_hermes_home
+    from clara_cli.config import load_config
+    from clara_constants import get_clara_home
 
-    home_key = str(get_hermes_home().expanduser().resolve())
+    home_key = str(get_clara_home().expanduser().resolve())
     with _registered_lock:
         _registered.difference_update(
             {key for key in _registered if key[0] == home_key}
@@ -295,7 +295,7 @@ def _parse_outbound_block(raw: Any) -> List[WebhookTarget]:
 
 
 def _parse_single_target(index: int, raw: Any) -> Optional[WebhookTarget]:
-    from hermes_cli.plugins import VALID_HOOKS
+    from clara_cli.plugins import VALID_HOOKS
 
     if not isinstance(raw, dict):
         logger.warning(
@@ -436,7 +436,7 @@ def _serialize_payload(
     """Render the POST body.  Same top-level shape as shell hooks' stdin
     (documented in :mod:`agent.shell_hooks`), plus delivery metadata.
 
-    ``delivery_id`` is shared with the ``X-Hermes-Delivery`` header so
+    ``delivery_id`` is shared with the ``X-Clara-Delivery`` header so
     receivers can dedupe on either — and since it (plus ``timestamp``)
     lives inside the HMAC-signed body, it doubles as replay protection.
     """
@@ -447,7 +447,7 @@ def _serialize_payload(
         cwd = ""
     # Resolved at fire time from the bound home so a multiplexed gateway's
     # receivers can tell which profile emitted the event (#92674).
-    from hermes_cli.profiles import get_active_profile_name
+    from clara_cli.profiles import get_active_profile_name
 
     payload = {
         "hook_event_name": event,
@@ -470,15 +470,15 @@ def _build_delivery(
 ) -> Dict[str, Any]:
     headers = {
         "Content-Type": "application/json",
-        "User-Agent": "Hermes-Agent-Outbound-Webhook",
-        "X-Hermes-Event": event,
-        "X-Hermes-Delivery": delivery_id,
+        "User-Agent": "Clara-Agent-Outbound-Webhook",
+        "X-Clara-Event": event,
+        "X-Clara-Delivery": delivery_id,
     }
     if target.secret:
         digest = hmac.new(
             target.secret.encode("utf-8"), body, hashlib.sha256
         ).hexdigest()
-        headers["X-Hermes-Signature-256"] = f"sha256={digest}"
+        headers["X-Clara-Signature-256"] = f"sha256={digest}"
     return {
         "url": target.url,
         "label": target.label,

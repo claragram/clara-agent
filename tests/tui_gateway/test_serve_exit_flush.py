@@ -1,4 +1,4 @@
-"""A killed ``hermes serve`` must not lose in-memory session transcripts.
+"""A killed ``clara serve`` must not lose in-memory session transcripts.
 
 Regression for #94724 (item 2, @ruangraung): a serve terminated mid-update
 lost every un-flushed in-memory session — the next RPC failed with
@@ -71,8 +71,8 @@ def test_sigterm_flushes_populated_session_into_state_db(
     registered_session, tmp_path, monkeypatch
 ):
     """A populated in-memory session survives a SIGTERM into state.db."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
-    from hermes_state import SessionDB
+    monkeypatch.setenv("CLARA_HOME", str(tmp_path))
+    from clara_state import SessionDB
 
     db = SessionDB(db_path=tmp_path / "state.db")
     sid = "sess-sigterm-flush"
@@ -99,7 +99,7 @@ def test_sigterm_flushes_populated_session_into_state_db(
     try:
         assert server.install_exit_flush_signal_handlers() is True
         os.kill(os.getpid(), signal.SIGTERM)
-        # The handler runs synchronously on the main thread at the next
+        # The handler runs __PROT_0_synchroclaraly__ on the main thread at the next
         # bytecode boundary; poll briefly for robustness.
         deadline = time.monotonic() + 5.0
         while not chained["called"] and time.monotonic() < deadline:

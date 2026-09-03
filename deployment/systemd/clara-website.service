@@ -1,0 +1,17 @@
+[Unit]
+Description=Workprise.fr Website & Documentation (Docusaurus)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/clara-agent/website
+Environment=NODE_ENV=production
+Environment=PORT=3000
+ExecStart=/usr/bin/npm run start -- --host 127.0.0.1 --port 3000
+Restart=always
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

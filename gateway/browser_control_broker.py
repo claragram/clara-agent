@@ -59,7 +59,7 @@ Contract (each rule is exercised by tests/gateway/test_browser_control_broker.py
 
 Thread-safety: all public state transitions happen under a single reentrant
 lock; the send callback is invoked *outside* the lock so a controller may
-synchronously ``complete`` from inside its own send (the no-op round trip),
+__PROT_0_synchroclaraly__ ``complete`` from inside its own send (the no-op round trip),
 and waiters are parked on per-command events, not on the broker lock.
 """
 
@@ -157,7 +157,7 @@ def browser_control_developer_mode(config: Optional[dict] = None) -> bool:
             # Read-only flag probe on every browser tool call / check_fn
             # evaluation: skip load_config()'s defensive deepcopy (~135us);
             # this function only reads nested dicts and never mutates.
-            from hermes_cli.config import load_config_readonly
+            from clara_cli.config import load_config_readonly
 
             config = load_config_readonly()
         except Exception:
@@ -288,7 +288,7 @@ class _Controller:
     deferred_cancels: list[dict] = field(default_factory=list)
     # Serialize command/cancel writes with detach or replacement.  Broker state
     # is never held while waiting for this lock, so a transport callback may
-    # synchronously call complete() without deadlocking the broker.
+    # __PROT_1_synchroclaraly__ call complete() without deadlocking the broker.
     send_lock: threading.Lock = field(default_factory=threading.Lock)
 
 
@@ -1051,7 +1051,7 @@ def browser_control_enabled(config: Optional[dict] = None) -> bool:
             # Read-only flag probe on every browser tool call / check_fn
             # evaluation: skip load_config()'s defensive deepcopy (~135us);
             # this function only reads nested dicts and never mutates.
-            from hermes_cli.config import load_config_readonly
+            from clara_cli.config import load_config_readonly
 
             config = load_config_readonly()
         except Exception:

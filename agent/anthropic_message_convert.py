@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from agent.anthropic_endpoints import (
     _is_deepseek_anthropic_endpoint,
     _is_kimi_family_endpoint,
-    _is_nous_portal_endpoint,
+    _is_clara_portal_endpoint,
     _is_third_party_anthropic_endpoint,
 )
 
@@ -608,7 +608,7 @@ def _convert_assistant_message(m: Dict[str, Any]) -> Dict[str, Any]:
     # Kimi's /coding endpoint (Anthropic protocol) requires assistant
     # tool-call messages to carry reasoning_content when thinking is
     # enabled server-side.  Preserve it as a thinking block so Kimi
-    # can validate the message history.  See hermes-agent#13848.
+    # can validate the message history.  See clara-agent#13848.
     #
     # Accept empty string "" — _copy_reasoning_content_for_api()
     # injects "" as a tier-3 fallback for Kimi tool-call messages
@@ -782,7 +782,7 @@ def _strip_orphaned_tool_blocks(result: List[Dict[str, Any]]) -> None:
         # Anthropic rejects the replayed turn with HTTP 400 "thinking blocks in
         # the latest assistant message cannot be modified".  Flag the turn so
         # _manage_thinking_signatures can demote the dead signature instead of
-        # replaying it verbatim.  See hermes-agent: extended-thinking + parallel
+        # replaying it verbatim.  See clara-agent: extended-thinking + parallel
         # tool batch interrupted mid-flight → non-retryable 400 crash-loop.
         if len(kept) != len(m["content"]) and any(
             isinstance(b, dict) and b.get("type") in {"thinking", "redacted_thinking"}
@@ -881,10 +881,10 @@ def _manage_thinking_signatures(
     and will reject them outright.  Kimi's /coding and DeepSeek's /anthropic
     endpoints speak the Anthropic protocol upstream but require unsigned
     thinking blocks (synthesised from ``reasoning_content``) to round-trip on
-    replayed assistant tool-call messages.  See hermes-agent#13848 (Kimi) and
-    hermes-agent#16748 (DeepSeek).
+    replayed assistant tool-call messages.  See clara-agent#13848 (Kimi) and
+    clara-agent#16748 (DeepSeek).
 
-    Nous Portal's ``/v1/messages`` route is the exception among third-party
+    Clara Portal's ``/v1/messages`` route is the exception among third-party
     hosts: it proxies Claude to Anthropic/Vertex/Bedrock and validates the
     same signed thinking blocks.  Sticky ``session_id`` keeps a conversation
     on one upstream instance so those signatures stay warm — stripping them
@@ -898,7 +898,7 @@ def _manage_thinking_signatures(
     # as a signature-blind proxy even though the host is not anthropic.com.
     _is_third_party = (
         _is_third_party_anthropic_endpoint(base_url)
-        and not _is_nous_portal_endpoint(base_url)
+        and not _is_clara_portal_endpoint(base_url)
     )
 
     last_assistant_idx = None

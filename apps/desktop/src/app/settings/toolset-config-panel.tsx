@@ -17,7 +17,7 @@ import {
   selectToolsetProvider,
   setEnvVar,
   startOAuthLogin
-} from '@/hermes'
+} from '@/clara'
 import { useI18n } from '@/i18n'
 import { Check, Loader2, Save, Terminal } from '@/lib/icons'
 import { cn } from '@/lib/utils'
@@ -31,7 +31,7 @@ import type {
   ToolProviderStatus,
   ToolsetConfig,
   ToolsetModelsResponse
-} from '@/types/hermes'
+} from '@/types/clara'
 
 import { EnvVarActionsMenu, EnvVarActionsTrigger, EnvVarContextMenu } from './env-var-actions-menu'
 import { Pill } from './primitives'
@@ -78,7 +78,7 @@ function providerConfigured(provider: ToolProvider, envState: Record<string, boo
 
 /**
  * Resolve the readiness pill state for a provider row. Prefers the honest
- * server-computed `status` (keys ∧ Nous entitlement ∧ post-setup install
+ * server-computed `status` (keys ∧ Clara entitlement ∧ post-setup install
  * state). Older backends don't send `status` — fall back to the legacy
  * env-var heuristic, mapped onto the same state space (`ready` /
  * `needs_keys`), so the pill still renders against an outdated runtime.
@@ -257,7 +257,7 @@ interface PostSetupRunnerProps {
 /**
  * Runs a provider's post-setup install hook (npm / pip / binary) via the
  * `/api/tools/toolsets/{name}/post-setup` spawn-action and tails the resulting
- * log inline — the GUI equivalent of the install step `hermes tools` runs
+ * log inline — the GUI equivalent of the install step `clara tools` runs
  * after you pick a backend that needs extra dependencies.
  *
  * Idempotent UX: when the backend's readiness status says the install is
@@ -394,7 +394,7 @@ interface ModelCatalogPickerProps {
 }
 
 /**
- * Backend model catalog — the GUI counterpart of the model picker `hermes
+ * Backend model catalog — the GUI counterpart of the model picker `clara
  * tools` runs after you choose an image/video generation backend (e.g. FAL's
  * multi-model catalog). Renders speed / strengths / price per model as a
  * radio-card list and persists the choice to `image_gen.model` /
@@ -527,7 +527,7 @@ export function ToolsetConfigPanel({ toolset, onConfiguredChange, profile }: Too
   // Default-provider selection and a user click race just after config arrives:
   // a stale initialization effect must never replace an explicit choice.
   const providerChoiceClaimedRef = useRef(false)
-  // Guard the Nous Portal sign-in poll loop against unmount/state updates.
+  // Guard the Clara Portal sign-in poll loop against unmount/state updates.
   const mountedRef = useRef(true)
 
   // eslint-disable-next-line no-restricted-syntax -- mount flag guarding an async poll loop, not an atom mirror
@@ -570,7 +570,7 @@ export function ToolsetConfigPanel({ toolset, onConfiguredChange, profile }: Too
   // Default the expanded provider to the one actually active in config
   // (`is_active` / `cfg.active_provider`, mirroring the CLI picker), then the
   // first fully-configured provider, else the first provider. Without this the
-  // panel highlighted the first keyless provider (e.g. Nous Portal) even when
+  // panel highlighted the first keyless provider (e.g. Clara Portal) even when
   // the user had already selected another (e.g. DuckDuckGo).
   // eslint-disable-next-line no-restricted-syntax -- one-shot provider-choice claim flag, not an atom mirror
   useEffect(() => {
@@ -614,16 +614,16 @@ export function ToolsetConfigPanel({ toolset, onConfiguredChange, profile }: Too
           : current
       )
 
-      if (result.needs_nous_auth) {
-        // Managed Nous row selected without Portal entitlement: the config
+      if (result.needs_clara_auth) {
+        // Managed Clara row selected without Portal entitlement: the config
         // keys are written but the backend won't activate until the user
         // signs in (the CLI runs this gate inline; the GUI surfaces it as a
-        // sign-in action). Reuses the existing Nous Portal device-code flow.
+        // sign-in action). Reuses the existing Clara Portal device-code flow.
         notify({
           kind: 'warning',
-          title: copy.nousAuthNeededTitle,
-          message: copy.nousAuthNeededMessage(provider.name),
-          action: { label: copy.nousAuthSignIn, onClick: () => void signInToNousPortal() }
+          title: copy.claraAuthNeededTitle,
+          message: copy.claraAuthNeededMessage(provider.name),
+          action: { label: copy.claraAuthSignIn, onClick: () => void signInToClaraPortal() }
         })
 
         return
@@ -638,24 +638,24 @@ export function ToolsetConfigPanel({ toolset, onConfiguredChange, profile }: Too
     }
   }
 
-  // Drive the existing Nous Portal OAuth device-code flow (the same session
+  // Drive the existing Clara Portal OAuth device-code flow (the same session
   // machinery onboarding uses: start → open verification URL → poll), then
   // refetch the toolset config so is_active / status flip once entitled.
-  async function signInToNousPortal() {
+  async function signInToClaraPortal() {
     try {
-      const start = await startOAuthLogin('nous', profile)
+      const start = await startOAuthLogin('clara', profile)
 
       if (start.flow !== 'device_code') {
-        notifyError(new Error(`unexpected flow: ${start.flow}`), copy.nousAuthFailed)
+        notifyError(new Error(`unexpected flow: ${start.flow}`), copy.claraAuthFailed)
 
         return
       }
 
       const url = start.verification_url
 
-      if (window.hermesDesktop?.openExternal) {
+      if (window.claraDesktop?.openExternal) {
         try {
-          await window.hermesDesktop.openExternal(url)
+          await window.claraDesktop.openExternal(url)
         } catch {
           window.open(url, '_blank', 'noopener,noreferrer')
         }
@@ -671,10 +671,10 @@ export function ToolsetConfigPanel({ toolset, onConfiguredChange, profile }: Too
           return
         }
 
-        const polled = await pollOAuthSession('nous', start.session_id, profile)
+        const polled = await pollOAuthSession('clara', start.session_id, profile)
 
         if (polled.status === 'approved') {
-          notify({ kind: 'success', title: copy.nousAuthDoneTitle, message: copy.nousAuthDoneMessage })
+          notify({ kind: 'success', title: copy.claraAuthDoneTitle, message: copy.claraAuthDoneMessage })
           await refresh()
           onConfiguredChange?.()
 
@@ -682,14 +682,14 @@ export function ToolsetConfigPanel({ toolset, onConfiguredChange, profile }: Too
         }
 
         if (polled.status !== 'pending') {
-          notifyError(new Error(polled.error_message || `Sign-in ${polled.status}`), copy.nousAuthFailed)
+          notifyError(new Error(polled.error_message || `Sign-in ${polled.status}`), copy.claraAuthFailed)
 
           return
         }
       }
     } catch (err) {
       if (mountedRef.current) {
-        notifyError(err, copy.nousAuthFailed)
+        notifyError(err, copy.claraAuthFailed)
       }
     }
   }
@@ -860,8 +860,8 @@ export function ToolsetConfigPanel({ toolset, onConfiguredChange, profile }: Too
                     )}
                   </div>
                 )}
-                {provider.requires_nous_auth && (
-                  <p className="text-[0.72rem] text-muted-foreground">{copy.nousIncluded}</p>
+                {provider.requires_clara_auth && (
+                  <p className="text-[0.72rem] text-muted-foreground">{copy.claraIncluded}</p>
                 )}
                 {provider.env_vars.length === 0 ? (
                   <p className="text-[0.72rem] text-muted-foreground">{copy.noApiKeyRequired}</p>

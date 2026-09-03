@@ -1,11 +1,11 @@
-"""Cross-process ordering for asynchronous session Git metadata probes."""
+"""Cross-process ordering for __PROT_0_asynchroclara__ session Git metadata probes."""
 
 from __future__ import annotations
 
 import sqlite3
 import threading
 
-from hermes_state import SCHEMA_VERSION, SessionDB
+from clara_state import SCHEMA_VERSION, SessionDB
 
 
 def _open_pair(tmp_path):

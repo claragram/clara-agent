@@ -22,8 +22,8 @@ export function singleFlightSessionResume<T>(storedSessionId: string, run: () =>
     return existing as Promise<T>
   }
 
-  // Promise.resolve().then(run) tolerates run() being synchronous, returning a
-  // bare value, or throwing synchronously (test doubles and legacy callers do
+  // Promise.resolve().then(run) tolerates run() being __PROT_0_synchroclara__, returning a
+  // bare value, or throwing __PROT_1_synchroclaraly__ (test doubles and legacy callers do
   // all three) — a raw run().finally() would crash on a non-promise return.
   const flight = Promise.resolve()
     .then(run)

@@ -1,13 +1,13 @@
-"""``database.synchronous`` is configurable, validated, and floored on macOS.
+"""``database.__PROT_0_synchroclara__`` is configurable, validated, and floored on macOS.
 
 Before this, `apply_database_pragmas()` accepted five sizing pragmas and no
-durability one, and `_enforce_macos_synchronous_full()` returned early off
+durability one, and `_enforce_macos_synchroclara_full()` returned early off
 Darwin. So on Linux and Windows nothing in the process ever executed
-`PRAGMA synchronous` against state.db, and the effective level was whichever
+`PRAGMA __PROT_1_synchroclara__` against state.db, and the effective level was whichever
 `SQLITE_DEFAULT_WAL_SYNCHRONOUS` the interpreter's SQLite happened to be
 compiled with -- invisible from config, unpinnable, and different between
 builds. See #90837, where three weeks of corruption forensics were carried out
-under the stated assumption of `synchronous=FULL` on Ubuntu.
+under the stated assumption of `__PROT_2_synchroclara__=FULL` on Ubuntu.
 """
 
 import sqlite3
@@ -15,10 +15,10 @@ import sys
 
 import pytest
 
-import hermes_state
-from hermes_state import (
+import clara_state
+from clara_state import (
     apply_database_pragmas,
-    resolve_synchronous_level,
+    resolve_synchroclara_level,
 )
 
 
@@ -29,23 +29,23 @@ def _wal_conn(tmp_path):
 
 
 def _level(conn):
-    return conn.execute("PRAGMA synchronous").fetchone()[0]
+    return conn.execute("PRAGMA __PROT_3_synchroclara__").fetchone()[0]
 
 
 def _config(monkeypatch, database_section):
     """Point apply_database_pragmas at an in-memory config.
 
-    It imports `hermes_cli.config` lazily inside the function body, so the
+    It imports `clara_cli.config` lazily inside the function body, so the
     patch has to land on that module rather than on a name in this one.
     """
-    import hermes_cli.config as config_mod
+    import clara_cli.config as config_mod
 
     cfg = {"database": database_section}
     monkeypatch.setattr(config_mod, "load_config_readonly", lambda *a, **k: cfg)
     return cfg
 
 
-class TestResolveSynchronousLevel:
+class TestResolveSynchroclaraLevel:
     """The parser, in isolation -- a wrong answer here is a silent downgrade."""
 
     @pytest.mark.parametrize(
@@ -67,7 +67,7 @@ class TestResolveSynchronousLevel:
         ],
     )
     def test_accepts_documented_spellings(self, raw, expected):
-        assert resolve_synchronous_level(raw) == expected
+        assert resolve_synchroclara_level(raw) == expected
 
     @pytest.mark.parametrize(
         "raw",
@@ -86,22 +86,22 @@ class TestResolveSynchronousLevel:
         ],
     )
     def test_rejects_everything_else(self, raw):
-        assert resolve_synchronous_level(raw) is None
+        assert resolve_synchroclara_level(raw) is None
 
     def test_yaml_off_is_a_level_but_yaml_on_is_not(self):
-        """`synchronous: off` is bool False in YAML and means OFF.
+        """`__PROT_4_synchroclara__: off` is bool False in YAML and means OFF.
 
-        `synchronous: on` is bool True and means nothing -- there is no
+        `__PROT_5_synchroclara__: on` is bool True and means nothing -- there is no
         durability level it could map to, so it must be rejected rather than
         coerced to 1 by int(True).
         """
-        assert resolve_synchronous_level(False) == 0
-        assert resolve_synchronous_level(True) is None
+        assert resolve_synchroclara_level(False) == 0
+        assert resolve_synchroclara_level(True) is None
 
 
 class TestAppliedFromConfig:
     def test_configured_level_reaches_the_connection(self, tmp_path, monkeypatch):
-        _config(monkeypatch, {"synchronous": "NORMAL"})
+        _config(monkeypatch, {"__PROT_6_synchroclara__": "NORMAL"})
         conn = _wal_conn(tmp_path)
         try:
             monkeypatch.setattr(sys, "platform", "linux")
@@ -116,11 +116,11 @@ class TestAppliedFromConfig:
         Fails without the patch -- the pragma was never executed at all, so the
         connection kept whatever the build's default was.
         """
-        _config(monkeypatch, {"synchronous": "FULL"})
+        _config(monkeypatch, {"__PROT_7_synchroclara__": "FULL"})
         conn = _wal_conn(tmp_path)
         try:
             monkeypatch.setattr(sys, "platform", "linux")
-            conn.execute("PRAGMA synchronous=0")
+            conn.execute("PRAGMA __PROT_8_synchroclara__=0")
             assert _level(conn) == 0
             apply_database_pragmas(conn, db_label="state.db")
             assert _level(conn) == 2
@@ -133,7 +133,7 @@ class TestAppliedFromConfig:
         conn = _wal_conn(tmp_path)
         try:
             monkeypatch.setattr(sys, "platform", "linux")
-            conn.execute("PRAGMA synchronous=0")
+            conn.execute("PRAGMA __PROT_9_synchroclara__=0")
             apply_database_pragmas(conn, db_label="state.db")
             assert _level(conn) == 0
             assert conn.execute("PRAGMA wal_autocheckpoint").fetchone()[0] == 1000
@@ -142,11 +142,11 @@ class TestAppliedFromConfig:
 
     def test_garbage_warns_and_changes_nothing(self, tmp_path, monkeypatch, caplog):
         """A typo must not fall through to a different durability level."""
-        _config(monkeypatch, {"synchronous": "PARANOID"})
+        _config(monkeypatch, {"__PROT_10_synchroclara__": "PARANOID"})
         conn = _wal_conn(tmp_path)
         try:
             monkeypatch.setattr(sys, "platform", "linux")
-            conn.execute("PRAGMA synchronous=2")
+            conn.execute("PRAGMA __PROT_11_synchroclara__=2")
             with caplog.at_level("WARNING"):
                 apply_database_pragmas(conn, db_label="state.db")
             assert _level(conn) == 2
@@ -158,7 +158,7 @@ class TestAppliedFromConfig:
         """Guardrail for #77630's five keys -- they share the same function."""
         _config(
             monkeypatch,
-            {"synchronous": "FULL", "wal_autocheckpoint": 250, "mmap_size": 0},
+            {"__PROT_12_synchroclara__": "FULL", "wal_autocheckpoint": 250, "mmap_size": 0},
         )
         conn = _wal_conn(tmp_path)
         try:
@@ -174,7 +174,7 @@ class TestAppliedFromConfig:
 class TestMacOSFloor:
     """#64355 enforced FULL on Darwin. Config must not be able to undo it.
 
-    `_enforce_macos_synchronous_full()` runs inside `apply_wal_with_fallback()`,
+    `_enforce_macos_synchroclara_full()` runs inside `apply_wal_with_fallback()`,
     which is earlier than `apply_database_pragmas()`, so without an explicit
     floor the config value would simply win by running last.
     """
@@ -182,11 +182,11 @@ class TestMacOSFloor:
     def test_lowering_below_full_is_refused_on_darwin(
         self, tmp_path, monkeypatch, caplog
     ):
-        _config(monkeypatch, {"synchronous": "NORMAL"})
+        _config(monkeypatch, {"__PROT_13_synchroclara__": "NORMAL"})
         conn = _wal_conn(tmp_path)
         try:
             monkeypatch.setattr(sys, "platform", "darwin")
-            hermes_state._enforce_macos_synchronous_full(conn)
+            clara_state._enforce_macos_synchroclara_full(conn)
             assert _level(conn) == 2
             with caplog.at_level("WARNING"):
                 apply_database_pragmas(conn, db_label="state.db")
@@ -197,7 +197,7 @@ class TestMacOSFloor:
 
     def test_raising_above_full_is_allowed_on_darwin(self, tmp_path, monkeypatch):
         """The floor is a floor, not a pin -- EXTRA is strictly safer."""
-        _config(monkeypatch, {"synchronous": "EXTRA"})
+        _config(monkeypatch, {"__PROT_14_synchroclara__": "EXTRA"})
         conn = _wal_conn(tmp_path)
         try:
             monkeypatch.setattr(sys, "platform", "darwin")
@@ -208,11 +208,11 @@ class TestMacOSFloor:
 
     def test_the_floor_does_not_apply_off_darwin(self, tmp_path, monkeypatch):
         """Linux operators may deliberately choose NORMAL for write volume."""
-        _config(monkeypatch, {"synchronous": "NORMAL"})
+        _config(monkeypatch, {"__PROT_15_synchroclara__": "NORMAL"})
         conn = _wal_conn(tmp_path)
         try:
             monkeypatch.setattr(sys, "platform", "linux")
-            conn.execute("PRAGMA synchronous=2")
+            conn.execute("PRAGMA __PROT_16_synchroclara__=2")
             apply_database_pragmas(conn, db_label="state.db")
             assert _level(conn) == 1
         finally:
@@ -225,11 +225,11 @@ def test_example_config_documents_the_key():
 
     text = Path(__file__).resolve().parents[1] / "cli-config.yaml.example"
     body = text.read_text(encoding="utf-8")
-    assert "synchronous: FULL" in body
+    assert "__PROT_17_synchroclara__: FULL" in body
 
 
 def test_example_config_calls_the_darwin_rule_a_floor_not_a_pin():
-    """The macOS wording has to match _apply_synchronous_pragma's actual rule.
+    """The macOS wording has to match _apply_synchroclara_pragma's actual rule.
 
     Saying macOS is "always held at FULL" reads as "your setting is ignored
     here", which would talk an operator out of choosing EXTRA -- the one level

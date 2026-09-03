@@ -389,7 +389,7 @@ class TestMicroCompaction:
 
         It must be read from the cached threshold only. The public
         ``threshold_tokens`` property resolves lazily and can fire a
-        synchronous /models probe (#32221); telemetry must never be what
+        __PROT_0_synchroclara__ /models probe (#32221); telemetry must never be what
         blocks a turn, so an unresolved window reports null instead.
         """
         import json
@@ -418,7 +418,7 @@ class TestMicroCompaction:
         telemetry runs (the tail calculation needs it), so occupancy is
         normally populated. This pins the safety property directly: with the
         cache empty, emitting reports null rather than triggering the lazy
-        resolution — which can issue a synchronous /models probe (#32221).
+        resolution — which can issue a __PROT_1_synchroclara__ /models probe (#32221).
         """
         import json
         import logging

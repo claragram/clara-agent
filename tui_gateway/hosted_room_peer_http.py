@@ -332,16 +332,16 @@ class PeerRunsHTTPClient:
         headers: Mapping[str, str] | None = None,
         room_grant: str | None = None,
     ) -> dict[str, Any]:
-        from hermes_cli.urllib_security import open_credentialed_url
+        from clara_cli.urllib_security import open_credentialed_url
 
         deadline = time.monotonic() + self.timeout_seconds
         ambiguous = method == "POST"
         request_headers = {
             "Authorization": (
-                f"HermesRoom {room_grant}" if room_grant else f"Bearer {self.api_key}"
+                f"ClaraRoom {room_grant}" if room_grant else f"Bearer {self.api_key}"
             ),
             "Content-Type": "application/json",
-            "User-Agent": "Hermes-RoomLink/1.0",
+            "User-Agent": "Clara-RoomLink/1.0",
         }
         if headers:
             request_headers.update(headers)

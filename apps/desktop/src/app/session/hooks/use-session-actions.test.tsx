@@ -1,4 +1,4 @@
-import { registryBackendScopeKey } from '@hermes/shared'
+import { registryBackendScopeKey } from '@clara/shared'
 import { useStore } from '@nanostores/react'
 import { act, cleanup, render, waitFor } from '@testing-library/react'
 import type { MutableRefObject } from 'react'
@@ -18,7 +18,7 @@ import {
   type SessionInfo,
   type SessionResumeResponse,
   setSessionArchived
-} from '@/hermes'
+} from '@/clara'
 import { createClientSessionState } from '@/lib/chat-runtime'
 import { $clarifyRequests, clearClarifyRequest, setClarifyRequest } from '@/store/clarify'
 import { clearSessionDraft, stashSessionDraft, takeSessionDraft } from '@/store/composer'
@@ -78,7 +78,7 @@ import type { ClientSessionState } from '../../types'
 import { useSessionActions } from './use-session-actions'
 import { useSessionStateCache } from './use-session-state-cache'
 
-vi.mock('@/hermes', async importOriginal => ({
+vi.mock('@/clara', async importOriginal => ({
   ...(await importOriginal<Record<string, unknown>>()),
   deleteSession: vi.fn(),
   getSession: vi.fn(),
@@ -360,7 +360,7 @@ describe('connection-qualified session deletion', () => {
     expect(requestGateway).not.toHaveBeenCalledWith('session.close', expect.anything())
   })
 
-  it('tears down the selected session from synchronous refs when render state is stale', async () => {
+  it('tears down the selected session from __PROT_0_synchroclara__ refs when render state is stale', async () => {
     const navigate = vi.fn()
     const requestGateway = vi.fn().mockResolvedValue({})
     const activeSessionIdRef: MutableRefObject<null | string> = { current: 'runtime-shared' }
@@ -1598,7 +1598,7 @@ describe('resumeSession failure recovery', () => {
   it('resumes via the gateway default (deferred build) — not lazy, no eager opt-out', async () => {
     // The switch-latency fix lives backend-side: a normal cold resume gets the
     // gateway's default DEFERRED build (transcript returns immediately, agent
-    // pre-warms in the background). The client must NOT force the synchronous
+    // pre-warms in the background). The client must NOT force the __PROT_1_synchroclara__
     // path (eager_build) and is only `lazy` for subagent watch windows.
     let resumeParams: Record<string, unknown> | undefined
 
@@ -2480,7 +2480,7 @@ describe('resumeSession warm-cache mapping integrity', () => {
   })
 
   it('pins an untagged row to the active registry connection instead of the same-named local profile', async () => {
-    setConnection({ connectionId: 'hermes01', mode: 'remote' } as never)
+    setConnection({ connectionId: 'clara01', mode: 'remote' } as never)
     setSessions([storedSession({ id: 'remote-stored', profile: 'default' })])
     vi.mocked(getLatestSessionMessages).mockResolvedValue({ messages: [], session_id: 'remote-stored' } as never)
     vi.mocked(requestGatewayForAgent).mockResolvedValue({
@@ -2504,7 +2504,7 @@ describe('resumeSession warm-cache mapping integrity', () => {
     await resume!('remote-stored', true)
 
     expect(requestGatewayForAgent).toHaveBeenCalledWith(
-      'hermes01',
+      'clara01',
       'default',
       'session.resume',
       expect.objectContaining({ session_id: 'remote-stored' })

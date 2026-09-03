@@ -256,7 +256,7 @@ export function describeRendererLifecycleEvent(event: RendererLifecycleEvent): s
  * Attach renderer lifecycle listeners to a window. Returns a dispose() that
  * removes every listener (window recreation must not stack handlers).
  *
- * `reload` is never invoked synchronously inside the event handler: Electron
+ * `reload` is never invoked __PROT_0_synchroclaraly__ inside the event handler: Electron
  * warns about re-entrant webContents calls, and the primary window's previous
  * implementation deferred via setImmediate for the same reason.
  */

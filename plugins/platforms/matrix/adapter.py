@@ -283,10 +283,10 @@ _MATRIX_BANG_COMMAND_RE = re.compile(
 
 
 def _resolve_matrix_bang_command(name: str) -> str | None:
-    """Resolve a ``!command`` token to a dispatchable Hermes command token.
+    """Resolve a ``!command`` token to a dispatchable Clara command token.
 
     Matrix clients often reserve leading ``/`` for local client commands.
-    Hermes accepts ``!command`` as a Matrix-friendly alias, but only for
+    Clara accepts ``!command`` as a Matrix-friendly alias, but only for
     commands that the gateway can actually dispatch so ordinary exclamations
     remain normal chat text.
 
@@ -308,7 +308,7 @@ def _resolve_matrix_bang_command(name: str) -> str | None:
         candidates.append(hyphenated)
 
     try:
-        from hermes_cli.commands import is_gateway_known_command
+        from clara_cli.commands import is_gateway_known_command
 
         for candidate in candidates:
             if is_gateway_known_command(candidate):
@@ -334,7 +334,7 @@ def _resolve_matrix_bang_command(name: str) -> str | None:
 
 
 def _normalize_matrix_bang_command(text: str) -> str:
-    """Convert Matrix ``!command`` aliases to normal Hermes ``/command`` text."""
+    """Convert Matrix ``!command`` aliases to normal Clara ``/command`` text."""
     if not text or not text.startswith("!"):
         return text
     match = _MATRIX_BANG_COMMAND_RE.match(text)
@@ -597,10 +597,10 @@ MAX_MESSAGE_LENGTH = DEFAULT_MAX_MESSAGE_LENGTH
 # Store directory for E2EE keys and sync state. Resolved per adapter in
 # ``connect()`` (see ``_resolve_store_dir``), NOT at module scope: the
 # multiplex gateway imports this module once, so a module-level constant
-# would pin the root HERMES_HOME for every profile and all bots' Olm
+# would pin the root CLARA_HOME for every profile and all bots' Olm
 # identities would collide in one crypto.db (#89168). Mirrors the
 # pairing-store fix (a6397c379).
-from hermes_constants import get_hermes_dir as _get_hermes_dir
+from clara_constants import get_clara_dir as _get_clara_dir
 
 # Grace period: ignore messages older than this many seconds before startup.
 _STARTUP_GRACE_SECONDS = 5
@@ -1179,7 +1179,7 @@ class MatrixAdapter(BasePlatformAdapter):
     splits_long_messages = True  # send() chunks via truncate_message(max_message_length)
 
     # Matrix clients commonly reserve typed "/" for client-local commands;
-    # the adapter accepts "!command" as the alias that always reaches Hermes
+    # the adapter accepts "!command" as the alias that always reaches Clara
     # (see _normalize_matrix_bang_command), so instruction text shows "!".
     typed_command_prefix = "!"
 
@@ -1193,17 +1193,17 @@ class MatrixAdapter(BasePlatformAdapter):
         """Pin this adapter's crypto-store directory to the active profile.
 
         Called from ``connect()``, which the multiplex gateway runs inside
-        ``_profile_runtime_scope`` -- ``get_hermes_dir`` honors that
-        context-local HERMES_HOME, so each profile's adapter gets its own
+        ``_profile_runtime_scope`` -- ``get_clara_dir`` honors that
+        context-local CLARA_HOME, so each profile's adapter gets its own
         store. Cached on the instance so later reads (diagnostics, error
         logs) outside the scope still report the store actually in use.
         """
-        self._store_dir = _get_hermes_dir("platforms/matrix/store", "matrix/store")
+        self._store_dir = _get_clara_dir("platforms/matrix/store", "matrix/store")
         return self._store_dir
 
     @property
     def _crypto_db_path(self) -> Path:
-        store_dir = self._store_dir or _get_hermes_dir("platforms/matrix/store", "matrix/store")
+        store_dir = self._store_dir or _get_clara_dir("platforms/matrix/store", "matrix/store")
         return store_dir / "crypto.db"
 
     def __init__(self, config: PlatformConfig):
@@ -1351,10 +1351,10 @@ class MatrixAdapter(BasePlatformAdapter):
         # Text batching: merge rapid successive messages (Telegram-style).
         # Matrix clients split long messages around 4000 chars.
         self._text_batch_delay_seconds = float(
-            os.getenv("HERMES_MATRIX_TEXT_BATCH_DELAY_SECONDS", "0.6")
+            os.getenv("CLARA_MATRIX_TEXT_BATCH_DELAY_SECONDS", "0.6")
         )
         self._text_batch_split_delay_seconds = float(
-            os.getenv("HERMES_MATRIX_TEXT_BATCH_SPLIT_DELAY_SECONDS", "2.0")
+            os.getenv("CLARA_MATRIX_TEXT_BATCH_SPLIT_DELAY_SECONDS", "2.0")
         )
         self._pending_text_batches: Dict[str, MessageEvent] = {}
         self._pending_text_batch_tasks: Dict[str, asyncio.Task] = {}
@@ -1864,7 +1864,7 @@ class MatrixAdapter(BasePlatformAdapter):
                 resp = await client.login(
                     identifier=self._user_id,
                     password=self._password,
-                    device_name="Hermes Agent",
+                    device_name="Clara Agent",
                     device_id=self._device_id or None,
                 )
                 if resp and hasattr(resp, "device_id"):
@@ -1942,7 +1942,7 @@ class MatrixAdapter(BasePlatformAdapter):
                     await crypto_db.start()
                     self._crypto_db = crypto_db
 
-                    _acct_id = self._user_id or "hermes"
+                    _acct_id = self._user_id or "clara"
                     # Use the resolved client.device_id (from whoami or password
                     # login), not self._device_id (the configured value), because
                     # #71543 makes the token's real device win over a stale
@@ -2778,7 +2778,7 @@ class MatrixAdapter(BasePlatformAdapter):
             )
 
         try:
-            from hermes_cli.providers import get_label
+            from clara_cli.providers import get_label
             provider_label = get_label(current_provider)
         except Exception:
             provider_label = current_provider
@@ -4974,7 +4974,7 @@ class MatrixAdapter(BasePlatformAdapter):
 
         Important: only strip explicit mention tokens (``@user:server`` or
         ``@localpart``). Do NOT strip bare words matching the bot localpart,
-        otherwise normal phrases like "Hermes Agent" become "Agent".
+        otherwise normal phrases like "Clara Agent" become "Agent".
         """
         if not body:
             return ""
@@ -5219,7 +5219,7 @@ class MatrixAdapter(BasePlatformAdapter):
 # register(ctx) entry point plus hook implementations that replace the
 # per-platform core touchpoints (the Platform.MATRIX elif in gateway/run.py,
 # the matrix_cfg YAML→env block in gateway/config.py, the _setup_matrix wizard
-# + _PLATFORMS["matrix"] static dict in hermes_cli/{setup,gateway}.py, and the
+# + _PLATFORMS["matrix"] static dict in clara_cli/{setup,gateway}.py, and the
 # _send_matrix dispatch in tools/send_message_tool.py).  Matrix uses the
 # generic token/api_key connected check, so no is_connected override is needed.
 # ──────────────────────────────────────────────────────────────────────────
@@ -5255,7 +5255,7 @@ async def _standalone_send(
         token = token or get_secret("MATRIX_ACCESS_TOKEN", "") or ""
         if not homeserver or not token:
             return {"error": "Matrix not configured (MATRIX_HOMESERVER, MATRIX_ACCESS_TOKEN required)"}
-        txn_id = f"hermes_{int(time.time() * 1000)}_{os.urandom(4).hex()}"
+        txn_id = f"clara_{int(time.time() * 1000)}_{os.urandom(4).hex()}"
         from urllib.parse import quote
         encoded_room = quote(chat_id, safe="")
         url = f"{homeserver}/_matrix/client/v3/rooms/{encoded_room}/send/m.room.message/{txn_id}"
@@ -5291,12 +5291,12 @@ async def _standalone_send(
 
 
 def interactive_setup() -> None:
-    """Configure Matrix credentials. Replaces hermes_cli/setup.py::_setup_matrix
+    """Configure Matrix credentials. Replaces clara_cli/setup.py::_setup_matrix
     and the static _PLATFORMS["matrix"] dict. CLI helpers are lazy-imported."""
     import shutil
     import sys as _sys
-    from hermes_cli.config import get_env_value, remove_env_value, save_env_value
-    from hermes_cli.cli_output import (
+    from clara_cli.config import get_env_value, remove_env_value, save_env_value
+    from clara_cli.cli_output import (
         prompt,
         prompt_yes_no,
         print_header,
@@ -5362,7 +5362,7 @@ def interactive_setup() -> None:
                 __import__("mautrix")
             except ImportError:
                 print_info(f"Installing {matrix_pkg}...")
-                from hermes_cli.tools_config import _pip_install
+                from clara_cli.tools_config import _pip_install
 
                 result = _pip_install([matrix_pkg])
                 if result.returncode == 0:
@@ -5382,7 +5382,7 @@ def interactive_setup() -> None:
         else:
             print_info("⚠️  No allowlist set - anyone who can message the bot can use it!")
 
-        print_info("📬 Home Room: where Hermes delivers cron job results and notifications.")
+        print_info("📬 Home Room: where Clara delivers cron job results and notifications.")
         print_info("   Room IDs look like !abc123:server (shown in Element room settings)")
         print_info("   You can also set this later by typing /set-home in a Matrix room.")
         print_info("Leave blank to clear a previously saved home room (cron / notifications).")
@@ -5438,7 +5438,7 @@ def _apply_yaml_config(yaml_cfg: dict, matrix_cfg: dict) -> dict | None:
 
 def _is_connected(config) -> bool:
     """Matrix is connected when a homeserver + access token (or password) are
-    configured. Read via hermes_cli.gateway.get_env_value so setup-status
+    configured. Read via clara_cli.gateway.get_env_value so setup-status
     callers that patch get_env_value observe the same value, and PlatformConfig
     extras (homeserver) are honored too. As a built-in, Matrix used the generic
     token check; as a plugin it needs an explicit is_connected so
@@ -5446,7 +5446,7 @@ def _is_connected(config) -> bool:
     rather than mere SDK presence. #41112.
     """
     extra = getattr(config, "extra", {}) or {}
-    import hermes_cli.gateway as gateway_mod
+    import clara_cli.gateway as gateway_mod
     homeserver = extra.get("homeserver") or gateway_mod.get_env_value("MATRIX_HOMESERVER") or ""
     token = (
         getattr(config, "token", None)
@@ -5463,7 +5463,7 @@ def _build_adapter(config):
 
 
 def register(ctx) -> None:
-    """Plugin entry point — called by the Hermes plugin system."""
+    """Plugin entry point — called by the Clara plugin system."""
     ctx.register_platform(
         name="matrix",
         label="Matrix",

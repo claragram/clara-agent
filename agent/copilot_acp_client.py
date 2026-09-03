@@ -1,9 +1,9 @@
-"""OpenAI-compatible shim that forwards Hermes requests to `copilot --acp`.
+"""OpenAI-compatible shim that forwards Clara requests to `copilot --acp`.
 
-This adapter lets Hermes treat the GitHub Copilot ACP server as a chat-style
+This adapter lets Clara treat the GitHub Copilot ACP server as a chat-style
 backend. Each request starts a short-lived ACP session, sends the formatted
 conversation as a single prompt, collects text chunks, and converts the result
-back into the minimal shape Hermes expects from an OpenAI client.
+back into the minimal shape Clara expects from an OpenAI client.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ from agent.acp_openai_bridge import (
 )
 from agent.file_safety import get_read_block_error, get_write_denied_error, is_write_approval_required
 from agent.redact import redact_sensitive_text
-from tools.environments.local import hermes_subprocess_env
+from tools.environments.local import clara_subprocess_env
 
 ACP_MARKER_BASE_URL = "acp://copilot"
 logger = logging.getLogger(__name__)
@@ -60,14 +60,14 @@ def _is_gh_copilot_deprecation_message(stderr_text: str) -> bool:
 
 def _resolve_command() -> str:
     return (
-        os.getenv("HERMES_COPILOT_ACP_COMMAND", "").strip()
+        os.getenv("CLARA_COPILOT_ACP_COMMAND", "").strip()
         or os.getenv("COPILOT_CLI_PATH", "").strip()
         or "copilot"
     )
 
 
 def _resolve_args() -> list[str]:
-    raw = os.getenv("HERMES_COPILOT_ACP_ARGS", "").strip()
+    raw = os.getenv("CLARA_COPILOT_ACP_ARGS", "").strip()
     if not raw:
         return ["--acp", "--stdio"]
     return shlex.split(raw)
@@ -103,7 +103,7 @@ def _acp_supported(command: str, args: list[str]) -> bool | None:
         command" error with full context.
 
     Only probes when ``--acp`` is actually among ``args``: a custom
-    HERMES_COPILOT_ACP_ARGS transport is the operator's business.
+    CLARA_COPILOT_ACP_ARGS transport is the operator's business.
     """
     if "--acp" not in args:
         return True
@@ -147,7 +147,7 @@ def _resolve_home_dir() -> str:
         pass
 
     # Last resort: /tmp (writable on any POSIX system). Avoids crashing the
-    # subprocess with no HOME; callers can set HERMES_HOME explicitly if they
+    # subprocess with no HOME; callers can set CLARA_HOME explicitly if they
     # need a different writable dir.
     return "/tmp"
 
@@ -156,10 +156,10 @@ def _build_subprocess_env() -> dict[str, str]:
     # Copilot ACP is a model-driving CLI executor: it legitimately needs LLM
     # provider credentials. Route through the central helper so Tier-1 secrets
     # (gateway bot tokens, GitHub auth, infra) are still stripped (#29157).
-    env = hermes_subprocess_env(inherit_credentials=True)
+    env = clara_subprocess_env(inherit_credentials=True)
     home = _resolve_home_dir()
     env["HOME"] = home
-    from hermes_constants import apply_subprocess_home_env
+    from clara_constants import apply_subprocess_home_env
     apply_subprocess_home_env(env)
     return env
 
@@ -259,7 +259,7 @@ def _format_messages_as_prompt(
     tool_choice: Any = None,
 ) -> str:
     sections: list[str] = [
-        "You are being used as the active ACP agent backend for Hermes.",
+        "You are being used as the active ACP agent backend for Clara.",
         "Use ACP capabilities to complete tasks.",
         "IMPORTANT: If you take an action with a tool, you MUST output tool calls using <tool_call>{...}</tool_call> blocks with JSON exactly in OpenAI function-call shape.",
         "If no tool is needed, answer normally.",
@@ -270,7 +270,7 @@ def _format_messages_as_prompt(
     # serving model FALSELY self-identify as the requested one. Identity
     # must come from the backend, not from prompt suggestion.
 
-    # Copilot has no tools of its own that would collide with Hermes', so it
+    # Copilot has no tools of its own that would collide with Clara', so it
     # forwards the whole toolset (no allowlist).
     sections.extend(_render_tool_bridge_sections(tools, tool_choice))
 
@@ -361,8 +361,8 @@ class CopilotACPClient:
     # Declared for agent/auxiliary_client.py: this shim drives an ACP subprocess
     # over stdio, so it is already a complete client (never re-dispatch it
     # through a wire adapter) and is safe to use from async code as-is.
-    HERMES_SKIP_TRANSPORT_WRAP = True
-    HERMES_SKIP_ASYNC_WRAP = True
+    CLARA_SKIP_TRANSPORT_WRAP = True
+    CLARA_SKIP_ASYNC_WRAP = True
 
     def __init__(
         self,
@@ -495,11 +495,11 @@ class CopilotACPClient:
                 f"Claude Code v2.x) or a different tool than expected. "
                 f"Either install a CLI that ships with --acp support "
                 f"(e.g. `@github/copilot` late 2025+), or set "
-                f"HERMES_COPILOT_ACP_COMMAND / HERMES_COPILOT_ACP_ARGS "
+                f"CLARA_COPILOT_ACP_COMMAND / CLARA_COPILOT_ACP_ARGS "
                 f"to a working pair."
             )
 
-        # Note the model Hermes selected; it is applied after session/new via
+        # Note the model Clara selected; it is applied after session/new via
         # the ACP-native `session/set_model` call. The CLI's `--model` spawn
         # flag is deliberately NOT used here: `copilot --acp` validates it
         # (an unknown id aborts the spawn) but then ignores it for the actual
@@ -509,7 +509,7 @@ class CopilotACPClient:
         try:
             # Hide the console the CLI child would otherwise flash on Windows
             # (#56747). Hide-only — stdio pipes stay intact for the ACP wire.
-            from hermes_cli._subprocess_compat import windows_hide_flags
+            from clara_cli._subprocess_compat import windows_hide_flags
 
             proc = subprocess.Popen(
                 [self._acp_command] + self._acp_args,
@@ -525,7 +525,7 @@ class CopilotACPClient:
         except FileNotFoundError as exc:
             raise RuntimeError(
                 f"Could not start Copilot ACP command '{self._acp_command}'. "
-                "Install GitHub Copilot CLI or set HERMES_COPILOT_ACP_COMMAND/COPILOT_CLI_PATH."
+                "Install GitHub Copilot CLI or set CLARA_COPILOT_ACP_COMMAND/COPILOT_CLI_PATH."
             ) from exc
 
         if proc.stdin is None or proc.stdout is None:
@@ -605,17 +605,17 @@ class CopilotACPClient:
             if proc.poll() is not None and stderr_text:
                 if _is_gh_copilot_deprecation_message(stderr_text):
                     raise RuntimeError(
-                        "Hermes ACP mode requires the NEW GitHub Copilot CLI "
+                        "Clara ACP mode requires the NEW GitHub Copilot CLI "
                         "(github.com/github/copilot-cli), but the binary it just "
                         "spawned is the deprecated `gh copilot` extension.\n\n"
                         "Install the new CLI:\n"
                         "  npm install -g @github/copilot\n"
                         "  # then verify with: copilot --help\n\n"
                         "If `copilot` already resolves to the new CLI but you still see this,\n"
-                        "point Hermes at it explicitly:\n"
-                        "  export HERMES_COPILOT_ACP_COMMAND=/path/to/new/copilot\n\n"
+                        "point Clara at it explicitly:\n"
+                        "  export CLARA_COPILOT_ACP_COMMAND=/path/to/new/copilot\n\n"
                         "Alternative: use the `copilot` provider (no ACP, hits the Copilot API\n"
-                        "directly with a Copilot subscription token) via `hermes setup`.\n\n"
+                        "directly with a Copilot subscription token) via `clara setup`.\n\n"
                         f"Original error:\n{stderr_text}"
                     )
                 raise RuntimeError(f"Copilot ACP process exited early: {stderr_text}")
@@ -633,8 +633,8 @@ class CopilotACPClient:
                         }
                     },
                     "clientInfo": {
-                        "name": "hermes-agent",
-                        "title": "Hermes Agent",
+                        "name": "clara-agent",
+                        "title": "Clara Agent",
                         "version": "0.0.0",
                     },
                 },
@@ -650,7 +650,7 @@ class CopilotACPClient:
             if not session_id:
                 raise RuntimeError("Copilot ACP did not return a sessionId.")
 
-            # Select the model Hermes asked for. Prefer the stable ACP v1
+            # Select the model Clara asked for. Prefer the stable ACP v1
             # session-config API: session/new advertises a category="model"
             # select option and session/set_config_option updates it. Copilot
             # still exposes the older models/session/set_model extension too,
@@ -785,7 +785,7 @@ class CopilotACPClient:
             response = _jsonrpc_error(
                 message_id,
                 -32601,
-                f"ACP client method '{method}' is not supported by Hermes yet.",
+                f"ACP client method '{method}' is not supported by Clara yet.",
             )
 
         process.stdin.write(json.dumps(response) + "\n")

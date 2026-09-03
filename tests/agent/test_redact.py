@@ -9,8 +9,8 @@ from agent.redact import mask_secret, redact_cdp_url, redact_sensitive_text, Red
 
 @pytest.fixture(autouse=True)
 def _ensure_redaction_enabled(monkeypatch):
-    """Ensure HERMES_REDACT_SECRETS is not disabled by prior test imports."""
-    monkeypatch.delenv("HERMES_REDACT_SECRETS", raising=False)
+    """Ensure CLARA_REDACT_SECRETS is not disabled by prior test imports."""
+    monkeypatch.delenv("CLARA_REDACT_SECRETS", raising=False)
     # Also patch the module-level snapshot so it reflects the cleared env var
     monkeypatch.setattr("agent.redact._REDACT_ENABLED", True)
 
@@ -870,7 +870,7 @@ class TestTerminalOutputRedaction:
         assert _command_reads_env_file("cat -n .env")
         assert _command_reads_env_file("cat -A .env")
         # With paths
-        assert _command_reads_env_file("cat ~/.hermes/.env")
+        assert _command_reads_env_file("cat ~/.clara/.env")
         assert _command_reads_env_file("cat /home/user/project/.env")
         assert _command_reads_env_file("cat ./config/.env.local")
         # In a pipeline / sequence
@@ -907,7 +907,7 @@ class TestTerminalOutputRedaction:
         from agent.redact import redact_terminal_output
         out = (
             "MISTRAL_API_KEY=abc123opaqueSecretValue\n"
-            "NOUS_API_KEY=xyz789opaqueKey\n"
+            "CLARA_API_KEY=xyz789opaqueKey\n"
             "DEBUG=true\n"
         )
         red = redact_terminal_output(out, "cat .env")

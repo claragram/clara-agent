@@ -4,7 +4,7 @@
  * Windows-aware teardown for the desktop's managed backend child process.
  *
  * Node's `child.kill()` only signals the direct child. On Windows a backend
- * that spawned its own grandchildren (a `hermes` REPL, a pty terminal
+ * that spawned its own grandchildren (a `clara` REPL, a pty terminal
  * session, the gateway) survives a plain SIGTERM and keeps files (e.g. the
  * venv shim) locked. So on Windows we tree-kill via `forceKillProcessTree`.
  *
@@ -34,7 +34,7 @@ export interface StopBackendChildDeps {
 }
 
 export interface StopBackendTreesForUpdateDeps {
-  /** Synchronous Windows taskkill /T /F implementation. */
+  /** __PROT_0_Synchroclara__ Windows taskkill /T /F implementation. */
   forceKillProcessTree: (pid: number) => void
   /** Clears and stops the desktop's pooled backends. */
   stopAllPoolBackends: () => void

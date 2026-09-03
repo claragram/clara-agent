@@ -35,7 +35,7 @@ import threading
 from dataclasses import dataclass, field
 from typing import Any, Awaitable, Callable, Optional
 
-from hermes_constants import hermes_home_key
+from clara_constants import clara_home_key
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ class PlatformEntry:
 
     # PASSIVE dependency probe: returns True when the platform's dependencies
     # are available RIGHT NOW.  Must be side-effect free — it is called from
-    # status displays (``hermes setup``, ``hermes status``, the dashboard
+    # status displays (``clara setup``, ``clara status``, the dashboard
     # readiness probe) and the config enablement pass, none of which may
     # trigger a pip install.  Put install logic in ``ensure_deps_fn`` instead.
     check_fn: Callable[[], bool]
@@ -109,7 +109,7 @@ class PlatformEntry:
     # If None, falls back to ``validate_config`` or ``check_fn``.
     is_connected: Optional[Callable[[Any], bool]] = None
 
-    # Env vars this platform needs (for ``hermes setup`` display).
+    # Env vars this platform needs (for ``clara setup`` display).
     required_env: list = field(default_factory=list)
 
     # Hint shown when check_fn returns False.
@@ -125,7 +125,7 @@ class PlatformEntry:
     source: str = "plugin"
 
     # Name of the plugin manifest that registered this entry (empty for
-    # built-ins).  Used by ``hermes gateway setup`` to auto-enable the
+    # built-ins).  Used by ``clara gateway setup`` to auto-enable the
     # owning plugin when the user configures its platform.
     plugin_name: str = ""
 
@@ -193,7 +193,7 @@ class PlatformEntry:
     # explicit target.  Invoked by ``tools/send_message_tool._parse_target_ref``
     # before channel-directory fallback so plugin platforms can declare their
     # own native target syntax (e.g. ``fmsg:@alice@example.com``) without
-    # hard-casing in Hermes core.
+    # hard-casing in Clara core.
     #
     # Signature:
     #     (target_ref: str) -> Optional[tuple[str, Optional[str]]]
@@ -241,7 +241,7 @@ class PlatformRegistry:
         self._lock = threading.RLock()
         # Process-global registrations (for example the built-in relay).
         self._entries: dict[str, PlatformEntry] = {}
-        # Plugin adapters are isolated per resolved HERMES_HOME and overlay the
+        # Plugin adapters are isolated per resolved CLARA_HOME and overlay the
         # process-global entries for lookups in that profile's runtime scope.
         self._scoped_entries: dict[str, dict[str, PlatformEntry]] = {}
         # Deferred platform loaders: name -> zero-arg callable that imports the
@@ -250,12 +250,12 @@ class PlatformRegistry:
         # Why this exists: platform adapter modules import heavy, platform-
         # specific SDKs at module level (lark_oapi, microsoft_teams, discord.py,
         # slack_bolt, ...). Eagerly loading all ~20 bundled platform plugins at
-        # plugin-discovery time added several seconds to *every* `hermes`
-        # invocation -- including plain `hermes chat`, which never touches any
+        # plugin-discovery time added several seconds to *every* `clara`
+        # invocation -- including plain `clara chat`, which never touches any
         # gateway platform. Discovery now registers a cheap deferred loader per
         # platform; the real module is imported only when a registry lookup
         # actually asks for that platform (gateway start, cron delivery,
-        # `hermes setup`/`gateway status`, send_message).
+        # `clara setup`/`gateway status`, send_message).
         self._deferred: dict[str, Callable[[], None]] = {}
         self._scoped_deferred: dict[str, dict[str, Callable[[], None]]] = {}
         self._inflight: dict[tuple[Optional[str], str], threading.Event] = {}
@@ -272,7 +272,7 @@ class PlatformRegistry:
 
     @staticmethod
     def current_scope_key() -> str:
-        return hermes_home_key()
+        return clara_home_key()
 
     def _scope_maps(
         self,
@@ -481,7 +481,7 @@ class PlatformRegistry:
 
         Used by the iterate-all accessors (``all_entries``/``plugin_entries``),
         which are only called by paths that genuinely need every adapter:
-        gateway startup, ``hermes setup``/``gateway status``, channel
+        gateway startup, ``clara setup``/``gateway status``, channel
         directory.  CLI chat never iterates the full set.
         """
         active_scope = self.current_scope_key()

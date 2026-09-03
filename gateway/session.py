@@ -41,7 +41,7 @@ def _now() -> datetime:
 # ``get_or_create_session`` — while it stays within this window of when
 # ``resume_pending`` was marked.  ``gateway/run.py`` bridges
 # ``config.yaml`` ``agent.gateway_auto_continue_freshness`` into
-# ``HERMES_AUTO_CONTINUE_FRESHNESS`` at startup.
+# ``CLARA_AUTO_CONTINUE_FRESHNESS`` at startup.
 _AUTO_CONTINUE_FRESHNESS_SECS_DEFAULT = 60 * 60
 
 
@@ -50,13 +50,13 @@ def auto_continue_freshness_window() -> float:
 
     Single source of truth for both the resume scheduler (``gateway/run.py``)
     and the routing-time zombie gate in ``get_or_create_session``.  Reads
-    ``HERMES_AUTO_CONTINUE_FRESHNESS`` (bridged from ``config.yaml``
+    ``CLARA_AUTO_CONTINUE_FRESHNESS`` (bridged from ``config.yaml``
     ``agent.gateway_auto_continue_freshness`` at gateway startup) and falls
     back to the module default when unset or malformed.  A non-positive value
     disables the freshness gate (restores the pre-fix "always fresh" behaviour
     for users who want to opt out).
     """
-    raw = os.environ.get("HERMES_AUTO_CONTINUE_FRESHNESS")
+    raw = os.environ.get("CLARA_AUTO_CONTINUE_FRESHNESS")
     if raw is None or raw == "":
         return float(_AUTO_CONTINUE_FRESHNESS_SECS_DEFAULT)
     try:
@@ -106,7 +106,7 @@ from utils import atomic_replace
 from agent.turn_context import extract_api_content_sidecar
 
 # Session keys/ids flow into filesystem paths downstream (e.g.
-# ``sessions_dir / f"{session_id}.json"`` in hermes_state, request-dump
+# ``sessions_dir / f"{session_id}.json"`` in clara_state, request-dump
 # filenames in agent_runtime_helpers). Any value that could escape the
 # sessions directory as a path must be rejected at the entry boundary.
 # Rejects: parent traversal (``..``), a path separator anywhere (``/`` or
@@ -372,7 +372,7 @@ def _slack_tools_loaded() -> bool:
     """True iff the agent will actually have Slack tools this session.
 
     Two independent paths grant Slack capability:
-      1. Native `slack` toolset enabled via `hermes tools` (opt-in, default
+      1. Native `slack` toolset enabled via `clara tools` (opt-in, default
          OFF) AND `SLACK_BOT_TOKEN` set — the tool's `check_fn` gates on it
          at registry time, so config alone isn't enough.
       2. An MCP server that has ACTUALLY registered tools into the live
@@ -413,8 +413,8 @@ def _slack_tools_loaded() -> bool:
     if not _slack_token.strip():
         return False
     try:
-        from hermes_cli.config import load_config
-        from hermes_cli.tools_config import _get_platform_tools
+        from clara_cli.config import load_config
+        from clara_cli.tools_config import _get_platform_tools
         cfg = load_config()
         # include_default_mcp_servers=True (the default) so a Slack MCP
         # server that's enabled by default for this platform (not
@@ -431,7 +431,7 @@ def _discord_tools_loaded() -> bool:
 
     Two conditions must hold:
       1. The `discord` or `discord_admin` toolset is enabled for the
-         Discord platform via `hermes tools` (opt-in, default OFF).
+         Discord platform via `clara tools` (opt-in, default OFF).
       2. `DISCORD_BOT_TOKEN` is set — the tool's `check_fn` gates on it
          at registry time, so the toolset being enabled in config is not
          enough if the token isn't configured.
@@ -441,8 +441,8 @@ def _discord_tools_loaded() -> bool:
     """
     try:
         from agent.secret_scope import get_secret
-        from hermes_cli.config import load_config
-        from hermes_cli.tools_config import _get_platform_tools
+        from clara_cli.config import load_config
+        from clara_cli.tools_config import _get_platform_tools
 
         if not (get_secret("DISCORD_BOT_TOKEN", "") or "").strip():
             return False
@@ -638,7 +638,7 @@ def build_session_context_prompt(
     elif context.source.platform == Platform.DISCORD:
         # Inject the Discord IDs block only when the agent actually has
         # Discord tools loaded this session — i.e. the user opted into
-        # `discord` / `discord_admin` via `hermes tools` AND the bot
+        # `discord` / `discord_admin` via `clara tools` AND the bot
         # token is configured.  Otherwise keep the stale-API disclaimer
         # honest so we never promise tools the agent lacks.
         if _discord_tools_loaded():
@@ -727,7 +727,7 @@ def build_session_context_prompt(
     lines.append("")
     lines.append("**Delivery options for scheduled tasks:**")
 
-    from hermes_constants import display_hermes_home
+    from clara_constants import display_clara_home
 
     # Origin delivery
     if context.source.platform == Platform.LOCAL:
@@ -741,7 +741,7 @@ def build_session_context_prompt(
 
     # Local always available
     lines.append(
-        f"- `\"local\"` → Save to local files only ({display_hermes_home()}/cron/output/)"
+        f"- `\"local\"` → Save to local files only ({display_clara_home()}/cron/output/)"
     )
 
     # Platform home channels
@@ -1045,7 +1045,7 @@ def build_channel_continuity_note(
 
     where = "thread" if source.thread_id else "channel"
     return (
-        f"[System note: This {where} had an earlier Hermes session "
+        f"[System note: This {where} had an earlier Clara session "
         f"(session_id: {prev}) that was auto-reset. If the user refers to "
         f"earlier work here, or the request depends on this {where}'s history, "
         f"use the session_search tool to recall that prior session before "
@@ -1227,7 +1227,7 @@ class _SessionFlight:
 
 
 class AsyncSessionStore:
-    """Async boundary for the synchronous, thread-safe SessionStore."""
+    """Async boundary for the __PROT_0_synchroclara__, thread-safe SessionStore."""
 
     def __init__(self, store: "SessionStore") -> None:
         self._store = store
@@ -1312,7 +1312,7 @@ class SessionStore:
         # a handle bound during __init__ is frozen to the process's own root
         # home; every profile's rows then land in the root state.db even
         # though ``_profile_runtime_scope`` has already redirected
-        # ``get_hermes_home()`` for the turn (its docstring lists "sessions"
+        # ``get_clara_home()`` for the turn (its docstring lists "sessions"
         # among what it scopes).  The row still carries the right
         # ``profile_name``, so the damage is invisible in the data and shows
         # up only as the desktop listing a profile's session under the
@@ -1327,7 +1327,7 @@ class SessionStore:
         self._db_pinned = _DB_UNPINNED
         self._db_handles: Dict[Path, Any] = {}
         self._db_handles_lock = threading.Lock()
-        # profile name -> its HERMES_HOME (or None to use the ambient scope).
+        # profile name -> its CLARA_HOME (or None to use the ambient scope).
         # Memoized so the per-key store lookup stays a dict hit instead of a
         # profile-directory stat on every transcript append.
         self._profile_home_cache: Dict[str, Optional[Path]] = {}
@@ -1350,9 +1350,9 @@ class SessionStore:
         # gateway's own home, before any profile scope exists, so capturing it
         # here is what makes the index deterministic — see ``_routing_db``.
         try:
-            from hermes_constants import get_hermes_home
+            from clara_constants import get_clara_home
 
-            self._routing_home: Optional[Path] = Path(get_hermes_home())
+            self._routing_home: Optional[Path] = Path(get_clara_home())
         except Exception:
             self._routing_home = None
         self._open_session_db_for_active_scope()
@@ -1366,7 +1366,7 @@ class SessionStore:
         row it is about to touch.
 
         ``SessionDB(db_path=None)`` resolves ``_default_db_path()`` at call
-        time, and that helper follows the context-local HERMES_HOME override
+        time, and that helper follows the context-local CLARA_HOME override
         installed by ``_profile_runtime_scope``.  Resolving here rather than
         once in ``__init__`` is the whole fix for #88532: it lets the
         scoping that the multiplexed inbound path already performs actually
@@ -1378,7 +1378,7 @@ class SessionStore:
         once it expires, one caller reopens while concurrent callers keep
         using the JSONL fallback.
         """
-        from hermes_state import SessionDB, _default_db_path, get_shared_session_db
+        from clara_state import SessionDB, _default_db_path, get_shared_session_db
 
         path = Path(db_path) if db_path is not None else Path(_default_db_path())
         def _open():
@@ -1479,7 +1479,7 @@ class SessionStore:
         return profile
 
     def _profile_home_for_key(self, session_key: Optional[str]) -> Optional[Path]:
-        """HERMES_HOME of the profile that owns *session_key*, or None.
+        """CLARA_HOME of the profile that owns *session_key*, or None.
 
         None here means only "no live home to point at" — either the key has
         no named owner, or that owner's directory could not be resolved.
@@ -1494,7 +1494,7 @@ class SessionStore:
             return cache[profile]
         home: Optional[Path] = None
         try:
-            from hermes_cli.profiles import get_profile_dir, profile_exists
+            from clara_cli.profiles import get_profile_dir, profile_exists
 
             if profile_exists(profile):
                 home = Path(get_profile_dir(profile))
@@ -1516,7 +1516,7 @@ class SessionStore:
     def _db_for_key(self, session_key: Optional[str]):
         """The SessionDB holding *session_key*'s rows, whatever scope is active.
 
-        ``_db`` follows the ambient HERMES_HOME, and only the inbound message
+        ``_db`` follows the ambient CLARA_HOME, and only the inbound message
         path installs one (``_profile_runtime_scope``).  Background work runs
         unscoped while operating on every profile's keys out of the single
         process-wide ``_entries`` dict — ``_session_expiry_watcher`` is the
@@ -1619,7 +1619,7 @@ class SessionStore:
         def _close(db) -> None:
             # Shared instances no-op on close() (the registry owns the
             # lifecycle).  Release the refcount instead (#90837).
-            from hermes_state import release_or_close
+            from clara_state import release_or_close
             try:
                 release_or_close(db)
             except Exception as exc:
@@ -2010,11 +2010,11 @@ class SessionStore:
         data = {
             "_README": (
                 "LEGACY MIRROR of the gateway routing index (the primary copy "
-                "lives in the gateway_routing table in ~/.hermes/state.db). "
+                "lives in the gateway_routing table in ~/.clara/state.db). "
                 "Maps messaging session keys (agent:main:<platform>:...) to "
                 "active session IDs. This is NOT the session list. ALL "
-                "sessions (CLI, TUI, and gateway) live in ~/.hermes/state.db "
-                "and are shown by `hermes sessions list` and `/sessions`. "
+                "sessions (CLI, TUI, and gateway) live in ~/.clara/state.db "
+                "and are shown by `clara sessions list` and `/sessions`. "
                 "Disable this file with `gateway.write_sessions_json: false` "
                 "in config.yaml."
             ),
@@ -2179,7 +2179,7 @@ class SessionStore:
         if source is not None and source.profile:
             return source.profile
         try:
-            from hermes_cli.profiles import get_active_profile_name
+            from clara_cli.profiles import get_active_profile_name
             return get_active_profile_name() or "default"
         except Exception:
             return None
@@ -2198,7 +2198,7 @@ class SessionStore:
     @staticmethod
     def _active_profile_name() -> str:
         try:
-            from hermes_cli.profiles import get_active_profile_name
+            from clara_cli.profiles import get_active_profile_name
             return get_active_profile_name() or "default"
         except Exception:
             return "default"
@@ -3382,7 +3382,7 @@ class SessionStore:
 
         The opaque token is returned to the caller and must be supplied to
         :meth:`clear_turn_active`.  Re-marking replaces the previous token so
-        a stale asynchronous unwind cannot clear a newer turn.
+        a stale __PROT_1_asynchroclara__ unwind cannot clear a newer turn.
         """
         token = uuid.uuid4().hex
         with self._lock:
@@ -3988,7 +3988,7 @@ class SessionStore:
             try:
                 self._append_transcript_message(session_id, msg)
             except Exception as exc:
-                from hermes_state import (
+                from clara_state import (
                     CompressionSessionClosedError,
                     StateDbCorruptError,
                     StateDbReplacedError,
@@ -4024,7 +4024,7 @@ class SessionStore:
                                 exc_info=True,
                             )
                     try:
-                        from hermes_state import divert_session_transcript_jsonl
+                        from clara_state import divert_session_transcript_jsonl
                         divert_session_transcript_jsonl(session_id, remaining)
                     except Exception:
                         logger.warning(
@@ -4262,7 +4262,7 @@ class SessionStore:
             return True
         import sqlite3
 
-        from hermes_state import SessionDB
+        from clara_state import SessionDB
 
         if isinstance(exc, sqlite3.DatabaseError):
             return SessionDB._is_fts_write_corruption_error(exc)

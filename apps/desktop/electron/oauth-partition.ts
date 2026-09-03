@@ -5,10 +5,10 @@
  * dashboard basic-auth) remote gateways (#92183).
  *
  * Historically every cookie-mode remote rode ONE Electron session partition
- * (`persist:hermes-remote-oauth`) — the jar was keyed on the auth *mode*, not
+ * (`persist:clara-remote-oauth`) — the jar was keyed on the auth *mode*, not
  * on the connection's identity. Chromium cookie jars scope by host and ignore
  * the port, so two registered gateways on the same host (the #92183 VPN
- * setup: one box, two dashboards) fought over the same `hermes_session*`
+ * setup: one box, two dashboards) fought over the same `clara_session*`
  * cookies: signing in to gateway B evicted gateway A's session, and A's
  * cookie was silently PRESENTED to B on every request — a cross-connection
  * credential leak.
@@ -26,7 +26,7 @@
  *     LEGACY shared partition, so existing signed-in users are not signed out
  *     by the upgrade.
  *   - `cloud` entries stay on the legacy partition: the silent per-agent
- *     cascade deliberately shares one jar with the Nous Portal session.
+ *     cascade deliberately shares one jar with the Clara Portal session.
  *   - Token-auth remotes, portal URLs, and anything unmatched or malformed
  *     fall back to the legacy partition (cookie-free flows are unaffected).
  *
@@ -34,7 +34,7 @@
  * project; main.ts owns session.fromPartition() and injects nothing here.
  */
 
-export const LEGACY_OAUTH_PARTITION = 'persist:hermes-remote-oauth'
+export const LEGACY_OAUTH_PARTITION = 'persist:clara-remote-oauth'
 
 const CONNECTION_PARTITION_PREFIX = `${LEGACY_OAUTH_PARTITION}:conn:`
 

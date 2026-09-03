@@ -7,11 +7,11 @@ import { I18nProvider } from '@/i18n'
 import { $localModelsEnabled } from '@/store/local-models-flag'
 import { $localRuntimeJobs } from '@/store/local-runtime-jobs'
 import { stubMenuDomApis, stubResizeObserver } from '@/test/jsdom'
-import type { LocalRuntimeJob, ModelOptionsResponse } from '@/types/hermes'
+import type { LocalRuntimeJob, ModelOptionsResponse } from '@/types/clara'
 
 import { ModelPickerDialog } from './model-picker'
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/clara', () => ({
   getLocalModelsStatus: vi.fn().mockResolvedValue({ loading: {} })
 }))
 vi.mock('@/lib/model-options', async importOriginal => ({
@@ -36,9 +36,9 @@ const OPTIONS: ModelOptionsResponse = {
       authenticated: true
     },
     {
-      slug: 'nous',
-      name: 'Nous',
-      models: ['Hermes-4.5'],
+      slug: 'clara',
+      name: 'Clara',
+      models: ['Clara-4.5'],
       authenticated: true
     }
   ]
@@ -116,7 +116,7 @@ describe('ModelPickerDialog download rows', () => {
     })
     renderPicker()
 
-    expect(await screen.findByText('Hermes-4.5')).toBeTruthy()
+    expect(await screen.findByText('Clara-4.5')).toBeTruthy()
     expect(screen.getByText('Qwen3.8 Flash Next (UD-Q4_K_XL)')).toBeTruthy()
     expect(screen.getByText('41%')).toBeTruthy()
   })

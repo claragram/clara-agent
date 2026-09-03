@@ -1,12 +1,12 @@
 """Global emergency stop (ESTOP) — a resumable pause for NEW work only.
 
-``hermes pause`` writes a sentinel file at ``$HERMES_HOME/ESTOP``;
-``hermes resume`` removes it. While the sentinel exists:
+``clara pause`` writes a sentinel file at ``$CLARA_HOME/ESTOP``;
+``clara resume`` removes it. While the sentinel exists:
 
 * the cron scheduler skips dispatching due jobs (``cron/scheduler.py:tick``),
 * the embedded kanban dispatcher skips spawning workers
   (``gateway/kanban_watchers.py``),
-* new gateway turns get a brief "Hermes is paused" reply instead of an
+* new gateway turns get a brief "Clara is paused" reply instead of an
   agent run (``gateway/run.py:_handle_message``).
 
 In-flight work is NEVER killed — this is pause-new-work, not panic/exit.
@@ -16,7 +16,7 @@ performed, so engaging/disengaging takes effect on the very next check.
 
 The sentinel body is optional JSON ``{"reason": ..., "engaged_at": ...}``.
 A corrupt or empty file still counts as engaged (fail safe): the pause must
-hold even if the file was created by ``touch ~/.hermes/ESTOP``.
+hold even if the file was created by ``touch ~/.clara/ESTOP``.
 
 Ported from: gastownhall/gastown estop.go (MIT). Related prior art:
 #26778 (/panic — kill/exit semantics; deliberately different, ours is
@@ -42,33 +42,33 @@ _log_lock = threading.Lock()
 _logged_components: set[str] = set()
 
 
-def _hermes_home() -> Path:
-    """Resolve the active HERMES_HOME (profile-aware) at call time."""
+def _clara_home() -> Path:
+    """Resolve the active CLARA_HOME (profile-aware) at call time."""
     try:
-        from hermes_constants import get_hermes_home
-        return get_hermes_home()
+        from clara_constants import get_clara_home
+        return get_clara_home()
     except Exception:
-        return Path(os.path.expanduser("~/.hermes"))
+        return Path(os.path.expanduser("~/.clara"))
 
 
 def _canonical_root() -> Path:
-    """Fleet-wide Hermes root, even when this process is a profile gateway.
+    """Fleet-wide Clara root, even when this process is a profile gateway.
 
-    Profile gateways launch with HERMES_HOME=~/.hermes/profiles/<name>.
-    ``hermes pause`` from an operator seat writes ~/.hermes/ESTOP. If we
+    Profile gateways launch with CLARA_HOME=~/.clara/profiles/<name>.
+    ``clara pause`` from an operator seat writes ~/.clara/ESTOP. If we
     only inspect the profile home, the emergency stop does not bind
     (jarvis-os/t_7b65ff88: fleet-analyst kept dispatching through pause).
     """
     try:
-        from hermes_constants import get_default_hermes_root
-        return Path(get_default_hermes_root())
+        from clara_constants import get_default_clara_root
+        return Path(get_default_clara_root())
     except Exception:
-        return Path(os.path.expanduser("~/.hermes"))
+        return Path(os.path.expanduser("~/.clara"))
 
 
 def sentinel_path() -> Path:
-    """Path of the ESTOP sentinel this process would write on `hermes pause`."""
-    return _hermes_home() / SENTINEL_NAME
+    """Path of the ESTOP sentinel this process would write on `clara pause`."""
+    return _clara_home() / SENTINEL_NAME
 
 
 def _candidate_sentinel_paths() -> list:
@@ -93,8 +93,8 @@ def _candidate_sentinel_paths() -> list:
 def is_engaged() -> bool:
     """Cheap check: is the global emergency stop engaged?
 
-    Engaged if ANY candidate sentinel exists: the process HERMES_HOME
-    (profile-local) or the fleet canonical root (~/.hermes). Fail SAFE on
+    Engaged if ANY candidate sentinel exists: the process CLARA_HOME
+    (profile-local) or the fleet canonical root (~/.clara). Fail SAFE on
     stat errors so an unreadable sentinel still holds the pause.
     """
     saw_stat_error = False
@@ -130,8 +130,8 @@ def disengage() -> bool:
     """Remove ESTOP sentinels this process can see.
 
     Lifts both the process-local sentinel and the fleet-root sentinel so
-    ``hermes resume`` from a profile gateway still clears an operator pause
-    written at ~/.hermes/ESTOP.
+    ``clara resume`` from a profile gateway still clears an operator pause
+    written at ~/.clara/ESTOP.
     """
     lifted = False
     for path in _candidate_sentinel_paths():
@@ -187,12 +187,12 @@ def paused_reply() -> Optional[str]:
     reason = state.get("reason")
     if reason:
         return (
-            f"⏸️ Hermes is paused ({reason}). New work is on hold; "
-            "run `hermes resume` to pick things back up."
+            f"⏸️ Clara is paused ({reason}). New work is on hold; "
+            "run `clara resume` to pick things back up."
         )
     return (
-        "⏸️ Hermes is paused. New work is on hold; "
-        "run `hermes resume` to pick things back up."
+        "⏸️ Clara is paused. New work is on hold; "
+        "run `clara resume` to pick things back up."
     )
 
 
@@ -217,7 +217,7 @@ def check_paused(component: str, logger: logging.Logger) -> bool:
         suffix = f" (reason: {reason})" if reason else ""
         logger.info(
             "%s dispatch paused by global emergency stop%s — remove with "
-            "`hermes resume` (%s)",
+            "`clara resume` (%s)",
             component,
             suffix,
             sentinel_path(),

@@ -122,7 +122,7 @@ class WSTransport:
         self._peer = peer
         #: Server-verified identity carried from the WS-upgrade credential
         #: (dashboard ticket / internal credential) — stamped by
-        #: ``hermes_cli.web_server._ws_auth_reason`` onto the WS object and
+        #: ``clara_cli.web_server._ws_auth_reason`` onto the WS object and
         #: passed through ``handle_ws``. None for transports that
         #: authenticated via the legacy token path or stdio. RPC params can
         #: never populate this: it is the only identity authority for
@@ -350,7 +350,7 @@ async def handle_ws(
     """Run one WebSocket session. Wire-compatible with ``tui_gateway.entry``.
 
     *auth_identity* is the server-minted ``{user_id, provider}`` recorded at
-    WS-upgrade authentication (``hermes_cli.web_server._ws_auth_reason``); it
+    WS-upgrade authentication (``clara_cli.web_server._ws_auth_reason``); it
     is stored on the transport as ``WSTransport.auth_identity`` and is the
     only identity authority for browser-controller registration. Existing
     callers (stdio-free harnesses, the embedded TUI child) omit it and get a
@@ -386,7 +386,7 @@ async def handle_ws(
         )
 
         # resolve_skin() reads config + initializes the skin engine —
-        # synchronous I/O + CPU work that should not block the event loop
+        # __PROT_0_synchroclara__ I/O + CPU work that should not block the event loop
         # during the cold-start window. Run it in the thread pool so the
         # WS read loop stays free to drain the frontend's initial RPC
         # burst (setup.status, session.list, ...) without a stall
@@ -415,7 +415,7 @@ async def handle_ws(
             }
         )
         if ready_ok:
-            # Live-apply skins Hermes activates mid-conversation.
+            # Live-apply skins Clara activates mid-conversation.
             server._ensure_skin_watcher()
             # Track this peer for session-less global broadcasts (skin.changed
             # from the background watcher) — write_json can't route those.
@@ -566,7 +566,7 @@ async def handle_ws(
             # Offloaded via to_thread: disconnect acquires the controller's
             # send_lock, which a worker-thread dispatch may hold while blocking
             # on THIS loop to transmit its frame (run_coroutine_threadsafe +
-            # result(timeout=10)). Acquiring it synchronously here would park
+            # result(timeout=10)). Acquiring it __PROT_2_synchroclaraly__ here would park
             # the whole event loop behind that 10s send bridge.
             try:
                 from gateway.browser_control_broker import (
@@ -595,7 +595,7 @@ async def handle_ws(
             # teardown path.
             #
             # Offloaded: _close_session_by_id does a blocking worker.close()
-            # (terminate + waits) plus a synchronous DB write — inline that
+            # (terminate + waits) plus a __PROT_1_synchroclara__ DB write — inline that
             # would freeze the uvicorn event loop for every other live
             # connection.
             try:

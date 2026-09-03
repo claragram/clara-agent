@@ -71,7 +71,7 @@ export function BootFailureOverlay() {
       return
     }
 
-    void window.hermesDesktop
+    void window.claraDesktop
       ?.getRecentLogs()
       .then(res => setLogs(res.lines ?? []))
       .catch(() => undefined)
@@ -93,7 +93,7 @@ export function BootFailureOverlay() {
     let cancelled = false
 
     void (async () => {
-      const desktop = window.hermesDesktop
+      const desktop = window.claraDesktop
 
       if (!desktop?.getConnectionConfig) {
         return
@@ -146,25 +146,25 @@ export function BootFailureOverlay() {
 
   const retry = async () => {
     setBusy('retry')
-    await window.hermesDesktop?.resetBootstrap().catch(() => undefined)
+    await window.claraDesktop?.resetBootstrap().catch(() => undefined)
     window.location.reload()
   }
 
   const repair = async () => {
     setBusy('repair')
-    await window.hermesDesktop?.repairBootstrap().catch(() => undefined)
+    await window.claraDesktop?.repairBootstrap().catch(() => undefined)
     window.location.reload()
   }
 
   const switchToLocalGateway = async () => {
     setBusy('local')
     // Soft apply: tears down the primary and re-dials in place (shell stays).
-    await window.hermesDesktop?.applyConnectionConfig({ mode: 'local' }).catch(() => undefined)
+    await window.claraDesktop?.applyConnectionConfig({ mode: 'local' }).catch(() => undefined)
     setBusy(null)
   }
 
   // Clear this gateway's stale auth first, then re-establish it through the
-  // connection's owning login flow. Hermes Cloud must reuse its portal session
+  // connection's owning login flow. Clara Cloud must reuse its portal session
   // and per-agent cascade; generic remote gateways use native/embedded OAuth.
   // Reload after success so boot mints a fresh ticket against the new session.
   const signInRemote = async () => {
@@ -175,7 +175,7 @@ export function BootFailureOverlay() {
     setBusy('signin')
 
     try {
-      const desktop = window.hermesDesktop
+      const desktop = window.claraDesktop
 
       await desktop?.oauthLogoutConnectionConfig?.(remoteReauth.url)
 
@@ -226,7 +226,7 @@ export function BootFailureOverlay() {
     }
   }
 
-  const openLogs = () => void window.hermesDesktop?.revealLogs().catch(() => undefined)
+  const openLogs = () => void window.claraDesktop?.revealLogs().catch(() => undefined)
   const copy = t.boot.failure
 
   const label = signInLabel(remoteReauth, {
@@ -275,7 +275,7 @@ export function BootFailureOverlay() {
 
   let actions: RecoveryAction[]
   let hint: string
-  // The electron boot path flags a Nous Cloud backend-down (502/503/504) with
+  // The electron boot path flags a Clara Cloud backend-down (502/503/504) with
   // the structured isCloudBackendDown/statusCode it carries through boot
   // progress. When set, the recovery screen leads with the cloud-specific
   // guidance instead of the generic remote-failure copy (#85335).
@@ -295,7 +295,7 @@ export function BootFailureOverlay() {
     ]
     hint = copy.remoteSignInHint(label)
   } else if (cloudDown) {
-    // A Nous Cloud agent is down — the user cannot restart the managed
+    // A Clara Cloud agent is down — the user cannot restart the managed
     // instance and Repair is local-only. Lead with the paths that actually
     // resolve it: check the portal (status/instance controls), switch to the
     // local gateway, retry, or get support on Discord. Portal/Discord are
@@ -305,7 +305,7 @@ export function BootFailureOverlay() {
       {
         key: 'portal',
         label: copy.cloudDownCheckPortal,
-        onClick: () => openExternalLink('https://portal.nousresearch.com'),
+        onClick: () => openExternalLink('https://portal.claraprise.com'),
         icon: <ExternalLink />
       },
       localAction,
@@ -313,7 +313,7 @@ export function BootFailureOverlay() {
       {
         key: 'discord',
         label: copy.cloudDownDiscord,
-        onClick: () => openExternalLink('https://discord.gg/NousResearch'),
+        onClick: () => openExternalLink('https://discord.gg/Workprise'),
         variant: 'ghost'
       },
       { ...settingsAction, variant: 'ghost' }
@@ -348,7 +348,7 @@ export function BootFailureOverlay() {
         // glass. Contract: `[data-glass-opaque]` in styles.css.
         data-glass-opaque=""
       >
-        <div className="flex max-h-[86vh] w-full max-w-[46rem] flex-col overflow-hidden rounded-xl border border-(--stroke-nous) bg-(--ui-chat-bubble-background) shadow-nous">
+        <div className="flex max-h-[86vh] w-full max-w-[46rem] flex-col overflow-hidden rounded-xl border border-(--stroke-clara) bg-(--ui-chat-bubble-background) shadow-clara">
           {/* Subtle back affordance (projects/overlay idiom): muted → foreground
               on hover, no divider. */}
           <button
@@ -376,7 +376,7 @@ export function BootFailureOverlay() {
       // glass. Contract: `[data-glass-opaque]` in styles.css.
       data-glass-opaque=""
     >
-      <div className="w-full max-w-[40rem] overflow-hidden rounded-xl border border-(--stroke-nous) bg-(--ui-chat-bubble-background) shadow-nous">
+      <div className="w-full max-w-[40rem] overflow-hidden rounded-xl border border-(--stroke-clara) bg-(--ui-chat-bubble-background) shadow-clara">
         <div className="flex items-start gap-3 px-5 py-4">
           <ErrorIcon className="mt-0.5" size="1.25rem" />
           <div>

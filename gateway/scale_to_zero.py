@@ -19,7 +19,7 @@ no live background work, inbound-quiet) holds AND the dormant quiesce completed.
 
 Design constraints (decisions.md):
   - Per-instance enable is gated SOLELY by the NAS "Labs" toggle, carried to the
-    gateway as the ``HERMES_SCALE_TO_ZERO`` env stamp (D11/Q8=A). NOT a user
+    gateway as the ``CLARA_SCALE_TO_ZERO`` env stamp (D11/Q8=A). NOT a user
     config key; ``scale_to_zero.idle_timeout_minutes`` IS config.yaml (D2).
   - Arm only when messaging is relay-only or absent (D1/F6) AND a wakeUrl is
     registered (§3.4(1)) AND the flag is set.
@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
 
 # Env flag stamped by NAS when the scaleToZero Labs toggle is on (D11/Q8=A),
 # mirroring how the `relay` feature stamps GATEWAY_RELAY_URL. Truthy values only.
-SCALE_TO_ZERO_ENV = "HERMES_SCALE_TO_ZERO"
+SCALE_TO_ZERO_ENV = "CLARA_SCALE_TO_ZERO"
 
 # Fly-injected machine identity (present on every Fly machine). Used by the
 # self-suspend call; both must be present for self_suspend_available().
@@ -75,7 +75,7 @@ _TRUTHY = {"1", "true", "yes", "on"}
 
 
 def scale_to_zero_enabled(environ: Optional[dict] = None) -> bool:
-    """Whether the per-instance Labs toggle is on (the HERMES_SCALE_TO_ZERO stamp).
+    """Whether the per-instance Labs toggle is on (the CLARA_SCALE_TO_ZERO stamp).
 
     D11/Q8=A: this env flag is the SOLE per-instance enable signal reaching the
     gateway. Absent/blank/falsey -> disabled (fail-safe default off).
@@ -182,15 +182,15 @@ def is_idle(
 DASHBOARD_CLIENT_HEARTBEAT_REL = os.path.join("state", "dashboard_clients.heartbeat")
 
 
-def dashboard_client_heartbeat_path(hermes_home: Optional[os.PathLike | str] = None):
-    """Path of the dashboard-client liveness marker under HERMES_HOME."""
+def dashboard_client_heartbeat_path(clara_home: Optional[os.PathLike | str] = None):
+    """Path of the dashboard-client liveness marker under CLARA_HOME."""
     from pathlib import Path
 
-    if hermes_home is None:
-        from hermes_constants import get_hermes_home
+    if clara_home is None:
+        from clara_constants import get_clara_home
 
-        hermes_home = get_hermes_home()
-    return Path(hermes_home) / DASHBOARD_CLIENT_HEARTBEAT_REL
+        clara_home = get_clara_home()
+    return Path(clara_home) / DASHBOARD_CLIENT_HEARTBEAT_REL
 
 
 def touch_dashboard_client_heartbeat(path: Optional[os.PathLike | str] = None) -> bool:

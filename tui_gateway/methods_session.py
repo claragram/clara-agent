@@ -38,7 +38,7 @@ def _(rid, params: dict) -> dict:
     # ``profile`` (app-global remote mode): a new chat started under a non-launch
     # profile must build its agent + persist against THAT profile's home/state.db,
     # not the dashboard's launch profile. Stored on the session so _start_agent_build
-    # and each turn re-bind HERMES_HOME. None/own profile → launch (unchanged).
+    # and each turn re-bind CLARA_HOME. None/own profile → launch (unchanged).
     profile = (params.get("profile") or "").strip() or None
     profile_home = _profile_home(profile)
 
@@ -56,7 +56,7 @@ def _(rid, params: dict) -> dict:
     create_reasoning_override = None
     if effort := str(params.get("reasoning_effort") or "").strip():
         try:
-            from hermes_constants import parse_reasoning_effort
+            from clara_constants import parse_reasoning_effort
 
             create_reasoning_override = parse_reasoning_effort(effort)
         except Exception:
@@ -171,7 +171,7 @@ def _(rid, params: dict) -> dict:
                         )
                         db.set_session_title(key, branch_title)
                     except Exception as exc:
-                        from hermes_state import is_disk_full_error
+                        from clara_state import is_disk_full_error
 
                         if is_disk_full_error(exc):
                             raise
@@ -247,7 +247,7 @@ def _(rid, params: dict) -> dict:
             # Resume picker should surface human conversation sessions from every
             # user-facing surface — CLI, TUI, all gateway platforms (including new
             # ones not enumerated here), ACP adapter clients, webhook sessions,
-            # custom `HERMES_SESSION_SOURCE` values, and older installs with
+            # custom `CLARA_SESSION_SOURCE` values, and older installs with
             # different source labels. We deny-list only the noisy internal
             # sources (``tool`` sub-agent runs and ``kanban`` dispatcher
             # workers) rather than allow-listing a fixed set of platform names
@@ -477,7 +477,7 @@ def _(rid, params: dict) -> dict:
     # shared launch db, which outlives the RPC and is never closed here.
     owns_db = False
     if profile_home is not None:
-        from hermes_state import get_shared_session_db
+        from clara_state import get_shared_session_db
 
         db = get_shared_session_db(profile_home / "state.db")
         owns_db = True
@@ -537,7 +537,7 @@ def _(rid, params: dict) -> dict:
                 if live is not None:
                     if owns_db:
                         with contextlib.suppress(Exception):
-                            from hermes_state import release_or_close
+                            from clara_state import release_or_close
                             release_or_close(db)
                     live["last_active"] = time.time()
                     # This resume reattaches the live record. A lazy session
@@ -672,7 +672,7 @@ def _(rid, params: dict) -> dict:
         # keeps lightweight test/adaptor DBs that predate the shared SessionDB
         # guard compatible. The limit resolves from config
         # (sessions.max_resume_messages, 0 disables).
-        from hermes_state import (
+        from clara_state import (
             SessionResumeTooLargeError,
             resolved_max_resume_messages,
         )
@@ -847,7 +847,7 @@ def _(rid, params: dict) -> dict:
         # Precedence vs omit_messages: defer_history SUPERSEDES omit_messages.
         # Desktop sends both flags on a cold resume; when defer_history is set the
         # response never carries a transcript (messages is always []) and the ONE
-        # history read happens in the background hydration worker — the synchronous
+        # history read happens in the background hydration worker — the __PROT_0_synchroclara__
         # omit_messages read below (cold resume default) is skipped entirely, so
         # the transcript is never loaded twice for one resume. omit_messages only
         # governs the response shape of the non-deferred paths.
@@ -918,7 +918,7 @@ def _(rid, params: dict) -> dict:
         # immediately and pre-warm the agent on a short timer (the same deferred-
         # build contract session.create uses); _sess() also builds on demand if the
         # first prompt beats the timer. A caller that needs the agent built
-        # synchronously (e.g. tests of the build race) passes ``eager_build: true``
+        # __PROT_1_synchroclaraly__ (e.g. tests of the build race) passes ``eager_build: true``
         # to fall through to the eager path below. Distinct from the lazy/watch
         # branch above: a normal resume restores the full ancestor history and the
         # session's persisted runtime identity, and is a real (upgradable) session.
@@ -1012,7 +1012,7 @@ def _(rid, params: dict) -> dict:
         lease = None  # claimed lazily on the first turn (_ensure_active_session_slot)
         _enable_gateway_prompts()
         home_token = (
-            set_hermes_home_override(str(profile_home)) if profile_home is not None else None
+            set_clara_home_override(str(profile_home)) if profile_home is not None else None
         )
         secret_token = (
             set_secret_scope(build_profile_secret_scope(Path(str(profile_home))))
@@ -1071,7 +1071,7 @@ def _(rid, params: dict) -> dict:
             return _err(rid, 5000, f"resume failed: {e}")
         finally:
             if home_token is not None:
-                reset_hermes_home_override(home_token)
+                reset_clara_home_override(home_token)
             if secret_token is not None:
                 reset_secret_scope(secret_token)
 
@@ -1091,7 +1091,7 @@ def _(rid, params: dict) -> dict:
                 return _reuse_live_response(*live)
             try:
                 init_home_token = (
-                    set_hermes_home_override(str(profile_home))
+                    set_clara_home_override(str(profile_home))
                     if profile_home is not None
                     else None
                 )
@@ -1144,7 +1144,7 @@ def _(rid, params: dict) -> dict:
                     owns_db = False
                 finally:
                     if init_home_token is not None:
-                        reset_hermes_home_override(init_home_token)
+                        reset_clara_home_override(init_home_token)
                     if init_secret_token is not None:
                         reset_secret_scope(init_secret_token)
                 if sid in _sessions:
@@ -1153,7 +1153,7 @@ def _(rid, params: dict) -> dict:
                             "model_override"
                         ]
                     _sessions[sid]["display_history_prefix"] = display_history_prefix
-                    # Remember the profile home so each turn re-binds HERMES_HOME (the
+                    # Remember the profile home so each turn re-binds CLARA_HOME (the
                     # agent persists to its own db, but mid-turn home reads — memory,
                     # skills — must resolve to the resumed profile too).
                     if profile_home is not None:
@@ -1184,7 +1184,7 @@ def _(rid, params: dict) -> dict:
         # Dropping it merely relied on refcounting to release the sqlite fds; that
         # stops being true the moment anything pins the instance — SessionDB pins
         # ITSELF once its background token writer starts, via
-        # atexit.register(_drain_token_queue_at_exit) (hermes_state.py), which only
+        # atexit.register(_drain_token_queue_at_exit) (clara_state.py), which only
         # close() unregisters. A pinned handle keeps its db/-wal/-shm fds and its
         # writer thread for the life of the process.
         if owns_db and db is not None:
@@ -1260,7 +1260,7 @@ def _(rid, params: dict) -> dict:
     raw = str(params.get("cwd", "") or "").strip()
     if not raw:
         return _err(rid, 4016, "cwd required")
-    from hermes_constants import translate_cwd_for_wsl_backend
+    from clara_constants import translate_cwd_for_wsl_backend
 
     resolved = os.path.abspath(os.path.expanduser(translate_cwd_for_wsl_backend(raw)))
     if not os.path.isdir(resolved):
@@ -1336,7 +1336,7 @@ def _(rid, params: dict) -> dict:
     # filter on ``transport is _detached_ws_transport`` (the WS-detached drop
     # sentinel): a detached session is still attachable via a quick reconnect /
     # session.resume until the grace-reap finalizes it, and a standalone
-    # ``hermes --tui`` session legitimately rides the real stdio transport and
+    # ``clara --tui`` session legitimately rides the real stdio transport and
     # must stay visible.
     # Keep the natural creation/insertion order from ``_sessions``.  The
     # frontend marks the focused session with ``current``; it should not jump to
@@ -1414,7 +1414,7 @@ def _(rid, params: dict) -> dict:
         if profile_home is not None:
             sessions_dir = Path(profile_home) / "sessions"
         else:
-            sessions_dir = get_hermes_home() / "sessions"
+            sessions_dir = get_clara_home() / "sessions"
         try:
             deleted = db.delete_session(target, sessions_dir=sessions_dir)
         except Exception as e:
@@ -1678,7 +1678,7 @@ def _(rid, params: dict) -> dict:
 
     Desktop parity with the CLI ``/handoff`` command: we only write
     ``handoff_state='pending'`` onto the persisted session row. The actual
-    transfer is performed by the separate ``hermes gateway`` process, whose
+    transfer is performed by the separate ``clara gateway`` process, whose
     ``_handoff_watcher`` claims the row, re-binds the session to the platform's
     home channel, and forges a synthetic turn. The desktop then polls
     ``handoff.state`` for the terminal result.
@@ -1834,14 +1834,14 @@ def _(rid, params: dict) -> dict:
     usage: dict = _session_usage_snapshot(session)
     if agent is None and not usage:
         usage = {"calls": 0, "input": 0, "output": 0, "total": 0}
-    # Nous credits block — agent-independent (a portal fetch), so it shows even
+    # Clara credits block — agent-independent (a portal fetch), so it shows even
     # with zero API calls or on a resumed session. The TUI /usage panel renders
-    # these lines regardless of `calls`. Fail-open: [] when not logged into Nous
+    # these lines regardless of `calls`. Fail-open: [] when not logged into Clara
     # or on any portal hiccup.
     try:
-        from agent.account_usage import nous_credits_lines
+        from agent.account_usage import clara_credits_lines
 
-        credits = nous_credits_lines()
+        credits = clara_credits_lines()
         if credits:
             usage["credits_lines"] = credits
     except Exception:
@@ -1955,7 +1955,7 @@ def _(rid, params: dict) -> dict:
         from agent.pet.render import PetRenderer
 
         try:
-            from hermes_cli.config import load_config
+            from clara_cli.config import load_config
 
             cfg = load_config()
             display = cfg.get("display", {}) if isinstance(cfg.get("display"), dict) else {}
@@ -2062,7 +2062,7 @@ def _(rid, params: dict) -> dict:
         from agent.pet import store
 
         try:
-            from hermes_cli.config import load_config
+            from clara_cli.config import load_config
 
             cfg = load_config()
             display = cfg.get("display", {}) if isinstance(cfg.get("display"), dict) else {}
@@ -2140,7 +2140,7 @@ def _(rid, params: dict) -> dict:
     try:
         from agent.pet import store
         from agent.pet.manifest import ManifestError
-        from hermes_cli.pets import _set_active
+        from clara_cli.pets import _set_active
 
         try:
             pet = store.install_pet(slug)
@@ -2167,7 +2167,7 @@ def _(rid, params: dict) -> dict:
         return _err(rid, 4004, "missing slug")
     try:
         from agent.pet import store
-        from hermes_cli.pets import _clear_active_if
+        from clara_cli.pets import _clear_active_if
 
         removed = store.remove_pet(slug)
 
@@ -2236,7 +2236,7 @@ def _(rid, params: dict) -> dict:
         # in config so surfaces don't point at the old (now-missing) directory.
         if new_slug != slug:
             try:
-                from hermes_cli.pets import _rename_active_if
+                from clara_cli.pets import _rename_active_if
 
                 _rename_active_if(slug, new_slug)
             except Exception as exc:  # noqa: BLE001 - rename already succeeded
@@ -2288,7 +2288,7 @@ def _(rid, params: dict) -> dict:
 def _(rid, params: dict) -> dict:
     """Turn the pet off from the desktop picker (``display.pet.enabled=false``)."""
     try:
-        from hermes_cli.pets import _set_enabled
+        from clara_cli.pets import _set_enabled
 
         _set_enabled(False)
         return _ok(rid, {"ok": True})
@@ -2307,7 +2307,7 @@ def _(rid, params: dict) -> dict:
     terminal surfaces on their next read.
     """
     try:
-        from hermes_cli.pets import set_pet_scale
+        from clara_cli.pets import set_pet_scale
 
         scale, err = set_pet_scale(params.get("scale"))
         if err:
@@ -2336,7 +2336,7 @@ def _(rid, params: dict) -> dict:
 def _(rid, params: dict) -> dict:
     """Whether pet generation is possible right now.
 
-    True only when a reference-capable image backend (Nous Portal / OpenRouter /
+    True only when a reference-capable image backend (Clara Portal / OpenRouter /
     OpenAI gpt-image) is configured — the desktop checks this on open so it can
     offer setup instead of a dead prompt. Cheap (config + plugin discovery).
     """
@@ -2631,7 +2631,7 @@ def _(rid, params: dict) -> dict:
     drives the device step-up exactly like the mutations.
     """
     from agent.subscription_view import subscription_change_preview_from_payload
-    from hermes_cli.nous_billing import BillingError, post_subscription_preview
+    from clara_cli.clara_billing import BillingError, post_subscription_preview
 
     tier_id = params.get("subscription_type_id")
     if not tier_id:
@@ -2655,7 +2655,7 @@ def _(rid, params: dict) -> dict:
     same-price change OR a cancellation at period end (chargeless). Requires
     billing:manage.
     """
-    from hermes_cli.nous_billing import BillingError, put_subscription_pending_change
+    from clara_cli.clara_billing import BillingError, put_subscription_pending_change
 
     cancel = bool(params.get("cancel"))
     tier_id = params.get("subscription_type_id")
@@ -2677,7 +2677,7 @@ def _(rid, params: dict) -> dict:
     Clears a scheduled downgrade or cancellation (resume / undo). Chargeless, but it
     re-enables recurring spend → requires billing:manage and honors the kill-switch.
     """
-    from hermes_cli.nous_billing import BillingError, delete_subscription_pending_change
+    from clara_cli.clara_billing import BillingError, delete_subscription_pending_change
 
     try:
         result = delete_subscription_pending_change()
@@ -2699,7 +2699,7 @@ def _(rid, params: dict) -> dict:
     the TUI reuses it on retry of the SAME upgrade. Requires billing:manage.
     """
     from agent.billing_view import new_idempotency_key
-    from hermes_cli.nous_billing import BillingError, post_subscription_upgrade
+    from clara_cli.clara_billing import BillingError, post_subscription_upgrade
 
     tier_id = params.get("subscription_type_id")
     if not tier_id:
@@ -2734,7 +2734,7 @@ def _(rid, params: dict) -> dict:
     supplied, the server-side core mints a fresh one and returns it so the TUI can
     reuse it on retry of the SAME purchase.
     """
-    from hermes_cli.nous_billing import BillingError, post_charge
+    from clara_cli.clara_billing import BillingError, post_charge
     from agent.billing_view import new_idempotency_key
 
     amount = params.get("amount_usd")
@@ -2758,7 +2758,7 @@ def _(rid, params: dict) -> dict:
 
     The poll. Caller drives the 2s/5-min cadence; this is a single status read.
     """
-    from hermes_cli.nous_billing import BillingError, get_charge_status
+    from clara_cli.clara_billing import BillingError, get_charge_status
 
     charge_id = params.get("charge_id")
     if not charge_id:
@@ -2787,7 +2787,7 @@ def _(rid, params: dict) -> dict:
 
     params: {enabled: bool, threshold: number, top_up_amount: number}.
     """
-    from hermes_cli.nous_billing import BillingError, patch_auto_top_up
+    from clara_cli.clara_billing import BillingError, patch_auto_top_up
 
     try:
         enabled = bool(params.get("enabled"))
@@ -2819,8 +2819,8 @@ def _(rid, params: dict) -> dict:
     """
     sid = params.get("session_id") or ""
     try:
-        from hermes_cli.auth import step_up_nous_billing_scope
-        from hermes_cli.nous_billing import BillingError
+        from clara_cli.auth import step_up_clara_billing_scope
+        from clara_cli.clara_billing import BillingError
 
         def _on_verification(url: str, code: str) -> None:
             _emit(
@@ -2829,7 +2829,7 @@ def _(rid, params: dict) -> dict:
                 {"verification_url": url, "user_code": code},
             )
 
-        granted = step_up_nous_billing_scope(
+        granted = step_up_clara_billing_scope(
             open_browser=False, on_verification=_on_verification
         )
         return _ok(rid, {"ok": True, "granted": bool(granted)})
@@ -2850,7 +2850,7 @@ def _(rid, params: dict) -> dict:
     if err:
         return err
 
-    from hermes_constants import display_hermes_home
+    from clara_constants import display_clara_home
 
     key = session.get("session_key") or params.get("session_id") or ""
     agent = session.get("agent")
@@ -2898,10 +2898,10 @@ def _(rid, params: dict) -> dict:
     model = getattr(agent, "model", None) or mirror.get("model") or "(unknown)"
     project = _project_info_for_cwd(_display_session_cwd(session))
     lines = [
-        "Hermes TUI Status",
+        "Clara TUI Status",
         "",
         f"Session ID: {key}",
-        f"Path: {display_hermes_home()}",
+        f"Path: {display_clara_home()}",
     ]
     if project:
         lines.append(f"Project: {project['name']}")
@@ -3219,17 +3219,17 @@ def _(rid, params: dict) -> dict:
         return _ok(rid, result)
 
     agent = session["agent"]
-    # Mirror the classic CLI /save: snapshot under the Hermes profile home
-    # (~/.hermes/sessions/saved/) rather than the project/workspace CWD, and
+    # Mirror the classic CLI /save: snapshot under the Clara profile home
+    # (~/.clara/sessions/saved/) rather than the project/workspace CWD, and
     # include the system prompt so the export matches the dashboard save.
-    saved_dir = get_hermes_home() / "sessions" / "saved"
+    saved_dir = get_clara_home() / "sessions" / "saved"
     try:
         saved_dir.mkdir(parents=True, exist_ok=True)
     except Exception as e:
         return _err(rid, 5011, f"failed to create save directory {saved_dir}: {e}")
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    path = saved_dir / f"hermes_conversation_{timestamp}.json"
+    path = saved_dir / f"clara_conversation_{timestamp}.json"
 
     with session["history_lock"]:
         messages = list(session.get("history", []))
@@ -3417,16 +3417,16 @@ def _(rid, params: dict) -> dict:
         # recreate the cross-profile split one turn later.
         parent_home = session.get("profile_home")
         if parent_home:
-            from hermes_state import SessionDB
+            from clara_state import SessionDB
 
             # DEDICATED handle, same ownership rule as session.resume: ours
             # until the branched agent takes it below. _make_agent raising, or
             # _init_session raising, both leave here without that transfer.
-            from hermes_state import get_shared_session_db
+            from clara_state import get_shared_session_db
             branch_db = get_shared_session_db(Path(parent_home) / "state.db")
             branch_owns_db = True
         home_token = (
-            set_hermes_home_override(parent_home) if parent_home else None
+            set_clara_home_override(parent_home) if parent_home else None
         )
         # The home override alone only moves config/skills/memory; credentials
         # resolve through get_secret(), which without a scope falls through to
@@ -3476,7 +3476,7 @@ def _(rid, params: dict) -> dict:
             if secret_token is not None:
                 reset_secret_scope(secret_token)
             if home_token is not None:
-                reset_hermes_home_override(home_token)
+                reset_clara_home_override(home_token)
         if new_sid in _sessions:
             _sessions[new_sid]["active_session_lease"] = lease
     except Exception as e:
@@ -3486,7 +3486,7 @@ def _(rid, params: dict) -> dict:
     finally:
         if branch_owns_db and branch_db is not None:
             with contextlib.suppress(Exception):
-                from hermes_state import release_or_close
+                from clara_state import release_or_close
                 release_or_close(branch_db)
     branched_session = _sessions.get(new_sid)
     return _ok(

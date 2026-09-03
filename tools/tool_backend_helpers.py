@@ -17,10 +17,10 @@ _DEFAULT_MODAL_MODE = "auto"
 _VALID_MODAL_MODES = {"auto", "direct", "managed"}
 
 
-def managed_nous_tools_enabled(*, force_fresh: bool = False) -> bool:
-    """Return True when the user is entitled to the Nous Tool Gateway.
+def managed_clara_tools_enabled(*, force_fresh: bool = False) -> bool:
+    """Return True when the user is entitled to the Clara Tool Gateway.
 
-    Entitlement is paid Nous Portal service access OR a live free tool pool
+    Entitlement is paid Clara Portal service access OR a live free tool pool
     (``tool_gateway_entitled``). Per-category coverage (the pool funds image but
     not video, etc.) is narrowed by callers via ``tool_gateway_entitled_for``;
     this coarse gate only answers "is any managed tool usable at all".
@@ -31,12 +31,12 @@ def managed_nous_tools_enabled(*, force_fresh: bool = False) -> bool:
     reflect a just-purchased subscription, credits, or pool grant immediately.
     """
     try:
-        from hermes_cli.nous_account import get_nous_portal_account_info
+        from clara_cli.clara_account import get_clara_portal_account_info
 
         if force_fresh:
-            account_info = get_nous_portal_account_info(force_fresh=True)
+            account_info = get_clara_portal_account_info(force_fresh=True)
         else:
-            account_info = get_nous_portal_account_info()
+            account_info = get_clara_portal_account_info()
         if not account_info.logged_in:
             return False
         return account_info.tool_gateway_entitled
@@ -44,20 +44,20 @@ def managed_nous_tools_enabled(*, force_fresh: bool = False) -> bool:
         return False
 
 
-def nous_tool_gateway_unavailable_message(
-    capability: str = "the Nous Tool Gateway",
+def clara_tool_gateway_unavailable_message(
+    capability: str = "the Clara Tool Gateway",
     *,
     force_fresh: bool = False,
 ) -> str:
-    """Return account-aware guidance for an unavailable Nous Tool Gateway path."""
+    """Return account-aware guidance for an unavailable Clara Tool Gateway path."""
     try:
-        from hermes_cli.nous_account import (
-            format_nous_portal_entitlement_message,
-            get_nous_portal_account_info,
+        from clara_cli.clara_account import (
+            format_clara_portal_entitlement_message,
+            get_clara_portal_account_info,
         )
 
-        account_info = get_nous_portal_account_info(force_fresh=force_fresh)
-        message = format_nous_portal_entitlement_message(
+        account_info = get_clara_portal_account_info(force_fresh=force_fresh)
+        message = format_clara_portal_entitlement_message(
             account_info,
             capability=capability,
         )
@@ -66,8 +66,8 @@ def nous_tool_gateway_unavailable_message(
     except Exception:
         pass
     return (
-        f"{capability} is unavailable. Run `hermes model` to refresh your "
-        "Nous Portal login and billing status."
+        f"{capability} is unavailable. Run `clara model` to refresh your "
+        "Clara Portal login and billing status."
     )
 
 
@@ -119,7 +119,7 @@ def resolve_modal_backend_state(
     requested_mode = coerce_modal_mode(modal_mode)
     normalized_mode = normalize_modal_mode(modal_mode)
     if managed_enabled is None:
-        managed_enabled = managed_nous_tools_enabled()
+        managed_enabled = managed_clara_tools_enabled()
     managed_mode_blocked = (
         requested_mode == "managed" and not managed_enabled
     )
@@ -163,18 +163,18 @@ def resolve_provider_secret(
 ) -> str:
     """Resolve a voice-provider API key. Single owner for STT/TTS key lookup.
 
-    Resolution order (fixes #68003 — keys added via ``hermes auth add
+    Resolution order (fixes #68003 — keys added via ``clara auth add
     <provider>`` were invisible to the voice tools, which only consulted
     env/.env):
 
     1. An explicit ``config_value`` from config.yaml, when the caller has one.
-    2. The environment / ``~/.hermes/.env``. Under a multiplexed gateway turn
+    2. The environment / ``~/.clara/.env``. Under a multiplexed gateway turn
        this reads the active profile's secret scope (authoritative — a scope
        miss must NOT borrow another profile's ``os.environ``; see
        ``agent/secret_scope.py``). Outside multiplexing it reads
-       ``hermes_cli.config.get_env_value`` (os.environ, then ``.env``),
+       ``clara_cli.config.get_env_value`` (os.environ, then ``.env``),
        matching the tools' historical behaviour exactly.
-    3. The credential pool / auth store for ``provider_id`` (``hermes auth
+    3. The credential pool / auth store for ``provider_id`` (``clara auth
        add <provider_id>``). Skipped under an active multiplex turn, where
        only the profile scope is authoritative for credentials.
 
@@ -183,7 +183,7 @@ def resolve_provider_secret(
 
     ``env_getter`` lets callers supply their module-level ``get_env_value``
     wrapper (transcription_tools / tts_tool expose one that tests patch);
-    when omitted, ``hermes_cli.config.get_env_value`` is used directly.
+    when omitted, ``clara_cli.config.get_env_value`` is used directly.
     """
     value = str(config_value or "").strip()
     if value:
@@ -211,7 +211,7 @@ def resolve_provider_secret(
         key = str(env_getter(env_var) or "").strip()
     else:
         try:
-            from hermes_cli.config import get_env_value
+            from clara_cli.config import get_env_value
 
             key = str(get_env_value(env_var) or "").strip()
         except ImportError:  # pragma: no cover — config is in-repo
@@ -224,7 +224,7 @@ def resolve_provider_secret(
     try:
         from agent.credential_pool import load_pool
 
-        # `hermes auth add <provider>` keys a registry provider by its plain
+        # `clara auth add <provider>` keys a registry provider by its plain
         # id, but a provider declared via config.yaml ``providers.<name>`` /
         # ``custom_providers`` is pooled under ``custom:<name>`` (see
         # agent/credential_pool.py CUSTOM_POOL_PREFIX). Check both.
@@ -265,7 +265,7 @@ def resolve_openai_audio_api_key() -> str:
     ``agent/secret_scope.py``.
 
     Outside a multiplexed turn, ``OPENAI_API_KEY`` additionally falls back to
-    the credential pool (``hermes auth add openai-api``) via
+    the credential pool (``clara auth add openai-api``) via
     ``resolve_provider_secret`` — same #68003 fix as the other voice
     providers. The dedicated voice-tools override remains env/scope-only.
     """
@@ -281,7 +281,7 @@ def prefers_gateway(config_section: str) -> bool:
     Reads ``<section>.use_gateway`` from config.yaml.  Never raises.
     """
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
         section = (load_config() or {}).get(config_section)
         if isinstance(section, dict):
             return is_truthy_value(section.get("use_gateway"), default=False)
@@ -290,13 +290,13 @@ def prefers_gateway(config_section: str) -> bool:
     return False
 
 
-# The provider value the managed "Nous Subscription" picker rows write for
-# every category (image_gen.provider: nous, web.backend: nous,
-# browser.cloud_provider: nous, ...). Runtime dispatch is a plain switch on
-# the stored string: "nous" → managed gateway client; any vendor name → that
+# The provider value the managed "Clara Subscription" picker rows write for
+# every category (image_gen.provider: clara, web.backend: clara,
+# browser.cloud_provider: clara, ...). Runtime dispatch is a plain switch on
+# the stored string: "clara" → managed gateway client; any vendor name → that
 # vendor direct with the user's own credentials; no key ever written →
 # legacy credential autodetect.
-NOUS_MANAGED_PROVIDER = "nous"
+CLARA_MANAGED_PROVIDER = "clara"
 
 # Per-capability keys that also count as "this category has been configured".
 _EXTRA_SELECTION_KEYS = {
@@ -314,10 +314,10 @@ _DEFAULT_NAME_KEYS = ("provider", "backend", "cloud_provider")
 
 
 def read_selection(section: str) -> str | None:
-    """Return the stored `hermes tools` provider string for a config section.
+    """Return the stored `clara tools` provider string for a config section.
 
     THE single runtime read of the persisted selection. Returns:
-    - ``"nous"`` — the managed Nous Tool Gateway row was selected,
+    - ``"clara"`` — the managed Clara Tool Gateway row was selected,
     - a vendor name (``"fal"``, ``"openai"``, ``"firecrawl"``, ...) — that
       vendor, direct, with the user's own credentials,
     - ``None`` — the category has NEVER been configured; the legacy
@@ -329,12 +329,12 @@ def read_selection(section: str) -> str | None:
 
     Legacy interpretation (read-time only — nothing is migrated on disk):
     older picker versions wrote ``<section>.use_gateway`` beside the name
-    key. ``use_gateway: true`` was only ever written by the managed "Nous
-    Subscription" row, so it maps to ``"nous"`` regardless of the name key;
+    key. ``use_gateway: true`` was only ever written by the managed "Clara
+    Subscription" row, so it maps to ``"clara"`` regardless of the name key;
     ``use_gateway: false`` beside a name key maps to that name.
     """
     try:
-        from hermes_cli.config import read_raw_config_readonly
+        from clara_cli.config import read_raw_config_readonly
 
         cfg = read_raw_config_readonly() or {}
         raw = cfg.get(section) if isinstance(cfg, dict) else None
@@ -359,7 +359,7 @@ def read_selection(section: str) -> str | None:
     # Legacy shim: a truthy use_gateway means the managed row was picked
     # (it was the only writer of use_gateway: true).
     if "use_gateway" in raw and is_truthy_value(raw.get("use_gateway"), default=False):
-        return NOUS_MANAGED_PROVIDER
+        return CLARA_MANAGED_PROVIDER
 
     # NOTE on the legacy DEFAULT_CONFIG ``stt.provider: local`` seed: it never
     # reached the raw config.yaml (``save_config`` strips schema defaults),
@@ -391,7 +391,7 @@ def selection_exists(section: str) -> bool:
     if not extra:
         return False
     try:
-        from hermes_cli.config import read_raw_config_readonly
+        from clara_cli.config import read_raw_config_readonly
 
         cfg = read_raw_config_readonly() or {}
         raw = cfg.get(section) if isinstance(cfg, dict) else None
@@ -406,7 +406,7 @@ def selection_exists(section: str) -> bool:
 # points at one otherwise fails silently at the FIRST tool call with a
 # generic "no registered provider has that name" — no migration, no startup
 # notice (reported after the Tavily removal in #99199). Both the startup
-# config check (hermes_cli.config.validate_config_structure) and
+# config check (clara_cli.config.validate_config_structure) and
 # selection_error() consult this map so the user learns what actually
 # happened and what to do. Declared data, one policy — add future removals
 # here, never as one-off string checks at call sites.
@@ -433,16 +433,16 @@ def selection_error(section: str, selection_name: str, failure: str) -> str:
     if note:
         failure = note
     return (
-        f"{section} is configured to use {selection_name} (set via hermes "
-        f"tools), but {failure}. Run 'hermes tools' to change it."
+        f"{section} is configured to use {selection_name} (set via clara "
+        f"tools), but {failure}. Run 'clara tools' to change it."
     )
 
 
 def fal_key_is_configured() -> bool:
     """Return True when FAL_KEY is set to a non-whitespace value.
 
-    Consults both ``os.environ`` and ``~/.hermes/.env`` (via
-    ``hermes_cli.config.get_env_value`` when available) so tool-side
+    Consults both ``os.environ`` and ``~/.clara/.env`` (via
+    ``clara_cli.config.get_env_value`` when available) so tool-side
     checks and CLI setup-time checks agree.  A whitespace-only value
     is treated as unset everywhere.
     """
@@ -451,7 +451,7 @@ def fal_key_is_configured() -> bool:
         # Fall back to the .env file for CLI paths that may run before
         # dotenv is loaded into os.environ.
         try:
-            from hermes_cli.config import get_env_value
+            from clara_cli.config import get_env_value
 
             value = get_env_value("FAL_KEY")
         except Exception:

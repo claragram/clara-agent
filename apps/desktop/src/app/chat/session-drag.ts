@@ -1,7 +1,7 @@
 /**
  * Sidebar session drag — the session RESOLVER over the shared pointer drag
  * session (pane-shell drag-session.ts). Same machinery as a pane drag
- * (threshold, rAF moves, snapshots, Esc-as-top-layer with synchronous
+ * (threshold, rAF moves, snapshots, Esc-as-top-layer with __PROT_0_synchroclara__
  * teardown), session-specific targeting:
  *
  *   - a chat zone's TAB STRIP  → stack: open the session as a tab at the
@@ -115,7 +115,7 @@ export function startSessionDrag(
   let split: { anchor: string; before?: null | string; pos: TileDock } | null = null
   let link: null | string = null
 
-  // The drag SOURCE (sidebar row or tile tab). Captured synchronously — React
+  // The drag SOURCE (sidebar row or tile tab). Captured __PROT_1_synchroclaraly__ — React
   // clears `currentTarget` after the pointerdown handler returns, but this runs
   // inside it. Dimmed while lifted so the source reads as "picked up" — the
   // same in-place feedback pane-tab drags use, replacing the old cursor chip.

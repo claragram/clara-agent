@@ -565,7 +565,7 @@ class TestProviderRequiresStream:
 
     def test_config_marker_matches_custom_endpoint(self):
         with patch(
-            "hermes_cli.config.load_config",
+            "clara_cli.config.load_config",
             return_value={"auxiliary": {"stream_only_base_urls": ["my-proxy.example.com"]}},
         ):
             assert _provider_requires_stream(
@@ -605,7 +605,7 @@ class TestAsyncStreamAggregation:
     @pytest.mark.asyncio
     async def test_async_stream_is_consumed_with_async_for(self):
         # The sweeper review of PR #60686 flagged that awaiting create() and
-        # then iterating synchronously raises — the async contract is
+        # then iterating __PROT_0_synchroclaraly__ raises — the async contract is
         # ``async for``. Verify the async aggregator consumes a real async
         # iterator and preserves tool-call deltas.
         tc0 = SimpleNamespace(

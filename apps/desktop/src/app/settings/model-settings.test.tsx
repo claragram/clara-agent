@@ -20,14 +20,14 @@ const setModelAssignment = vi.fn()
 const getRecommendedDefaultModel = vi.fn()
 const saveMoaModels = vi.fn()
 const setEnvVar = vi.fn()
-const getHermesConfigRecord = vi.fn()
-const saveHermesConfig = vi.fn()
+const getClaraConfigRecord = vi.fn()
+const saveClaraConfig = vi.fn()
 const startManualLocalEndpoint = vi.fn()
 const startManualOnboarding = vi.fn()
 const startManualProviderOAuth = vi.fn()
 let profileSwitchHandler: (() => void) | null = null
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/clara', () => ({
   getGlobalModelInfo: (profile?: null | string) => getGlobalModelInfo(profile),
   getGlobalModelOptions: (opts?: unknown, profile?: null | string) => getGlobalModelOptions(opts, profile),
   getAuxiliaryModels: (profile?: null | string) => getAuxiliaryModels(profile),
@@ -38,8 +38,8 @@ vi.mock('@/hermes', () => ({
   getRecommendedDefaultModel: (slug: string) => getRecommendedDefaultModel(slug),
   saveMoaModels: (body: unknown) => saveMoaModels(body),
   setEnvVar: (key: string, value: string) => setEnvVar(key, value),
-  getHermesConfigRecord: () => getHermesConfigRecord(),
-  saveHermesConfig: (config: unknown) => saveHermesConfig(config),
+  getClaraConfigRecord: () => getClaraConfigRecord(),
+  saveClaraConfig: (config: unknown) => saveClaraConfig(config),
   setApiRequestProfile: () => {}
 }))
 
@@ -56,28 +56,28 @@ vi.mock('../hooks/use-on-profile-switch', () => ({
 }))
 
 beforeEach(() => {
-  getGlobalModelInfo.mockResolvedValue({ provider: 'nous', model: 'hermes-4' })
+  getGlobalModelInfo.mockResolvedValue({ provider: 'clara', model: 'clara-4' })
   getGlobalModelOptions.mockResolvedValue({
     providers: [
       {
-        name: 'Nous',
-        slug: 'nous',
-        models: ['hermes-4', 'hermes-4-mini'],
+        name: 'Clara',
+        slug: 'clara',
+        models: ['clara-4', 'clara-4-mini'],
         authenticated: true,
-        capabilities: { 'hermes-4': { reasoning: true, fast: true } }
+        capabilities: { 'clara-4': { reasoning: true, fast: true } }
       }
     ]
   })
   getAuxiliaryModels.mockResolvedValue({
-    main: { provider: 'nous', model: 'hermes-4' },
+    main: { provider: 'clara', model: 'clara-4' },
     tasks: [{ task: 'vision', provider: 'auto', model: '', base_url: '' }]
   })
   getMoaModels.mockResolvedValue(null)
-  setModelAssignment.mockResolvedValue({ ok: true, provider: 'nous', model: 'hermes-4', gateway_tools: [] })
-  getRecommendedDefaultModel.mockResolvedValue({ provider: 'nous', model: 'hermes-4', free_tier: null })
+  setModelAssignment.mockResolvedValue({ ok: true, provider: 'clara', model: 'clara-4', gateway_tools: [] })
+  getRecommendedDefaultModel.mockResolvedValue({ provider: 'clara', model: 'clara-4', free_tier: null })
   setEnvVar.mockResolvedValue({ ok: true })
-  getHermesConfigRecord.mockResolvedValue({ agent: { reasoning_effort: 'medium', service_tier: 'normal' } })
-  saveHermesConfig.mockResolvedValue({ ok: true })
+  getClaraConfigRecord.mockResolvedValue({ agent: { reasoning_effort: 'medium', service_tier: 'normal' } })
+  saveClaraConfig.mockResolvedValue({ ok: true })
 })
 
 afterEach(() => {
@@ -136,8 +136,8 @@ describe('ModelSettings', () => {
     const triggers = await screen.findAllByRole('combobox')
     fireEvent.click(triggers[0])
 
-    // "Nous" shows in both the trigger and the open list.
-    expect((await screen.findAllByText('Nous')).length).toBeGreaterThan(0)
+    // "Clara" shows in both the trigger and the open list.
+    expect((await screen.findAllByText('Clara')).length).toBeGreaterThan(0)
     expect(screen.queryByText(/DeepSeek/)).toBeNull()
   })
 
@@ -202,7 +202,7 @@ describe('ModelSettings', () => {
   it('replaces the selected provider and model when the active profile changes', async () => {
     getGlobalModelInfo
       .mockResolvedValueOnce({ provider: 'custom', model: 'local-a' })
-      .mockResolvedValueOnce({ provider: 'nous', model: 'hermes-4' })
+      .mockResolvedValueOnce({ provider: 'clara', model: 'clara-4' })
     getGlobalModelOptions
       .mockResolvedValueOnce({
         providers: [
@@ -217,11 +217,11 @@ describe('ModelSettings', () => {
       .mockResolvedValueOnce({
         providers: [
           {
-            name: 'Nous',
-            slug: 'nous',
-            models: ['hermes-4'],
+            name: 'Clara',
+            slug: 'clara',
+            models: ['clara-4'],
             authenticated: true,
-            capabilities: { 'hermes-4': { reasoning: true, fast: true } }
+            capabilities: { 'clara-4': { reasoning: true, fast: true } }
           }
         ]
       })
@@ -234,7 +234,7 @@ describe('ModelSettings', () => {
     })
 
     await waitFor(() => expect(getGlobalModelInfo).toHaveBeenCalledTimes(2))
-    await waitFor(() => expect(screen.getAllByRole('combobox')[0].textContent).toContain('Nous'))
+    await waitFor(() => expect(screen.getAllByRole('combobox')[0].textContent).toContain('Clara'))
     expect(screen.queryByRole('button', { name: 'Set up provider' })).toBeNull()
   })
 
@@ -242,9 +242,9 @@ describe('ModelSettings', () => {
     getGlobalModelOptions.mockResolvedValueOnce({
       providers: [
         {
-          name: 'Nous',
-          slug: 'nous',
-          models: ['hermes-4'],
+          name: 'Clara',
+          slug: 'clara',
+          models: ['clara-4'],
           authenticated: true
         },
         {
@@ -288,13 +288,13 @@ describe('ModelSettings', () => {
 
   it('writes the profile default speed (service_tier) when the fast switch is toggled', async () => {
     await renderModelSettings()
-    await waitFor(() => expect(getHermesConfigRecord).toHaveBeenCalled())
+    await waitFor(() => expect(getClaraConfigRecord).toHaveBeenCalled())
 
     const fastSwitch = await screen.findByRole('switch')
     fireEvent.click(fastSwitch)
 
     await waitFor(() =>
-      expect(saveHermesConfig).toHaveBeenCalledWith(
+      expect(saveClaraConfig).toHaveBeenCalledWith(
         expect.objectContaining({ agent: expect.objectContaining({ service_tier: 'fast' }) })
       )
     )
@@ -304,17 +304,17 @@ describe('ModelSettings', () => {
     getGlobalModelOptions.mockResolvedValueOnce({
       providers: [
         {
-          name: 'Nous',
-          slug: 'nous',
-          models: ['hermes-4'],
+          name: 'Clara',
+          slug: 'clara',
+          models: ['clara-4'],
           authenticated: true,
-          capabilities: { 'hermes-4': { reasoning: false, fast: false } }
+          capabilities: { 'clara-4': { reasoning: false, fast: false } }
         }
       ]
     })
 
     await renderModelSettings()
-    await waitFor(() => expect(getHermesConfigRecord).toHaveBeenCalled())
+    await waitFor(() => expect(getClaraConfigRecord).toHaveBeenCalled())
 
     expect(screen.queryByRole('switch')).toBeNull()
   })
@@ -335,8 +335,8 @@ describe('ModelSettings', () => {
 
     await waitFor(() =>
       expect(setModelAssignment).toHaveBeenCalledWith({
-        model: 'hermes-4',
-        provider: 'nous',
+        model: 'clara-4',
+        provider: 'clara',
         scope: 'auxiliary',
         task: 'vision'
       })
@@ -384,7 +384,7 @@ describe('ModelSettings', () => {
       provider: 'openrouter',
       model: 'anthropic/claude-opus-4.7',
       gateway_tools: [],
-      stale_aux: [{ task: 'compression', provider: 'nous', model: 'hermes-4' }]
+      stale_aux: [{ task: 'compression', provider: 'clara', model: 'clara-4' }]
     })
 
     await renderModelSettings()
@@ -395,12 +395,12 @@ describe('ModelSettings', () => {
 
     // The switch-time notice names the pinned provider and offers a reset.
     expect(await screen.findByText(/still run on/)).toBeTruthy()
-    expect(screen.getByText('nous')).toBeTruthy()
+    expect(screen.getByText('clara')).toBeTruthy()
   })
 
   it('shows a persistent banner when a loaded aux slot mismatches the main provider', async () => {
     getAuxiliaryModels.mockResolvedValueOnce({
-      main: { provider: 'nous', model: 'hermes-4' },
+      main: { provider: 'clara', model: 'clara-4' },
       tasks: [{ task: 'curator', provider: 'openrouter', model: 'anthropic/claude-opus-4.7', base_url: '' }]
     })
 
@@ -418,7 +418,7 @@ describe('ModelSettings MoA preset editor', () => {
     presets: {
       default: {
         reference_models: [
-          { provider: 'nous', model: 'hermes-4' },
+          { provider: 'clara', model: 'clara-4' },
           { provider: 'openrouter', model: 'deepseek/deepseek-v4-pro' }
         ],
         aggregator: { provider: 'openrouter', model: 'anthropic/claude-opus-4.8' },
@@ -429,7 +429,7 @@ describe('ModelSettings MoA preset editor', () => {
       }
     },
     reference_models: [
-      { provider: 'nous', model: 'hermes-4' },
+      { provider: 'clara', model: 'clara-4' },
       { provider: 'openrouter', model: 'deepseek/deepseek-v4-pro' }
     ],
     aggregator: { provider: 'openrouter', model: 'anthropic/claude-opus-4.8' },
@@ -443,11 +443,11 @@ describe('ModelSettings MoA preset editor', () => {
     getGlobalModelOptions.mockResolvedValue({
       providers: [
         {
-          name: 'Nous',
-          slug: 'nous',
-          models: ['hermes-4', 'hermes-4-mini'],
+          name: 'Clara',
+          slug: 'clara',
+          models: ['clara-4', 'clara-4-mini'],
           authenticated: true,
-          capabilities: { 'hermes-4': { reasoning: true, fast: true } }
+          capabilities: { 'clara-4': { reasoning: true, fast: true } }
         },
         {
           name: 'OpenRouter',
@@ -534,13 +534,13 @@ describe('ModelSettings MoA preset editor', () => {
       await openReferenceEditor()
 
       fireEvent.click(slotSelects().ref1Provider)
-      fireEvent.click(await screen.findByRole('option', { name: 'Nous' }))
+      fireEvent.click(await screen.findByRole('option', { name: 'Clara' }))
       await vi.advanceTimersByTimeAsync(700)
 
       // Radix treats re-picking the current value as a no-op (no
       // onValueChange), so nothing changes: no save, model still shown.
       expect(saveMoaModels).not.toHaveBeenCalled()
-      expect(screen.getByText('nous · hermes-4')).toBeTruthy()
+      expect(screen.getByText('clara · clara-4')).toBeTruthy()
     } finally {
       vi.useRealTimers()
     }
@@ -581,7 +581,7 @@ describe('ModelSettings MoA preset editor', () => {
           presets: expect.objectContaining({
             default: expect.objectContaining({
               reference_models: [
-                expect.objectContaining({ provider: 'nous', model: 'hermes-4', enabled: false }),
+                expect.objectContaining({ provider: 'clara', model: 'clara-4', enabled: false }),
                 expect.objectContaining({ provider: 'openrouter', model: 'deepseek/deepseek-v4-pro' })
               ]
             })
@@ -596,11 +596,11 @@ describe('ModelSettings MoA preset editor', () => {
 
 describe('ModelSettings code-skew 503', () => {
   const skewError = new Error(
-    'Error invoking remote method \'hermes:api\': Error: 503: {"detail":"Restart required: This process is running code from 08b4875f4a but the checkout on disk is now 48d2528066. The model picker would risk a stale-module crash — restart the Desktop-owned backend to load the new code (use Restart backend in Hermes Desktop, or quit and reopen the app)"}'
+    'Error invoking remote method \'clara:api\': Error: 503: {"detail":"Restart required: This process is running code from 08b4875f4a but the checkout on disk is now 48d2528066. The model picker would risk a stale-module crash — restart the Desktop-owned backend to load the new code (use Restart backend in Clara Desktop, or quit and reopen the app)"}'
   )
 
   afterEach(() => {
-    delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+    delete (window as unknown as { claraDesktop?: unknown }).claraDesktop
   })
 
   it('unwraps the stale-backend 503 instead of dumping IPC JSON', async () => {
@@ -612,14 +612,14 @@ describe('ModelSettings code-skew 503', () => {
       expect(screen.getByText(/running old code after an update/i)).toBeTruthy()
     })
     expect(screen.getByRole('button', { name: 'Restart backend' })).toBeTruthy()
-    expect(screen.queryByText(/hermes:api/)).toBeNull()
+    expect(screen.queryByText(/clara:api/)).toBeNull()
     expect(screen.queryByText(/systemctl/)).toBeNull()
   })
 
   it('recycles the Desktop-owned backend and reloads the catalog', async () => {
     const recycleBackend = vi.fn().mockResolvedValue({ ok: true })
 
-    ;(window as unknown as { hermesDesktop: { recycleBackend: typeof recycleBackend } }).hermesDesktop = {
+    ;(window as unknown as { claraDesktop: { recycleBackend: typeof recycleBackend } }).claraDesktop = {
       recycleBackend
     }
 

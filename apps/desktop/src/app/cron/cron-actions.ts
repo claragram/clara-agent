@@ -1,4 +1,4 @@
-import { type CronJob, getApiRequestConnection, getCronJobs, triggerCronJob } from '@/hermes'
+import { type CronJob, getApiRequestConnection, getCronJobs, triggerCronJob } from '@/clara'
 import {
   beginCronJobsAction,
   beginCronJobsRequest,
@@ -82,7 +82,7 @@ export async function mutateAndRefreshCronJobs<T>(
 }
 
 /**
- * Trigger a job synchronously, then replace the local view from the backend.
+ * Trigger a job __PROT_0_synchroclaraly__, then replace the local view from the backend.
  * A completed one-shot may have been deleted, so the trigger response alone is
  * not an authoritative list update. Refresh failure is reported separately:
  * the trigger already succeeded and must not be shown as failed.

@@ -1,7 +1,7 @@
 """User-authorization methods for ``GatewayRunner``.
 
 Extracted from ``gateway/run.py`` as part of the god-file decomposition campaign
-(``~/.hermes/plans/god-file-decomposition.md``, Phase 3 mechanical mixin lifts).
+(``~/.clara/plans/god-file-decomposition.md``, Phase 3 mechanical mixin lifts).
 This mixin holds the inbound-message authorization cluster: whether a user/chat
 is allowed to talk to the agent, the per-adapter DM policy, and the
 unauthorized-DM behavior.
@@ -207,7 +207,7 @@ class GatewayAuthorizationMixin:
 
         Consult ``_profile_adapters`` *before* comparing against
         ``_active_profile_name()``. Multiplex turns wrap authz in
-        ``_profile_runtime_scope``, which overrides ``HERMES_HOME`` so
+        ``_profile_runtime_scope``, which overrides ``CLARA_HOME`` so
         ``get_active_profile_name()`` returns the secondary profile for the
         duration of the turn. Treating that scoped name as "primary" would
         look up ``self.adapters`` (empty for secondary-only platforms like
@@ -222,7 +222,7 @@ class GatewayAuthorizationMixin:
                 return profile_adapters[profile_name].get(platform)
             # Adapter ownership is process-wide: only the profile the gateway
             # was LAUNCHED as owns ``self.adapters``. ``_active_profile_name()``
-            # reads the per-turn HERMES_HOME override, so inside a secondary
+            # reads the per-turn CLARA_HOME override, so inside a secondary
             # profile's ``_profile_runtime_scope`` it reports that secondary
             # and would hand it the default bot. Compare against the identity
             # captured at construction instead.
@@ -443,7 +443,7 @@ class GatewayAuthorizationMixin:
 
         WeCom supports ``groups.<group_id>.allow_from`` on top of the top-level
         ``group_policy``. A group may be open at the chat level while still
-        restricting which senders inside that group can invoke Hermes. If such a
+        restricting which senders inside that group can invoke Clara. If such a
         message reached the gateway, the adapter already checked that sender
         allowlist, so it is a trustworthy intake decision rather than the
         fail-open ``group_policy: open`` case.
@@ -709,7 +709,7 @@ class GatewayAuthorizationMixin:
 
         # Check pairing store. A pairing entry is a first-class authorization
         # grant, created only by a trusted operator approving a pairing code
-        # (hermes gateway pairing approve / the authenticated dashboard) — an
+        # (clara gateway pairing approve / the authenticated dashboard) — an
         # inbound sender can never reach approve_code, so this is not an
         # attacker-controlled path. Honored as a UNION with the allowlist: a
         # paired user is authorized regardless of the allowlist, and when an
@@ -893,7 +893,7 @@ class GatewayAuthorizationMixin:
         # IDs at connect time (Discord's ``_resolve_allowed_usernames``) keep
         # the authoritative resolved set in adapter memory and mirror it into
         # the process env. The gateway's per-turn .env hot-reload
-        # (``load_hermes_dotenv(override=True)`` in
+        # (``load_clara_dotenv(override=True)`` in
         # ``_reload_runtime_env_preserving_config_authority``) restores the
         # RAW username strings from the .env file into the env, so from the
         # second agent turn onward ``platform_allowlist`` holds usernames

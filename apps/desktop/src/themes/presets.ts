@@ -2,20 +2,20 @@
  * Built-in desktop themes. Names match the CLI skins / dashboard presets.
  * Add new themes here — no code changes needed elsewhere.
  *
- * The palette-bearing skins (nous, catppuccin, everforest, solarized) are forks
+ * The palette-bearing skins (clara, catppuccin, everforest, solarized) are forks
  * of their VS Code originals, converted by `buildThemeFromMarketplace` (see
  * ./install.ts) from the extensions below — the same path a Marketplace import
  * takes, so each is identical to installing the extension by hand and costs the
  * user neither the download nor the install step.
  *
- *   nous       ← github.github-vscode-theme   (Light Default / Dark Default)
+ *   clara       ← github.github-vscode-theme   (Light Default / Dark Default)
  *   catppuccin ← Catppuccin.catppuccin-vsc    (Latte / Mocha)
  *   everforest ← sainnhe.everforest
  *   solarized  ← ryanolsonx.solarized
  *
  * Re-convert marketplace forks from the upstream extension rather than
  * hand-editing hexes; hand edits drift from upstream silently and can't be
- * re-derived. `nous-alt` is first-party — do not re-derive it from GitHub.
+ * re-derived. `clara-alt` is first-party — do not re-derive it from GitHub.
  */
 
 import type { DesktopTheme, DesktopThemeTypography } from './types'
@@ -35,22 +35,22 @@ const SYSTEM_MONO = 'Menlo, Monaco, "SF Mono", "Courier Prime", monospace, ' + E
 export const DEFAULT_TYPOGRAPHY: DesktopThemeTypography = { fontSans: SYSTEM_SANS, fontMono: SYSTEM_MONO }
 
 /**
- * Nous — the canonical Hermes desktop identity, forked from the GitHub VS Code
+ * Clara — the canonical Clara desktop identity, forked from the GitHub VS Code
  * theme (github.github-vscode-theme). Light is GitHub Light Default, dark is
  * GitHub Dark Default, both converted through the same path a Marketplace
  * install takes, so the palette here is byte-identical to importing the
  * extension yourself.
  *
- * Typography stays Hermes's own: a VS Code theme carries no font opinion, and
+ * Typography stays Clara's own: a VS Code theme carries no font opinion, and
  * these are the stacks every skin has been rendering with.
  */
 /**
  * GitHub — the upstream palette, unmodified.
  *
- * `nous` is a fork of this with its own accent, so shipping both keeps the
+ * `clara` is a fork of this with its own accent, so shipping both keeps the
  * original available on its own terms instead of only existing as the thing
- * nous diverged from. Everything but the accent family is identical between
- * them; separate presets are what let nous's accent move without silently
+ * clara diverged from. Everything but the accent family is identical between
+ * them; separate presets are what let clara's accent move without silently
  * redefining what "GitHub" means.
  */
 export const githubTheme: DesktopTheme = {
@@ -161,7 +161,7 @@ export const githubTheme: DesktopTheme = {
 /** Catppuccin — Latte in light, Mocha in dark (Catppuccin.catppuccin-vsc). */
 
 /**
- * Nous — the canonical Hermes desktop identity: GitHub's chrome carrying Nous
+ * Clara — the canonical Clara desktop identity: GitHub's chrome carrying Clara
  * blue. Forked from github.github-vscode-theme (Light Default / Dark Default),
  * with only the accent family re-seeded; every neutral is upstream's.
  *
@@ -171,10 +171,10 @@ export const githubTheme: DesktopTheme = {
  * surfaces below are mixed from those seeds in OKLab, which is what keeps a
  * saturated blue from drifting violet on its way to white.
  */
-export const nousTheme: DesktopTheme = {
-  name: 'nous',
-  label: 'Nous',
-  description: 'GitHub chrome, Nous blue accent',
+export const claraTheme: DesktopTheme = {
+  name: 'clara',
+  label: 'Clara',
+  description: 'GitHub chrome, Clara blue accent',
   colors: {
     background: '#ffffff',
     foreground: '#1f2328',
@@ -587,68 +587,68 @@ export const solarizedTheme: DesktopTheme = {
   }
 }
 
-const NOUS_ALT_BLUE = '#0053FD'
-const NOUS_ALT_NAVY = '#1540B1'
-const NOUS_ALT_CREAM = '#FFE6CB'
+const CLARA_ALT_BLUE = '#0053FD'
+const CLARA_ALT_NAVY = '#1540B1'
+const CLARA_ALT_CREAM = '#FFE6CB'
 
-const nousAltTint = (pct: number) => `color-mix(in srgb, ${NOUS_ALT_BLUE} ${pct}%, #FFFFFF)`
-const nousAltTintTransparent = (pct: number) => `color-mix(in srgb, ${NOUS_ALT_BLUE} ${pct}%, transparent)`
+const claraAltTint = (pct: number) => `color-mix(in srgb, ${CLARA_ALT_BLUE} ${pct}%, #FFFFFF)`
+const claraAltTintTransparent = (pct: number) => `color-mix(in srgb, ${CLARA_ALT_BLUE} ${pct}%, transparent)`
 
 /**
- * Nous Alt — the hand-authored Nous from before the GitHub fork. Light is
+ * Clara Alt — the hand-authored Clara from before the GitHub fork. Light is
  * glass neutrals with brand blue; dark is cream on mission-blue.
  */
-export const nousAltTheme: DesktopTheme = {
-  name: 'nous-alt',
-  label: 'Nous Alt',
+export const claraAltTheme: DesktopTheme = {
+  name: 'clara-alt',
+  label: 'Clara Alt',
   description: 'Glass neutrals, cream on mission-blue',
   colors: {
     background: '#F8FAFF',
     foreground: '#17171A',
     card: '#FFFFFF',
     cardForeground: '#17171A',
-    muted: nousAltTint(5),
+    muted: claraAltTint(5),
     mutedForeground: '#666678',
     popover: '#FFFFFF',
     popoverForeground: '#17171A',
-    primary: NOUS_ALT_BLUE,
+    primary: CLARA_ALT_BLUE,
     primaryForeground: '#FCFCFC',
-    secondary: nousAltTint(7),
+    secondary: claraAltTint(7),
     secondaryForeground: '#242432',
-    accent: nousAltTint(10),
+    accent: claraAltTint(10),
     accentForeground: '#202030',
-    border: nousAltTintTransparent(22),
-    input: nousAltTintTransparent(30),
-    ring: NOUS_ALT_BLUE,
-    midground: NOUS_ALT_BLUE,
-    composerRing: NOUS_ALT_BLUE,
+    border: claraAltTintTransparent(22),
+    input: claraAltTintTransparent(30),
+    ring: CLARA_ALT_BLUE,
+    midground: CLARA_ALT_BLUE,
+    composerRing: CLARA_ALT_BLUE,
     destructive: '#C72E4D',
     destructiveForeground: '#FFFFFF',
     sidebarBackground: '#F3F7FF',
-    sidebarBorder: nousAltTintTransparent(18),
-    userBubble: nousAltTint(6),
-    userBubbleBorder: nousAltTintTransparent(24)
+    sidebarBorder: claraAltTintTransparent(18),
+    userBubble: claraAltTint(6),
+    userBubbleBorder: claraAltTintTransparent(24)
   },
   darkColors: {
     background: '#0D2F86',
-    foreground: NOUS_ALT_CREAM,
+    foreground: CLARA_ALT_CREAM,
     card: '#12378F',
-    cardForeground: NOUS_ALT_CREAM,
+    cardForeground: CLARA_ALT_CREAM,
     muted: '#183F9A',
     mutedForeground: '#B5C7F3',
     popover: '#123A96',
-    popoverForeground: NOUS_ALT_CREAM,
-    primary: NOUS_ALT_CREAM,
+    popoverForeground: CLARA_ALT_CREAM,
+    primary: CLARA_ALT_CREAM,
     primaryForeground: '#0D2F86',
     secondary: '#1B45A4',
     secondaryForeground: '#E0E8FF',
-    accent: NOUS_ALT_NAVY,
+    accent: CLARA_ALT_NAVY,
     accentForeground: '#F0F4FF',
     border: '#3158AD',
     input: '#0B2566',
-    ring: NOUS_ALT_CREAM,
-    midground: NOUS_ALT_BLUE,
-    composerRing: NOUS_ALT_CREAM,
+    ring: CLARA_ALT_CREAM,
+    midground: CLARA_ALT_BLUE,
+    composerRing: CLARA_ALT_CREAM,
     destructive: '#C0473A',
     destructiveForeground: '#FEF2F2',
     sidebarBackground: '#09286F',
@@ -846,12 +846,12 @@ export const slateTheme: DesktopTheme = {
 }
 
 export const BUILTIN_THEMES: Record<string, DesktopTheme> = {
-  nous: nousTheme,
+  clara: claraTheme,
   github: githubTheme,
   catppuccin: catppuccinTheme,
   everforest: everforestTheme,
   solarized: solarizedTheme,
-  'nous-alt': nousAltTheme,
+  'clara-alt': claraAltTheme,
   midnight: midnightTheme,
   ember: emberTheme,
   mono: monoTheme,
@@ -862,4 +862,4 @@ export const BUILTIN_THEMES: Record<string, DesktopTheme> = {
 export const BUILTIN_THEME_LIST = Object.values(BUILTIN_THEMES)
 
 /** Skin used when nothing is persisted or the persisted name is retired. */
-export const DEFAULT_SKIN_NAME = 'nous'
+export const DEFAULT_SKIN_NAME = 'clara'

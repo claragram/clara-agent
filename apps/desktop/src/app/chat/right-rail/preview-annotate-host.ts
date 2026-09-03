@@ -47,7 +47,7 @@ const padRect = (rect: { height: number; width: number; x: number; y: number }) 
  * like a dead button.
  */
 export function overlayInstallScript(source: string): string {
-  return '(function(){var api=' + source + ';window.__hermesAnnotate=api;api.install();})()'
+  return '(function(){var api=' + source + ';window.__claraAnnotate=api;api.install();})()'
 }
 
 export async function installAnnotateOverlay(guest: PreviewAnnotateGuest): Promise<void> {
@@ -57,17 +57,17 @@ export async function installAnnotateOverlay(guest: PreviewAnnotateGuest): Promi
 export async function teardownAnnotateOverlay(guest: PreviewAnnotateGuest): Promise<void> {
   await guest.executeJavaScript(`
     (function () {
-      if (window.__hermesAnnotate && window.__hermesAnnotate.teardown) {
-        window.__hermesAnnotate.teardown();
+      if (window.__claraAnnotate && window.__claraAnnotate.teardown) {
+        window.__claraAnnotate.teardown();
       }
-      window.__hermesAnnotate = null;
+      window.__claraAnnotate = null;
     })()
   `)
 }
 
 export async function waitAnnotateEvent(guest: PreviewAnnotateGuest): Promise<AnnotatePageEvent> {
   const event = await guest.executeJavaScript(`
-    window.__hermesAnnotate ? window.__hermesAnnotate.wait() : Promise.resolve({ type: 'end' })
+    window.__claraAnnotate ? window.__claraAnnotate.wait() : Promise.resolve({ type: 'end' })
   `)
 
   return event as AnnotatePageEvent
@@ -75,7 +75,7 @@ export async function waitAnnotateEvent(guest: PreviewAnnotateGuest): Promise<An
 
 export async function syncAnnotatePins(guest: PreviewAnnotateGuest, pins: AnnotatePinChrome[]): Promise<void> {
   await guest.executeJavaScript(`
-    window.__hermesAnnotate && window.__hermesAnnotate.showPins(${JSON.stringify(pins)})
+    window.__claraAnnotate && window.__claraAnnotate.showPins(${JSON.stringify(pins)})
   `)
 }
 
@@ -85,13 +85,13 @@ export async function showAnnotateDraft(
   number: number
 ): Promise<void> {
   await guest.executeJavaScript(`
-    window.__hermesAnnotate && window.__hermesAnnotate.showDraft(${JSON.stringify(rect)}, ${number})
+    window.__claraAnnotate && window.__claraAnnotate.showDraft(${JSON.stringify(rect)}, ${number})
   `)
 }
 
 export async function hideAnnotateDraft(guest: PreviewAnnotateGuest): Promise<void> {
   await guest.executeJavaScript(`
-    window.__hermesAnnotate && window.__hermesAnnotate.hideDraft()
+    window.__claraAnnotate && window.__claraAnnotate.hideDraft()
   `)
 }
 

@@ -4,9 +4,9 @@ Gateway runtime status helpers.
 Provides PID-file based detection of whether the gateway daemon is running,
 used by send_message's check_fn to gate availability in the CLI.
 
-The PID file lives at ``{HERMES_HOME}/gateway.pid``.  HERMES_HOME defaults to
-``~/.hermes`` but can be overridden via the environment variable.  This means
-separate HERMES_HOME directories naturally get separate PID files — a property
+The PID file lives at ``{CLARA_HOME}/gateway.pid``.  CLARA_HOME defaults to
+``~/.clara`` but can be overridden via the environment variable.  This means
+separate CLARA_HOME directories naturally get separate PID files — a property
 that will be useful when we add named profiles (multiple agents running
 concurrently under distinct configurations).
 """
@@ -26,7 +26,7 @@ import time
 from datetime import datetime, timezone
 from dataclasses import dataclass
 from pathlib import Path
-from hermes_constants import get_hermes_home, _get_platform_default_hermes_home
+from clara_constants import get_clara_home, _get_platform_default_clara_home
 from typing import Any, Callable, NamedTuple, Optional
 from utils import atomic_json_write
 
@@ -35,7 +35,7 @@ if sys.platform == "win32":
 else:
     import fcntl
 
-_GATEWAY_KIND = "hermes-gateway"
+_GATEWAY_KIND = "clara-gateway"
 _RUNTIME_STATUS_FILE = "gateway_state.json"
 _LOCKS_DIRNAME = "gateway-locks"
 _IS_WINDOWS = sys.platform == "win32"
@@ -66,7 +66,7 @@ def _get_starts_log_path() -> Path:
     """Path to the append-only gateway-start ledger used by the respawn-storm
     breaker. Distinct from ``restart_loop.json`` (the auto-resume guard) — no
     collision."""
-    return get_hermes_home() / "gateway-starts.log"
+    return get_clara_home() / "gateway-starts.log"
 
 
 def record_start_and_check_storm(
@@ -129,31 +129,31 @@ def record_start_and_check_storm(
         return None
 
 
-def _get_process_hermes_home() -> Path:
-    """Return the process-level HERMES_HOME, skipping context-local overrides.
+def _get_process_clara_home() -> Path:
+    """Return the process-level CLARA_HOME, skipping context-local overrides.
 
     Gateway identity files (PID, lock, runtime status, takeover/stop markers)
     must always live in the directory the gateway process was launched with.
-    ``get_hermes_home()`` honors ``_HERMES_HOME_OVERRIDE`` contextvar used for
+    ``get_clara_home()`` honors ``_CLARA_HOME_OVERRIDE`` contextvar used for
     per-session profile dispatch, which would route these files into the wrong
     profile directory when a profile-context task happens to be active at write
     time.  See issue #56986.
     """
-    val = os.environ.get("HERMES_HOME", "").strip()
+    val = os.environ.get("CLARA_HOME", "").strip()
     if val:
         return Path(val)
-    return _get_platform_default_hermes_home()
+    return _get_platform_default_clara_home()
 
 
-def _canonical_hermes_home(path: Path | str) -> Path:
-    """Return a stable absolute HERMES_HOME path for persisted identity data."""
+def _canonical_clara_home(path: Path | str) -> Path:
+    """Return a stable absolute CLARA_HOME path for persisted identity data."""
     return Path(path).expanduser().resolve(strict=False)
 
 
-def _same_hermes_home(left: Path | str, right: Path | str) -> bool:
-    """Compare HERMES_HOME paths with the host platform's case semantics."""
-    return os.path.normcase(str(_canonical_hermes_home(left))) == os.path.normcase(
-        str(_canonical_hermes_home(right))
+def _same_clara_home(left: Path | str, right: Path | str) -> bool:
+    """Compare CLARA_HOME paths with the host platform's case semantics."""
+    return os.path.normcase(str(_canonical_clara_home(left))) == os.path.normcase(
+        str(_canonical_clara_home(right))
     )
 
 
@@ -162,11 +162,11 @@ def recorded_gateway_home_conflicts(
     *,
     expected_home: Optional[Path | str] = None,
 ) -> bool:
-    """True when a persisted gateway record names a DIFFERENT HERMES_HOME.
+    """True when a persisted gateway record names a DIFFERENT CLARA_HOME.
 
     Cross-profile kill refusal (#89315): a poisoned/contaminated PID record
     inside one profile's home can truthfully name ANOTHER profile's live
-    gateway (its ``hermes_home`` stamp records the real owner). Any
+    gateway (its ``clara_home`` stamp records the real owner). Any
     destructive caller about to signal the recorded PID must consult this
     first and refuse when the record positively proves the target belongs to
     a different profile — otherwise ``gateway stop``/``restart``/``profile
@@ -175,51 +175,51 @@ def recorded_gateway_home_conflicts(
 
     ``expected_home`` overrides the comparison base (e.g. ``profile delete``
     stopping a TARGET profile's gateway rather than the current process's).
-    Legacy records without a ``hermes_home`` stamp return False — they prove
+    Legacy records without a ``clara_home`` stamp return False — they prove
     nothing either way, and destructive callers already pair this with the
     exact PID + start-time identity guards. A comparison failure returns True
     (destructive action + unprovable ownership ⇒ fail closed).
     """
     if not isinstance(record, dict):
         return False
-    recorded_home = record.get("hermes_home")
+    recorded_home = record.get("clara_home")
     if not isinstance(recorded_home, str) or not recorded_home.strip():
         return False
     try:
-        base = expected_home if expected_home is not None else _get_process_hermes_home()
-        return not _same_hermes_home(recorded_home, base)
+        base = expected_home if expected_home is not None else _get_process_clara_home()
+        return not _same_clara_home(recorded_home, base)
     except Exception:
         return True
 
 
-# Mirrors hermes_cli.profiles._PROFILE_ID_RE — duplicated here because gateway
-# identity code must stay import-light (hermes_constants + stdlib only).
+# Mirrors clara_cli.profiles._PROFILE_ID_RE — duplicated here because gateway
+# identity code must stay import-light (clara_constants + stdlib only).
 _PROFILE_LABEL_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
 
 
 def _profile_label_for_home(home: Path | str) -> Optional[str]:
-    """Best-effort profile label for a HERMES_HOME path.
+    """Best-effort profile label for a CLARA_HOME path.
 
     Returns the profile name for ``<root>/profiles/<name>`` layouts (both
-    ``~/.hermes/profiles/coder`` and Docker ``/opt/data/profiles/coder``),
+    ``~/.clara/profiles/coder`` and Docker ``/opt/data/profiles/coder``),
     ``"default"`` for the deployment's root home, and ``None`` when no label
     can be inferred.  Never raises — this feeds diagnostics only.
     """
     try:
-        canonical = _canonical_hermes_home(home)
+        canonical = _canonical_clara_home(home)
     except Exception:
         return None
     if canonical.parent.name == "profiles" and _PROFILE_LABEL_RE.match(canonical.name):
         return canonical.name
     try:
-        from hermes_constants import get_default_hermes_root
+        from clara_constants import get_default_clara_root
 
-        if _same_hermes_home(canonical, get_default_hermes_root()):
+        if _same_clara_home(canonical, get_default_clara_root()):
             return "default"
     except Exception:
         pass
     try:
-        if _same_hermes_home(canonical, _get_platform_default_hermes_home()):
+        if _same_clara_home(canonical, _get_platform_default_clara_home()):
             return "default"
     except Exception:
         pass
@@ -230,9 +230,9 @@ def scoped_lock_owner_label(record: Optional[dict[str, Any]]) -> Optional[str]:
     """Profile label for the gateway that owns a scoped credential lock.
 
     Scoped locks are machine-global, so the holder may belong to a different
-    HERMES_HOME profile than the caller.  Prefers the explicit ``profile``
+    CLARA_HOME profile than the caller.  Prefers the explicit ``profile``
     field stamped by :func:`acquire_scoped_lock`; falls back to inferring the
-    label from the persisted ``hermes_home`` for locks written before the
+    label from the persisted ``clara_home`` for locks written before the
     profile field existed.  Returns ``None`` for legacy or malformed records
     so callers keep their PID-only wording.
     """
@@ -243,15 +243,15 @@ def scoped_lock_owner_label(record: Optional[dict[str, Any]]) -> Optional[str]:
         # Validate the persisted label — lock files are plain JSON on disk,
         # and this string flows into log lines and a suggested CLI command.
         return profile.strip()
-    home = record.get("hermes_home")
+    home = record.get("clara_home")
     if isinstance(home, str) and home.strip():
         return _profile_label_for_home(home)
     return None
 
 
 def _get_pid_path() -> Path:
-    """Return the path to the gateway PID file, respecting HERMES_HOME."""
-    home = _get_process_hermes_home()
+    """Return the path to the gateway PID file, respecting CLARA_HOME."""
+    home = _get_process_clara_home()
     return home / "gateway.pid"
 
 
@@ -259,7 +259,7 @@ def _get_gateway_lock_path(pid_path: Optional[Path] = None) -> Path:
     """Return the path to the runtime gateway lock file."""
     if pid_path is not None:
         return pid_path.with_name(_GATEWAY_LOCK_FILENAME)
-    home = _get_process_hermes_home()
+    home = _get_process_clara_home()
     return home / _GATEWAY_LOCK_FILENAME
 
 
@@ -270,18 +270,18 @@ def _get_runtime_status_path() -> Path:
 
 def _get_lock_dir() -> Path:
     """Return the machine-local directory for token-scoped gateway locks."""
-    override = os.getenv("HERMES_GATEWAY_LOCK_DIR")
+    override = os.getenv("CLARA_GATEWAY_LOCK_DIR")
     if override:
         return Path(override)
     state_home = Path(os.getenv("XDG_STATE_HOME", Path.home() / ".local" / "state"))
-    return state_home / "hermes" / _LOCKS_DIRNAME
+    return state_home / "clara" / _LOCKS_DIRNAME
 
 
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-# Reject epoch values before 2000-01-01T00:00:00Z: nothing in Hermes' lifetime
+# Reject epoch values before 2000-01-01T00:00:00Z: nothing in Clara' lifetime
 # legitimately produced a gateway heartbeat last century, so anything older is
 # a corrupt or hand-edited state file (e.g. an accidental 0 / tiny int).
 _EPOCH_MIN_PLAUSIBLE = 946684800.0  # 2000-01-01T00:00:00Z
@@ -384,7 +384,7 @@ def terminate_pid(
         # CREATE_NO_WINDOW: terminate_pid runs from the windowless pythonw.exe
         # gateway/desktop backend, so a bare taskkill spawn would flash a
         # conhost window on every force-kill.
-        from hermes_cli._subprocess_compat import windows_hide_flags
+        from clara_cli._subprocess_compat import windows_hide_flags
 
         try:
             result = subprocess.run(
@@ -498,11 +498,11 @@ def _read_process_cmdline(pid: int) -> Optional[str]:
 
 
 def _gateway_command_subcommand(command: str | None) -> str | None:
-    """Return the Hermes gateway lifecycle subcommand from a command line.
+    """Return the Clara gateway lifecycle subcommand from a command line.
 
     Lifecycle decisions (is the gateway up? did restart relaunch it?) must not
     fire on loose substring matches.  The previous ``"... gateway" in cmdline``
-    test also matched ``hermes_cli.main gateway status`` and even unrelated
+    test also matched ``clara_cli.main gateway status`` and even unrelated
     processes like ``python -m tui_gateway`` -- which made ``restart()`` race
     against a still-draining old process and ``status``/``start`` report false
     positives.  This requires the actual ``gateway`` subcommand followed by
@@ -511,8 +511,8 @@ def _gateway_command_subcommand(command: str | None) -> str | None:
     word "gateway".
 
     Tokenizes quote-aware (``shlex``) so quoted Windows paths with spaces
-    (``"C:\\Program Files\\...\\hermes-gateway.exe"``) survive, and strips
-    ``--profile``/``-p`` selectors from anywhere in argv -- Hermes's
+    (``"C:\\Program Files\\...\\clara-gateway.exe"``) survive, and strips
+    ``--profile``/``-p`` selectors from anywhere in argv -- Clara's
     ``_apply_profile_override`` removes them before argparse, so the profile
     flag (and a profile literally named ``gateway``) can legally appear on
     either side of the ``gateway`` subcommand.
@@ -534,14 +534,14 @@ def _gateway_command_subcommand(command: str | None) -> str | None:
         if token == "gateway/run.py" or token.endswith("/gateway/run.py"):
             return "run"
         basename = token.rsplit("/", 1)[-1]
-        if basename in ("hermes-gateway", "hermes-gateway.exe"):
+        if basename in ("clara-gateway", "clara-gateway.exe"):
             return "run"
 
     joined = " ".join(tokens)
     has_gateway_entry = (
-        "hermes_cli.main" in joined
-        or "hermes_cli/main.py" in joined
-        or any(t.rsplit("/", 1)[-1] in ("hermes", "hermes.exe") for t in tokens)
+        "clara_cli.main" in joined
+        or "clara_cli/main.py" in joined
+        or any(t.rsplit("/", 1)[-1] in ("clara", "clara.exe") for t in tokens)
     )
     if not has_gateway_entry:
         return None
@@ -566,7 +566,7 @@ def _gateway_command_subcommand(command: str | None) -> str | None:
         if token != "gateway":
             continue
         if i + 1 >= len(filtered):
-            return "run"  # bare `hermes gateway` defaults to `run`
+            return "run"  # bare `clara gateway` defaults to `run`
         return filtered[i + 1]
     return None
 
@@ -584,14 +584,14 @@ def looks_like_gateway_runtime_command_line(command: str | None) -> bool:
     fallback executes ``run_gateway()`` in that same process, so its argv stays
     as ``gateway restart`` while it owns the webhook port and writes runtime
     state. Keep the public ``looks_like_gateway_command_line()`` strict, and
-    use this broader matcher only when validating Hermes-owned runtime records
+    use this broader matcher only when validating Clara-owned runtime records
     or no-supervisor cleanup scans.
     """
     return _gateway_command_subcommand(command) in {"run", "restart"}
 
 
 def _looks_like_gateway_process(pid: int) -> bool:
-    """Return True when the live PID still looks like the Hermes gateway."""
+    """Return True when the live PID still looks like the Clara gateway."""
     cmdline = _read_process_cmdline(pid)
     if not cmdline:
         return False
@@ -612,10 +612,10 @@ def _record_looks_like_gateway(record: dict[str, Any]) -> bool:
 
 
 def _profile_name_for_home(profile_home: Path) -> Optional[str]:
-    """Return the profile id a HERMES_HOME directory represents, or None.
+    """Return the profile id a CLARA_HOME directory represents, or None.
 
     A named profile's home is ``<root>/profiles/<name>`` (immediate parent is
-    ``profiles``).  The root/default home (``~/.hermes`` or ``$HERMES_HOME``)
+    ``profiles``).  The root/default home (``~/.clara`` or ``$CLARA_HOME``)
     has no such parent, so it maps to the default profile (``None`` here, which
     callers treat as "the bare, flag-less gateway").
     """
@@ -627,18 +627,18 @@ def _profile_name_for_home(profile_home: Path) -> Optional[str]:
 def _command_line_belongs_to_profile(command: str, profile_home: Path) -> bool:
     """Return True when a gateway command line belongs to ``profile_home``.
 
-    Mirrors ``hermes_cli.gateway._matches_current_profile`` so the dashboard's
+    Mirrors ``clara_cli.gateway._matches_current_profile`` so the dashboard's
     cross-profile liveness fallback scopes a live PID to the *right* profile.
     In a per-profile container, one profile's stale ``gateway_state.json`` can
     record a PID that the OS has since recycled onto a DIFFERENT profile's live
     gateway.  That recycled PID's command line still ``looks_like_gateway`` —
     so without a profile check the dead profile is reported running.  A named
     profile gateway carries ``-p <name>``/``--profile <name>`` (or, rarely, an
-    explicit ``HERMES_HOME=<path>``) on its argv; the default/root gateway runs
+    explicit ``CLARA_HOME=<path>``) on its argv; the default/root gateway runs
     bare with no profile flag.
     """
     # Normalize separators before the substring match: on Windows,
-    # str(Path) renders backslashes while a HERMES_HOME= value on the argv
+    # str(Path) renders backslashes while a CLARA_HOME= value on the argv
     # may carry forward slashes (Git Bash, JSON configs) — and vice versa.
     command_lc = command.lower().replace("\\", "/")
     profile_name = _profile_name_for_home(profile_home)
@@ -649,17 +649,17 @@ def _command_line_belongs_to_profile(command: str, profile_home: Path) -> bool:
         return (
             f"--profile {profile_lc}" in command_lc
             or f"-p {profile_lc}" in command_lc
-            or f"hermes_home={home_lc}" in command_lc
+            or f"clara_home={home_lc}" in command_lc
         )
 
     # Default/root profile: the gateway runs with no profile flag. Accept unless
     # the command advertises *some other* profile (an explicit -p/--profile) or
-    # a non-matching explicit HERMES_HOME= on the argv. HERMES_HOME is usually
+    # a non-matching explicit CLARA_HOME= on the argv. CLARA_HOME is usually
     # passed via the environment (not visible on the command line), so its mere
     # absence is not disqualifying — only a conflicting explicit value is.
     if "--profile " in command_lc or " -p " in command_lc:
         return False
-    if "hermes_home=" in command_lc and f"hermes_home={home_lc}" not in command_lc:
+    if "clara_home=" in command_lc and f"clara_home={home_lc}" not in command_lc:
         return False
     return True
 
@@ -703,10 +703,10 @@ def _build_pid_record() -> dict:
         "argv": list(sys.argv),
         "start_time": _get_process_start_time(os.getpid()),
         # Scoped credential locks are machine-global rather than
-        # HERMES_HOME-local.  Persist the owning gateway's process home so an
+        # CLARA_HOME-local.  Persist the owning gateway's process home so an
         # explicit cross-profile --replace can place its planned-takeover
         # marker where the target process will actually read it.
-        "hermes_home": str(_canonical_hermes_home(_get_process_hermes_home())),
+        "clara_home": str(_canonical_clara_home(_get_process_clara_home())),
     }
 
 
@@ -714,15 +714,15 @@ def _get_code_identity_fields() -> dict[str, Any]:
     """Code identity of THIS gateway process, for fleet version checks.
 
     Lazy import so ``gateway.status`` keeps no import-time dependency on
-    ``hermes_cli``; the helper itself is cached per process. A gateway
+    ``clara_cli``; the helper itself is cached per process. A gateway
     keeps serving the module versions it imported at startup, so stamping
-    the identity into ``gateway_state.json`` lets `hermes update` (and the
+    the identity into ``gateway_state.json`` lets `clara update` (and the
     dashboard) prove whether a running gateway actually picked up new code
     after the restart phase — instead of assuming it did (#88654, #69754).
     Never raises; degrades to absent fields.
     """
     try:
-        from hermes_cli.build_info import get_code_identity
+        from clara_cli.build_info import get_code_identity
 
         identity = get_code_identity()
         return {
@@ -736,25 +736,25 @@ def _get_code_identity_fields() -> dict[str, Any]:
 def _pid_record_belongs_to_current_profile(
     record: Optional[dict[str, Any]],
 ) -> bool:
-    """Return True when the PID record's ``hermes_home`` matches the current process.
+    """Return True when the PID record's ``clara_home`` matches the current process.
 
     PID records written by ``_build_pid_record()`` include the gateway's
-    ``hermes_home`` at write time. If a profile gateway was started (or recorded)
-    under a different HERMES_HOME, the record belongs to a different profile
+    ``clara_home`` at write time. If a profile gateway was started (or recorded)
+    under a different CLARA_HOME, the record belongs to a different profile
     and must be ignored — otherwise the default-profile gateway can mistakenly
     assume the identity of another profile (issue #74872).
 
-    Records that predate the ``hermes_home`` field (pre-#74872 gateways) are
+    Records that predate the ``clara_home`` field (pre-#74872 gateways) are
     accepted conservatively (no field → assume current profile).
     """
     if not isinstance(record, dict):
         return False
-    record_home = record.get("hermes_home")
+    record_home = record.get("clara_home")
     if not record_home:
-        # Records without hermes_home belong to a pre-#74872 gateway;
+        # Records without clara_home belong to a pre-#74872 gateway;
         # accept them conservatively.
         return True
-    return _same_hermes_home(record_home, _get_process_hermes_home())
+    return _same_clara_home(record_home, _get_process_clara_home())
 
 
 def _build_runtime_status_record() -> dict[str, Any]:
@@ -1258,7 +1258,7 @@ def write_runtime_status(
         payload["active_agents"] = parse_active_agents(active_agents)
     if served_profiles is not _UNSET:
         # Profiles this gateway multiplexes (multi-profile mode). Absent/empty
-        # for a single-profile gateway. Lets `hermes status` show per-profile
+        # for a single-profile gateway. Lets `clara status` show per-profile
         # coverage without a second probe.
         payload["served_profiles"] = list(served_profiles or [])
     if session_store is not _UNSET:
@@ -1315,7 +1315,7 @@ def read_runtime_status(path: Optional[Path] = None) -> Optional[dict[str, Any]]
 
     ``path`` is optional so callers that need to inspect a *different*
     profile's state file (e.g. the dashboard enumerating every profile)
-    can do so without mutating ``HERMES_HOME`` in-process.  Defaults to
+    can do so without mutating ``CLARA_HOME`` in-process.  Defaults to
     the active profile's ``gateway_state.json``.
     """
     return _read_json_file(path or _get_runtime_status_path())
@@ -1487,7 +1487,7 @@ def resolve_gateway_liveness(
 
     ``pid_probe`` / ``runtime_reader`` / ``runtime_pid_probe`` let a caller
     inject its own module-level references to these helpers.  The dashboard
-    passes its ``hermes_cli.web_server`` bindings so the long-standing
+    passes its ``clara_cli.web_server`` bindings so the long-standing
     monkeypatch seam in the test-suite keeps working; production callers
     leave them ``None`` and get this module's implementations.
     """
@@ -1580,7 +1580,7 @@ def get_runtime_status_running_pid(
     OS process identity.
 
     ``expected_home`` scopes the OS-identity check to a specific profile's
-    HERMES_HOME.  Pass it when validating *another* profile's state file (the
+    CLARA_HOME.  Pass it when validating *another* profile's state file (the
     dashboard enumerating every profile): a stale record whose PID the OS has
     recycled onto a different profile's live gateway must not be reported
     running for the dead profile.  Omit it (the default) for the active
@@ -1606,7 +1606,7 @@ def get_runtime_status_running_pid(
         return None
 
     # When no explicit expected_home is given (active profile context),
-    # verify the persisted record's hermes_home matches the current process.
+    # verify the persisted record's clara_home matches the current process.
     # This prevents the default-profile gateway from assuming another
     # profile's identity via a stale runtime status record (#74872).
     if expected_home is None and not _pid_record_belongs_to_current_profile(payload):
@@ -1646,7 +1646,7 @@ def acquire_scoped_lock(scope: str, identity: str, metadata: Optional[dict[str, 
     """Acquire a machine-local lock keyed by scope + identity.
 
     Used to prevent multiple local gateways from using the same external identity
-    at once (e.g. the same Telegram bot token across different HERMES_HOME dirs).
+    at once (e.g. the same Telegram bot token across different CLARA_HOME dirs).
     """
     lock_path = _get_scope_lock_path(scope, identity)
     lock_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1662,8 +1662,8 @@ def acquire_scoped_lock(scope: str, identity: str, metadata: Optional[dict[str, 
     # operator no way to tell WHICH profile owns the credential.  Stamped
     # only on scoped-lock records (they're machine-global; PID/runtime
     # status files are per-home and don't need it).  Omitted when no label
-    # is inferable; readers fall back to deriving it from hermes_home.
-    profile = _profile_label_for_home(_get_process_hermes_home())
+    # is inferable; readers fall back to deriving it from clara_home.
+    profile = _profile_label_for_home(_get_process_clara_home())
     if profile:
         record["profile"] = profile
 
@@ -1866,7 +1866,7 @@ def release_all_scoped_locks(
 # unexpected kills — but that also means a --replace takeover target
 # exits 1, which tricks systemd into reviving it 30 seconds later,
 # starting a flap loop against the replacer when both services are
-# enabled in the user's systemd (e.g. ``hermes.service`` + ``hermes-
+# enabled in the user's systemd (e.g. ``clara.service`` + ``clara-
 # gateway.service``).
 #
 # The takeover marker breaks the loop: the replacer writes a short-lived
@@ -1883,19 +1883,19 @@ _PLANNED_STOP_MARKER_FILENAME = ".gateway-planned-stop.json"
 _PLANNED_STOP_MARKER_TTL_S = 60
 
 
-def _get_takeover_marker_path(hermes_home: Optional[Path] = None) -> Path:
+def _get_takeover_marker_path(clara_home: Optional[Path] = None) -> Path:
     """Return the path to the --replace takeover marker file.
 
-    ``hermes_home`` is supplied only for a verified cross-home handoff.  The
+    ``clara_home`` is supplied only for a verified cross-home handoff.  The
     target process always consumes the marker from its own process-level home.
     """
-    home = hermes_home or _get_process_hermes_home()
-    return _canonical_hermes_home(home) / _TAKEOVER_MARKER_FILENAME
+    home = clara_home or _get_process_clara_home()
+    return _canonical_clara_home(home) / _TAKEOVER_MARKER_FILENAME
 
 
 def _get_planned_stop_marker_path() -> Path:
     """Return the path to the intentional gateway stop marker file."""
-    home = _get_process_hermes_home()
+    home = _get_process_clara_home()
     return home / _PLANNED_STOP_MARKER_FILENAME
 
 
@@ -1938,20 +1938,20 @@ def _consume_pid_marker_for_self(
         return False
 
     # Cross-profile guard (#29092): new markers explicitly name the verified
-    # TARGET home.  That permits a deliberate cross-HERMES_HOME --replace while
+    # TARGET home.  That permits a deliberate cross-CLARA_HOME --replace while
     # ensuring a marker accidentally written into another profile's directory
     # is ignored.  Legacy markers have no target field, so retain the original
     # same-replacer-home rule for backwards compatibility.
-    our_home = _get_process_hermes_home()
-    target_home = record.get("target_hermes_home")
+    our_home = _get_process_clara_home()
+    target_home = record.get("target_clara_home")
     if target_home is not None:
-        if not isinstance(target_home, str) or not _same_hermes_home(
+        if not isinstance(target_home, str) or not _same_clara_home(
             target_home, our_home
         ):
             return False
     else:
-        replacer_home = record.get("replacer_hermes_home")
-        if replacer_home is not None and not _same_hermes_home(
+        replacer_home = record.get("replacer_clara_home")
+        if replacer_home is not None and not _same_clara_home(
             replacer_home, our_home
         ):
             return False
@@ -1963,7 +1963,7 @@ def _consume_pid_marker_for_self(
     # platforms without ``/proc`` (macOS, native Windows — the very
     # platform the planned-stop watcher exists for). Requiring a non-None
     # match there would make every consume return False, so a legitimate
-    # ``hermes gateway stop`` on Windows would be misclassified as an
+    # ``clara gateway stop`` on Windows would be misclassified as an
     # unexpected ``UNKNOWN`` exit (exit 1) and revived by the service
     # manager. So: when both start_times are known they must match; when
     # either is unknown, fall back to PID equality alone (bounded by the
@@ -1999,7 +1999,7 @@ def write_takeover_marker(
 
     A verified scoped-lock handoff supplies ``target_home`` and the already
     validated ``target_start_time`` so the marker is written into the target
-    gateway's HERMES_HOME rather than the replacer's.  Same-home callers omit
+    gateway's CLARA_HOME rather than the replacer's.  Same-home callers omit
     both arguments and preserve the historical behavior.
 
     Returns True on successful write, False on any failure. Historical
@@ -2008,18 +2008,18 @@ def write_takeover_marker(
     without recognizing the handoff.
     """
     try:
-        marker_home = _canonical_hermes_home(
-            target_home or _get_process_hermes_home()
+        marker_home = _canonical_clara_home(
+            target_home or _get_process_clara_home()
         )
         if target_start_time is _UNSET:
             target_start_time = _get_process_start_time(target_pid)
         record = {
             "target_pid": target_pid,
             "target_start_time": target_start_time,
-            "target_hermes_home": str(marker_home),
+            "target_clara_home": str(marker_home),
             "replacer_pid": os.getpid(),
-            "replacer_hermes_home": str(
-                _canonical_hermes_home(_get_process_hermes_home())
+            "replacer_clara_home": str(
+                _canonical_clara_home(_get_process_clara_home())
             ),
             "written_at": _utc_now_iso(),
         }
@@ -2063,7 +2063,7 @@ def _validated_scoped_lock_gateway_owner(
 
     A machine-global scoped-lock file is only a claim; it is not sufficient
     authority to terminate a process or choose a marker destination.  Require
-    the lock record, the target HERMES_HOME's gateway PID record, and the live
+    the lock record, the target CLARA_HOME's gateway PID record, and the live
     OS process to agree on PID, start-time fingerprint, gateway identity, and
     process home.  Missing legacy metadata fails closed and leaves the normal
     retryable lock-conflict path in charge.
@@ -2082,12 +2082,12 @@ def _validated_scoped_lock_gateway_owner(
     if not isinstance(owner_start_time, int) or isinstance(owner_start_time, bool):
         return None
 
-    raw_home = record.get("hermes_home")
+    raw_home = record.get("clara_home")
     if not isinstance(raw_home, str) or not raw_home.strip():
         return None
     if not Path(raw_home).expanduser().is_absolute():
         return None
-    target_home = _canonical_hermes_home(raw_home)
+    target_home = _canonical_clara_home(raw_home)
 
     if not _pid_exists(owner_pid):
         return None
@@ -2111,8 +2111,8 @@ def _validated_scoped_lock_gateway_owner(
     if pid_record_pid != owner_pid or pid_record.get("start_time") != owner_start_time:
         return None
 
-    pid_record_home = pid_record.get("hermes_home")
-    if not isinstance(pid_record_home, str) or not _same_hermes_home(
+    pid_record_home = pid_record.get("clara_home")
+    if not isinstance(pid_record_home, str) or not _same_clara_home(
         pid_record_home, target_home
     ):
         return None

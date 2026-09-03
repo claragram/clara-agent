@@ -53,7 +53,7 @@ def test_result_auth_reasons_map_to_auth_layer():
 
 def test_result_billing_block_wins():
     surface = build_error_surface_from_result(
-        _failed_result("rate_limit", billing_block={"provider": "nous"})
+        _failed_result("rate_limit", billing_block={"provider": "clara"})
     )
     assert surface["layer"] == LAYER_BILLING
     assert surface["retryable"] is False

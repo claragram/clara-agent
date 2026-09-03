@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { getGlobalModelOptions } from '@/hermes'
+import { getGlobalModelOptions } from '@/clara'
 
 import {
   firstSelectableCatalogModel,
@@ -12,9 +12,9 @@ import {
   selectionInCatalog
 } from './model-options'
 
-const globalOptions = { model: 'hermes-4', provider: 'nous', providers: [] }
+const globalOptions = { model: 'clara-4', provider: 'clara', providers: [] }
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/clara', () => ({
   getGlobalModelOptions: vi.fn(() => Promise.resolve(globalOptions))
 }))
 
@@ -41,12 +41,12 @@ describe('requestModelOptions', () => {
   })
 
   it('recovers an empty gateway catalog through profile-scoped REST without replacing the session selection', async () => {
-    const gatewayPayload = { model: 'hermes-local', provider: 'hermes-local' }
+    const gatewayPayload = { model: 'clara-local', provider: 'clara-local' }
 
     const restPayload = {
       model: 'profile-default',
       provider: 'openai-codex',
-      providers: [{ models: ['hermes-local'], name: 'Hermes Local vLLM', slug: 'hermes-local' }]
+      providers: [{ models: ['clara-local'], name: 'Clara Local vLLM', slug: 'clara-local' }]
     }
 
     const gateway = {
@@ -57,8 +57,8 @@ describe('requestModelOptions', () => {
 
     await expect(requestModelOptions({ gateway: gateway as never, sessionId: 'session-1' })).resolves.toEqual({
       ...restPayload,
-      model: 'hermes-local',
-      provider: 'hermes-local'
+      model: 'clara-local',
+      provider: 'clara-local'
     })
 
     expect(getGlobalModelOptions).toHaveBeenCalledWith({ explicitOnly: true })
@@ -66,9 +66,9 @@ describe('requestModelOptions', () => {
 
   it('recovers through profile-scoped REST when the gateway catalog request fails', async () => {
     const restPayload = {
-      model: 'hermes-local',
-      provider: 'hermes-local',
-      providers: [{ models: ['hermes-local'], name: 'Hermes Local vLLM', slug: 'hermes-local' }]
+      model: 'clara-local',
+      provider: 'clara-local',
+      providers: [{ models: ['clara-local'], name: 'Clara Local vLLM', slug: 'clara-local' }]
     }
 
     const gateway = {
@@ -96,7 +96,7 @@ describe('requestModelOptions', () => {
   })
 
   it('keeps the gateway result when both catalog paths have no selectable models', async () => {
-    const gatewayPayload = { model: 'hermes-local', provider: 'hermes-local', providers: [] }
+    const gatewayPayload = { model: 'clara-local', provider: 'clara-local', providers: [] }
 
     const gateway = {
       request: vi.fn(() => Promise.resolve(gatewayPayload))
@@ -142,8 +142,8 @@ describe('requestModelOptions', () => {
   it('prefers an owner-routed request over the ambient gateway socket', async () => {
     const gatewayPayload = {
       model: 'chrome-model',
-      provider: 'nous',
-      providers: [{ models: ['chrome-model'], name: 'Nous', slug: 'nous' }]
+      provider: 'clara',
+      providers: [{ models: ['chrome-model'], name: 'Clara', slug: 'clara' }]
     }
 
     const routedPayload = {
@@ -178,7 +178,7 @@ describe('requestModelOptions', () => {
   })
 
   it('keeps an empty owner-routed catalog instead of replacing it from ambient REST', async () => {
-    const ownerPayload = { model: 'berry-local', provider: 'hermes-local', providers: [] }
+    const ownerPayload = { model: 'berry-local', provider: 'clara-local', providers: [] }
 
     const request = vi.fn(() => Promise.resolve(ownerPayload)) as unknown as <T>(
       method: string,
@@ -218,7 +218,7 @@ describe('modelOptionsQueryKey', () => {
 describe('manualPickRemoved', () => {
   const providers = [
     { name: 'OpenRouter', slug: 'openrouter', models: ['owl-alpha', 'gpt-5.5'] },
-    { name: 'Nous', slug: 'nous', models: [] } // present but unconfigured / re-auth
+    { name: 'Clara', slug: 'clara', models: [] } // present but unconfigured / re-auth
   ]
 
   it('flags a pick whose model was dropped from a populated provider', () => {
@@ -239,7 +239,7 @@ describe('manualPickRemoved', () => {
   })
 
   it('never clobbers when the provider has an empty model list (re-auth)', () => {
-    expect(manualPickRemoved(providers, 'nous', 'hermes-4')).toBe(false)
+    expect(manualPickRemoved(providers, 'clara', 'clara-4')).toBe(false)
   })
 
   it('never clobbers on a not-yet-loaded or empty catalog', () => {

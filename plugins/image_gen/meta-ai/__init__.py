@@ -5,10 +5,10 @@ The Meta Model API (https://api.meta.ai/v1) is OpenAI-compatible, so we reuse
 the OpenAI Python SDK pointed at Meta's base URL and authenticate with
 ``META_MODEL_API_KEY``.
 
-Output is base64 JSON (WebP) -> saved under ``$HERMES_HOME/cache/images/``.
+Output is base64 JSON (WebP) -> saved under ``$CLARA_HOME/cache/images/``.
 
 Selection precedence (first hit wins):
-  1. ``model`` kwarg forwarded by the dispatcher (the ``hermes tools`` pick)
+  1. ``model`` kwarg forwarded by the dispatcher (the ``clara tools`` pick)
   2. ``META_IMAGE_MODEL`` env var (escape hatch for scripts / tests)
   3. ``image_gen.meta-ai.model`` in ``config.yaml``
   4. ``image_gen.model`` in ``config.yaml`` (when it's one of our IDs)
@@ -62,7 +62,7 @@ def _resolve_base_url() -> str:
 # ---------------------------------------------------------------------------
 # Model catalog
 # ---------------------------------------------------------------------------
-# Catalog shown in `hermes tools` and matched against `image_gen.model`.
+# Catalog shown in `clara tools` and matched against `image_gen.model`.
 # The model id is sent verbatim to the Meta Model API (`/v1/images/generations`).
 _MODELS: Dict[str, Dict[str, Any]] = {
     "muse-image-1.0": {
@@ -86,7 +86,7 @@ def _resolve_model(caller_model: Optional[str] = None) -> Tuple[str, Dict[str, A
     """Return (model_id, metadata) using the documented precedence chain.
 
     ``caller_model`` is the ``model`` kwarg the dispatcher forwards from the
-    top-level ``image_gen.model`` config key (what ``hermes tools`` writes).
+    top-level ``image_gen.model`` config key (what ``clara tools`` writes).
     It wins when it names one of our models, mirroring the xai/krea/openrouter
     providers, so a user's picker choice is never silently dropped.
     """
@@ -98,7 +98,7 @@ def _resolve_model(caller_model: Optional[str] = None) -> Tuple[str, Dict[str, A
         return env_model, _MODELS[env_model]
 
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
 
         cfg = load_config() or {}
         ig = cfg.get("image_gen") or {}
@@ -192,7 +192,7 @@ class MetaImageGenProvider(ImageGenProvider):
         if not api_key:
             return error_response(
                 error=(
-                    f"{API_KEY_ENV} not set. Run `hermes tools` -> Image "
+                    f"{API_KEY_ENV} not set. Run `clara tools` -> Image "
                     "Generation -> Meta Model API to configure."
                 ),
                 error_type="auth_required",

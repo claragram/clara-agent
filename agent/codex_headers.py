@@ -37,7 +37,7 @@ def codex_cloudflare_headers(
     """Identity and account headers for chatgpt.com/backend-api/codex.
 
     OpenAI requires third-party harnesses to identify themselves. Requests to
-    the official endpoint always send Hermes' originator and version. Custom
+    the official endpoint always send Clara' originator and version. Custom
     endpoints retain the existing compatibility identity. In either case,
     preserve ``ChatGPT-Account-ID`` from the OAuth JWT's
     ``chatgpt_account_id`` claim.
@@ -47,15 +47,15 @@ def codex_cloudflare_headers(
     crash at client construction.
     """
     headers = {
-        "User-Agent": "codex_cli_rs/0.0.0 (Hermes Agent)",
+        "User-Agent": "codex_cli_rs/0.0.0 (Clara Agent)",
         "originator": "codex_cli_rs",
     }
     if is_official_codex_base_url(base_url):
-        from hermes_cli import __version__
+        from clara_cli import __version__
 
         headers.update({
-            "User-Agent": f"HermesAgent/{__version__}",
-            "originator": "hermes-agent",
+            "User-Agent": f"ClaraAgent/{__version__}",
+            "originator": "clara-agent",
         })
     if not isinstance(access_token, str) or not access_token.strip():
         return headers

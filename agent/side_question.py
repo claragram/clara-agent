@@ -173,7 +173,7 @@ def render_history_for_side_question(
 def _side_question_task_config() -> Dict[str, Any]:
     """Return ``auxiliary.side_question`` from config (or ``{}``)."""
     try:
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.config import load_config_readonly
 
         cfg = load_config_readonly()
     except Exception:
@@ -190,7 +190,7 @@ def _answer_via_fork(
 ) -> str:
     """Answer via a cache-parity fork of ``parent_agent``.
 
-    Runs synchronously on the CALLING thread (all /btw surfaces invoke this
+    Runs __PROT_0_synchroclaraly__ on the CALLING thread (all /btw surfaces invoke this
     from a worker thread). The thread-scoped tool whitelist is emptied so
     any tool call the fork attempts is denied at dispatch — the request's
     ``tools[]`` stays byte-identical to the parent's for cache parity, but
@@ -202,7 +202,7 @@ def _answer_via_fork(
         _snapshot_review_usage,
         build_cache_parity_fork,
     )
-    from hermes_cli.plugins import (
+    from clara_cli.plugins import (
         clear_thread_tool_whitelist,
         set_thread_tool_whitelist,
     )

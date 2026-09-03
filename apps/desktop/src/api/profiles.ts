@@ -4,19 +4,19 @@ import type {
   ProfileSetupCommand,
   ProfileSoul,
   ProfilesResponse
-} from '@/types/hermes'
+} from '@/types/clara'
 
-import { capabilityScoped, hermesApi, type ProfileScope, STARTUP_REQUEST_TIMEOUT_MS } from './client'
+import { capabilityScoped, claraApi, type ProfileScope, STARTUP_REQUEST_TIMEOUT_MS } from './client'
 
 export function getProfiles(): Promise<ProfilesResponse> {
-  return hermesApi<ProfilesResponse>({
+  return claraApi<ProfilesResponse>({
     path: '/api/profiles',
     timeoutMs: STARTUP_REQUEST_TIMEOUT_MS
   })
 }
 
 export function createProfile(body: ProfileCreatePayload): Promise<{ name: string; ok: boolean; path: string }> {
-  return hermesApi<{ name: string; ok: boolean; path: string }>({
+  return claraApi<{ name: string; ok: boolean; path: string }>({
     path: '/api/profiles',
     method: 'POST',
     body
@@ -37,7 +37,7 @@ export function renameProfile(
   newName: string,
   scope?: ProfileScope
 ): Promise<{ name: string; ok: boolean; path: string }> {
-  return hermesApi<{ name: string; ok: boolean; path: string }>({
+  return claraApi<{ name: string; ok: boolean; path: string }>({
     ...profileOwnerScoped(scope),
     path: `/api/profiles/${encodeURIComponent(name)}`,
     method: 'PATCH',
@@ -57,7 +57,7 @@ export function deleteProfile(name: string, scope?: ProfileScope): Promise<{ ok:
     return Promise.reject(new Error('The default profile cannot be deleted.'))
   }
 
-  return hermesApi<{ ok: boolean; path: string }>({
+  return claraApi<{ ok: boolean; path: string }>({
     ...profileOwnerScoped(scope),
     path: `/api/profiles/${encodeURIComponent(normalized)}`,
     method: 'DELETE'
@@ -65,14 +65,14 @@ export function deleteProfile(name: string, scope?: ProfileScope): Promise<{ ok:
 }
 
 export function getProfileSoul(name: string, scope?: ProfileScope): Promise<ProfileSoul> {
-  return hermesApi<ProfileSoul>({
+  return claraApi<ProfileSoul>({
     ...profileOwnerScoped(scope),
     path: `/api/profiles/${encodeURIComponent(name)}/soul`
   })
 }
 
 export function updateProfileSoul(name: string, content: string, scope?: ProfileScope): Promise<{ ok: boolean }> {
-  return hermesApi<{ ok: boolean }>({
+  return claraApi<{ ok: boolean }>({
     ...profileOwnerScoped(scope),
     path: `/api/profiles/${encodeURIComponent(name)}/soul`,
     method: 'PUT',
@@ -81,7 +81,7 @@ export function updateProfileSoul(name: string, content: string, scope?: Profile
 }
 
 export function getProfileSetupCommand(name: string): Promise<ProfileSetupCommand> {
-  return hermesApi<ProfileSetupCommand>({
+  return claraApi<ProfileSetupCommand>({
     path: `/api/profiles/${encodeURIComponent(name)}/setup-command`
   })
 }
@@ -93,7 +93,7 @@ export function exportProfileArchive(
   name: string,
   opts: { extraFiles?: Record<string, string>; output?: string } = {}
 ): Promise<{ archive: string; ok: boolean }> {
-  return hermesApi<{ archive: string; ok: boolean }>({
+  return claraApi<{ archive: string; ok: boolean }>({
     path: `/api/profiles/${encodeURIComponent(name)}/export`,
     method: 'POST',
     body: { extra_files: opts.extraFiles ?? {}, output: opts.output ?? '' },
@@ -108,7 +108,7 @@ export function importProfileArchive(
   archive: string,
   name?: string
 ): Promise<{ desktop: null | ProfileDesktopOverlay; name: string; ok: boolean; path: string }> {
-  return hermesApi<{ desktop: null | ProfileDesktopOverlay; name: string; ok: boolean; path: string }>({
+  return claraApi<{ desktop: null | ProfileDesktopOverlay; name: string; ok: boolean; path: string }>({
     path: '/api/profiles/import',
     method: 'POST',
     body: { archive, name: name || null },

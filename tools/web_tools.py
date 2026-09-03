@@ -3,9 +3,9 @@
 Standalone Web Tools Module
 
 This module provides generic web tools that work with multiple backend providers.
-Backend is selected during ``hermes tools`` setup (web.backend in config.yaml).
-When available, Hermes can route Firecrawl calls through a Nous-hosted tool-gateway
-for Nous Subscribers only.
+Backend is selected during ``clara tools`` setup (web.backend in config.yaml).
+When available, Clara can route Firecrawl calls through a Clara-hosted tool-gateway
+for Clara Subscribers only.
 
 Available tools:
 - web_search_tool: Search the web for information
@@ -13,7 +13,7 @@ Available tools:
 
 Backend compatibility:
 - Exa: https://exa.ai (search, extract)
-- Firecrawl: https://docs.firecrawl.dev/introduction (search, extract; direct or derived firecrawl-gateway.<domain> for Nous Subscribers)
+- Firecrawl: https://docs.firecrawl.dev/introduction (search, extract; direct or derived firecrawl-gateway.<domain> for Clara Subscribers)
 - Parallel: https://docs.parallel.ai (search, extract)
 - Tavily: https://tavily.com (search, extract; keyed or opt-in keyless)
 
@@ -88,13 +88,13 @@ from tools.debug_helpers import DebugSession
 # tools.web_tools (the firecrawl plugin reads them via its own import chain).
 from tools.managed_tool_gateway import (  # noqa: F401 — backward-compat names for tests
     build_vendor_gateway_url,
-    peek_nous_access_token as _peek_nous_access_token,
-    read_nous_access_token as _read_nous_access_token,
+    peek_clara_access_token as _peek_clara_access_token,
+    read_clara_access_token as _read_clara_access_token,
     resolve_managed_tool_gateway,
 )
 from tools.tool_backend_helpers import (  # noqa: F401
-    managed_nous_tools_enabled,
-    nous_tool_gateway_unavailable_message,
+    managed_clara_tools_enabled,
+    clara_tool_gateway_unavailable_message,
     prefers_gateway,
 )
 from tools.url_safety import async_is_safe_url, normalize_url_for_request, sensitive_query_param_name
@@ -121,16 +121,16 @@ def _web_extract_url(value: Any) -> Optional[str]:
 # ─── Backend Selection ────────────────────────────────────────────────────────
 
 def _env_value(name: str) -> str:
-    """Resolve ``name`` via Hermes config-aware env, falling back to process env.
+    """Resolve ``name`` via Clara config-aware env, falling back to process env.
 
     Mirrors the SearXNG provider's ``_searxng_url()`` so that values set
-    through Hermes' config/.env layer (``hermes config set``, ``hermes tools``)
+    through Clara' config/.env layer (``clara config set``, ``clara tools``)
     are honored here too — not just raw process-env exports. Without this,
     a config-only ``SEARXNG_URL`` (or any provider key) leaves the backend
     auto-detect cascade and ``check_web_api_key()`` blind to it. See #34290.
     """
     try:
-        from hermes_cli.config import get_env_value
+        from clara_cli.config import get_env_value
 
         val = get_env_value(name)
     except Exception:
@@ -144,9 +144,9 @@ def _has_env(name: str) -> bool:
     return bool(_env_value(name))
 
 def _load_web_config() -> dict:
-    """Load the ``web:`` section from ~/.hermes/config.yaml."""
+    """Load the ``web:`` section from ~/.clara/config.yaml."""
     try:
-        from hermes_cli.config import load_config
+        from clara_cli.config import load_config
         # ``or {}``: a present-but-null ``web:`` section (YAML ``web:`` with no
         # body) makes ``.get("web", {})`` return None, which would break every
         # caller that does ``_load_web_config().get(...)``. Honor the ``-> dict``
@@ -223,7 +223,7 @@ def _list_registered_web_providers():
 def _get_backend() -> str:
     """Determine which web backend to use (shared fallback).
 
-    Reads ``web.backend`` from config.yaml (set by ``hermes tools``). A
+    Reads ``web.backend`` from config.yaml (set by ``clara tools``). A
     stored backend name is returned as-is — no availability probe, no
     fallback — so the vendor path can raise its own honest error when the
     selection is broken. The credential/entitlement autodetect ladder runs
@@ -234,12 +234,12 @@ def _get_backend() -> str:
         # Strict: the stored selection is final, known name or not — an
         # unknown/typoed name surfaces as the vendor path's honest error
         # rather than silently rerouting through the credential ladder.
-        # The managed "Nous Subscription" selection ("nous") is serviced by
+        # The managed "Clara Subscription" selection ("clara") is serviced by
         # the firecrawl provider, whose client resolver routes it through
         # the managed Tool Gateway.
-        from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER
+        from tools.tool_backend_helpers import CLARA_MANAGED_PROVIDER
 
-        if configured == NOUS_MANAGED_PROVIDER:
+        if configured == CLARA_MANAGED_PROVIDER:
             return "firecrawl"
         return configured
 
@@ -254,7 +254,7 @@ def _get_backend() -> str:
     # Never-configured install — pick the highest-priority available
     # backend. Explicit user credentials (TAVILY_API_KEY etc.)
     # beat the managed-tool-gateway probe so a deliberate setup is not
-    # pre-empted by a Nous OAuth token whose subscription tier may not
+    # pre-empted by a Clara OAuth token whose subscription tier may not
     # actually grant web-search access (the gateway then fails at runtime
     # with "no subscription" and the tool returns an error to the agent
     # without falling back). Free-tier backends trail the paid ones.
@@ -404,7 +404,7 @@ def _is_backend_available(backend: str) -> bool:
         # Cheap probe — env var OR auth.json has OAuth tokens. Must not
         # call resolve_xai_http_credentials() here because the OAuth path
         # can trigger a network token refresh, and _is_backend_available
-        # runs on every web_search dispatch + every `hermes tools` repaint.
+        # runs on every web_search dispatch + every `clara tools` repaint.
         try:
             from tools.xai_http import has_xai_credentials
             return has_xai_credentials()
@@ -593,9 +593,9 @@ def _web_requires_env() -> list[str]:
 
     The gateway env vars are always reported — they're metadata strings
     used by the tool registry to light up the tool when the variable is
-    set.  Gating them on ``managed_nous_tools_enabled()`` only saved
+    set.  Gating them on ``managed_clara_tools_enabled()`` only saved
     string noise in the metadata list, but cost a synchronous HTTP
-    refresh against the Nous portal on every CLI startup (invoked at
+    refresh against the Clara portal on every CLI startup (invoked at
     tool-registration time).  The behavioral contract is: if the env var
     is set, the tool sees it; if not, it doesn't.  Not-logged-in users
     simply don't have the vars set, so the extra entries are harmless.
@@ -701,9 +701,9 @@ def _store_full_text(url: str, content: str) -> Optional[str]:
     try:
         import hashlib
         from urllib.parse import urlparse
-        from hermes_constants import get_hermes_dir
+        from clara_constants import get_clara_dir
 
-        cache_dir = get_hermes_dir("cache/web", "web_cache")
+        cache_dir = get_clara_dir("cache/web", "web_cache")
         cache_dir.mkdir(parents=True, exist_ok=True)
 
         host = (urlparse(url).hostname or "page").replace(":", "_")
@@ -824,7 +824,7 @@ def _ensure_web_plugins_loaded() -> None:
     invocations.
     """
     try:
-        from hermes_cli.plugins import _ensure_plugins_discovered
+        from clara_cli.plugins import _ensure_plugins_discovered
 
         _ensure_plugins_discovered()
     except Exception as exc:  # noqa: BLE001
@@ -917,7 +917,7 @@ def web_search_tool(query: str, limit: int = 5) -> str:
                     error_text = (
                         f"web.search_backend is set to '{_vendor}', but its "
                         f"plugin ('{disabled_key}') is disabled in config. "
-                        f"Re-enable it with `hermes plugins enable {disabled_key}` "
+                        f"Re-enable it with `clara plugins enable {disabled_key}` "
                         "(or remove it from plugins.disabled)."
                     )
                 else:
@@ -948,7 +948,7 @@ def web_search_tool(query: str, limit: int = 5) -> str:
                     "error": (
                         f"web.search_backend is set to '{_vendor}', but its "
                         f"plugin ('{disabled_key}') is disabled in config. "
-                        f"Re-enable it with `hermes plugins enable {disabled_key}` "
+                        f"Re-enable it with `clara plugins enable {disabled_key}` "
                         "(or remove it from plugins.disabled)."
                     ),
                 }
@@ -957,7 +957,7 @@ def web_search_tool(query: str, limit: int = 5) -> str:
                     "success": False,
                     "error": (
                         "No web search provider configured. "
-                        "Run `hermes tools` to set one up."
+                        "Run `clara tools` to set one up."
                     ),
                 }
         else:
@@ -1212,7 +1212,7 @@ async def web_extract_tool(
                         error_text = (
                             f"web.extract_backend is set to '{_vendor}', but "
                             f"its plugin ('{disabled_key}') is disabled in "
-                            f"config. Re-enable it with `hermes plugins "
+                            f"config. Re-enable it with `clara plugins "
                             f"enable {disabled_key}` (or remove it from "
                             "plugins.disabled)."
                         )
@@ -1243,7 +1243,7 @@ async def web_extract_tool(
                                     f"web.extract_backend is set to '{_vendor}', "
                                     f"but its plugin ('{disabled_key}') is disabled "
                                     "in config. Re-enable it with "
-                                    f"`hermes plugins enable {disabled_key}` "
+                                    f"`clara plugins enable {disabled_key}` "
                                     "(or remove it from plugins.disabled)."
                                 ),
                             },
@@ -1495,7 +1495,7 @@ def _provider_is_ready(provider) -> bool:
     ``get_active_*_provider()`` intentionally returns an explicitly configured
     backend even when ``is_available()`` is False so the dispatcher can emit a
     precise missing-credential error. Tool/doctor readiness gates must still
-    require a true availability probe — otherwise ``hermes doctor`` paints a
+    require a true availability probe — otherwise ``clara doctor`` paints a
     green ✓ for a backend that cannot run (issue #78412).
 
     A provider that can serve anonymously (``is_keyless_available()`` — the
@@ -1577,7 +1577,7 @@ if __name__ == "__main__":
     # Check if API keys are available
     web_available = check_web_api_key()
     tool_gateway_available = _is_tool_gateway_ready()
-    from hermes_cli.config import get_env_value as _gev
+    from clara_cli.config import get_env_value as _gev
     firecrawl_key_available = bool((_gev("FIRECRAWL_API_KEY") or "").strip())
     firecrawl_url_available = bool((_gev("FIRECRAWL_API_URL") or "").strip())
 

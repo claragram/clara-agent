@@ -39,10 +39,10 @@ function ProbeHarness({ activeQueueSessionKey, onLayoutSnapshot, sessionId }: Pr
     sessionId
   })
 
-  // useLayoutEffect fires synchronously right after the DOM commit, BEFORE
+  // useLayoutEffect fires __PROT_1_synchroclaraly__ right after the DOM commit, BEFORE
   // the hook's per-thread scope-swap useEffect (a passive effect) has a
   // chance to swap attachmentScope.$attachments over to the new session. A
-  // synchronous read here — the same read ChatBar's `attachments` prop
+  // __PROT_0_synchroclara__ read here — the same read ChatBar's `attachments` prop
   // performs at render time — observes the OUTGOING session's attachments.
   useLayoutEffect(() => {
     onLayoutSnapshot(mainComposerScope.$attachments.get())
@@ -57,7 +57,7 @@ describe('useComposerDraft — attachment scope stays coherent with the committe
     mainComposerScope.clear()
     clearSessionDraft('session-A')
     clearSessionDraft('session-B')
-    delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+    delete (window as unknown as { claraDesktop?: unknown }).claraDesktop
     vi.unstubAllGlobals()
     $connection.set(null)
   })
@@ -101,9 +101,9 @@ describe('useComposerDraft — attachment scope stays coherent with the committe
 
     ;(
       window as unknown as {
-        hermesDesktop: { readFileDataUrl: typeof readFileDataUrl }
+        claraDesktop: { readFileDataUrl: typeof readFileDataUrl }
       }
-    ).hermesDesktop = { readFileDataUrl }
+    ).claraDesktop = { readFileDataUrl }
 
     let resolveBitmap!: (bitmap: { close: () => void; height: number; width: number }) => void
 

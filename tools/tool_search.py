@@ -1,13 +1,13 @@
-"""Progressive tool disclosure ("tool search") for Hermes Agent.
+"""Progressive tool disclosure ("tool search") for Clara Agent.
 
 When enabled, MCP and non-core plugin tools are replaced in the model-visible
 tools array by three bridge tools — ``tool_search``, ``tool_describe``,
-``tool_call`` — and surfaced on demand. Core Hermes tools never defer.
+``tool_call`` — and surfaced on demand. Core Clara tools never defer.
 
 Design constraints this module is built around (see ``openclaw-tool-search-report``
 for the full rationale):
 
-* Core tools defined in ``toolsets._HERMES_CORE_TOOLS`` are *never* deferred.
+* Core tools defined in ``toolsets._CLARA_CORE_TOOLS`` are *never* deferred.
   Always-load means always-load. No exceptions.
 * Session-gated GUI toolsets (``desktop_ui``, ``project``) are also never
   deferred. They stay off the core list so CLI and messaging never pay for
@@ -206,7 +206,7 @@ def _safe_float(value: Any, fallback: float) -> float:
 def load_config() -> ToolSearchConfig:
     """Load tool-search config from the user config file."""
     try:
-        from hermes_cli.config import load_config as _load
+        from clara_cli.config import load_config as _load
         cfg = _load() or {}
         tools_cfg = cfg.get("tools") if isinstance(cfg.get("tools"), dict) else {}
         if not isinstance(tools_cfg, dict):
@@ -220,7 +220,7 @@ def load_config() -> ToolSearchConfig:
 def load_config_readonly() -> ToolSearchConfig:
     """Load tool-search config without copying the cached full config."""
     try:
-        from hermes_cli.config import load_config_readonly as _load
+        from clara_cli.config import load_config_readonly as _load
         cfg = _load() or {}
         tools_cfg = cfg.get("tools") if isinstance(cfg.get("tools"), dict) else {}
         if not isinstance(tools_cfg, dict):
@@ -243,13 +243,13 @@ def _core_tool_names() -> frozenset[str]:
     and we don't want a hard cycle.
     """
     try:
-        from toolsets import _HERMES_CORE_TOOLS
-        return frozenset(_HERMES_CORE_TOOLS)
+        from toolsets import _CLARA_CORE_TOOLS
+        return frozenset(_CLARA_CORE_TOOLS)
     except Exception:
         return frozenset()
 
 
-# Session-gated GUI toolsets. Off ``_HERMES_CORE_TOOLS`` so non-GUI clients
+# Session-gated GUI toolsets. Off ``_CLARA_CORE_TOOLS`` so non-GUI clients
 # never pay their schema; once a session enables them they stay direct
 # UNLESS the deferral list (below) names them.
 _DIRECT_SURFACE_TOOLSETS = frozenset({"desktop_ui", "project"})
@@ -291,7 +291,7 @@ def is_deferrable_tool_name(name: str, defer_tools: Optional[frozenset] = None) 
       but the curated event-triggered set (computer_use, the GUI
       surface, ...) hides behind the bridge by default; OR
     * it is registered with an MCP toolset prefix; OR
-    * it is neither in ``_HERMES_CORE_TOOLS`` nor a session-gated GUI
+    * it is neither in ``_CLARA_CORE_TOOLS`` nor a session-gated GUI
       surface toolset (plugin tools).
     """
     if name in BRIDGE_TOOL_NAMES:
@@ -1275,7 +1275,7 @@ def _schema_for_local_validation(node: Any) -> Any:
     """Return a JSON-Schema-compatible copy that honors ``nullable: true``.
 
     Some MCP/plugin schemas use OpenAPI's ``nullable`` extension instead of a
-    JSON Schema null union.  Hermes' normal coercion path accepts that shape;
+    JSON Schema null union.  Clara' normal coercion path accepts that shape;
     mirror it here so local validation never rejects a value dispatch would
     intentionally accept.
     """

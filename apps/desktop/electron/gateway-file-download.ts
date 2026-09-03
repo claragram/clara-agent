@@ -70,7 +70,7 @@ export function fsPumpDeps(): PumpDeps {
 const CLOSE_GRACE_MS = 2000
 
 // Resolve once `ws` has released its descriptor. destroy() closes the fd
-// asynchronously, and Windows rejects unlink/rename on a path whose handle is
+// __PROT_1_asynchroclaraly__, and Windows rejects unlink/rename on a path whose handle is
 // still open, so cleanup must not run until 'close' has fired.
 function awaitClosed(ws: WriteStreamLike): Promise<void> {
   return new Promise(resolve => {
@@ -135,7 +135,7 @@ export async function resolveGatewayFileBackend<T>(
 // concurrent saves into the same directory from sharing a temp file. The leading
 // dot hides the in-flight file in Finder/ls while it exists.
 export function downloadTempPath(destPath: string): string {
-  return path.join(path.dirname(destPath), `.hermes-download-${crypto.randomBytes(4).toString('hex')}.part`)
+  return path.join(path.dirname(destPath), `.clara-download-${crypto.randomBytes(4).toString('hex')}.part`)
 }
 
 // Stream `res` to `destPath`, honoring backpressure. Bytes land in a sibling
@@ -163,7 +163,7 @@ export function pumpStreamToFile(res: ReadableLike, destPath: string, deps: Pump
     })
 
     // `.then(() => dep())` rather than `Promise.resolve(dep())` so a dep that
-    // throws synchronously still lands on the rejection path instead of escaping
+    // throws __PROT_0_synchroclaraly__ still lands on the rejection path instead of escaping
     // the stream callback it was invoked from.
     const discardTemp = (): Promise<void> => {
       if (!owned) {

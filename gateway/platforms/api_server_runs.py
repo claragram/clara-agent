@@ -20,9 +20,9 @@ except ImportError:
 
 logger = logging.getLogger("gateway.platforms.api_server")
 _ROOM_RETENTION_REQUEST_KEY = (
-    RequestKey("hermes.room_run_retention_until", float)
+    RequestKey("clara.room_run_retention_until", float)
     if RequestKey is not None
-    else "hermes.room_run_retention_until"
+    else "clara.room_run_retention_until"
 )
 
 
@@ -31,14 +31,14 @@ def _remember_room_retention(request: "web.Request", claims: dict[str, Any]) -> 
     try:
         request[_ROOM_RETENTION_REQUEST_KEY] = value
     except (AttributeError, TypeError):
-        setattr(request, "_hermes_room_run_retention_until", value)
+        setattr(request, "_clara_room_run_retention_until", value)
 
 
 def _room_retention_until(request: "web.Request") -> float:
     try:
         value = request.get(_ROOM_RETENTION_REQUEST_KEY, 0)
     except AttributeError:
-        value = getattr(request, "_hermes_room_run_retention_until", 0)
+        value = getattr(request, "_clara_room_run_retention_until", 0)
     return max(0.0, float(value or 0))
 
 
@@ -125,7 +125,7 @@ def _set_run_status(
     previous_status = str(current.get("status") or "")
     field_names = set(fields)
     current.update({
-        "object": "hermes.run",
+        "object": "clara.run",
         "run_id": run_id,
         "status": status,
         "updated_at": now,
@@ -582,7 +582,7 @@ async def _handle_runs(
             ]
             headers = {"Idempotency-Replayed": "true"}
             if gateway_session_key:
-                headers["X-Hermes-Session-Key"] = gateway_session_key
+                headers["X-Clara-Session-Key"] = gateway_session_key
             return web.json_response(
                 {
                     "run_id": original_id,
@@ -607,7 +607,7 @@ async def _handle_runs(
     self._run_owners[run_id] = self._run_idempotency_scope(request)
     # Same rule as /v1/responses: an explicit body session_id wins, then
     # the response chain, then the conversation the client declared via
-    # ``X-Hermes-Session-Key``.  Falling straight through to ``run_id``
+    # ``X-Clara-Session-Key``.  Falling straight through to ``run_id``
     # made the run id the conversation identity, so a declared channel
     # re-keyed every affinity surface once per run (#96811).
     # Same precedence gate as /v1/responses: an explicit body session_id
@@ -693,7 +693,7 @@ async def _handle_runs(
             ]
             headers = {"Idempotency-Replayed": "true"}
             if gateway_session_key:
-                headers["X-Hermes-Session-Key"] = gateway_session_key
+                headers["X-Clara-Session-Key"] = gateway_session_key
             return web.json_response(
                 {
                     "run_id": original_id,
@@ -798,11 +798,11 @@ async def _handle_runs(
                         approval_token = set_current_session_key(approval_session_key)
                         session_tokens = self._bind_api_server_session(
                             # chat_id carries the raw session id (the
-                            # X-Hermes-Session-Id equivalent) exactly like
+                            # X-Clara-Session-Id equivalent) exactly like
                             # the other agent-entry routes bind it via
                             # _run_agent(). Without it,
                             # tools.async_delegation reads an empty
-                            # HERMES_SESSION_CHAT_ID on /v1/runs and
+                            # CLARA_SESSION_CHAT_ID on /v1/runs and
                             # background delegations stay forced-sync
                             # (no wake target).
                             chat_id=session_id or "",
@@ -1030,7 +1030,7 @@ async def _handle_runs(
         task.add_done_callback(self._background_tasks.discard)
 
     response_headers = (
-        {"X-Hermes-Session-Key": gateway_session_key} if gateway_session_key else {}
+        {"X-Clara-Session-Key": gateway_session_key} if gateway_session_key else {}
     )
     return web.json_response(
         {"run_id": run_id, "status": "started", "replayed": False},
@@ -1301,7 +1301,7 @@ async def _handle_run_approval(
             pass
 
     return web.json_response({
-        "object": "hermes.run.approval_response",
+        "object": "clara.run.approval_response",
         "run_id": run_id,
         "choice": choice,
         **({"request_id": request_id} if request_id else {}),
@@ -1384,7 +1384,7 @@ async def _handle_steer_run(
                 "timestamp": time.time(),
                 "accepted": True,
             })
-    return web.json_response({"object": "hermes.run.steer", "run_id": run_id, "accepted": True})
+    return web.json_response({"object": "clara.run.steer", "run_id": run_id, "accepted": True})
 
 
 async def _handle_stop_run(

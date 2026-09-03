@@ -3,10 +3,10 @@ name: osint-investigation
 description: Follow the money via public records and sanctions data.
 version: 0.1.0
 platforms: [linux, macos, windows]
-author: Hermes Agent (adapted from ShinMegamiBoson/OpenPlanter, MIT)
+author: Clara Agent (adapted from ShinMegamiBoson/OpenPlanter, MIT)
 license: MIT
 metadata:
-  hermes:
+  clara:
     tags: [osint, investigation, public-records, sec, sanctions, corporate-registry, property, courts, due-diligence, journalism]
     category: research
     related_skills: [domain-intel, arxiv]
@@ -116,7 +116,7 @@ python SKILL_DIR/scripts/fetch_ofac_sdn.py --out data/ofac_sdn.csv
 
 # ICIJ Offshore Leaks — downloads ~70 MB bulk CSV on first use,
 # then searches it locally. Cached for 30 days under
-# $HERMES_OSINT_CACHE/icij/ (default: ~/.cache/hermes-osint/icij/).
+# $CLARA_OSINT_CACHE/icij/ (default: ~/.cache/clara-osint/icij/).
 python SKILL_DIR/scripts/fetch_icij_offshore.py --entity "EXAMPLE CORP" \
     --out data/icij.csv
 ```
@@ -144,7 +144,7 @@ python SKILL_DIR/scripts/fetch_wayback.py --url "example.com" \
     --match host --collapse digest --out data/wayback.csv
 
 # Wikipedia + Wikidata — narrative bio + structured facts
-# Set HERMES_OSINT_UA=your-app/1.0 (your@email) to identify yourself
+# Set CLARA_OSINT_UA=your-app/1.0 (your@email) to identify yourself
 python SKILL_DIR/scripts/fetch_wikipedia.py --query "Bill Gates" \
     --out data/wp.csv
 

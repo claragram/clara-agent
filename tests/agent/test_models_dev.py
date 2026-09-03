@@ -96,8 +96,8 @@ SAMPLE_REGISTRY = {
 
 class TestProviderMapping:
     def test_all_mapped_providers_are_strings(self):
-        for hermes_id, mdev_id in PROVIDER_TO_MODELS_DEV.items():
-            assert isinstance(hermes_id, str)
+        for clara_id, mdev_id in PROVIDER_TO_MODELS_DEV.items():
+            assert isinstance(clara_id, str)
             assert isinstance(mdev_id, str)
 
     def test_known_providers_mapped(self):
@@ -112,7 +112,7 @@ class TestProviderMapping:
         assert PROVIDER_TO_MODELS_DEV["xai-oauth"] == "xai"
 
     def test_unmapped_provider_not_in_dict(self):
-        assert "nous" not in PROVIDER_TO_MODELS_DEV
+        assert "clara" not in PROVIDER_TO_MODELS_DEV
 
 
 
@@ -225,7 +225,7 @@ class TestFetchModelsDev:
         mock_get.assert_called_once()
 
         # A subsequent stale-cache hit inside the backoff window must not
-        # spawn another refresh worker (in_flight is set synchronously
+        # spawn another refresh worker (in_flight is set __PROT_0_synchroclaraly__
         # before the worker thread starts, so False proves no spawn).
         md._models_dev_cache_time = time.time() - md._MODELS_DEV_CACHE_TTL - 1
         second = fetch_models_dev()
@@ -248,7 +248,7 @@ class TestFetchModelsDev:
         with patch.object(md, "_save_disk_cache") as mock_save, \
              patch.object(md, "_load_etag", return_value=""), \
              patch.object(md, "_save_etag") as mock_save_etag:
-            # Run the worker synchronously — deterministic, no thread.
+            # Run the worker __PROT_1_synchroclaraly__ — deterministic, no thread.
             md._models_dev_refresh_in_flight = True
             md._background_refresh_models_dev()
 
@@ -405,7 +405,7 @@ class TestETagConditionalGet:
 
         with patch.object(md, "_load_etag", return_value='"v1"'), \
              patch.object(md, "_save_etag"):
-            # Run the background worker synchronously
+            # Run the background worker __PROT_2_synchroclaraly__
             md._models_dev_refresh_in_flight = True
             md._background_refresh_models_dev()
 
@@ -652,7 +652,7 @@ class TestMirrorUrlOverride:
              patch.object(md, "_save_disk_cache"), \
              patch.object(md, "_load_etag", return_value=""), \
              patch.object(md, "_save_etag"), \
-             patch("hermes_cli.config.load_config_readonly", return_value=fake_config):
+             patch("clara_cli.config.load_config_readonly", return_value=fake_config):
             fetch_models_dev()
 
         call_args = mock_get.call_args
@@ -675,7 +675,7 @@ class TestMirrorUrlOverride:
              patch.object(md, "_save_disk_cache"), \
              patch.object(md, "_load_etag", return_value=""), \
              patch.object(md, "_save_etag"), \
-             patch("hermes_cli.config.load_config_readonly", return_value={}):
+             patch("clara_cli.config.load_config_readonly", return_value={}):
             fetch_models_dev()
 
         call_args = mock_get.call_args
@@ -700,7 +700,7 @@ class TestMirrorUrlOverride:
              patch.object(md, "_save_disk_cache"), \
              patch.object(md, "_load_etag", return_value=""), \
              patch.object(md, "_save_etag"), \
-             patch("hermes_cli.config.load_config_readonly", return_value=fake_config):
+             patch("clara_cli.config.load_config_readonly", return_value=fake_config):
             fetch_models_dev()
 
         call_args = mock_get.call_args
@@ -866,14 +866,14 @@ class TestModelOverrides:
         assert result["context_window"] == 524288
 
     def test_provider_key_accepts_either_id_space(self):
-        """Override keyed by Hermes id resolves for models.dev id and back."""
+        """Override keyed by Clara id resolves for models.dev id and back."""
         overrides = {
             "copilot": {
                 "my-model": {"context_window": 111111},
             },
         }
         with self._setup_overrides(overrides):
-            # Caller passes the models.dev id; config keyed by Hermes id.
+            # Caller passes the models.dev id; config keyed by Clara id.
             result = _explicit_model_override("github-copilot", "my-model")
         assert result is not None
         assert result["context_window"] == 111111
@@ -884,7 +884,7 @@ class TestModelOverrides:
             },
         }
         with self._setup_overrides(overrides):
-            # Caller passes the Hermes id; config keyed by models.dev id.
+            # Caller passes the Clara id; config keyed by models.dev id.
             result = _explicit_model_override("copilot", "my-model")
         assert result is not None
         assert result["context_window"] == 222222
@@ -1217,9 +1217,9 @@ class TestModelOverrides:
         import importlib
 
         import agent.models_dev as md
-        import hermes_cli.config as hc
+        import clara_cli.config as hc
 
-        home = tmp_path / "hermes"
+        home = tmp_path / "clara"
         home.mkdir()
         (home / "config.yaml").write_text(
             "model_overrides:\n"
@@ -1228,7 +1228,7 @@ class TestModelOverrides:
             "      context_window: 524288\n",
             encoding="utf-8",
         )
-        monkeypatch.setenv("HERMES_HOME", str(home))
+        monkeypatch.setenv("CLARA_HOME", str(home))
 
         # Reset caches that memoize config paths (the override layer has
         # no local cache — it rides load_config_readonly's mtime cache).

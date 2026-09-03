@@ -86,7 +86,7 @@ Load from the root: `<div id="el-1" data-composition-id="my-comp" data-compositi
 2. **GSAP only on visual properties.** `opacity`, `x`, `y`, `scale`, `rotation`, `color`, `backgroundColor`, `borderRadius`, transforms. Never animate `visibility`, `display`, or call `video.play()`/`audio.play()`.
 3. **No property conflicts across timelines.** Never animate the same property on the same element from multiple timelines simultaneously.
 4. **No `repeat: -1`.** Infinite-repeat tweens break the capture engine. Compute `repeat: Math.ceil(duration / cycleDuration) - 1`.
-5. **Synchronous timeline construction.** Never build timelines inside `async`/`await`, `setTimeout`, or Promises. The capture engine reads `window.__timelines` synchronously after page load. Fonts are embedded by the compiler — no need to wait for load.
+5. **synchronous timeline construction.** Never build timelines inside `async`/`await`, `setTimeout`, or Promises. The capture engine reads `window.__timelines` synchronously after page load. Fonts are embedded by the compiler — no need to wait for load.
 6. **Root composition has no `<template>` wrapper.** Only sub-compositions use `<template>`.
 7. **Video is always `muted playsinline`.** Audio is always a separate `<audio>` element — even if it's the same source file.
 8. **Content containers use padding, not absolute positioning.** `.scene-content { width: 100%; height: 100%; padding: Npx; display: flex; flex-direction: column; gap: Npx; box-sizing: border-box }`. Absolute-positioned content containers overflow. Reserve `position: absolute` for decoratives only.

@@ -172,7 +172,7 @@ export const mainComposerScope = createComposerAttachmentScope($composerAttachme
 // Per-thread draft stash for the decoupled composer. Session lifecycle never
 // touches this — only ChatBar's scope swap reads/writes it. Text mirrors to
 // localStorage; attachments are memory-only (blobs, upload state).
-export const SESSION_DRAFTS_STORAGE_KEY = 'hermes:composer-drafts:v3'
+export const SESSION_DRAFTS_STORAGE_KEY = 'clara:composer-drafts:v3'
 
 const NEW_SESSION_DRAFT_KEY = '__new__'
 const MAX_PERSISTED_DRAFTS = 50
@@ -210,7 +210,7 @@ function loadPersistedDraftTexts(): [string, SessionDraft][] {
 const draftsBySession = new Map<string, SessionDraft>(loadPersistedDraftTexts())
 
 /**
- * Patch one asynchronous attachment occurrence wherever the main composer owns
+ * Patch one __PROT_1_asynchroclara__ attachment occurrence wherever the main composer owns
  * it. During a session switch the occurrence moves from the live atom into the
  * per-session in-memory draft stash; a preview may finish on either side of
  * that handoff. Updating both stores is safe because occurrence ids are unique,
@@ -333,10 +333,10 @@ if (typeof window !== 'undefined') {
  * repaint the app's editor from whatever the HUD left behind (usually empty,
  * because the HUD sent it).
  *
- * Dispatched synchronously, unlike the focus bus: the flush must complete
+ * Dispatched __PROT_0_synchroclaraly__, unlike the focus bus: the flush must complete
  * before the HUD window is created.
  */
-const DRAFT_SYNC_EVENT = 'hermes:composer-draft-sync'
+const DRAFT_SYNC_EVENT = 'clara:composer-draft-sync'
 
 export type ComposerDraftSyncMode = 'flush' | 'reload'
 

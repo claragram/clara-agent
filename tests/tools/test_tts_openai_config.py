@@ -46,37 +46,37 @@ class TestResolveOpenaiAudioClientConfig:
             )
 
 
-    def test_nous_selection_overrides_config_credentials(self):
-        """A stored 'nous' selection (or legacy use_gateway: true) routes
+    def test_clara_selection_overrides_config_credentials(self):
+        """A stored 'clara' selection (or legacy use_gateway: true) routes
         managed even when direct credentials are present."""
         config = {"openai": {"api_key": "cfg-key", "base_url": "http://localhost:4003/v1"}}
         managed = SimpleNamespace(
-            nous_user_token="managed-token",
-            gateway_origin="https://openai-audio-gateway.nousresearch.com",
+            clara_user_token="managed-token",
+            gateway_origin="https://openai-audio-gateway.workprise.com",
         )
 
         with patch.object(tts_tool, "_load_tts_config", return_value=config), \
-             patch.object(tts_tool, "read_selection", return_value="nous"), \
+             patch.object(tts_tool, "read_selection", return_value="clara"), \
              patch.object(tts_tool, "resolve_openai_audio_api_key", return_value="env-key"), \
              patch.object(tts_tool, "resolve_managed_tool_gateway", return_value=managed):
             assert tts_tool._resolve_openai_audio_client_config() == (
                 "managed-token",
-                "https://openai-audio-gateway.nousresearch.com/v1",
+                "https://openai-audio-gateway.workprise.com/v1",
                 True,
             )
 
-    def test_nous_selection_unentitled_raises_selection_error(self):
+    def test_clara_selection_unentitled_raises_selection_error(self):
         """Selected managed route + unavailable gateway = honest error naming
         the selection, never a silent fall back to direct credentials."""
         config = {"openai": {"api_key": "cfg-key"}}
         with patch.object(tts_tool, "_load_tts_config", return_value=config), \
-             patch.object(tts_tool, "read_selection", return_value="nous"), \
+             patch.object(tts_tool, "read_selection", return_value="clara"), \
              patch.object(tts_tool, "resolve_openai_audio_api_key", return_value="env-key"), \
              patch.object(tts_tool, "resolve_managed_tool_gateway", return_value=None):
             with pytest.raises(ValueError) as exc:
                 tts_tool._resolve_openai_audio_client_config()
-        assert "nous" in str(exc.value)
-        assert "hermes tools" in str(exc.value)
+        assert "clara" in str(exc.value)
+        assert "clara tools" in str(exc.value)
 
     def test_vendor_selection_missing_key_raises_selection_error(self):
         """A stored vendor selection with no credentials errors by name —
@@ -89,14 +89,14 @@ class TestResolveOpenaiAudioClientConfig:
                 tts_tool._resolve_openai_audio_client_config()
         gateway_mock.assert_not_called()
         assert "openai" in str(exc.value)
-        assert "hermes tools" in str(exc.value)
+        assert "clara tools" in str(exc.value)
 
     def test_missing_config_and_env_raises_updated_error(self):
         with patch.object(tts_tool, "_load_tts_config", return_value={}), \
              patch.object(tts_tool, "read_selection", return_value=None), \
              patch.object(tts_tool, "resolve_openai_audio_api_key", return_value=""), \
              patch.object(tts_tool, "resolve_managed_tool_gateway", return_value=None), \
-             patch.object(tts_tool, "managed_nous_tools_enabled", return_value=False):
+             patch.object(tts_tool, "managed_clara_tools_enabled", return_value=False):
             with pytest.raises(ValueError) as exc:
                 tts_tool._resolve_openai_audio_client_config()
 

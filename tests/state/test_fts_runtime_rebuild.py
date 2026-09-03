@@ -20,9 +20,9 @@ from types import SimpleNamespace
 
 import pytest
 
-import hermes_state
-import hermes_state_schema
-from hermes_state import (
+import clara_state
+import clara_state_schema
+from clara_state import (
     FTS_REBUILD_DEFERRAL_KEY,
     FTS_STALE_KEY,
     LEGACY_FTS_SQL,
@@ -100,7 +100,7 @@ class TestRuntimeFtsRebuild:
         assert _concrete_state_db_holder_pids(
             db_path,
             [
-                (222, "uninspectable holder: python -m hermes_cli.main serve --port 0"),
+                (222, "uninspectable holder: python -m clara_cli.main serve --port 0"),
                 (-1, "open-file scan failed"),
             ],
         ) == []
@@ -173,11 +173,11 @@ class TestRuntimeFtsRebuild:
                     )
                 )
 
-        monkeypatch.setattr(hermes_state, "psutil", FakePsutil)
-        monkeypatch.setattr(hermes_state, "_IS_WINDOWS", False)
-        monkeypatch.setattr(hermes_state.os, "getpid", lambda: 111)
+        monkeypatch.setattr(clara_state, "psutil", FakePsutil)
+        monkeypatch.setattr(clara_state, "_IS_WINDOWS", False)
+        monkeypatch.setattr(clara_state.os, "getpid", lambda: 111)
         # Force the macOS/psutil path even on Linux test runners
-        monkeypatch.setattr(hermes_state.sys, "platform", "darwin")
+        monkeypatch.setattr(clara_state.sys, "platform", "darwin")
 
         assert db._foreign_state_db_holders() == [
             (222, f"{db_path}-wal (deleted)")
@@ -209,20 +209,20 @@ class TestRuntimeFtsRebuild:
         other.touch()
         os.symlink(str(other), str(proc_root / "333" / "fd" / "3"))
 
-        monkeypatch.setattr(hermes_state, "_IS_WINDOWS", False)
-        monkeypatch.setattr(hermes_state.os, "getpid", lambda: 111)
-        monkeypatch.setattr(hermes_state.sys, "platform", "linux")
+        monkeypatch.setattr(clara_state, "_IS_WINDOWS", False)
+        monkeypatch.setattr(clara_state.os, "getpid", lambda: 111)
+        monkeypatch.setattr(clara_state.sys, "platform", "linux")
         real_listdir = os.listdir
         def _listdir(path):
             if isinstance(path, str):
                 path = path.replace("/proc", str(proc_root))
             return real_listdir(path)
-        monkeypatch.setattr(hermes_state.os, "listdir", _listdir)
+        monkeypatch.setattr(clara_state.os, "listdir", _listdir)
         real_readlink = os.readlink
         def _readlink(path):
             path = path.replace("/proc", str(proc_root))
             return real_readlink(path)
-        monkeypatch.setattr(hermes_state.os, "readlink", _readlink)
+        monkeypatch.setattr(clara_state.os, "readlink", _readlink)
 
         holders = db._foreign_state_db_holders()
         assert holders == [(222, db_path_wal + " (deleted)")]
@@ -231,7 +231,7 @@ class TestRuntimeFtsRebuild:
         self, db, tmp_path, monkeypatch
     ):
         """A process whose fd table is unreadable (different user) is still
-        flagged when /proc/<pid>/cmdline identifies it as a Hermes process."""
+        flagged when /proc/<pid>/cmdline identifies it as a Clara process."""
         db_path = tmp_path / "state.db"
 
         proc_root = tmp_path / "proc"
@@ -239,19 +239,19 @@ class TestRuntimeFtsRebuild:
             (proc_root / str(pid) / "fd").mkdir(parents=True)
         # PID 222's fd dir is unreadable (PermissionError)
         os.chmod(proc_root / "222" / "fd", 0o000)
-        # PID 222's cmdline is world-readable and looks like Hermes
+        # PID 222's cmdline is world-readable and looks like Clara
         cmdline_path = proc_root / "222" / "cmdline"
-        cmdline_path.write_bytes(b"python3\x00hermes_cli.main\x00chat\x00")
+        cmdline_path.write_bytes(b"python3\x00clara_cli.main\x00chat\x00")
 
-        monkeypatch.setattr(hermes_state, "_IS_WINDOWS", False)
-        monkeypatch.setattr(hermes_state.os, "getpid", lambda: 111)
-        monkeypatch.setattr(hermes_state.sys, "platform", "linux")
+        monkeypatch.setattr(clara_state, "_IS_WINDOWS", False)
+        monkeypatch.setattr(clara_state.os, "getpid", lambda: 111)
+        monkeypatch.setattr(clara_state.sys, "platform", "linux")
         real_listdir = os.listdir
         def _listdir(path):
             if isinstance(path, str):
                 path = path.replace("/proc", str(proc_root))
             return real_listdir(path)
-        monkeypatch.setattr(hermes_state.os, "listdir", _listdir)
+        monkeypatch.setattr(clara_state.os, "listdir", _listdir)
         # _read_proc_cmdline opens /proc/<pid>/cmdline directly; redirect
         # it to our fake proc tree.
         def _fake_cmdline(pid):
@@ -264,13 +264,13 @@ class TestRuntimeFtsRebuild:
                 return raw.replace(b"\x00", b" ").decode("utf-8", "replace").strip()
             except OSError:
                 return None
-        monkeypatch.setattr(hermes_state, "_read_proc_cmdline", _fake_cmdline)
+        monkeypatch.setattr(clara_state, "_read_proc_cmdline", _fake_cmdline)
 
         holders = db._foreign_state_db_holders()
         # Should include PID 222 with the cmdline info
         assert len(holders) == 1
         assert holders[0][0] == 222
-        assert "hermes_cli.main" in holders[0][1]
+        assert "clara_cli.main" in holders[0][1]
 
         # Cleanup
         os.chmod(proc_root / "222" / "fd", 0o755)
@@ -335,7 +335,7 @@ class TestRuntimeFtsRebuild:
         # Structural corruption quarantines the handle: the typed error wraps
         # the original (cause preserved, SQLite result code copied) and the
         # sticky flag is set, so later writes fail fast.
-        from hermes_state import StateDbCorruptError
+        from clara_state import StateDbCorruptError
 
         assert isinstance(caught.value, StateDbCorruptError)
         assert caught.value.__cause__ is structural
@@ -704,7 +704,7 @@ class TestRuntimeFtsRebuild:
             "_reap_inactive_orphan_desktop_holders",
             lambda self, holders, *, min_age_seconds: reaped.extend(holders) or [4242],
         )
-        monkeypatch.setattr(hermes_state_schema.time, "time", lambda: 120.0)
+        monkeypatch.setattr(clara_state_schema.time, "time", lambda: 120.0)
 
         reopened = SessionDB(db_path=db_path)
         try:
@@ -823,7 +823,7 @@ class TestPhysicalCorruptionAcceptance:
         db = SessionDB(db_path=db_path)
         try:
             caplog.clear()
-            with caplog.at_level("WARNING", logger="hermes_state"):
+            with caplog.at_level("WARNING", logger="clara_state"):
                 with pytest.raises(sqlite3.DatabaseError) as caught:
                     db.append_message("s1", "user", "post-corruption write")
             # The genuine structural error propagated, not an FTS retry result.
@@ -842,14 +842,14 @@ class TestPhysicalCorruptionAcceptance:
             # Structural damage quarantines the handle: typed error, sticky
             # flag, later writes fail fast, and close() must not checkpoint
             # the WAL over a damaged page image (the #90950 page-1 clobber).
-            from hermes_state import StateDbCorruptError
+            from clara_state import StateDbCorruptError
 
             assert isinstance(caught.value, StateDbCorruptError)
             assert db._db_corrupt is True
             with pytest.raises(StateDbCorruptError):
                 db.append_message("s1", "user", "second write after corruption")
             caplog.clear()
-            with caplog.at_level("WARNING", logger="hermes_state"):
+            with caplog.at_level("WARNING", logger="clara_state"):
                 db.close()
             assert "Skipping the close-time WAL checkpoint" in caplog.text
         finally:

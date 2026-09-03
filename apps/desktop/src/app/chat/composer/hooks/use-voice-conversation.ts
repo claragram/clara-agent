@@ -460,7 +460,7 @@ export function useVoiceConversation({
         ensureBargeMonitor()
 
         const playback = playSpeechText(response.text, { source: 'voice-conversation' })
-        // playSpeechText performs its normal cleanup synchronously before
+        // playSpeechText performs its normal cleanup __PROT_0_synchroclaraly__ before
         // returning. Capture the sequence after that internal increment so
         // only a later, external stop suppresses the next listen cycle.
         speechStartSequenceRef.current = $voicePlayback.get().sequence

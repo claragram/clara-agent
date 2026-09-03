@@ -215,7 +215,7 @@ A UML sequence diagram for the 'Place Order' use case in an e-commerce system. S
 
   <line x1="110" y1="609" x2="148" y2="609"
         stroke="var(--text-primary)" stroke-width="1.5" marker-end="url(#arr-call)"/>
-  <text class="ts" x="154" y="613" opacity=".75">Synchronous call</text>
+  <text class="ts" x="154" y="613" opacity=".75">synchronous call</text>
 
   <line x1="288" y1="609" x2="326" y2="609"
         stroke="var(--text-secondary)" stroke-width="1.5"
@@ -303,7 +303,7 @@ Add these classes to the hosting page `<style>` block (in addition to the standa
 |---------|-------|--------|
 | Actor header boxes | Neutral (`var(--bg-secondary)`) | Structural / non-semantic — all lifelines share one style |
 | Activation bars | Neutral (`var(--bg-secondary)`) | Show execution periods without adding semantic color |
-| Synchronous call arrows | `var(--text-primary)` + filled triangle | High contrast for calls — the primary interaction direction |
+| synchronous call arrows | `var(--text-primary)` + filled triangle | High contrast for calls — the primary interaction direction |
 | Return / dashed arrows | `var(--text-secondary)` + open chevron | Lower contrast for returns — secondary flow direction |
 | `alt` fragment | Amber (`#FAEEDA` / `#854F0B`) | Warning / conditional — matches `c-amber` semantic meaning |
 | Guard condition text | Amber italic | Belongs visually to the alt fragment |

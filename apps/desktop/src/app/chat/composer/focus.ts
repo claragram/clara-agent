@@ -5,7 +5,7 @@
  * Cmd+L, preview console, etc.) dispatch through here. Each composer subscribes
  * and routes the work back into its own ref/state.
  *
- * `dispatch` defers to a macrotask so synchronous click/keydown handlers
+ * `dispatch` defers to a macrotask so __PROT_0_synchroclara__ click/keydown handlers
  * (react-arborist row focus, picker `node.select()`) finish first and don't
  * steal focus from the composer effect.
  */
@@ -43,13 +43,13 @@ interface AttachImagesDetail {
   target: ComposerTarget
 }
 
-const FOCUS_EVENT = 'hermes:composer-focus'
-const INSERT_EVENT = 'hermes:composer-insert'
-const ATTACH_IMAGES_EVENT = 'hermes:composer-attach-images'
-const INSERT_REFS_EVENT = 'hermes:composer-insert-refs'
-const SUBMIT_EVENT = 'hermes:composer-submit'
-const VOICE_TOGGLE_EVENT = 'hermes:composer-voice-toggle'
-const MODEL_MENU_EVENT = 'hermes:composer-model-menu'
+const FOCUS_EVENT = 'clara:composer-focus'
+const INSERT_EVENT = 'clara:composer-insert'
+const ATTACH_IMAGES_EVENT = 'clara:composer-attach-images'
+const INSERT_REFS_EVENT = 'clara:composer-insert-refs'
+const SUBMIT_EVENT = 'clara:composer-submit'
+const VOICE_TOGGLE_EVENT = 'clara:composer-voice-toggle'
+const MODEL_MENU_EVENT = 'clara:composer-model-menu'
 
 /** Inline edit composer root — mounted only while a user bubble is being edited. */
 const EDIT_COMPOSER_ROOT = '[data-slot="aui_edit-composer-root"]'

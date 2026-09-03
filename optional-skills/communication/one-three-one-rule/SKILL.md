@@ -7,7 +7,7 @@ author: Willard Moore
 license: MIT
 category: communication
 metadata:
-  hermes:
+  clara:
     tags: [communication, decision-making, proposals, trade-offs]
 ---
 

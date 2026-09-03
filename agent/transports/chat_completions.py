@@ -1,7 +1,7 @@
 """OpenAI Chat Completions transport.
 
 Handles the default api_mode ('chat_completions') used by ~16 OpenAI-compatible
-providers (OpenRouter, Nous, NVIDIA, Qwen, Ollama, DeepSeek, xAI, Kimi, etc.).
+providers (OpenRouter, Clara, NVIDIA, Qwen, Ollama, DeepSeek, xAI, Kimi, etc.).
 
 Messages and tools are already in OpenAI format — convert_messages and
 convert_tools are near-identity.  The complexity lives in build_kwargs
@@ -38,7 +38,7 @@ from agent.transports.types import NormalizedResponse, ToolCall, Usage
 # declaration and map the alias back in normalize_response. The alias value
 # matches _CODEX_TOOL_SEARCH_ALIAS from the Codex-side fix for the same
 # reserved-name class (#83122) so the two transports stay consistent.
-_XAI_TOOL_SEARCH_ALIAS = "hermes_tool_search"
+_XAI_TOOL_SEARCH_ALIAS = "clara_tool_search"
 
 
 def _rename_tool_search_bridge_for_xai(
@@ -52,7 +52,7 @@ def _rename_tool_search_bridge_for_xai(
     ``alias_map`` maps each alias THIS request emits back to the original
     name; the caller stashes it on the transport so ``normalize_response``
     only reverses aliases that were actually sent. If a real tool already
-    occupies ``hermes_tool_search``, the bridge takes a ``_2``/``_3``
+    occupies ``clara_tool_search``, the bridge takes a ``_2``/``_3``
     suffix instead of duplicating a wire name.
     """
     rewritten: list[dict[str, Any]] = []
@@ -171,7 +171,7 @@ def _add_prompt_cache_key(
 def _reasoning_config_for_model(model: str, reasoning_config: dict | None) -> dict | None:
     """Return the model's wire-compatible reasoning config.
 
-    Hermes' internal effort set extends the wire vocabulary with ``ultra``
+    Clara' internal effort set extends the wire vocabulary with ``ultra``
     (the /reasoning command documents none..xhigh|max|ultra). OpenAI-
     compatible wires — OpenRouter chief among them — accept exactly
     max|xhigh|high|medium|low|minimal|none and reject the extension with
@@ -193,7 +193,7 @@ def _reasoning_config_for_model(model: str, reasoning_config: dict | None) -> di
 
 
 def _build_gemini_thinking_config(model: str, reasoning_config: dict | None) -> dict | None:
-    """Translate Hermes/OpenRouter-style reasoning config to Gemini thinkingConfig."""
+    """Translate Clara/OpenRouter-style reasoning config to Gemini thinkingConfig."""
     if reasoning_config is None or not isinstance(reasoning_config, dict):
         return None
 
@@ -220,7 +220,7 @@ def _build_gemini_thinking_config(model: str, reasoning_config: dict | None) -> 
 
     thinking_config: Dict[str, Any] = {"includeThoughts": True}
 
-    # Gemini 2.5 accepts thinkingBudget; don't guess a budget from Hermes'
+    # Gemini 2.5 accepts thinkingBudget; don't guess a budget from Clara'
     # coarse effort levels. ``includeThoughts`` alone is enough to surface
     # thought parts without risking request validation errors.
     if normalized_model.startswith("gemini-2.5-"):
@@ -230,7 +230,7 @@ def _build_gemini_thinking_config(model: str, reasoning_config: dict | None) -> 
         effort = "medium"
 
     # Gemini 3 Flash documents low/medium/high thinking levels; Gemini 3 Pro
-    # is stricter (low/high). Clamp Hermes' wider effort set to what each
+    # is stricter (low/high). Clamp Clara' wider effort set to what each
     # family accepts so we never forward an undocumented level verbatim.
     if normalized_model.startswith(("gemini-3", "gemini-3.1")):
         if "flash" in normalized_model:
@@ -271,7 +271,7 @@ def _raise_gemini_thinking_max_tokens(
     """Raise Gemini output caps that thinking tokens would otherwise consume.
 
     Gemini bills thought tokens against maxOutputTokens / max_tokens. A
-    global Hermes cap of 4096 is enough for visible text, but Ultra/high
+    global Clara cap of 4096 is enough for visible text, but Ultra/high
     thinking can exhaust it on the first request and abort after four
     length-continuations.
     """
@@ -368,7 +368,7 @@ class ChatCompletionsTransport(ProviderTransport):
           ``Extra inputs are not permitted, field: 'messages[N].tool_name'``.
           Permissive providers (OpenRouter, MiniMax) silently ignore the
           field, which masked the bug for months.
-        - Hermes-internal scaffolding markers — any top-level message key
+        - Clara-internal scaffolding markers — any top-level message key
           starting with ``_`` (e.g. ``_empty_recovery_synthetic``,
           ``_empty_terminal_sentinel``, ``_thinking_prefill``). These are
           bookkeeping flags the agent loop attaches to messages so the
@@ -487,7 +487,7 @@ class ChatCompletionsTransport(ProviderTransport):
                 out_msg.pop("bedrock_content_blocks", None)
 
 
-            # Drop all Hermes-internal scaffolding markers (``_``-prefixed).
+            # Drop all Clara-internal scaffolding markers (``_``-prefixed).
             # OpenAI's message schema has no ``_``-prefixed fields, so this
             # is safe and future-proofs against new markers being added.
             internal_keys = [k for k in msg if isinstance(k, str) and k.startswith("_")]
@@ -569,7 +569,7 @@ class ChatCompletionsTransport(ProviderTransport):
             # (i.e. custom / unregistered providers). Known providers all go
             # through provider_profile.
             is_openrouter: bool
-            is_nous: bool
+            is_clara: bool
             is_qwen_portal: bool
             is_github_models: bool
             is_nvidia_nim: bool
@@ -591,7 +591,7 @@ class ChatCompletionsTransport(ProviderTransport):
             supports_reasoning: bool
             github_reasoning_extra: dict | None
             lmstudio_reasoning_options: list[str] | None  # raw allowed_options from /api/v1/models
-            # Claude on OpenRouter/Nous max output
+            # Claude on OpenRouter/Clara max output
             anthropic_max_output: int | None
             extra_body_additions: dict | None
             supports_prompt_cache_key: bool — explicit endpoint capability for
@@ -636,7 +636,7 @@ class ChatCompletionsTransport(ProviderTransport):
         # Tools
         if tools:
             # Moonshot/Kimi uses a stricter flavored JSON Schema.  Rewriting
-            # tool parameters here keeps aggregator routes (Nous, OpenRouter,
+            # tool parameters here keeps aggregator routes (Clara, OpenRouter,
             # etc.) compatible, in addition to direct moonshot.ai endpoints.
             if is_moonshot_model(model):
                 tools = sanitize_moonshot_tools(tools)
@@ -952,7 +952,7 @@ class ChatCompletionsTransport(ProviderTransport):
             # keys (tags, reasoning, provider, plugins, …) are unknown fields
             # there and Gemini rejects the whole request with a non-retryable
             # HTTP 400 ("Invalid JSON payload received. Unknown name 'tags'").
-            # This happens when a profile that emits extra_body (e.g. the Nous
+            # This happens when a profile that emits extra_body (e.g. the Clara
             # profile's portal `tags`) is active but the resolved endpoint is a
             # Gemini base_url — typical when only Google credentials are set and
             # a fallback/aux call lands on Gemini. The native client only reads
@@ -1006,14 +1006,14 @@ class ChatCompletionsTransport(ProviderTransport):
                 tc_function = getattr(tc, "function", None)
                 function_name = getattr(tc_function, "name", None)
                 # Match Relay's codec: skip absent function/name fields, but
-                # preserve an explicit blank name for Hermes's recovery path.
+                # preserve an explicit blank name for Clara's recovery path.
                 if tc_function is None or function_name is None:
                     continue
                 # Map THIS request's wire aliases back before dispatch.
                 # Request-local provenance: when the paired request recorded
                 # its alias map, only those aliases are reversed — a real
                 # user/plugin/MCP tool that happens to be named
-                # ``hermes_tool_search`` dispatches as itself when no alias
+                # ``clara_tool_search`` dispatches as itself when no alias
                 # was emitted. The static-constant fallback covers
                 # normalize-only call sites with no recorded request.
                 _alias_map = self._last_wire_aliases
@@ -1086,7 +1086,7 @@ class ChatCompletionsTransport(ProviderTransport):
         # OpenAI structured-refusal field. When a model declines, the SDK
         # populates ``message.refusal`` with the explanation and leaves
         # ``content`` empty. OpenAI-compatible proxies that front Anthropic /
-        # Bedrock (e.g. Nous Portal) surface a Claude refusal this way — or via
+        # Bedrock (e.g. Clara Portal) surface a Claude refusal this way — or via
         # ``finish_reason="content_filter"`` — instead of the native
         # ``stop_reason="refusal"``. Without capturing it the refusal looks
         # like an empty response, so the agent loop retries a deterministic

@@ -13,7 +13,7 @@ Size caps (documented contract):
   untouched — the notepad is prompt-injected each run, so unbounded growth
   would bloat every wake-up's prompt.
 
-Write path is the CLI (``hermes cron notepad <job_id> set <key> <value>``),
+Write path is the CLI (``clara cron notepad <job_id> set <key> <value>``),
 which the running agent invokes via its terminal tool; no model tool is
 added.
 
@@ -29,11 +29,11 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional
 
-from hermes_constants import get_hermes_home
-from hermes_time import now as _hermes_now
+from clara_constants import get_clara_home
+from clara_time import now as _clara_now
 
 # Optional test override. Production resolves the path at transaction time so
-# multiplexed profile ticks (set_hermes_home_override) cannot leak one
+# multiplexed profile ticks (set_clara_home_override) cannot leak one
 # profile's notepad rows into the import-time home — and remove_job's
 # clear_notepad cannot wipe the wrong profile's DB (#86519). Same pattern as
 # cron/executions.py.
@@ -45,7 +45,7 @@ _lock = threading.RLock()
 
 
 def _current_notepad_file() -> Path:
-    return NOTEPAD_FILE or (get_hermes_home().resolve() / "cron" / "notepad.db")
+    return NOTEPAD_FILE or (get_clara_home().resolve() / "cron" / "notepad.db")
 
 
 def _connect() -> sqlite3.Connection:
@@ -57,7 +57,7 @@ def _connect() -> sqlite3.Connection:
 
 
 def _initialize_schema(conn: sqlite3.Connection) -> None:
-    from hermes_state import apply_wal_with_fallback
+    from clara_state import apply_wal_with_fallback
 
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA busy_timeout=5000")
@@ -108,7 +108,7 @@ def set_note(job_id: str, key: str, value: str) -> Dict[str, Any]:
     """Upsert one key. Raises ValueError when a size cap would be exceeded."""
     job_id, key, value = str(job_id), str(key), str(value)
     _validate(job_id, key, value)
-    now = _hermes_now().isoformat()
+    now = _clara_now().isoformat()
     with _transaction() as conn:
         row = conn.execute(
             """SELECT COALESCE(SUM(LENGTH(CAST(key AS BLOB))
@@ -194,7 +194,7 @@ def render_notepad_section(job_id: str) -> str:
         "## Job notepad (persistent across runs)\n"
         "This durable scratchpad survives between scheduled runs of this "
         "job. Update it via the CLI, e.g.:\n"
-        f"`hermes cron notepad {job_id} set <key> <value>` "
-        f"(also: get/delete/list; `hermes cron notepad {job_id} delete "
+        f"`clara cron notepad {job_id} set <key> <value>` "
+        f"(also: get/delete/list; `clara cron notepad {job_id} delete "
         "<key>` removes an entry).\n\n" + "\n".join(lines) + "\n\n"
     )

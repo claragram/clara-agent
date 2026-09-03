@@ -480,7 +480,7 @@ class WebhookAdapter(BasePlatformAdapter):
         Set via ``platforms.webhook.extra.routes.<name>.toolsets`` in
         config.yaml or a ``toolsets`` key on a subscription in
         ``webhook_subscriptions.json`` (manual edit — deliberately NOT
-        exposed through `hermes webhook subscribe`, so an agent-created
+        exposed through `clara webhook subscribe`, so an agent-created
         subscription cannot self-grant elevated tools).
         """
         chat_id = str(getattr(source, "chat_id", "") or "")
@@ -506,9 +506,9 @@ class WebhookAdapter(BasePlatformAdapter):
 
     def _reload_dynamic_routes(self) -> None:
         """Reload agent-created subscriptions from disk if the file changed."""
-        from hermes_constants import get_hermes_home
-        hermes_home = get_hermes_home()
-        subs_path = hermes_home / _DYNAMIC_ROUTES_FILENAME
+        from clara_constants import get_clara_home
+        clara_home = get_clara_home()
+        subs_path = clara_home / _DYNAMIC_ROUTES_FILENAME
         if not subs_path.exists():
             if self._dynamic_routes:
                 self._dynamic_routes = {}
@@ -588,7 +588,7 @@ class WebhookAdapter(BasePlatformAdapter):
             # the prefix served the gateway owner's routes/config under
             # another profile's URL (#91583 defect 2).
             try:
-                from hermes_cli.profiles import profile_matches_home
+                from clara_cli.profiles import profile_matches_home
 
                 if profile_matches_home(profile):
                     return None
@@ -596,7 +596,7 @@ class WebhookAdapter(BasePlatformAdapter):
                 pass
             return _PROFILE_REJECTED
         try:
-            from hermes_cli.profiles import profiles_to_serve
+            from clara_cli.profiles import profiles_to_serve
             served = {
                 name
                 for name, _ in profiles_to_serve(
@@ -645,7 +645,7 @@ class WebhookAdapter(BasePlatformAdapter):
         if not profile or not isinstance(profile, str):
             return nullcontext()
         from gateway.run import _profile_runtime_scope
-        from hermes_cli.profiles import get_profile_dir
+        from clara_cli.profiles import get_profile_dir
 
         return _profile_runtime_scope(get_profile_dir(profile))
 
@@ -1080,7 +1080,7 @@ class WebhookAdapter(BasePlatformAdapter):
                 )
                 return
             # AsyncSessionDB forwards end_session via asyncio.to_thread; a
-            # plain SessionDB exposes it synchronously.  Handle both.
+            # plain SessionDB exposes it __PROT_0_synchroclaraly__.  Handle both.
             _end = session_db.end_session
             result = _end(session_id, "webhook_complete")
             if asyncio.iscoroutine(result):

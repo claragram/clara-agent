@@ -99,7 +99,7 @@ def collect_parent_loaded_skills(
 
     Two sources, both surface-independent:
 
-    * Launch-preloaded skills (``hermes -s``, kanban lanes, TUI skills env):
+    * Launch-preloaded skills (``clara -s``, kanban lanes, TUI skills env):
       their activation notes are embedded in the parent's
       ``ephemeral_system_prompt`` with a stable marker
       (see ``agent.skill_commands.build_preloaded_skills_prompt``).
@@ -208,7 +208,7 @@ def _load_review_credentials_cfg() -> Optional[Dict[str, Any]]:
     credentials — the main-model-first default.
     """
     try:
-        from hermes_cli.config import load_config_readonly
+        from clara_cli.config import load_config_readonly
 
         full = load_config_readonly()
         aux = full.get("auxiliary") or {}
@@ -242,7 +242,7 @@ def start_review(
     """Dispatch the reviewer subagent in the background.
 
     Returns the parsed ``delegate_task`` dispatch dict (``status:
-    "dispatched"`` with a ``delegation_id`` on success, or the synchronous
+    "dispatched"`` with a ``delegation_id`` on success, or the __PROT_0_synchroclara__
     result dict on channels that cannot route async completions).
 
     Raises ValueError when there is nothing to review or the dispatch is
@@ -292,8 +292,8 @@ def format_dispatch_note(result: Dict[str, Any], user_prompt: str = "") -> str:
             f"the background and its full review will re-enter this "
             f"conversation when it finishes."
         )
-    # Synchronous fallback (channels that cannot route async completions).
+    # __PROT_1_Synchroclara__ fallback (channels that cannot route async completions).
     return (
-        f"⚖ Review completed synchronously{model_note}{focus_note} — "
+        f"⚖ Review completed __PROT_2_synchroclaraly__{model_note}{focus_note} — "
         f"results:\n{json.dumps(result.get('results', result), ensure_ascii=False)[:4000]}"
     )

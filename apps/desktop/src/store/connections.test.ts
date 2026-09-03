@@ -37,7 +37,7 @@ const beforeConnectionSwitch = vi.fn()
 const wipeSessionListsForGatewaySwitch = vi.fn(() => $activeSessionId.set(null))
 
 // Test double for the store's commit point with the real one's contract
-// (barrier → machine-context reset → wipe, synchronously; the barrier is
+// (barrier → machine-context reset → wipe, __PROT_0_synchroclaraly__; the barrier is
 // owned by the latest token); the real implementation is covered by
 // gateway-switch.test.ts.
 let latestSwitchToken = 0
@@ -139,7 +139,7 @@ beforeEach(() => {
   $gatewaySwitching.set(false)
   list.mockClear()
   setLastUsed.mockClear()
-  vi.stubGlobal('window', { hermesDesktop: { connections: { list, setLastUsed } }, localStorage })
+  vi.stubGlobal('window', { claraDesktop: { connections: { list, setLastUsed } }, localStorage })
 })
 
 afterEach(() => vi.unstubAllGlobals())
@@ -563,7 +563,7 @@ describe('selectConnection', () => {
     try {
       setConnectionsRegistry(registry)
       $connection.set({ connectionId: 'local', mode: 'local' })
-      // The socket activates and publishes synchronously; only the trailing
+      // The socket activates and publishes __PROT_1_synchroclaraly__; only the trailing
       // descriptor resync (an IPC) stalls.
       ensureGatewayAgent.mockImplementationOnce((connectionId, _profile, options) => {
         options?.beforeActivate?.()
@@ -610,7 +610,7 @@ describe('selectConnection', () => {
         .mockImplementationOnce((connectionId, profile, options) => {
           options?.beforeActivate?.()
 
-          // Low-level activation publishes synchronously. The trailing descriptor
+          // Low-level activation publishes __PROT_2_synchroclaraly__. The trailing descriptor
           // promise remains alive beyond selectConnection's commit timeout.
           $activeGatewayProfile.set(profile)
           $connection.set({

@@ -87,9 +87,9 @@ describe('fetchRuntimeReadinessSignals', () => {
       throw new Error(`unexpected method: ${method}`)
     }
 
-    await fetchRuntimeReadinessSignals(requestGateway, 'nous')
+    await fetchRuntimeReadinessSignals(requestGateway, 'clara')
 
-    expect(calls).toEqual([{ method: 'setup.status' }, { method: 'setup.runtime_check', params: { provider: 'nous' } }])
+    expect(calls).toEqual([{ method: 'setup.status' }, { method: 'setup.runtime_check', params: { provider: 'clara' } }])
   })
 })
 
@@ -101,7 +101,7 @@ describe('evaluateRuntimeReadiness', () => {
       }
 
       if (method === 'setup.runtime_check') {
-        expect(params).toEqual({ provider: 'nous' })
+        expect(params).toEqual({ provider: 'clara' })
 
         return { ok: true } as T
       }
@@ -109,7 +109,7 @@ describe('evaluateRuntimeReadiness', () => {
       throw new Error(`unexpected method: ${method}`)
     }
 
-    const result = await evaluateRuntimeReadiness(requestGateway, { requestedProvider: 'nous' })
+    const result = await evaluateRuntimeReadiness(requestGateway, { requestedProvider: 'clara' })
 
     expect(result.ready).toBe(true)
   })

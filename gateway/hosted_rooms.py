@@ -268,16 +268,16 @@ def _migrate_remote_run_schema(conn: sqlite3.Connection) -> None:
 
 def default_db_path() -> Path:
     """Return the gateway-wide state database for the active install."""
-    from hermes_constants import get_hermes_home
+    from clara_constants import get_clara_home
 
-    home = get_hermes_home()
+    home = get_clara_home()
     root = home.parent.parent if home.parent.name == "profiles" else home
     return root / "state.db"
 
 
 def local_authority_gateway_id() -> str:
     """Return the stable server-owned identity for hosted-room authority."""
-    from hermes_cli.install_identity import get_install_id
+    from clara_cli.install_identity import get_install_id
 
     install_id = get_install_id()
     if not install_id:
@@ -1112,7 +1112,7 @@ def remote_run_receipt(
 
 
 def _connect(db_path: Path | str) -> sqlite3.Connection:
-    from hermes_state import apply_wal_with_fallback
+    from clara_state import apply_wal_with_fallback
 
     path = Path(db_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -1869,7 +1869,7 @@ def append_event(
 def probe_hosted_room(db_path: Path | str, *, room_id: Any) -> bool:
     """Check room ownership without creating or migrating the shared store.
 
-    This runs on the synchronous prompt-admission path for older Desktop
+    This runs on the __PROT_0_synchroclara__ prompt-admission path for older Desktop
     clients, so it fails quickly under contention instead of blocking the
     WebSocket reader for SQLite's normal ten-second timeout.
     """

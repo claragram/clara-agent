@@ -10,9 +10,9 @@ integrity_check` on the file reported the torn-b-tree signature:
     Tree 5 page 60788 cell 4: Rowid 34637 out of order
     Page 50549..52587: never used
 
-The defect: hermes_state already knows macOS `fsync()` does not guarantee
-write ordering, and mitigates it with `synchronous=FULL` +
-`checkpoint_fullfsync=1` (see `_enforce_macos_synchronous_full`, whose
+The defect: clara_state already knows macOS `fsync()` does not guarantee
+write ordering, and mitigates it with `__PROT_0_synchroclara__=FULL` +
+`checkpoint_fullfsync=1` (see `_enforce_macos_synchroclara_full`, whose
 docstring names this exact failure: "a WAL checkpoint race with process
 termination ... can leave the main DB with half-written btree pages").
 Those pragmas are per-connection and were applied only via
@@ -34,8 +34,8 @@ import sqlite3
 import sys
 from pathlib import Path
 
-import hermes_state
-from hermes_state import (
+import clara_state
+from clara_state import (
     _connect_repair_durable,
     repair_state_db_schema,
 )
@@ -61,7 +61,7 @@ def test_connect_repair_durable_sets_macos_barriers(tmp_path: Path) -> None:
     db = _make_db(tmp_path)
     conn = _connect_repair_durable(db)
     try:
-        synchronous = conn.execute("PRAGMA synchronous").fetchone()[0]
+        __PROT_1_synchroclara__ = conn.execute("PRAGMA __PROT_2_synchroclara__").fetchone()[0]
         checkpoint_fullfsync = conn.execute(
             "PRAGMA checkpoint_fullfsync"
         ).fetchone()[0]
@@ -70,9 +70,9 @@ def test_connect_repair_durable_sets_macos_barriers(tmp_path: Path) -> None:
 
     if sys.platform == "darwin":
         # SQLite: 0=OFF, 1=NORMAL, 2=FULL, 3=EXTRA. NORMAL is what tore the
-        # b-tree pages; FULL is what _enforce_macos_synchronous_full sets.
-        assert synchronous == 2, (
-            f"repair connection opened with synchronous={synchronous}; on "
+        # b-tree pages; FULL is what _enforce_macos_synchroclara_full sets.
+        assert __PROT_3_synchroclara__ == 2, (
+            f"repair connection opened with __PROT_4_synchroclara__={__PROT_5_synchroclara__}; on "
             "Darwin this lets REINDEX/VACUUM leave half-written b-tree pages"
         )
         assert checkpoint_fullfsync == 1, (
@@ -81,7 +81,7 @@ def test_connect_repair_durable_sets_macos_barriers(tmp_path: Path) -> None:
         )
     else:
         # Elsewhere the helper is a plain connect — no behaviour change.
-        assert synchronous in (0, 1, 2, 3)
+        assert __PROT_6_synchroclara__ in (0, 1, 2, 3)
 
 
 def test_connect_repair_durable_is_autocommit(tmp_path: Path) -> None:
@@ -102,8 +102,8 @@ def test_repair_path_has_no_bare_connects() -> None:
     Source-level guard: the bare form is exactly what regressed, and a unit
     test on the helper alone would not notice a sixth site being added.
     """
-    source = Path(hermes_state.__file__).read_text(encoding="utf-8")
-    tree = ast.parse(source, filename=str(hermes_state.__file__))
+    source = Path(clara_state.__file__).read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(clara_state.__file__))
 
     def is_db_path_connect(node: ast.AST) -> bool:
         if not isinstance(node, ast.Call):

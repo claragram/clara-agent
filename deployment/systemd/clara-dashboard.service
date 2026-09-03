@@ -1,0 +1,19 @@
+[Unit]
+Description=Clara Web Dashboard & Session Manager (Workprise)
+After=network.target clara-gateway.service
+Wants=clara-gateway.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/clara-agent
+Environment=PATH=/opt/clara-agent/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=CLARA_LANGUAGE=fr
+EnvironmentFile=-/opt/clara-agent/.env
+ExecStart=/opt/clara-agent/.venv/bin/clara dashboard --host 127.0.0.1 --port 9119 --no-open --skip-build
+Restart=always
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

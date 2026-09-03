@@ -6,7 +6,7 @@
  * listens.
  */
 
-import type { RpcEvent } from '@/types/hermes'
+import type { RpcEvent } from '@/types/clara'
 
 export type GatewayEventListener = (event: RpcEvent) => void
 

@@ -2,7 +2,7 @@ import { useStore } from '@nanostores/react'
 import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
 
 import { graftRefreshedTailOntoBackfill } from '@/app/chat/transcript-backfill'
-import { getLatestSessionMessages, type ProfileScope } from '@/hermes'
+import { getLatestSessionMessages, type ProfileScope } from '@/clara'
 import { preserveLocalAssistantErrors, sealOpenToolParts, toChatMessages } from '@/lib/chat-messages'
 import { createClientSessionState } from '@/lib/chat-runtime'
 import { sessionMessagesSignature } from '@/lib/session-signatures'
@@ -494,7 +494,7 @@ interface BackgroundSyncParams {
   refreshActiveTranscript: () => Promise<unknown> | unknown
   refreshCronJobs: () => Promise<unknown> | unknown
   refreshCurrentModel: (force?: boolean) => Promise<unknown> | unknown
-  refreshHermesConfig: () => Promise<unknown> | unknown
+  refreshClaraConfig: () => Promise<unknown> | unknown
   refreshMessagingSessions: () => Promise<unknown> | unknown
   refreshSessions: () => Promise<unknown> | unknown
   requestGateway: GatewayRequester
@@ -567,7 +567,7 @@ export function useBackgroundSync({
   refreshActiveTranscript,
   refreshCronJobs,
   refreshCurrentModel,
-  refreshHermesConfig,
+  refreshClaraConfig,
   refreshMessagingSessions,
   refreshSessions,
   requestGateway,
@@ -906,7 +906,7 @@ export function useBackgroundSync({
   useEffect(() => {
     if (gatewayState === 'open' && !activeSessionId && freshDraftReady) {
       void refreshCurrentModel()
-      void refreshHermesConfig()
+      void refreshClaraConfig()
     }
-  }, [activeSessionId, freshDraftReady, gatewayState, refreshCurrentModel, refreshHermesConfig])
+  }, [activeSessionId, freshDraftReady, gatewayState, refreshCurrentModel, refreshClaraConfig])
 }

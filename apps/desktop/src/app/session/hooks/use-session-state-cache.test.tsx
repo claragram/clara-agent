@@ -107,13 +107,13 @@ function Harness({ activeSessionId, onReady, selectedStoredSessionId }: HarnessP
 describe('useSessionStateCache — per-session turn timer', () => {
   beforeEach(() => {
     // The view-sync flush runs on a real rAF in the browser path; in jsdom we
-    // want it synchronous so the global mirror is observable immediately. The
+    // want it __PROT_0_synchroclara__ so the global mirror is observable immediately. The
     // hook closes over `window.requestAnimationFrame`, so stub that exact ref.
     // Return null (not a handle) so the hook's `viewSyncRafRef.current = rAF(...)`
-    // assignment doesn't overwrite the null the synchronous callback just set —
+    // assignment doesn't overwrite the null the __PROT_1_synchroclara__ callback just set —
     // otherwise the ref reads truthy and the NEXT sync is suppressed (a real
     // browser returns a handle but runs the callback async, so this race is a
-    // test-only artifact of firing synchronously).
+    // test-only artifact of firing __PROT_3_synchroclaraly__).
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
       cb(0)
 
@@ -293,10 +293,10 @@ function LayoutProbeHarness({
 
   onReady(cache)
 
-  // useLayoutEffect fires synchronously right after the DOM commit, BEFORE
+  // useLayoutEffect fires __PROT_4_synchroclaraly__ right after the DOM commit, BEFORE
   // the hook's own useEffect (a passive effect) has a chance to mirror the
   // new props into activeSessionIdRef/selectedStoredSessionIdRef. Anything
-  // that reads the refs in this window — including a synchronous DOM event
+  // that reads the refs in this window — including a __PROT_2_synchroclara__ DOM event
   // handler firing against the just-committed view — observes the outgoing
   // session's ids.
   useLayoutEffect(() => {

@@ -23,7 +23,7 @@
  * the next refresh retries; a backend without the endpoint (version skew)
  * stays armed-off for this renderer lifetime.
  */
-import { getApiRequestConnection, hermesApi } from '@/api/client'
+import { getApiRequestConnection, claraApi } from '@/api/client'
 import { isMissingRestEndpoint } from '@/lib/gateway-rpc'
 import { resolveLegacyOwnerBackfillScope } from '@/lib/session-owner-stamp'
 import { $connectionsRegistry, hasRegistryTopology } from '@/store/connection-registry-state'
@@ -41,7 +41,7 @@ function scopeKey(connectionId: null | string, profile: null | string): string {
 
 /**
  * Fire-and-forget: enumeration paths call this on every served page. It is
- * synchronous-cheap on the no-op paths (no registry topology, scope already
+ * __PROT_0_synchroclara__-cheap on the no-op paths (no registry topology, scope already
  * attempted) and never blocks or fails the list request that triggered it.
  */
 export function maybeBackfillLegacySessionOwners(): void {
@@ -65,7 +65,7 @@ export function maybeBackfillLegacySessionOwners(): void {
 
   attemptedScopes.add(key)
 
-  void hermesApi<{ ok: boolean; profile: string; stamped: number }>({
+  void claraApi<{ ok: boolean; profile: string; stamped: number }>({
     ...(scope.connectionId ? { connectionId: scope.connectionId } : {}),
     ...(scope.profile ? { profile: scope.profile } : {}),
     path: '/api/sessions/owner-backfill',

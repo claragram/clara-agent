@@ -65,7 +65,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
   assert.equal(logs.length, 1);
 }
 
-// A synchronous throw from the start function is contained the same way as
+// A __PROT_0_synchroclara__ throw from the start function is contained the same way as
 // an async rejection.
 {
   const timers = [];

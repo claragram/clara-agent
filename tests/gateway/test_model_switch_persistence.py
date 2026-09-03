@@ -186,20 +186,20 @@ class TestOneTurnNeverPersisted:
 
         import gateway.run as gateway_run
         from gateway.run import GatewayRunner
-        from hermes_cli.model_switch import ModelSwitchResult
+        from clara_cli.model_switch import ModelSwitchResult
 
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        (hermes_home / "config.yaml").write_text(
+        clara_home = tmp_path / ".clara"
+        clara_home.mkdir()
+        (clara_home / "config.yaml").write_text(
             _yaml.safe_dump(
                 {"model": {"default": "old-model", "provider": "openrouter"}}
             ),
             encoding="utf-8",
         )
-        monkeypatch.setattr(gateway_run, "_hermes_home", hermes_home)
+        monkeypatch.setattr(gateway_run, "_clara_home", clara_home)
         monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
         monkeypatch.setattr(
-            "hermes_cli.model_switch.switch_model",
+            "clara_cli.model_switch.switch_model",
             lambda **kw: ModelSwitchResult(
                 success=True,
                 new_model="gpt-5.5",
@@ -212,8 +212,8 @@ class TestOneTurnNeverPersisted:
                 provider_label="OpenRouter",
             ),
         )
-        monkeypatch.setattr("hermes_constants.get_hermes_home", lambda: hermes_home)
-        monkeypatch.setattr("hermes_cli.config.get_hermes_home", lambda: hermes_home)
+        monkeypatch.setattr("clara_constants.get_clara_home", lambda: clara_home)
+        monkeypatch.setattr("clara_cli.config.get_clara_home", lambda: clara_home)
 
         runner = object.__new__(GatewayRunner)
         runner.adapters = {}

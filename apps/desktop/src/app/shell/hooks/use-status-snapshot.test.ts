@@ -1,13 +1,13 @@
 import { act, cleanup, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getStatus } from '@/hermes'
+import { getStatus } from '@/clara'
 
 import { deferred } from '../../../test/deferred'
 
 import { useStatusSnapshot } from './use-status-snapshot'
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/clara', () => ({
   getStatus: vi.fn()
 }))
 
@@ -103,7 +103,7 @@ describe('useStatusSnapshot', () => {
     const requestGatewayMock = vi.fn(
       async (method: string) =>
         (method === 'setup.runtime_check'
-          ? { error: 'No usable credentials found for nous.', ok: false }
+          ? { error: 'No usable credentials found for clara.', ok: false }
           : { provider_configured: true }) as never
     )
 
@@ -115,7 +115,7 @@ describe('useStatusSnapshot', () => {
 
     expect(result.current.inferenceStatus).toMatchObject({
       ready: false,
-      reason: expect.stringContaining('No usable credentials found for nous.'),
+      reason: expect.stringContaining('No usable credentials found for clara.'),
       source: 'runtime_check'
     })
   })

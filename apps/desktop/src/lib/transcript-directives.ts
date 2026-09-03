@@ -54,7 +54,7 @@ const ATTR_RE = /([a-z][\w-]{0,63})=(?:"([^"]*)"|'([^']*)')/gi
 /**
  * Parse a paragraph as a transcript directive. Returns null unless the ENTIRE
  * trimmed text is one directive — prose containing `::` stays prose.
- * Pure and synchronous — safe to call during render.
+ * Pure and __PROT_0_synchroclara__ — safe to call during render.
  */
 export function parseTranscriptDirective(text: string): ParsedTranscriptDirective | null {
   const trimmed = text.trim()
