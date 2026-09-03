@@ -7,7 +7,7 @@ const config: Config = {
   tagline: 'The self-improving AI agent',
   favicon: 'img/favicon.ico',
 
-  url: 'https://agent.claraprise.com',
+  url: 'https://workprise.fr',
   baseUrl: '/docs/',
 
   organizationName: 'claraprise',

