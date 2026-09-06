@@ -1,0 +1,38 @@
+{
+  "name": "@claragram/clara",
+  "version": "0.21.0",
+  "description": "Clara Agent CLI launcher — run Clara anywhere with npx @claragram/clara",
+  "type": "module",
+  "bin": {
+    "clara": "./bin/clara.mjs"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "clara",
+    "claragram",
+    "ai-agent",
+    "agent",
+    "llm",
+    "cli",
+    "assistant",
+    "terminal"
+  ],
+  "author": "Claragram <support@claragram.com> (https://claragram.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/claragram/clara-agent.git",
+    "directory": "packages/clara"
+  },
+  "homepage": "https://claragram.com",
+  "bugs": {
+    "url": "https://github.com/claragram/clara-agent/issues"
+  }
+}
