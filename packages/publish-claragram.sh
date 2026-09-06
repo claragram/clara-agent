@@ -40,8 +40,9 @@ echo "============================================================"
 
 # If no OTP was provided via argument and stdin is a terminal, prompt for it
 if [ -z "$OTP" ] && [ -t 0 ]; then
-  echo "🔐 If your npm account has 2FA enabled, enter your 6-digit authenticator code."
-  read -p "2FA / OTP Code (press enter to skip if 2FA not enabled): " input_otp
+  echo "🔐 npm account requires Two-Factor Authentication (2FA) to publish packages."
+  echo "📲 Open your Authenticator app (Google Authenticator, Authy, 1Password, etc.)"
+  read -p "Enter 6-digit 2FA / OTP Code: " input_otp
   OTP="$input_otp"
 fi
 
@@ -60,13 +61,34 @@ publish_pkg() {
   echo "------------------------------------------------------------"
   echo "📦 Packaging & Publishing: ${name}@${version}"
   echo "------------------------------------------------------------"
-  
-  if [ -n "$OTP" ]; then
-    npm publish --access public --ignore-scripts --otp="$OTP"
-  else
-    npm publish --access public --ignore-scripts
-  fi
-  echo "✅ Live at: https://www.npmjs.com/package/${name}"
+
+  local attempt=1
+  while [ $attempt -le 3 ]; do
+    local publish_cmd="npm publish --access public --ignore-scripts"
+    if [ -n "$OTP" ]; then
+      publish_cmd="$publish_cmd --otp=$OTP"
+    fi
+
+    echo "⏳ Running: $publish_cmd"
+    if $publish_cmd; then
+      echo "✅ Live at: https://www.npmjs.com/package/${name}"
+      return 0
+    else
+      echo ""
+      echo "⚠️ Publish failed for ${name} (likely requires 2FA or code expired)."
+      if [ -t 0 ]; then
+        echo "📲 Please enter a fresh 6-digit code from your Authenticator app:"
+        read -p "2FA / OTP Code: " OTP
+        attempt=$((attempt + 1))
+      else
+        echo "❌ Cannot prompt in non-interactive mode. Please pass --otp=XXXXXX."
+        return 1
+      fi
+    fi
+  done
+
+  echo "❌ Failed to publish ${name} after 3 attempts."
+  return 1
 }
 
 case "$TARGET" in
