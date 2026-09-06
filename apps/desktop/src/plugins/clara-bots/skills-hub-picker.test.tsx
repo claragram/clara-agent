@@ -13,7 +13,7 @@ import type * as ClaraSdk from '@clara/plugin-sdk'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const HUB_ORIGIN = 'https://agent.claraprise.com'
+const HUB_ORIGIN = 'https://agent.claragram.com'
 
 const mocks = vi.hoisted(() => ({
   notify: vi.fn(),

@@ -295,7 +295,7 @@ export default function UserStoriesCollage(): JSX.Element {
       <div className={styles.footer}>
         Built something with Clara?{' '}
         <a
-          href="https://github.com/claraprise/clara-agent/edit/main/website/src/data/userStories.json"
+          href="https://github.com/claragram/clara-agent/edit/main/website/src/data/userStories.json"
           target="_blank"
           rel="noopener noreferrer"
         >

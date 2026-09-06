@@ -19,23 +19,23 @@ import React, {
 } from "react";
 import { api, fetchJSON, authedFetch, buildWsUrl, buildWsAuthParam } from "@/lib/api";
 import { cn, timeAgo, isoTimeAgo } from "@/lib/utils";
-import { Badge } from "@nous-research/ui/ui/components/badge";
-import { Button } from "@nous-research/ui/ui/components/button";
-import { Checkbox } from "@nous-research/ui/ui/components/checkbox";
-import { ConfirmDialog } from "@nous-research/ui/ui/components/confirm-dialog";
+import { Badge } from "@claragram/ui/ui/components/badge";
+import { Button } from "@claragram/ui/ui/components/button";
+import { Checkbox } from "@claragram/ui/ui/components/checkbox";
+import { ConfirmDialog } from "@claragram/ui/ui/components/confirm-dialog";
 import {
   Dialog, DialogClose, DialogContent, DialogDescription,
   DialogFooter, DialogHeader, DialogTitle,
-} from "@nous-research/ui/ui/components/dialog";
-import { Toast } from "@nous-research/ui/ui/components/toast";
-import { useConfirmDelete } from "@nous-research/ui/hooks/use-confirm-delete";
-import { useToast } from "@nous-research/ui/hooks/use-toast";
-import { Select, SelectOption } from "@nous-research/ui/ui/components/select";
-import { Card, CardHeader, CardTitle, CardContent } from "@nous-research/ui/ui/components/card";
-import { Input } from "@nous-research/ui/ui/components/input";
-import { Label } from "@nous-research/ui/ui/components/label";
-import { Separator } from "@nous-research/ui/ui/components/separator";
-import { Tabs, TabsList, TabsTrigger } from "@nous-research/ui/ui/components/tabs";
+} from "@claragram/ui/ui/components/dialog";
+import { Toast } from "@claragram/ui/ui/components/toast";
+import { useConfirmDelete } from "@claragram/ui/hooks/use-confirm-delete";
+import { useToast } from "@claragram/ui/hooks/use-toast";
+import { Select, SelectOption } from "@claragram/ui/ui/components/select";
+import { Card, CardHeader, CardTitle, CardContent } from "@claragram/ui/ui/components/card";
+import { Input } from "@claragram/ui/ui/components/input";
+import { Label } from "@claragram/ui/ui/components/label";
+import { Separator } from "@claragram/ui/ui/components/separator";
+import { Tabs, TabsList, TabsTrigger } from "@claragram/ui/ui/components/tabs";
 import { useI18n } from "@/i18n";
 import { registerSlot, PluginSlot } from "./slots";
 
@@ -189,4 +189,8 @@ export function exposePluginSDK() {
     // Hooks
     useI18n,
   };
+
+  // Backwards-compatibility aliases for plugins referencing legacy globals
+  window.__HERMES_PLUGINS__ = window.__CLARA_PLUGINS__;
+  window.__HERMES_PLUGIN_SDK__ = window.__CLARA_PLUGIN_SDK__;
 }

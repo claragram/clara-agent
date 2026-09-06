@@ -6,7 +6,7 @@ description: "Connect Clara Agent to the Clara Portal MCP server so your local a
 
 # Manage Clara Cloud with MCP
 
-[Clara Cloud](https://portal.claraprise.com/cloud) runs hosted Clara Agent instances for you. Normally you manage them from the `/agents` page in the [Clara Portal](/integrations/clara-portal). This guide connects your **local** Clara Agent to the Portal's MCP server so you can manage those cloud instances by just asking — "list my cloud agents", "restart the stopped one", "what's it costing me" — without leaving your terminal.
+[Clara Cloud](https://portal.claragram.com/cloud) runs hosted Clara Agent instances for you. Normally you manage them from the `/agents` page in the [Clara Portal](/integrations/clara-portal). This guide connects your **local** Clara Agent to the Portal's MCP server so you can manage those cloud instances by just asking — "list my cloud agents", "restart the stopped one", "what's it costing me" — without leaving your terminal.
 
 It's a standard [MCP](/user-guide/features/mcp) server hosted by Claragram, gated by the same OAuth login you already use for the Portal. Once connected, Clara gets two tools it can call on your behalf.
 
@@ -28,7 +28,7 @@ Every call runs against **your** org with your Portal identity, and membership i
 
 ## Prerequisites
 
-- A [Clara Portal](/integrations/clara-portal) account with [Clara Cloud](https://portal.claraprise.com/cloud) access (at least one instance, or the ability to create one).
+- A [Clara Portal](/integrations/clara-portal) account with [Clara Cloud](https://portal.claragram.com/cloud) access (at least one instance, or the ability to create one).
 - MCP support installed. If you used the standard install script it's already there; otherwise:
 
   ```bash
@@ -41,7 +41,7 @@ You do **not** need a separate API key or client secret — the server uses OAut
 ## Step 1: add the server
 
 ```bash
-clara mcp add --url https://portal.claraprise.com/mcp --auth oauth clara-cloud
+clara mcp add --url https://portal.claragram.com/mcp --auth oauth clara-cloud
 ```
 
 `--auth oauth` tells Clara this is an OAuth-protected HTTP server. On first connect Clara:
@@ -108,7 +108,7 @@ After `clara mcp add`, the server lives in `~/.clara/config.yaml`:
 ```yaml
 mcp_servers:
   clara-cloud:
-    url: "https://portal.claraprise.com/mcp"
+    url: "https://portal.claragram.com/mcp"
     auth: oauth
 ```
 
@@ -121,7 +121,7 @@ The server exposes both read (`agents`) and mutating (`agent`) tools. If you wan
 ```yaml
 mcp_servers:
   clara-cloud:
-    url: "https://portal.claraprise.com/mcp"
+    url: "https://portal.claragram.com/mcp"
     auth: oauth
     tools:
       include: [agents]
@@ -142,7 +142,7 @@ The stored client registration no longer matches the server (for example, you co
 ```bash
 clara mcp remove clara-cloud
 rm -f ~/.clara/mcp-tokens/clara-cloud.*
-clara mcp add --url https://portal.claraprise.com/mcp --auth oauth clara-cloud
+clara mcp add --url https://portal.claragram.com/mcp --auth oauth clara-cloud
 ```
 
 ### The tools aren't showing up after adding the server

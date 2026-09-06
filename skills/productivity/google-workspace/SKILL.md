@@ -13,7 +13,7 @@ required_credential_files:
 metadata:
   clara:
     tags: [Google, Gmail, Calendar, Drive, Sheets, Docs, Contacts, Email, OAuth]
-    homepage: https://github.com/claraprise/clara-agent
+    homepage: https://github.com/claragram/clara-agent
     related_skills: [himalaya]
 ---
 

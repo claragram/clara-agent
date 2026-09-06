@@ -21,7 +21,7 @@ const TIERS = [
     bullets: ['300+ models', 'Hosted tool usage', '$5 monthly credits'],
     label: 'Visor',
     price: { primary: '$5', primarySuffix: '/mo' },
-    src: '/img/hermes-2.png',
+    src: '/img/clara-2.png',
     tint: '#99bbdd'
   },
   {
@@ -33,7 +33,7 @@ const TIERS = [
     ],
     label: 'Angel',
     price: { primary: '$20', primarySuffix: '/mo' },
-    src: '/img/hermes-3.jpg',
+    src: '/img/clara-3.jpg',
     tint: '#ccaa88'
   },
   {
@@ -45,7 +45,7 @@ const TIERS = [
     ],
     label: 'Herald',
     price: { primary: '$50', primarySuffix: '/mo' },
-    src: '/img/hermes-4.png',
+    src: '/img/clara-4.png',
     tint: '#dd8899'
   },
   {
@@ -57,7 +57,7 @@ const TIERS = [
     ],
     label: 'Muse',
     price: { primary: '$200', primarySuffix: '/mo' },
-    src: '/img/hermes-1.png',
+    src: '/img/clara-1.png',
     tint: '#ccaa88'
   }
 ] as const

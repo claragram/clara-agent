@@ -6,7 +6,7 @@
 # Uses uv for desktop/server installs and Python's stdlib venv + pip on Termux.
 #
 # Usage:
-#   curl -fsSL https://agent.claraprise.com/install.sh | bash
+#   curl -fsSL https://agent.claragram.com/install.sh | bash
 #
 # Or with options:
 #   curl -fsSL ... | bash -s -- --no-venv --skip-setup
@@ -44,7 +44,7 @@ BOLD='\033[1m'
 
 # Configuration
 REPO_URL_SSH="git@github.com:claragram/clara-agent.git"
-REPO_URL_HTTPS="https://github.com/claraprise/clara-agent.git"
+REPO_URL_HTTPS="https://github.com/claragram/clara-agent.git"
 CLARA_HOME="${CLARA_HOME:-$HOME/.clara}"
 # INSTALL_DIR is resolved AFTER arg parsing and OS detection so we can pick an
 # FHS-style layout for root installs.  Track whether the user gave us an
@@ -535,7 +535,7 @@ detect_os() {
             OS="windows"
             DISTRO="windows"
             log_error "Windows detected. Please use the PowerShell installer:"
-            log_info "  iex (irm https://agent.claraprise.com/install.ps1)"
+            log_info "  iex (irm https://agent.claragram.com/install.ps1)"
             exit 1
             ;;
         *)

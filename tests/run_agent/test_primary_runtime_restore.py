@@ -614,7 +614,7 @@ class TestTryRecoverPrimaryTransport:
         """Portal Claude holds a local Anthropic SDK client — rebuild it."""
         agent = _make_agent(
             provider="clara",
-            base_url="https://inference-api.claraprise.com/v1",
+            base_url="https://inference-api.claragram.com/v1",
         )
         agent.api_mode = "anthropic_messages"
         agent.model = "anthropic/claude-opus-4.8"
@@ -623,7 +623,7 @@ class TestTryRecoverPrimaryTransport:
             "model": "anthropic/claude-opus-4.8",
             "provider": "clara",
             "anthropic_api_key": "portal-jwt",
-            "anthropic_base_url": "https://inference-api.claraprise.com/v1",
+            "anthropic_base_url": "https://inference-api.claragram.com/v1",
             "is_anthropic_oauth": False,
         })
         error = _make_transport_error("ReadTimeout")

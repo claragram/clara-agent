@@ -2,7 +2,7 @@
 
 Set via `clara model` (picker) or `clara setup`. 35+ provider profiles ship as
 plugins under `plugins/model-providers/`; user plugins of the same name override.
-Full docs: https://agent.claraprise.com/docs/integrations/providers
+Full docs: https://agent.claragram.com/docs/integrations/providers
 
 ### Providers
 

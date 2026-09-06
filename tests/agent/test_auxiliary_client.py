@@ -399,7 +399,7 @@ class TestBuildCallKwargsMaxTokens:
             ("zai", "glm-5.2", "https://api.z.ai/api/coding/paas/v4", "max_tokens"),
             ("openrouter", "deepseek/deepseek-v4-flash:nitro", "https://openrouter.ai/api/v1", "max_tokens"),
             ("copilot", "gpt-5.5", "https://api.githubcopilot.com", "max_completion_tokens"),
-            ("clara", "clara-4", "https://inference-api.claraprise.com/v1", "max_tokens"),
+            ("clara", "clara-4", "https://inference-api.claragram.com/v1", "max_tokens"),
         ],
     )
     def test_moa_task_sends_max_tokens_on_openai_compatible(self, provider, model, base_url, expected_key):
@@ -1315,11 +1315,11 @@ class TestAuxiliaryPoolAwareness:
             status_code = 401
 
         stale_client = MagicMock()
-        stale_client.base_url = "https://inference-api.claraprise.com/v1"
+        stale_client.base_url = "https://inference-api.claragram.com/v1"
         stale_client.chat.completions.create.side_effect = _Auth401("stale clara key")
 
         fresh_client = MagicMock()
-        fresh_client.base_url = "https://inference-api.claraprise.com/v1"
+        fresh_client.base_url = "https://inference-api.claragram.com/v1"
         fresh_client.chat.completions.create.return_value = {"ok": True}
 
         with (
@@ -1327,7 +1327,7 @@ class TestAuxiliaryPoolAwareness:
             patch("agent.auxiliary_client._get_cached_client", return_value=(stale_client, "clara-model")),
             patch("agent.auxiliary_client.OpenAI", return_value=fresh_client),
             patch("agent.auxiliary_client._validate_llm_response", side_effect=lambda resp, _task, **_kw: resp),
-            patch("agent.auxiliary_client._resolve_clara_runtime_api", return_value=("fresh-agent-key", "https://inference-api.claraprise.com/v1")),
+            patch("agent.auxiliary_client._resolve_clara_runtime_api", return_value=("fresh-agent-key", "https://inference-api.claragram.com/v1")),
         ):
             result = call_llm(
                 task="compression",
@@ -3621,7 +3621,7 @@ class TestAuxiliaryClientPoisonedCacheEviction:
     Otherwise the next auxiliary call (compression retry, memory flush,
     background review) reuses the closed httpx transport and fails with
     ``Connection error`` even though the main provider route is healthy.
-    See https://github.com/claraprise/clara-agent/issues/23432.
+    See https://github.com/claragram/clara-agent/issues/23432.
     """
 
 
@@ -3723,7 +3723,7 @@ class TestBuildCallKwargsToolDedup:
     Providers like Google Vertex, Azure, and Bedrock reject requests with
     duplicate tool names (HTTP 400).  This guard converts a hard failure into
     a warning log so agent turns succeed even if an upstream injection path
-    regresses.  See: https://github.com/claraprise/clara-agent/issues/18478
+    regresses.  See: https://github.com/claragram/clara-agent/issues/18478
     """
 
     def _make_tool(self, name: str) -> dict:
@@ -3874,9 +3874,9 @@ class TestOpenRouterExplicitApiKey:
 def test_pool_runtime_base_url_uses_clara_env_override(monkeypatch):
     entry = SimpleNamespace(
         provider="clara",
-        runtime_base_url="https://inference-api.claraprise.com/v1",
-        inference_base_url="https://inference-api.claraprise.com/v1",
-        base_url="https://inference-api.claraprise.com/v1",
+        runtime_base_url="https://inference-api.claragram.com/v1",
+        inference_base_url="https://inference-api.claragram.com/v1",
+        base_url="https://inference-api.claragram.com/v1",
     )
     monkeypatch.setenv("CLARA_INFERENCE_BASE_URL", "https://ai.wildebeest-newton.ts.net/v1")
 

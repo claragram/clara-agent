@@ -12,18 +12,18 @@ import type {
   MemoryProviderSetupResult,
   PluginsHubResponse,
 } from "@/lib/api";
-import { Button } from "@nous-research/ui/ui/components/button";
-import { Badge } from "@nous-research/ui/ui/components/badge";
-import { Select, SelectOption } from "@nous-research/ui/ui/components/select";
-import { Switch } from "@nous-research/ui/ui/components/switch";
-import { Spinner } from "@nous-research/ui/ui/components/spinner";
-import { CommandBlock, CopyButton } from "@nous-research/ui/ui/components/command-block";
-import { Card, CardContent, CardHeader, CardTitle } from "@nous-research/ui/ui/components/card";
-import { ConfirmDialog } from "@nous-research/ui/ui/components/confirm-dialog";
-import { Input } from "@nous-research/ui/ui/components/input";
-import { Label } from "@nous-research/ui/ui/components/label";
-import { useToast } from "@nous-research/ui/hooks/use-toast";
-import { Toast } from "@nous-research/ui/ui/components/toast";
+import { Button } from "@claragram/ui/ui/components/button";
+import { Badge } from "@claragram/ui/ui/components/badge";
+import { Select, SelectOption } from "@claragram/ui/ui/components/select";
+import { Switch } from "@claragram/ui/ui/components/switch";
+import { Spinner } from "@claragram/ui/ui/components/spinner";
+import { CommandBlock, CopyButton } from "@claragram/ui/ui/components/command-block";
+import { Card, CardContent, CardHeader, CardTitle } from "@claragram/ui/ui/components/card";
+import { ConfirmDialog } from "@claragram/ui/ui/components/confirm-dialog";
+import { Input } from "@claragram/ui/ui/components/input";
+import { Label } from "@claragram/ui/ui/components/label";
+import { useToast } from "@claragram/ui/hooks/use-toast";
+import { Toast } from "@claragram/ui/ui/components/toast";
 import { useI18n } from "@/i18n";
 import { PluginSlot } from "@/plugins";
 import { cn } from "@/lib/utils";

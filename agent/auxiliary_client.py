@@ -1327,7 +1327,7 @@ _PROVIDERS_WITHOUT_VISION: frozenset = frozenset({
 # `X-Title` is the canonical attribution header OpenRouter's dashboard
 # reads; the previous `X-OpenRouter-Title` label was not recognized there.
 _OR_HEADERS_BASE = {
-    "HTTP-Referer": "https://agent.claraprise.com",
+    "HTTP-Referer": "https://agent.claragram.com",
     "X-Title": "Clara Agent",
     "X-OpenRouter-Categories": "productivity,cli-agent",
 }
@@ -1448,7 +1448,7 @@ def build_nvidia_nim_headers(base_url: str | None) -> dict:
 from clara_cli import __version__ as _CLARA_VERSION
 
 _AI_GATEWAY_HEADERS = {
-    "HTTP-Referer": "https://agent.claraprise.com",
+    "HTTP-Referer": "https://agent.claragram.com",
     "X-Title": "Clara Agent",
     "User-Agent": f"ClaraAgent/{_CLARA_VERSION}",
 }
@@ -1492,7 +1492,7 @@ auxiliary_is_clara: bool = False
 # the user chose it; _warn_paid_lane_once still fires for that case).
 _OPENROUTER_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
 _CLARA_MODEL = "google/gemini-3.6-flash"
-_CLARA_DEFAULT_BASE_URL = "https://inference-api.claraprise.com/v1"
+_CLARA_DEFAULT_BASE_URL = "https://inference-api.claragram.com/v1"
 _ANTHROPIC_DEFAULT_BASE_URL = "https://api.anthropic.com"
 _AUTH_JSON_PATH = get_clara_home() / "auth.json"
 
@@ -5128,7 +5128,7 @@ def _recoverable_pool_provider(
         return "openai-codex"
     if base_url_host_matches(base, "openrouter.ai"):
         return "openrouter"
-    if base_url_host_matches(base, "inference-api.claraprise.com"):
+    if base_url_host_matches(base, "inference-api.claragram.com"):
         return "clara"
     if base_url_host_matches(base, "api.anthropic.com"):
         return "anthropic"
@@ -5467,7 +5467,7 @@ def _auth_refresh_provider_for_route(
         return "openai-codex"
     if base_url_host_matches(client_base_url, "api.anthropic.com"):
         return "anthropic"
-    if base_url_host_matches(client_base_url, "inference-api.claraprise.com"):
+    if base_url_host_matches(client_base_url, "inference-api.claragram.com"):
         return "clara"
     return normalized
 
@@ -9339,7 +9339,7 @@ def _build_call_kwargs(
             except Exception:
                 pass
         _clara_on_messages = False
-        if _provider_norm in {"clara", "clara-portal", "claragram", "workprise"}:
+        if _provider_norm in {"clara", "clara-portal", "claragram"}:
             from clara_cli.providers import clara_api_mode
 
             _clara_on_messages = clara_api_mode(model) == "anthropic_messages"
@@ -9466,7 +9466,7 @@ def _build_call_kwargs(
     # compression/title/vision calls on the same upstream instance as the
     # main turn (cache warmth) — tags alone are not enough on /v1/messages.
     _provider_for_portal = str(provider or "").strip().lower()
-    if _provider_for_portal in {"clara", "clara-portal", "claragram", "workprise"}:
+    if _provider_for_portal in {"clara", "clara-portal", "claragram"}:
         if "tags" not in merged_extra:
             merged_extra["tags"] = _clara_portal_tags()
         if "session_id" not in merged_extra:
@@ -9490,7 +9490,7 @@ def _build_call_kwargs(
         provider_norm = str(provider or "").strip().lower()
         effective_base = base_url or ""
         _clara_on_messages = False
-        if provider_norm in {"clara", "clara-portal", "claragram", "workprise"}:
+        if provider_norm in {"clara", "clara-portal", "claragram"}:
             from clara_cli.providers import clara_api_mode
 
             _clara_on_messages = clara_api_mode(model) == "anthropic_messages"
@@ -10764,7 +10764,7 @@ def _call_llm_impl(
         # known-good default). Only applies to Clara-routed calls.
         _heal_is_clara = (
             resolved_provider == "clara"
-            or base_url_host_matches(_base_info, "inference-api.claraprise.com")
+            or base_url_host_matches(_base_info, "inference-api.claragram.com")
         )
         if _is_model_not_found_error(first_err) and _heal_is_clara:
             healed_model = _refresh_clara_recommended_model(
@@ -10790,7 +10790,7 @@ def _call_llm_impl(
         # ── Clara auth refresh parity with main agent ──────────────────
         client_is_clara = (
             resolved_provider == "clara"
-            or base_url_host_matches(_base_info, "inference-api.claraprise.com")
+            or base_url_host_matches(_base_info, "inference-api.claragram.com")
         )
         if (
             _is_payment_error(first_err)
@@ -11560,7 +11560,7 @@ async def _async_call_llm_impl(
         # fresh Portal fetch and retry once with the current recommendation.
         _heal_is_clara = (
             resolved_provider == "clara"
-            or base_url_host_matches(_client_base, "inference-api.claraprise.com")
+            or base_url_host_matches(_client_base, "inference-api.claragram.com")
         )
         if _is_model_not_found_error(first_err) and _heal_is_clara:
             healed_model = _refresh_clara_recommended_model(
@@ -11586,7 +11586,7 @@ async def _async_call_llm_impl(
         # ── Clara auth refresh parity with main agent ──────────────────
         client_is_clara = (
             resolved_provider == "clara"
-            or base_url_host_matches(_client_base, "inference-api.claraprise.com")
+            or base_url_host_matches(_client_base, "inference-api.claragram.com")
         )
         if (
             _is_payment_error(first_err)

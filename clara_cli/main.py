@@ -12041,7 +12041,7 @@ def _maybe_setup_dashboard_auth_interactively(args) -> None:
             "    clara dashboard register\n"
             "  It provisions a Clara Portal OAuth client and writes "
             "CLARA_DASHBOARD_OAUTH_CLIENT_ID into ~/.clara/.env for you.\n"
-            "  Docs: https://agent.claraprise.com/docs/"
+            "  Docs: https://agent.claragram.com/docs/"
             "user-guide/features/web-dashboard#authentication-gated-mode"
         )
         sys.exit(0)
@@ -13597,7 +13597,7 @@ def main():
             "Manage the fallback provider chain.  Fallback providers are tried "
             "in order when the primary model fails with rate-limit, overload, or "
             "connection errors.  See: "
-            "https://agent.claraprise.com/docs/user-guide/features/fallback-providers"
+            "https://agent.claragram.com/docs/user-guide/features/fallback-providers"
         ),
     )
     fallback_subparsers = fallback_parser.add_subparsers(dest="fallback_command")
@@ -13632,7 +13632,7 @@ def main():
             "accumulate. Never deletes uncommitted tracked changes, unique "
             "unpushed commits, or in-use trees; untracked-only scratch is "
             "archived to ~/.clara/archive/worktree-prune/ before removal. See: "
-            "https://agent.claraprise.com/docs/user-guide/cli#worktree-cleanup"
+            "https://agent.claragram.com/docs/user-guide/cli#worktree-cleanup"
         ),
     )
     worktree_subparsers = worktree_parser.add_subparsers(dest="worktree_action")
@@ -13737,7 +13737,7 @@ def main():
             "Pull API keys from an external secret manager at process startup "
             "instead of storing them in ~/.clara/.env.  Supports Bitwarden "
             "Secrets Manager and 1Password.  See: "
-            "https://agent.claraprise.com/docs/user-guide/secrets/"
+            "https://agent.claragram.com/docs/user-guide/secrets/"
         ),
     )
     secrets_subparsers = secrets_parser.add_subparsers(dest="secrets_command")
@@ -13788,7 +13788,7 @@ def main():
             "Manage iron-proxy, the optional TLS-intercepting egress firewall "
             "that swaps proxy tokens for real API credentials before outbound "
             "requests leave a sandbox.  Disabled by default.  See: "
-            "https://agent.claraprise.com/docs/user-guide/egress/iron-proxy"
+            "https://agent.claragram.com/docs/user-guide/egress/iron-proxy"
         ),
     )
 

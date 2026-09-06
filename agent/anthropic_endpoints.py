@@ -154,19 +154,19 @@ def _is_clara_portal_endpoint(base_url: str | None) -> bool:
     """Return True for Clara Portal's Anthropic Messages route.
 
     Portal serves its ``anthropic/*`` catalog natively at
-    ``https://inference-api.claraprise.com/v1/messages``.  Portal-specific
+    ``https://inference-api.claragram.com/v1/messages``.  Portal-specific
     behaviours key off this: Bearer JWT auth, verbatim catalog model ids,
     and native thinking-signature replay.
 
     Trusted hosts only:
 
-    1. Prod hostname ``inference-api.claraprise.com``
+    1. Prod hostname ``inference-api.claragram.com``
     2. The operator-set ``CLARA_INFERENCE_BASE_URL`` hostname (staging/preview)
 
-    Lookalikes such as ``inference-api.claraprise.com.attacker.test`` are
+    Lookalikes such as ``inference-api.claragram.com.attacker.test`` are
     rejected (hostname match, not substring).
     """
-    if base_url_host_matches(base_url or "", "inference-api.claraprise.com"):
+    if base_url_host_matches(base_url or "", "inference-api.claragram.com"):
         return True
     try:
         from clara_cli.auth import _clara_inference_env_override

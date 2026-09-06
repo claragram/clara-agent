@@ -27,19 +27,19 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { Badge } from "@nous-research/ui/ui/components/badge";
-import { Button } from "@nous-research/ui/ui/components/button";
-import { Spinner } from "@nous-research/ui/ui/components/spinner";
-import { H2 } from "@nous-research/ui/ui/components/typography/h2";
-import { Card, CardContent } from "@nous-research/ui/ui/components/card";
-import { Checkbox } from "@nous-research/ui/ui/components/checkbox";
-import { Input } from "@nous-research/ui/ui/components/input";
-import { Label } from "@nous-research/ui/ui/components/label";
-import { Select, SelectOption } from "@nous-research/ui/ui/components/select";
-import { Toast } from "@nous-research/ui/ui/components/toast";
-import { useToast } from "@nous-research/ui/hooks/use-toast";
-import { useConfirmDelete } from "@nous-research/ui/hooks/use-confirm-delete";
-import { ConfirmDialog } from "@nous-research/ui/ui/components/confirm-dialog";
+import { Badge } from "@claragram/ui/ui/components/badge";
+import { Button } from "@claragram/ui/ui/components/button";
+import { Spinner } from "@claragram/ui/ui/components/spinner";
+import { H2 } from "@claragram/ui/ui/components/typography/h2";
+import { Card, CardContent } from "@claragram/ui/ui/components/card";
+import { Checkbox } from "@claragram/ui/ui/components/checkbox";
+import { Input } from "@claragram/ui/ui/components/input";
+import { Label } from "@claragram/ui/ui/components/label";
+import { Select, SelectOption } from "@claragram/ui/ui/components/select";
+import { Toast } from "@claragram/ui/ui/components/toast";
+import { useToast } from "@claragram/ui/hooks/use-toast";
+import { useConfirmDelete } from "@claragram/ui/hooks/use-confirm-delete";
+import { ConfirmDialog } from "@claragram/ui/ui/components/confirm-dialog";
 import { useModalBehavior } from "@/hooks/useModalBehavior";
 import { DeleteConfirmDialog } from "@/components/DeleteConfirmDialog";
 import { ClaraConsoleModal } from "@/components/ClaraConsoleModal";
@@ -972,7 +972,7 @@ export default function SystemPage() {
                 </span>
               )}
               <a
-                href={portal?.subscription_url || "https://portal.claraprise.com/manage-subscription"}
+                href={portal?.subscription_url || "https://portal.claragram.com/manage-subscription"}
                 target="_blank"
                 rel="noreferrer"
                 className="ml-auto text-xs text-primary underline"

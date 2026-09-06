@@ -22,7 +22,7 @@ class TestClaraAgentHelpGuidance:
     def test_no_skills_variant_has_no_skill_view_reference(self):
         from agent.prompt_builder import CLARA_AGENT_HELP_GUIDANCE_NO_SKILLS
         assert "skill_view" not in CLARA_AGENT_HELP_GUIDANCE_NO_SKILLS
-        assert "agent.claraprise.com/docs" in CLARA_AGENT_HELP_GUIDANCE_NO_SKILLS
+        assert "agent.claragram.com/docs" in CLARA_AGENT_HELP_GUIDANCE_NO_SKILLS
 
 
 class TestExecutionGuidanceText:

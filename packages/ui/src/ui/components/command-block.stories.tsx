@@ -7,7 +7,7 @@ import {
 
 const meta: Meta<typeof CommandBlock> = {
   args: {
-    code: 'curl -fsSL https://hermes.nousresearch.com/install.sh | bash',
+    code: 'curl -fsSL https://agent.claragram.com/install.sh | bash',
     label: '1. Install'
   },
   component: CommandBlock,
@@ -30,11 +30,11 @@ export const TwoStep: Story = {
   render: () => (
     <div className="flex w-[520px] flex-col gap-3">
       <CommandBlock
-        code="curl -fsSL https://hermes.nousresearch.com/install.sh | bash"
+        code="curl -fsSL https://agent.claragram.com/install.sh | bash"
         label="1. Install"
       />
 
-      <CommandBlock code="hermes setup" label="2. Configure" />
+      <CommandBlock code="clara setup" label="2. Configure" />
     </div>
   )
 }

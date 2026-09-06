@@ -224,7 +224,7 @@ If you've worked through this guide and the issue persists:
 
 1. Run the job with `clara cron run <job_id>` (fires on next gateway tick) and watch for errors in the chat output
 2. Check `~/.clara/logs/agent.log` for scheduler messages and `~/.clara/logs/errors.log` for warnings
-3. Open an issue at [github.com/claraprise/clara-agent](https://github.com/claraprise/clara-agent) with:
+3. Open an issue at [github.com/claragram/clara-agent](https://github.com/claragram/clara-agent) with:
    - The job ID and schedule
    - The delivery target
    - What you expected vs. what happened

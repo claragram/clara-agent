@@ -141,5 +141,5 @@ A symlink to a divergent `node_modules` is worse than no install — the worktre
 - [Git Worktrees](../user-guide/git-worktrees.md) — the isolation model these helpers build on
 - [TUI](../user-guide/tui.md) — `clara --tui --dev` and the `CLARA_TUI_DIR` prebuild path
 - [Desktop App](../user-guide/desktop.md) — building from source and the backend resolution ladder
-- [`apps/desktop/README.md`](https://github.com/claraprise/clara-agent/blob/main/apps/desktop/README.md) — dev server, sandbox script, and packaging
+- [`apps/desktop/README.md`](https://github.com/claragram/clara-agent/blob/main/apps/desktop/README.md) — dev server, sandbox script, and packaging
 - [Environment Variables](../reference/environment-variables.md) — every `CLARA_*` variable Clara reads

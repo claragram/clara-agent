@@ -1,6 +1,6 @@
 # Contributor Quick Reference
 
-For occasional contributors and PR authors. Full developer docs: https://agent.claraprise.com/docs/developer-guide/
+For occasional contributors and PR authors. Full developer docs: https://agent.claragram.com/docs/developer-guide/
 
 ### Project Layout
 

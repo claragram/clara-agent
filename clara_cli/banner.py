@@ -142,7 +142,7 @@ _UPSTREAM_REPO_URL = "https://github.com/claragram/clara-agent.git"
 _OFFICIAL_REPO_CANONICAL = "github.com/claragram/clara-agent"
 _OFFICIAL_REPO_CANONICALS = {
     "github.com/claragram/clara-agent",
-    "github.com/claraprise/clara-agent",
+    "github.com/claragram/clara-agent",
     "github.com/claragram/clara-agent",
 }
 

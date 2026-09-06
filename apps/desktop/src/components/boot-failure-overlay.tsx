@@ -305,7 +305,7 @@ export function BootFailureOverlay() {
       {
         key: 'portal',
         label: copy.cloudDownCheckPortal,
-        onClick: () => openExternalLink('https://portal.claraprise.com'),
+        onClick: () => openExternalLink('https://portal.claragram.com'),
         icon: <ExternalLink />
       },
       localAction,

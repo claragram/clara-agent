@@ -20,8 +20,8 @@ type Story = StoryObj
 export const AllFormControls: Story = {
   render: () => {
     function FormDemo() {
-      const [name, setName] = useState('Hermes')
-      const [email, setEmail] = useState('hermes@nousresearch.com')
+      const [name, setName] = useState('Clara')
+      const [email, setEmail] = useState('info@claragram.com')
       const [provider, setProvider] = useState('anthropic')
       const [logging, setLogging] = useState(true)
       const [telemetry, setTelemetry] = useState(false)

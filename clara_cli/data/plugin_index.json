@@ -9,7 +9,7 @@
       "tags": ["media", "image-gen", "video-gen", "dashboard", "desktop"],
       "repo": "claragram/clara-media-studio",
       "ref": "e8d59971d2b7901405b39dac7b03bdd616272d0d",
-      "homepage": "https://github.com/claraprise/clara-media-studio",
+      "homepage": "https://github.com/claragram/clara-media-studio",
       "capabilities": ["tools", "dashboard"],
       "api_version": 1,
       "added_at": "2026-08-12"
@@ -21,7 +21,7 @@
       "tags": ["telegram", "gateway", "approvals", "messaging"],
       "repo": "claragram/clara-telegram-business",
       "ref": "e905f3bc5eeaa5a9dab9bc5155601b3ebec75757",
-      "homepage": "https://github.com/claraprise/clara-telegram-business",
+      "homepage": "https://github.com/claragram/clara-telegram-business",
       "capabilities": ["platform"],
       "api_version": 1,
       "added_at": "2026-08-12"
@@ -34,7 +34,7 @@
       "repo": "claragram/clara-example-plugins",
       "subdir": "plugin-llm-example",
       "ref": "38fe0fb53eff98d477f807432e965429e665ca33",
-      "homepage": "https://github.com/claraprise/clara-example-plugins/tree/main/plugin-llm-example",
+      "homepage": "https://github.com/claragram/clara-example-plugins/tree/main/plugin-llm-example",
       "capabilities": ["commands", "llm"],
       "api_version": 1,
       "added_at": "2026-08-12"
@@ -47,7 +47,7 @@
       "repo": "claragram/clara-example-plugins",
       "subdir": "plugin-llm-async-example",
       "ref": "38fe0fb53eff98d477f807432e965429e665ca33",
-      "homepage": "https://github.com/claraprise/clara-example-plugins/tree/main/plugin-llm-async-example",
+      "homepage": "https://github.com/claragram/clara-example-plugins/tree/main/plugin-llm-async-example",
       "capabilities": ["commands", "llm"],
       "api_version": 1,
       "added_at": "2026-08-12"

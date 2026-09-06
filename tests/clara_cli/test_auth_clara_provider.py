@@ -200,8 +200,8 @@ def test_resolve_clara_runtime_credentials_invoke_jwt_is_idempotent(
         "active_provider": "clara",
         "providers": {
             "clara": {
-                "portal_base_url": "https://portal.claraprise.com",
-                "inference_base_url": "https://inference-api.claraprise.com/v1",
+                "portal_base_url": "https://portal.claragram.com",
+                "inference_base_url": "https://inference-api.claragram.com/v1",
                 "client_id": "clara-cli",
                 "token_type": "Bearer",
                 "scope": auth_mod.DEFAULT_CLARA_SCOPE,
@@ -505,8 +505,8 @@ class TestLoginClaraSkipKeepsCurrent:
         fake_auth_state = {
             "access_token": "fake-clara-token",
             "agent_key": "fake-agent-key",
-            "inference_base_url": "https://inference-api.claraprise.com",
-            "portal_base_url": "https://portal.claraprise.com",
+            "inference_base_url": "https://inference-api.claragram.com",
+            "portal_base_url": "https://portal.claragram.com",
             "refresh_token": "fake-refresh",
             "token_expires_at": 9999999999,
         }
@@ -798,7 +798,7 @@ def test_refresh_token_reuse_detection_surfaces_actionable_message():
     with pytest.raises(AuthError) as exc_info:
         _refresh_access_token(
             client=_FakeClient(),
-            portal_base_url="https://portal.claraprise.com",
+            portal_base_url="https://portal.claragram.com",
             client_id="clara-cli",
             refresh_token="rt_consumed_elsewhere",
         )
@@ -838,7 +838,7 @@ def test_refresh_token_exchange_sends_refresh_token_header():
 
     payload = _refresh_access_token(
         client=client,
-        portal_base_url="https://portal.claraprise.com",
+        portal_base_url="https://portal.claragram.com",
         client_id="clara-cli",
         refresh_token="refresh-1",
     )
@@ -1011,7 +1011,7 @@ class TestStalePortalBaseUrlMigration:
             "active_provider": "clara",
             "providers": {
                 "clara": {
-                    "portal_base_url": "https://api.claraprise.com",
+                    "portal_base_url": "https://api.claragram.com",
                     "access_token": "test-token",
                     "refresh_token": "test-refresh",
                 }
@@ -1044,7 +1044,7 @@ class TestStalePortalBaseUrlMigration:
         auth_file = clara_home / "auth.json"
         store = json.loads(auth_file.read_text())
         store["providers"]["clara"]["portal_base_url"] = (
-            "https://portal.claraprise.com"
+            "https://portal.claragram.com"
         )
         auth_file.write_text(json.dumps(store, indent=2))
 
@@ -1079,10 +1079,10 @@ class TestClaraDeviceAuthTimeoutMessage:
     def test_timeout_message_mentions_captcha_login_and_retry(self):
         from clara_cli.auth import _clara_device_auth_timeout_message
 
-        msg = _clara_device_auth_timeout_message("https://portal.claraprise.com")
+        msg = _clara_device_auth_timeout_message("https://portal.claragram.com")
         assert "CAPTCHA" in msg
         assert "clara portal" in msg
-        assert "https://portal.claraprise.com/login" in msg
+        assert "https://portal.claragram.com/login" in msg
         # Must NOT point at the nonexistent /device page (live Portal 404s it).
         assert "/device" not in msg
 
@@ -1119,7 +1119,7 @@ def test_poll_for_token_timeout_raises_actionable_message():
     with pytest.raises(TimeoutError) as excinfo:
         auth_mod._poll_for_token(
             client=cast(httpx.Client, _PendingClient()),
-            portal_base_url="https://portal.claraprise.com",
+            portal_base_url="https://portal.claragram.com",
             client_id="clara-cli",
             device_code="device",
             expires_in=1,
@@ -1129,7 +1129,7 @@ def test_poll_for_token_timeout_raises_actionable_message():
     msg = str(excinfo.value)
     assert "CAPTCHA" in msg
     assert "clara portal" in msg
-    assert "https://portal.claraprise.com/login" in msg
+    assert "https://portal.claragram.com/login" in msg
 
 
 def test_clara_device_code_login_timeout_raises_actionable_message(monkeypatch):
@@ -1145,9 +1145,9 @@ def test_clara_device_code_login_timeout_raises_actionable_message(monkeypatch):
         lambda **kwargs: {
             "device_code": "device",
             "user_code": "SMCL-97YT",
-            "verification_uri": "https://portal.claraprise.com/manage-subscription",
+            "verification_uri": "https://portal.claragram.com/manage-subscription",
             "verification_uri_complete": (
-                "https://portal.claraprise.com/manage-subscription"
+                "https://portal.claragram.com/manage-subscription"
                 "?user_code=SMCL-97YT"
             ),
             "expires_in": 600,
@@ -1168,7 +1168,7 @@ def test_clara_device_code_login_timeout_raises_actionable_message(monkeypatch):
 
     with pytest.raises(TimeoutError) as excinfo:
         auth_mod._clara_device_code_login(
-            portal_base_url="https://portal.claraprise.com",
+            portal_base_url="https://portal.claragram.com",
             inference_base_url="https://inference.example.com/v1",
             open_browser=False,
             timeout_seconds=1,
@@ -1177,4 +1177,4 @@ def test_clara_device_code_login_timeout_raises_actionable_message(monkeypatch):
     msg = str(excinfo.value)
     assert "CAPTCHA" in msg
     assert "clara portal" in msg
-    assert "https://portal.claraprise.com/login" in msg
+    assert "https://portal.claragram.com/login" in msg

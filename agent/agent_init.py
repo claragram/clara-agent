@@ -750,7 +750,7 @@ def init_agent(
         # AWS Bedrock — auto-detect from provider name or base URL
         # (bedrock-runtime.<region>.amazonaws.com).
         agent.api_mode = "bedrock_converse"
-    elif agent.provider in {"clara", "clara-portal", "claragram", "workprise"}:
+    elif agent.provider in {"clara", "clara-portal", "claragram"}:
         # Portal is dual-wire: anthropic/* → Messages, everything else →
         # chat_completions. Callers that already pass api_mode win above;
         # this covers direct AIAgent construction without a resolved runtime.
@@ -2953,7 +2953,7 @@ def init_agent(
             _clara_warn = _check_clara_model_warning(agent.model or "")
             if _clara_warn:
                 _user_msg = (
-                    "⚠ Workprise Clara 3 & 4 models are NOT agentic — they "
+                    "⚠ Claragram Clara 3 & 4 models are NOT agentic — they "
                     "lack reliable tool-calling for agent workflows (delegation, "
                     "cron, proactive tools). Consider an agentic model instead "
                     "(Claude, GPT, Gemini, Qwen-Coder, etc.)."

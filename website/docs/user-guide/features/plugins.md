@@ -538,7 +538,7 @@ all a bundled seed copy ships with Clara — so search works fully offline.
   "repo": "Claragram/clara-media-studio",
   "ref": "<40-char commit SHA>",
   "subdir": null,
-  "homepage": "https://github.com/claraprise/clara-media-studio",
+  "homepage": "https://github.com/claragram/clara-media-studio",
   "capabilities": ["tools", "dashboard"],
   "api_version": 1,
   "added_at": "2026-08-12"
@@ -551,7 +551,7 @@ SHA, and optional `subdir` supports monorepos. The bundled seed file
 
 **Submitting a plugin.** The index is maintained as a plain JSON file —
 submit a pull request to the
-[clara-plugin-index](https://github.com/claraprise/clara-plugin-index)
+[clara-plugin-index](https://github.com/claragram/clara-plugin-index)
 repository adding your entry (name, description, author, tags, `owner/repo`,
 and a pinned commit SHA). Review covers the entry's *metadata* only.
 

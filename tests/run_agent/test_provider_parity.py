@@ -359,7 +359,7 @@ class TestBuildApiKwargsClaraPortal:
         agent = _make_agent(
             monkeypatch,
             "clara",
-            base_url="https://inference-api.claraprise.com/v1",
+            base_url="https://inference-api.claragram.com/v1",
             model="gpt-5",
         )
         messages = [{"role": "user", "content": "hi"}]
@@ -371,7 +371,7 @@ class TestBuildApiKwargsClaraPortal:
         agent = _make_agent(
             monkeypatch,
             "clara",
-            base_url="https://inference-api.claraprise.com/v1",
+            base_url="https://inference-api.claragram.com/v1",
             model="gpt-5",
         )
         messages = [{"role": "user", "content": "hi"}]

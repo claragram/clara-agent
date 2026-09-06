@@ -1,12 +1,12 @@
 # Changelog
 
-All notable changes to `@nous-research/ui` are documented here. Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+All notable changes to `@claragram/ui` are documented here. Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## 0.17.0
 
 ### Component promotion and Radix Dialog consolidation
 
-Promotes reusable components and hooks from `hermes-agent/web` into the shared design system, and consolidates all dialog/modal implementations on Radix UI primitives.
+Promotes reusable components and hooks from `clara-agent/web` into the shared design system, and consolidates all dialog/modal implementations on Radix UI primitives.
 
 #### Added
 
@@ -45,7 +45,7 @@ Promotes reusable components and hooks from `hermes-agent/web` into the shared d
 
 ### Usability overhaul — typography, contrast, theming
 
-This release reworks how the brand uppercase + Mondwest styling and color hierarchy are applied, addressing legibility, contrast, and themability complaints from consumers (notably the Hermes Dashboard).
+This release reworks how the brand uppercase + Mondwest styling and color hierarchy are applied, addressing legibility, contrast, and themability complaints from consumers (notably the Clara Dashboard).
 
 #### Added
 
@@ -68,13 +68,13 @@ This release reworks how the brand uppercase + Mondwest styling and color hierar
 
 ### Added
 
-- Storybook autodocs enabled for all components ([#21](https://github.com/NousResearch/design-language/pull/21)).
+- Storybook autodocs enabled for all components ([#21](https://github.com/claragram/clara-agent/pull/21)).
 
 ## 0.14.2
 
 ### Added
 
-- `Checkbox` component built on Radix primitive ([#20](https://github.com/NousResearch/design-language/pull/20)).
+- `Checkbox` component built on Radix primitive ([#20](https://github.com/claragram/clara-agent/pull/20)).
 
 ### Fixed
 
@@ -263,4 +263,4 @@ This release reworks how the brand uppercase + Mondwest styling and color hierar
 
 ## 0.1.x
 
-Versions `0.1.0`–`0.1.3` were published to npm before git tags were added in this repository. See [npm version history](https://www.npmjs.com/package/@nous-research/ui?activeTab=versions) for install pins.
+Versions `0.1.0`–`0.1.3` were published to npm before git tags were added in this repository. See [npm version history](https://www.npmjs.com/package/@claragram/ui?activeTab=versions) for install pins.

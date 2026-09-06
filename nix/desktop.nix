@@ -209,7 +209,7 @@ stdenv.mkDerivation {
 
   meta = with lib; {
     description = "Native Electron desktop shell for Clara Agent";
-    homepage = "https://github.com/claraprise/clara-agent";
+    homepage = "https://github.com/claragram/clara-agent";
     license = licenses.mit;
     platforms = platforms.unix;
     mainProgram = "clara-desktop";

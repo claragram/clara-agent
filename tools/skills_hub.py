@@ -4504,7 +4504,7 @@ def check_for_skill_updates(
 # Clara centralized index source
 # ---------------------------------------------------------------------------
 
-CLARA_INDEX_URL = "https://agent.claraprise.com/docs/api/skills-index.json"
+CLARA_INDEX_URL = "https://agent.claragram.com/docs/api/skills-index.json"
 CLARA_INDEX_TTL = 6 * 3600  # 6 hours
 
 

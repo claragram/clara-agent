@@ -960,7 +960,7 @@ abandons its own. Instead, create a reconciliation card assigned to a **third,
 neutral profile** with **both** conflicted cards linked as parents: the parent
 links carry both sides' completion summaries into the reconciler's context, so
 it receives both diffs *and* both intents. The bundled
-[`agent-merge-conflict-arbiter` optional skill](https://github.com/claraprise/clara-agent/blob/main/optional-skills/autonomous-ai-agents/agent-merge-conflict-arbiter/SKILL.md)
+[`agent-merge-conflict-arbiter` optional skill](https://github.com/claragram/clara-agent/blob/main/optional-skills/autonomous-ai-agents/agent-merge-conflict-arbiter/SKILL.md)
 gives that worker the full procedure: classify each conflicted hunk, resolve
 impartially, verify, and hand back a summary naming every decision.
 
@@ -1043,7 +1043,7 @@ A "wake" forges a synthetic inbound message to the destination gateway agent so 
 
 In a one-gateway-per-profile deployment (one dispatcher, separate gateway
 processes for `writer`, `admin`, etc. — see the [multi-gateway
-guide](https://github.com/claraprise/clara-agent/blob/main/docs/kanban/multi-gateway.md)),
+guide](https://github.com/claragram/clara-agent/blob/main/docs/kanban/multi-gateway.md)),
 dispatch and delivery have separate owners:
 
 - **Dispatch stays single-owner.** Exactly one gateway keeps

@@ -58,7 +58,7 @@ CLARA_OVERLAYS: Dict[str, ClaraOverlay] = {
     "clara": ClaraOverlay(
         transport="openai_chat",
         auth_type="oauth_device_code",
-        base_url_override="https://inference-api.claraprise.com/v1",
+        base_url_override="https://inference-api.claragram.com/v1",
     ),
     "openai-codex": ClaraOverlay(
         transport="codex_responses",
@@ -773,7 +773,7 @@ def determine_api_mode(provider: str, base_url: str = "", model: str = "") -> st
     # (the majority of the Portal catalog), so the transport lookup below
     # would pin Claude on the wrong wire without this carve-out.
     provider_norm = (provider or "").strip().lower()
-    if provider_norm in {"clara", "clara-portal", "claragram", "workprise"}:
+    if provider_norm in {"clara", "clara-portal", "claragram"}:
         return clara_api_mode(model)
 
     pdef = get_provider(provider)

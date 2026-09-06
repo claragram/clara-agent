@@ -1,7 +1,7 @@
 # Clara CLI Reference
 
 Live sources when anything looks stale: `clara --help`, `clara <command> --help`,
-https://agent.claraprise.com/docs/reference/cli-commands
+https://agent.claragram.com/docs/reference/cli-commands
 
 ### Global Flags
 
@@ -79,7 +79,7 @@ clara gateway run|install|start|stop|restart|status|setup
 ```
 
 20+ platforms: Telegram, Discord, Slack, WhatsApp (Baileys + Business Cloud API), iMessage (Photon — `clara photon setup`), Signal, Email, SMS, Matrix, Mattermost, Teams, LINE, SimpleX, ntfy, Google Chat, Home Assistant, DingTalk, Feishu, WeCom, Weixin, API Server, Webhooks. Open WebUI connects via the API Server adapter. Most adapters ship under `plugins/platforms/`.
-Docs: https://agent.claraprise.com/docs/user-guide/messaging/
+Docs: https://agent.claragram.com/docs/user-guide/messaging/
 
 ### Sessions
 
@@ -141,10 +141,10 @@ Plugin- and provider-supplied subcommands (e.g. `clara photon setup`) only appea
 
 | Looking for... | Location |
 |---|---|
-| Config options | `clara config edit` · [Configuration docs](https://agent.claraprise.com/docs/user-guide/configuration) |
-| Tools / toolsets | `clara tools list` · [Tools reference](https://agent.claraprise.com/docs/reference/tools-reference) |
-| Skills catalog | `clara skills browse` · [Skills catalog](https://agent.claraprise.com/docs/reference/skills-catalog) |
-| Provider setup | `clara model` · [Providers guide](https://agent.claraprise.com/docs/integrations/providers) |
-| Env variables | `clara config env-path` · [Env vars reference](https://agent.claraprise.com/docs/reference/environment-variables) |
+| Config options | `clara config edit` · [Configuration docs](https://agent.claragram.com/docs/user-guide/configuration) |
+| Tools / toolsets | `clara tools list` · [Tools reference](https://agent.claragram.com/docs/reference/tools-reference) |
+| Skills catalog | `clara skills browse` · [Skills catalog](https://agent.claragram.com/docs/reference/skills-catalog) |
+| Provider setup | `clara model` · [Providers guide](https://agent.claragram.com/docs/integrations/providers) |
+| Env variables | `clara config env-path` · [Env vars reference](https://agent.claragram.com/docs/reference/environment-variables) |
 | Gateway logs | `~/.clara/logs/gateway.log` (or `clara logs`) |
 | Sessions | `clara sessions browse` (reads state.db) |

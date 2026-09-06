@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { exec as execCallback } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
@@ -282,13 +283,14 @@ test('POSIX managed launcher is detached, correlation-scoped, and never publishe
 
 test('POSIX managed launcher executes the updater command and atomically publishes its status', async () => {
   const home = await mkdtemp(path.join(os.tmpdir(), 'clara-managed-launch-'))
+  const trueBinary = existsSync('/bin/true') ? '/bin/true' : '/usr/bin/true'
 
   try {
     const command = buildPosixManagedUpdateLaunch(
       {
         ssh: { exec: async () => '' },
         platform: 'Linux',
-        claraPath: '/bin/true',
+        claraPath: trueBinary,
         claraHome: home
       },
       CORRELATION

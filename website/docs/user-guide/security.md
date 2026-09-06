@@ -310,7 +310,7 @@ file bridge, background jobs with no human channel) fail closed. Private keys,
 
 When set, `write_file` and `patch` may only target paths inside the listed directory prefix(es). Anything outside is **hard-blocked** — not routed through dangerous-command approval.
 
-- Set automatically in the [official Docker image](https://github.com/claraprise/clara-agent) (`CLARA_WRITE_SAFE_ROOT=/opt/data`)
+- Set automatically in the [official Docker image](https://github.com/claragram/clara-agent) (`CLARA_WRITE_SAFE_ROOT=/opt/data`)
 - Supports multiple roots separated by `:` on Unix or `;` on Windows
 - **Do not add to `~/.clara/.env` casually.** If you set it to a project directory, the agent cannot write to `~/.clara/cron/jobs.json`, profile skills, or other Clara state outside that prefix
 
@@ -445,7 +445,7 @@ docker exec -u clara clara-agent clara pairing approve telegram ABC12DEF
 If you already ran the command as root and the user is still unauthorized,
 restart the container — the entrypoint will fix ownership on the next start.
 
-[i10270]: https://github.com/claraprise/clara-agent/issues/10270
+[i10270]: https://github.com/claragram/clara-agent/issues/10270
 :::
 
 **Storage:** Pairing data is stored in `~/.clara/pairing/` with per-platform JSON files:

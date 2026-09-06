@@ -1008,8 +1008,8 @@ def _run_debug_share_clara(args, *, log_lines: int, redact: bool) -> None:
     )
     print(
         "\nPick up the discussion in:\n"
-        "  GitHub Issues        https://github.com/claraprise/clara-agent/issues\n"
-        "  Clara Portal Support  https://portal.claraprise.com/help\n"
+        "  GitHub Issues        https://github.com/claragram/clara-agent/issues\n"
+        "  Clara Portal Support  https://portal.claragram.com/help\n"
         "  Discord              https://discord.gg/claragram"
     )
 

@@ -40,7 +40,7 @@ export const lens0 = (
   Lens: { ...LENS_0.Lens, ...l }
 })
 
-// The Hermes light-mode look is produced by a fullscreen opaque-white
+// The Clara light-mode look is produced by a fullscreen opaque-white
 // `mix-blend-mode: difference` foreground layer that inverts everything.
 // Colored lenses that want a "white + accent" look MUST be built from
 // LENS_5I, not LENS_0 — otherwise `bgBlend: 'difference'` + an opaque

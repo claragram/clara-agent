@@ -34,7 +34,7 @@ vercel = VercelAIGatewayProfile(
     env_vars=("AI_GATEWAY_API_KEY",),
     base_url="https://ai-gateway.vercel.sh/v1",
     default_headers={
-        "HTTP-Referer": "https://agent.claraprise.com",
+        "HTTP-Referer": "https://agent.claragram.com",
         "X-Title": "Clara Agent",
     },
     default_aux_model="google/gemini-3-flash",

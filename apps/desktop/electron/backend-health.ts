@@ -99,7 +99,7 @@ export function isServerSideHttpError(error: unknown): {
  *    runs BEFORE the readiness loop; and
  *  - readiness-probe exhaustion in waitForClaraReady().
  *
- * Returns null unless the backend is a *.agents.workprise.com host AND the
+ * Returns null unless the backend is a *.agents.claragram.com host AND the
  * error classifies as 502/503/504. When it matches, returns an error carrying:
  * isCloudBackendDown, statusCode, detail, and the original cause. The renderer
  * overlay keys on isCloudBackendDown/statusCode; main owns the classification.
@@ -154,7 +154,7 @@ export function isClaraCloudAgentUrl(baseUrl: string): boolean {
   try {
     const host = new URL(baseUrl).hostname
 
-    return host.endsWith('.agents.claragram.com') || host.endsWith('.agents.workprise.com')
+    return host.endsWith('.agents.claragram.com')
   } catch {
     return false
   }

@@ -52,6 +52,6 @@ def test_clara_401_guidance_strings_present():
     assert "clara portal" in source
 
     # Must point at the portal so users can check account/credit status.
-    assert "portal.claraprise.com" in source
+    assert "portal.claragram.com" in source
 
 

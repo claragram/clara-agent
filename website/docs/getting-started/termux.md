@@ -135,7 +135,7 @@ Then use `python3.13` in place of `python` in the commands below
 ### 2. Clone Clara
 
 ```bash
-git clone https://github.com/claraprise/clara-agent.git
+git clone https://github.com/claragram/clara-agent.git
 cd clara-agent
 ```
 

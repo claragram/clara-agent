@@ -8130,7 +8130,7 @@ async function freshGatewayWsUrl(profile) {
 // Canonical Clara portal base URL, overridable for staging/dev. Mirrors the CLI
 // convention (clara_cli/auth.py DEFAULT_CLARA_PORTAL_URL + the same env names)
 // so a single override flips every Clara surface to the same portal.
-const DEFAULT_CLARA_PORTAL_URL = 'https://portal.claraprise.com'
+const DEFAULT_CLARA_PORTAL_URL = 'https://portal.claragram.com'
 
 function resolvePortalBaseUrl() {
   const raw = process.env.CLARA_PORTAL_BASE_URL || process.env.CLARA_PORTAL_BASE_URL || DEFAULT_CLARA_PORTAL_URL

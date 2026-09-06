@@ -474,7 +474,7 @@ class TestNestedDictModelDefaultPairing:
                 },
                 "providers": {
                     "clara": {
-                        "base_url": "https://inference-api.claraprise.com/v1",
+                        "base_url": "https://inference-api.claragram.com/v1",
                     },
                 },
             },

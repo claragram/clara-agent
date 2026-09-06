@@ -222,7 +222,7 @@ class TestFallbackChainAdvancement:
         activation has to re-derive api_mode from the model and rebuild the
         Anthropic client — otherwise the turn POSTs /chat/completions.
         """
-        portal = "https://inference-api.claraprise.com/v1"
+        portal = "https://inference-api.claragram.com/v1"
         fbs = [
             {
                 "provider": "clara",
@@ -271,7 +271,7 @@ class TestFallbackChainAdvancement:
         assert agent._anthropic_client is not None
 
     def test_clara_non_anthropic_fallback_stays_on_chat_completions(self):
-        portal = "https://inference-api.claraprise.com/v1"
+        portal = "https://inference-api.claragram.com/v1"
         fbs = [{"provider": "clara", "model": "clara-4-405b"}]
         agent = _make_agent(fallback_model=fbs)
         with (

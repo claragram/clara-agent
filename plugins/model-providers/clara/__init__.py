@@ -133,16 +133,16 @@ class ClaraProfile(ProviderProfile):
 
 clara = ClaraProfile(
     name="clara",
-    aliases=("clara-portal", "workprise"),
+    aliases=("clara-portal", "claragram"),
     env_vars=("CLARA_API_KEY",),
     display_name="Claragram",
-    description="Workprise — Clara model family",
+    description="Claragram — Clara model family",
     signup_url="https://claragram.com/",
     fallback_models=(
         "clara-3-405b",
         "clara-3-70b",
     ),
-    base_url="https://inference-api.claraprise.com/v1",
+    base_url="https://inference-api.claragram.com/v1",
     auth_type="oauth_device_code",
 )
 

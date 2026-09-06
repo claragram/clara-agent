@@ -1,6 +1,6 @@
 """Tests for get_clara_home() profile-mode fallback warning.
 
-Regression test for https://github.com/claraprise/clara-agent/issues/18594.
+Regression test for https://github.com/claragram/clara-agent/issues/18594.
 
 When CLARA_HOME is unset but an active_profile file indicates a non-default
 profile is active, get_clara_home() should:

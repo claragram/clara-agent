@@ -20,7 +20,7 @@ from providers.base import ProviderProfile
 # off the wire (the free tier 401s any unrecognized bearer).
 _KEYLESS_HEADERS = {
     "Authorization": "",
-    "HTTP-Referer": "https://agent.claraprise.com",
+    "HTTP-Referer": "https://agent.claragram.com",
     "X-Title": "Clara Agent",
     "User-Agent": f"ClaraAgent/{_CLARA_VERSION}",
 }

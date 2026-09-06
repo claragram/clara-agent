@@ -76,7 +76,7 @@ Select **Quick Setup**. Clara opens a browser tab and waits for you to finish th
 
 ### 3. Create a Clara Portal account
 
-In the browser, create a [Clara Portal](https://portal.claraprise.com) account (or sign in) and choose the **Free** plan.
+In the browser, create a [Clara Portal](https://portal.claragram.com) account (or sign in) and choose the **Free** plan.
 
 ### 4. Connect your account
 

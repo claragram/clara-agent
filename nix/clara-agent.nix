@@ -263,7 +263,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   meta = with lib; {
     description = "AI agent with advanced tool-calling capabilities";
-    homepage = "https://github.com/claraprise/clara-agent";
+    homepage = "https://github.com/claragram/clara-agent";
     mainProgram = "clara";
     license = licenses.mit;
     platforms = platforms.unix;

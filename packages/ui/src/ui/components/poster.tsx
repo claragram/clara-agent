@@ -86,8 +86,8 @@ function ScanlineOverlay() {
  *
  * Two variants, matching actual use cases:
  * - `'vibe'` (default): full-bleed distorted image with just registration
- *   marks and a tiny "Hermes Agent" mark in the corner — mirrors the
- *   overlay on the Hermes agent website.
+ *   marks and a tiny "Clara Agent" mark in the corner — mirrors the
+ *   overlay on the Clara agent website.
  * - `'dispatch'`: broadcast-card layout with sidebar copy, numbered tags,
  *   and chrome — for when the poster needs to carry information.
  */
@@ -207,7 +207,7 @@ export function Poster({
           <ScanlineOverlay />
 
           <Small className="absolute bottom-4 left-4 z-1 opacity-80">
-            Hermes Agent
+            Clara Agent
           </Small>
         </div>
 
@@ -394,11 +394,11 @@ export interface PosterProps {
   /** (`dispatch` only) Small legal / signature line at the bottom-right. */
   seal?: React.ReactNode
   /**
-   * Signature mark. In `vibe` this is the small "Hermes Agent" overlay in the
+   * Signature mark. In `vibe` this is the small "Clara Agent" overlay in the
    * bottom-right. In `dispatch` this is the URL / CTA in the footer.
    */
   signature?: React.ReactNode
-  /** Override the poster image. Defaults to the Hermes "filler-bg0" asset. */
+  /** Override the poster image. Defaults to the Clara "filler-bg0" asset. */
   src?: string
   /** (`dispatch` only) Ranked list of features / pricing tiers rendered as a numbered sidebar list. */
   tags?: string[]

@@ -37,7 +37,7 @@ SAMPLE = _index_doc(
         {
             "name": "clara-media-studio",
             "description": "Generative media workspace plugin.",
-            "author": "Workprise",
+            "author": "Claragram",
             "tags": ["media", "image-gen"],
             "repo": "claragram/clara-media-studio",
             "ref": "e" * 40,
@@ -45,7 +45,7 @@ SAMPLE = _index_doc(
         {
             "name": "clara-telegram-business",
             "description": "Telegram secretary bot with owner approval.",
-            "author": "Workprise",
+            "author": "Claragram",
             "tags": ["telegram", "gateway"],
             "repo": "claragram/clara-telegram-business",
             "ref": "f" * 40,
@@ -54,7 +54,7 @@ SAMPLE = _index_doc(
         {
             "name": "plugin-llm-example",
             "description": "Reference plugin for structured LLM access.",
-            "author": "Workprise",
+            "author": "Claragram",
             "tags": ["example", "llm"],
             "repo": "claragram/clara-example-plugins",
             "subdir": "plugin-llm-example",

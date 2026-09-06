@@ -27,7 +27,7 @@ A quick search before you build saves your time and keeps the PR queue clean —
   gh search issues --repo claragram/clara-agent "<your terms>"
   gh search prs --repo claragram/clara-agent --state all "<your terms>"
   ```
-  Or use the web UI: [issues](https://github.com/claraprise/clara-agent/issues?q=) · [PRs (all states)](https://github.com/claraprise/clara-agent/pulls?q=is%3Apr).
+  Or use the web UI: [issues](https://github.com/claragram/clara-agent/issues?q=) · [PRs (all states)](https://github.com/claragram/clara-agent/pulls?q=is%3Apr).
 - **The issue tracker can lag the code.** Many requested features are already implemented in-tree, so also search the source (`search_files`, or your editor's grep) for the capability before proposing it.
 - **If an open PR already addresses it**, consider reviewing or improving that one instead of opening a competing duplicate.
 - **For larger work**, comment on the issue to signal you're working on it, so others don't start the same thing.
@@ -93,7 +93,7 @@ The reason is maintenance load, not quality. Every external product absorbed int
 
 Publish these as a **standalone plugin repo** instead:
 
-- Implement the relevant ABC and use the existing plugin discovery path (`~/.clara/plugins/`, project `.clara/plugins/`, or a pip entry point) — see [Build a Clara Plugin](https://agent.claraprise.com/docs/guides/build-a-clara-plugin)
+- Implement the relevant ABC and use the existing plugin discovery path (`~/.clara/plugins/`, project `.clara/plugins/`, or a pip entry point) — see [Build a Clara Plugin](https://agent.claragram.com/docs/guides/build-a-clara-plugin)
 - Register lifecycle hooks (`pre_tool_call`, `post_tool_call`, `pre_llm_call`, `post_llm_call`, `on_session_start`, `on_session_end`), tools (`ctx.register_tool`), and CLI subcommands (`ctx.register_cli_command`) through the surface we already expose — no core changes needed
 - If your plugin needs a capability the framework doesn't expose, that's a feature request to **widen the generic plugin surface** (a new hook or `ctx` method) — never special-case your plugin in core
 - Promote it in the [Claragram Discord](https://discord.gg/claragram) `#plugins-skills-and-skins` channel so users can find and install it
@@ -124,7 +124,7 @@ development environment on the same layout the CLI, updater, lazy dependency
 installer, gateway, and docs assume.
 
 ```bash
-curl -fsSL https://agent.claraprise.com/install.sh | bash
+curl -fsSL https://agent.claragram.com/install.sh | bash
 cd "${CLARA_HOME:-$HOME/.clara}/clara-agent"
 
 # Add dev/test extras on top of the standard install.
@@ -156,7 +156,7 @@ which silently destroys the running runtime mid-session. Keeping it outside the
 tree means no relative path from the workspace resolves to it.
 
 ```bash
-git clone https://github.com/claraprise/clara-agent.git
+git clone https://github.com/claragram/clara-agent.git
 cd clara-agent
 
 # Create venv with Python 3.11, OUTSIDE the source tree
@@ -275,7 +275,7 @@ clara-agent/
 ├── skills/                   # Bundled skills (copied to ~/.clara/skills/ on install)
 ├── optional-skills/          # Official optional skills (discoverable via hub, not activated by default)
 ├── tests/                    # Test suite
-├── website/                  # Documentation site (agent.claraprise.com)
+├── website/                  # Documentation site (agent.claragram.com)
 │
 ├── cli-config.yaml.example   # Example configuration (copied to ~/.clara/config.yaml)
 └── AGENTS.md                 # Development guide for AI coding assistants
@@ -972,7 +972,7 @@ test(tools): add unit tests for file_operations
 
 ## Reporting Issues
 
-- Use [GitHub Issues](https://github.com/claraprise/clara-agent/issues)
+- Use [GitHub Issues](https://github.com/claragram/clara-agent/issues)
 - Include: OS, Python version, Clara version (`clara --version`), full error traceback
 - Include steps to reproduce
 - Check existing issues before creating duplicates

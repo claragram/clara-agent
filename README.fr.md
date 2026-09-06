@@ -4,7 +4,7 @@
 
 # Clara Agent ☤
 <p align="center">
-  <a href="https://agent.claraprise.com/">Clara Agent</a> | <a href="https://agent.claraprise.com/">Clara Desktop</a> | <a href="https://claragram.com/">Claragram (claragram.com)</a>
+  <a href="https://agent.claragram.com/">Clara Agent</a> | <a href="https://agent.claragram.com/">Clara Desktop</a> | <a href="https://claragram.com/">Claragram (claragram.com)</a>
 </p>
 <p align="center">
   <a href="https://claragram.com"><img src="https://img.shields.io/badge/Claragram-claragram.com-blue?style=for-the-badge" alt="Claragram"></a>
@@ -27,7 +27,7 @@ Clara est un agent IA conçu pour apprendre de ses expériences, créer des comp
 - **Apprentissage continu & Mémoire persistante** : Création automatique de compétences personnalisées et recherche dans l'historique de session.
 - **Planificateur Cron intégré** : Automatisation de rapports quotidiens, veilles et sauvegardes récurrentes en langage naturel.
 - **Délégation et sous-agents** : Exécution de workflows parallèles avec sous-agents isolés.
-- **Multi-modèles** : Compatible avec [Clara Portal](https://portal.claraprise.com), OpenAI, Anthropic, OpenRouter ou tout modèle local/serveur privé.
+- **Multi-modèles** : Compatible avec [Clara Portal](https://portal.claragram.com), OpenAI, Anthropic, OpenRouter ou tout modèle local/serveur privé.
 
 ---
 
@@ -35,12 +35,12 @@ Clara est un agent IA conçu pour apprendre de ses expériences, créer des comp
 
 ### Linux, macOS, WSL2
 ```bash
-curl -fsSL https://agent.claraprise.com/install.sh | bash
+curl -fsSL https://agent.claragram.com/install.sh | bash
 ```
 
 ### Windows (PowerShell)
 ```powershell
-iex (irm https://agent.claraprise.com/install.ps1)
+iex (irm https://agent.claragram.com/install.ps1)
 ```
 
 ---
@@ -62,5 +62,5 @@ clara gateway run
 
 ## Services & Support
 - **Claragram** : [claragram.com](https://claragram.com)
-- **Suite Claraprise** : [claraprise.com](https://claraprise.com)
+- **Suite Claragram** : [claragram.com](https://claragram.com)
 - **Organisation parente** : [Claragram](https://claragram.com)

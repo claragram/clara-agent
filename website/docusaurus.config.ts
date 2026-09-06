@@ -10,7 +10,7 @@ const config: Config = {
   url: 'https://claragram.com',
   baseUrl: '/docs/',
 
-  organizationName: 'claraprise',
+  organizationName: 'claragram',
   projectName: 'clara-agent',
 
   onBrokenLinks: 'warn',
@@ -152,7 +152,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://github.com/claraprise',
+          href: 'https://github.com/claragram',
           label: 'GitHub',
           position: 'right',
         },
@@ -174,19 +174,19 @@ const config: Config = {
           title: 'Ecosystem',
           items: [
             { label: 'Web Portal', href: 'https://portal.claragram.com' },
-            { label: 'GitHub Organization', href: 'https://github.com/claraprise' },
-            { label: 'Contact', href: 'mailto:contact@claragram.com' },
+            { label: 'GitHub Organization', href: 'https://github.com/claragram' },
+            { label: 'Contact', href: 'mailto:info@claragram.com' },
           ],
         },
         {
           title: 'Company',
           items: [
             { label: 'Claragram', href: 'https://claragram.com' },
-            { label: 'Claraprise', href: 'https://claraprise.com' },
+            { label: 'Claragram', href: 'https://claragram.com' },
           ],
         },
       ],
-      copyright: `Built by <a href="https://claragram.com">Claragram</a> · Claraprise · ${new Date().getFullYear()}`,
+      copyright: `Built by <a href="https://claragram.com">Claragram</a> · Claragram · ${new Date().getFullYear()}`,
     },
     prism: {
       theme: prismThemes.github,

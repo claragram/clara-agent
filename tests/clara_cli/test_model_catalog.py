@@ -137,7 +137,7 @@ class TestFallbackChain:
     releases (opus 4.8, etc.) never reach the picker.
     """
 
-    PRIMARY = "https://agent.claraprise.com/docs/api/model-catalog.json"
+    PRIMARY = "https://agent.claragram.com/docs/api/model-catalog.json"
     FALLBACK = (
         "https://raw.githubusercontent.com/claragram/clara-agent"
         "/main/website/static/api/model-catalog.json"

@@ -56,7 +56,7 @@ test('isOfficialSshRemote is true only for the official repo over SSH', () => {
   assert.equal(isOfficialSshRemote('git@github.com:Claragram/clara-agent.git'), true)
   assert.equal(isOfficialSshRemote('git@github.com:Claragram/clara-agent'), true)
   assert.equal(isOfficialSshRemote('ssh://git@github.com/claragram/clara-agent.git'), true)
-  assert.equal(isOfficialSshRemote('ssh://git@github.com/claraprise/clara-agent.git'), true)
+  assert.equal(isOfficialSshRemote('ssh://git@github.com/claragram/clara-agent.git'), true)
   // Case-insensitive owner/repo match.
   assert.equal(isOfficialSshRemote('git@github.com:claragram/clara-agent.git'), true)
 })

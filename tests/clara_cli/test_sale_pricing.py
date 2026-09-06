@@ -93,7 +93,7 @@ def test_resolve_clara_pricing_credentials_honors_inference_env_override(monkeyp
     """
     monkeypatch.setenv(
         "CLARA_INFERENCE_BASE_URL",
-        "https://stg-inference-api.claraprise.com/v1",
+        "https://stg-inference-api.claragram.com/v1",
     )
     # Auth resolution fails / returns nothing — the env override must still win.
     monkeypatch.setattr(
@@ -104,7 +104,7 @@ def test_resolve_clara_pricing_credentials_honors_inference_env_override(monkeyp
     assert api_key == ""
     # The bare origin, whichever form the override was written in: callers
     # append their own path (``/v1/models``), so a suffix here would double up.
-    assert base_url == "https://stg-inference-api.claraprise.com"
+    assert base_url == "https://stg-inference-api.claragram.com"
 
 
 def test_resolve_clara_pricing_credentials_normalizes_either_suffix(monkeypatch):
@@ -113,14 +113,14 @@ def test_resolve_clara_pricing_credentials_normalizes_either_suffix(monkeypatch)
         "clara_cli.auth.resolve_clara_runtime_credentials", lambda: None
     )
     for override in (
-        "https://stg-inference-api.claraprise.com",
-        "https://stg-inference-api.claraprise.com/",
-        "https://stg-inference-api.claraprise.com/v1",
-        "https://stg-inference-api.claraprise.com/v1/",
+        "https://stg-inference-api.claragram.com",
+        "https://stg-inference-api.claragram.com/",
+        "https://stg-inference-api.claragram.com/v1",
+        "https://stg-inference-api.claragram.com/v1/",
     ):
         monkeypatch.setenv("CLARA_INFERENCE_BASE_URL", override)
         assert models_mod._resolve_clara_pricing_credentials()[1] == (
-            "https://stg-inference-api.claraprise.com"
+            "https://stg-inference-api.claragram.com"
         )
 
 

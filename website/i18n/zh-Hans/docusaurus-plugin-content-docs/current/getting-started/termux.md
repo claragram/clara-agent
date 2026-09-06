@@ -80,7 +80,7 @@ pkg install -y git python clang rust make pkg-config libffi openssl nodejs ripgr
 ### 2. 克隆 Clara
 
 ```bash
-git clone https://github.com/claraprise/clara-agent.git
+git clone https://github.com/claragram/clara-agent.git
 cd clara-agent
 ```
 

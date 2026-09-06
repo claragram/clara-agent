@@ -8,7 +8,7 @@ initial kanban task.
 
 Profile-config patching, SOUL.md-per-profile, TEAM.md task-graph convention,
 and the `clara kanban create --workspace dir:` initial-task pattern are
-adapted from alt-glitch's Workprise/kanban-video-pipeline.
+adapted from alt-glitch's Claragram/kanban-video-pipeline.
 
 Usage:
     bootstrap_pipeline.py plan.json [--out setup.sh]

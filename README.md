@@ -4,7 +4,7 @@
 
 # Clara Agent ☤
 <p align="center">
-  <a href="https://agent.claraprise.com/">Clara Agent</a> | <a href="https://agent.claraprise.com/">Clara Desktop</a> | <a href="AI_AGENT_DEPLOYMENT_MANUAL.md">AI Agent Manual</a> | <a href="CLARA_ARCHITECTURE_INDEX.md">Architecture Index</a>
+  <a href="https://agent.claragram.com/">Clara Agent</a> | <a href="https://agent.claragram.com/">Clara Desktop</a> | <a href="AI_AGENT_DEPLOYMENT_MANUAL.md">AI Agent Manual</a> | <a href="CLARA_ARCHITECTURE_INDEX.md">Architecture Index</a>
 </p>
 <p align="center">
   <a href="AI_AGENT_DEPLOYMENT_MANUAL.md"><img src="https://img.shields.io/badge/AI%20Agent-Deployment%20Manual-success?style=for-the-badge" alt="AI Agent Manual"></a>
@@ -21,7 +21,7 @@
 
 **The self-improving AI agent built by [Claragram](https://claragram.com).** It's the only agent with a built-in learning loop — it creates skills from experience, improves them during use, nudges itself to persist knowledge, searches its own past conversations, and builds a deepening model of who you are across sessions. Run it on a $5 VPS, a GPU cluster, or serverless infrastructure that costs nearly nothing when idle. It's not tied to your laptop — talk to it from Telegram while it works on a cloud VM.
 
-Use any model you want — [Clara Portal](https://portal.claraprise.com), OpenRouter, OpenAI, your own endpoint, and [many others](https://agent.claraprise.com/docs/integrations/providers). Switch with `clara model` — no code changes, no lock-in.
+Use any model you want — [Clara Portal](https://portal.claragram.com), OpenRouter, OpenAI, your own endpoint, and [many others](https://agent.claragram.com/docs/integrations/providers). Switch with `clara model` — no code changes, no lock-in.
 
 <table>
 <tr><td><b>A real terminal interface</b></td><td>Full TUI with multiline editing, slash-command autocomplete, conversation history, interrupt-and-redirect, and streaming tool output.</td></tr>
@@ -40,7 +40,7 @@ Use any model you want — [Clara Portal](https://portal.claraprise.com), OpenRo
 ### Linux, macOS, WSL2, Termux
 
 ```bash
-curl -fsSL https://agent.claraprise.com/install.sh | bash
+curl -fsSL https://agent.claragram.com/install.sh | bash
 ```
 
 ### Windows (native, PowerShell)
@@ -50,14 +50,14 @@ curl -fsSL https://agent.claraprise.com/install.sh | bash
 Run this in PowerShell:
 
 ```powershell
-iex (irm https://agent.claraprise.com/install.ps1)
+iex (irm https://agent.claragram.com/install.ps1)
 ```
 
 The installer handles everything: uv, Python 3.11, Node.js, ripgrep, ffmpeg, **and a portable Git Bash** (MinGit, unpacked to `%LOCALAPPDATA%\clara\git` — no admin required, completely isolated from any system Git install). Clara uses this bundled Git Bash to run shell commands.
 
 If you already have Git installed, the installer detects it and uses that instead. Otherwise a ~45MB MinGit download is all you need — it won't touch or interfere with any system Git.
 
-> **Android / Termux:** The tested manual path is documented in the [Termux guide](https://agent.claraprise.com/docs/getting-started/termux). On Termux, Clara installs a curated `.[termux]` extra because the full `.[all]` extra currently pulls Android-incompatible voice dependencies.
+> **Android / Termux:** The tested manual path is documented in the [Termux guide](https://agent.claragram.com/docs/getting-started/termux). On Termux, Clara installs a curated `.[termux]` extra because the full `.[all]` extra currently pulls Android-incompatible voice dependencies.
 >
 > **Windows:** Native Windows is fully supported — the PowerShell one-liner above installs everything. If you'd rather use WSL2, the Linux command works there too. Native Windows install lives under `%LOCALAPPDATA%\clara`; WSL2 installs under `~/.clara` as on Linux.
 
@@ -120,13 +120,13 @@ clara update       # Update to the latest version
 clara doctor       # Diagnose any issues
 ```
 
-📖 **[Full documentation →](https://agent.claraprise.com/docs/)**
+📖 **[Full documentation →](https://agent.claragram.com/docs/)**
 
 ---
 
 ## Skip the API-key collection — Clara Portal
 
-Clara works with whatever provider you want — that's not changing. But if you'd rather not collect five separate API keys for the model, web search, image generation, TTS, and a cloud browser, **[Clara Portal](https://portal.claraprise.com)** covers all of them under one subscription:
+Clara works with whatever provider you want — that's not changing. But if you'd rather not collect five separate API keys for the model, web search, image generation, TTS, and a cloud browser, **[Clara Portal](https://portal.claragram.com)** covers all of them under one subscription:
 
 - **300+ models** — pick any of them with `/model <name>`
 - **Tool Gateway** — web search (Firecrawl), image generation (FAL), text-to-speech (OpenAI), cloud browser (Browser Use), all routed through your sub. No extra accounts.
@@ -137,7 +137,7 @@ One command from a fresh install:
 clara setup --portal
 ```
 
-That logs you in via OAuth, sets Clara as your provider, and turns on the Tool Gateway. Check what's wired up any time with `clara portal info`. Full details on the [Tool Gateway docs page](https://agent.claraprise.com/docs/user-guide/features/tool-gateway).
+That logs you in via OAuth, sets Clara as your provider, and turns on the Tool Gateway. Check what's wired up any time with `clara portal info`. Full details on the [Tool Gateway docs page](https://agent.claragram.com/docs/user-guide/features/tool-gateway).
 
 You can still bring your own keys per-tool whenever you want — the gateway is per-backend, not all-or-nothing.
 
@@ -159,31 +159,31 @@ Clara has two entry points: start the terminal UI with `clara`, or run the gatew
 | Interrupt current work         | `Ctrl+C` or send a new message                | `/stop` or send a new message                                                    |
 | Platform-specific status       | `/platforms`                                  | `/status`, `/sethome`                                                            |
 
-For the full command lists, see the [CLI guide](https://agent.claraprise.com/docs/user-guide/cli) and the [Messaging Gateway guide](https://agent.claraprise.com/docs/user-guide/messaging).
+For the full command lists, see the [CLI guide](https://agent.claragram.com/docs/user-guide/cli) and the [Messaging Gateway guide](https://agent.claragram.com/docs/user-guide/messaging).
 
 ---
 
 ## Documentation
 
-All documentation lives at **[agent.claraprise.com/docs](https://agent.claraprise.com/docs/)**:
+All documentation lives at **[agent.claragram.com/docs](https://agent.claragram.com/docs/)**:
 
 | Section                                                                                             | What's Covered                                             |
 | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| [Quickstart](https://agent.claraprise.com/docs/getting-started/quickstart)                 | Install → setup → first conversation in 2 minutes          |
-| [CLI Usage](https://agent.claraprise.com/docs/user-guide/cli)                              | Commands, keybindings, personalities, sessions             |
-| [Configuration](https://agent.claraprise.com/docs/user-guide/configuration)                | Config file, providers, models, all options                |
-| [Messaging Gateway](https://agent.claraprise.com/docs/user-guide/messaging)                | Telegram, Discord, Slack, WhatsApp, Signal, Home Assistant |
-| [Security](https://agent.claraprise.com/docs/user-guide/security)                          | Command approval, DM pairing, container isolation          |
-| [Tools & Toolsets](https://agent.claraprise.com/docs/user-guide/features/tools)            | 40+ tools, toolset system, terminal backends               |
-| [Skills System](https://agent.claraprise.com/docs/user-guide/features/skills)              | Procedural memory, Skills Hub, creating skills             |
-| [Memory](https://agent.claraprise.com/docs/user-guide/features/memory)                     | Persistent memory, user profiles, best practices           |
-| [MCP Integration](https://agent.claraprise.com/docs/user-guide/features/mcp)               | Connect any MCP server for extended capabilities           |
-| [Cron Scheduling](https://agent.claraprise.com/docs/user-guide/features/cron)              | Scheduled tasks with platform delivery                     |
-| [Context Files](https://agent.claraprise.com/docs/user-guide/features/context-files)       | Project context that shapes every conversation             |
-| [Architecture](https://agent.claraprise.com/docs/developer-guide/architecture)             | Project structure, agent loop, key classes                 |
-| [Contributing](https://agent.claraprise.com/docs/developer-guide/contributing)             | Development setup, PR process, code style                  |
-| [CLI Reference](https://agent.claraprise.com/docs/reference/cli-commands)                  | All commands and flags                                     |
-| [Environment Variables](https://agent.claraprise.com/docs/reference/environment-variables) | Complete env var reference                                 |
+| [Quickstart](https://agent.claragram.com/docs/getting-started/quickstart)                 | Install → setup → first conversation in 2 minutes          |
+| [CLI Usage](https://agent.claragram.com/docs/user-guide/cli)                              | Commands, keybindings, personalities, sessions             |
+| [Configuration](https://agent.claragram.com/docs/user-guide/configuration)                | Config file, providers, models, all options                |
+| [Messaging Gateway](https://agent.claragram.com/docs/user-guide/messaging)                | Telegram, Discord, Slack, WhatsApp, Signal, Home Assistant |
+| [Security](https://agent.claragram.com/docs/user-guide/security)                          | Command approval, DM pairing, container isolation          |
+| [Tools & Toolsets](https://agent.claragram.com/docs/user-guide/features/tools)            | 40+ tools, toolset system, terminal backends               |
+| [Skills System](https://agent.claragram.com/docs/user-guide/features/skills)              | Procedural memory, Skills Hub, creating skills             |
+| [Memory](https://agent.claragram.com/docs/user-guide/features/memory)                     | Persistent memory, user profiles, best practices           |
+| [MCP Integration](https://agent.claragram.com/docs/user-guide/features/mcp)               | Connect any MCP server for extended capabilities           |
+| [Cron Scheduling](https://agent.claragram.com/docs/user-guide/features/cron)              | Scheduled tasks with platform delivery                     |
+| [Context Files](https://agent.claragram.com/docs/user-guide/features/context-files)       | Project context that shapes every conversation             |
+| [Architecture](https://agent.claragram.com/docs/developer-guide/architecture)             | Project structure, agent loop, key classes                 |
+| [Contributing](https://agent.claragram.com/docs/developer-guide/contributing)             | Development setup, PR process, code style                  |
+| [CLI Reference](https://agent.claragram.com/docs/reference/cli-commands)                  | All commands and flags                                     |
+| [Environment Variables](https://agent.claragram.com/docs/reference/environment-variables) | Complete env var reference                                 |
 
 ---
 
@@ -219,7 +219,7 @@ See `clara claw migrate --help` for all options, or use the `openclaw-migration`
 
 ## Contributing
 
-We welcome contributions! See the [Contributing Guide](https://agent.claraprise.com/docs/developer-guide/contributing) for development setup, code style, and PR process.
+We welcome contributions! See the [Contributing Guide](https://agent.claragram.com/docs/developer-guide/contributing) for development setup, code style, and PR process.
 
 Quick start for contributors — use the standard installer, then work from the
 full git checkout it creates at `$CLARA_HOME/clara-agent` (usually
@@ -227,7 +227,7 @@ full git checkout it creates at `$CLARA_HOME/clara-agent` (usually
 managed venv, lazy dependencies, gateway, and docs tooling.
 
 ```bash
-curl -fsSL https://agent.claraprise.com/install.sh | bash
+curl -fsSL https://agent.claragram.com/install.sh | bash
 cd "${CLARA_HOME:-$HOME/.clara}/clara-agent"
 uv pip install -e ".[all,dev]"
 scripts/run_tests.sh

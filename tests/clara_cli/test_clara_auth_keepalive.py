@@ -105,7 +105,7 @@ def test_keepalive_falls_back_to_singleton_state(monkeypatch):
         return {
             "provider": "clara",
             "api_key": "fresh-agent-key",
-            "base_url": "https://inference-api.claraprise.com/v1",
+            "base_url": "https://inference-api.claragram.com/v1",
         }
 
     monkeypatch.setattr("agent.credential_pool.load_pool", lambda provider: _Pool())

@@ -199,7 +199,7 @@ You no longer need to wrap `clara update` in `screen` or `tmux` to survive a ter
 clara --version
 ```
 
-Compare against the latest release at the [GitHub releases page](https://github.com/claraprise/clara-agent/releases).
+Compare against the latest release at the [GitHub releases page](https://github.com/claragram/clara-agent/releases).
 
 ### Updating from Messaging Platforms
 

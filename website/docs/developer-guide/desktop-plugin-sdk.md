@@ -66,7 +66,7 @@ written against the disk door (what you and the agent write);
 [Bundled plugins](#bundled-plugins) notes the two
 differences. No desktop plugins ship in the core tree today — reference demos
 live in the companion
-[`clara-example-plugins`](https://github.com/claraprise/clara-example-plugins)
+[`clara-example-plugins`](https://github.com/claragram/clara-example-plugins)
 repo.
 
 ## Quick start — your first plugin
@@ -848,7 +848,7 @@ enable/disable contract as a disk plugin. The two differences:
 
 No desktop plugins ship in the core tree today; the shipped app stays uncluttered
 and demos live in the
-[`clara-example-plugins`](https://github.com/claraprise/clara-example-plugins)
+[`clara-example-plugins`](https://github.com/claragram/clara-example-plugins)
 companion repo.
 
 ## Security model

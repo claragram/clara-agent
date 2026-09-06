@@ -110,8 +110,8 @@ AUTH_STORE_VERSION = 1
 AUTH_LOCK_TIMEOUT_SECONDS = 15.0
 
 # Clara Portal defaults
-DEFAULT_CLARA_PORTAL_URL = "https://portal.claraprise.com"
-DEFAULT_CLARA_INFERENCE_URL = "https://inference-api.claraprise.com/v1"
+DEFAULT_CLARA_PORTAL_URL = "https://portal.claragram.com"
+DEFAULT_CLARA_INFERENCE_URL = "https://inference-api.claragram.com/v1"
 DEFAULT_CLARA_CLIENT_ID = "clara-cli"
 CLARA_INFERENCE_INVOKE_SCOPE = "inference:invoke"
 CLARA_BILLING_MANAGE_SCOPE = "billing:manage"
@@ -164,11 +164,11 @@ QWEN_ACCESS_TOKEN_REFRESH_SKEW_SECONDS = 120
 DEFAULT_SPOTIFY_ACCOUNTS_BASE_URL = "https://accounts.spotify.com"
 DEFAULT_SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1"
 DEFAULT_SPOTIFY_REDIRECT_URI = "http://127.0.0.1:43827/spotify/callback"
-SPOTIFY_DOCS_URL = "https://agent.claraprise.com/docs/user-guide/features/spotify"
+SPOTIFY_DOCS_URL = "https://agent.claragram.com/docs/user-guide/features/spotify"
 SPOTIFY_DASHBOARD_URL = "https://developer.spotify.com/dashboard"
 SPOTIFY_ACCESS_TOKEN_REFRESH_SKEW_SECONDS = 120
 
-OAUTH_OVER_SSH_DOCS_URL = "https://agent.claraprise.com/docs/guides/oauth-over-ssh"
+OAUTH_OVER_SSH_DOCS_URL = "https://agent.claragram.com/docs/guides/oauth-over-ssh"
 DEFAULT_SPOTIFY_SCOPE = " ".join((
     "user-modify-playback-state",
     "user-read-playback-state",
@@ -3031,14 +3031,14 @@ def _optional_base_url(value: Any) -> Optional[str]:
 
 
 _CLARA_STALE_PORTAL_HOSTS: FrozenSet[str] = frozenset({
-    "api.claraprise.com",
+    "api.claragram.com",
 })
 
 # Allowlist of valid Clara Portal hosts. A portal_base_url outside this
 # set is treated as a misconfiguration and falls back to the default.
 # "localhost" / "127.0.0.1" are valid for local development and testing.
 _CLARA_PORTAL_ALLOWED_HOSTS: FrozenSet[str] = frozenset({
-    "portal.claraprise.com",
+    "portal.claragram.com",
     "localhost",
     "127.0.0.1",
 })
@@ -3068,7 +3068,7 @@ def _migrate_stale_clara_portal_url(providers: Dict[str, Any]) -> None:
 # dev/staging escape hatch and the env source is already trusted (the
 # user set it themselves).
 _ALLOWED_CLARA_INFERENCE_HOSTS: FrozenSet[str] = frozenset({
-    "inference-api.claraprise.com",
+    "inference-api.claragram.com",
 })
 
 
@@ -7472,7 +7472,7 @@ def _snapshot_clara_pool_status() -> Dict[str, Any]:
 
 # ── Process-level memo for get_clara_auth_status() ──
 # get_clara_auth_status() validates state by calling resolve_clara_runtime_credentials(),
-# which does a __PROT_0_synchroclara__ OAuth refresh POST to portal.claraprise.com. That can take
+# which does a __PROT_0_synchroclara__ OAuth refresh POST to portal.claragram.com. That can take
 # ~350ms even on the failure path, and read-only UI surfaces (`clara tools`, status panels,
 # subscription-feature checks) call it many times per render — `clara tools` → "All Platforms"
 # was firing the refresh ~31× during one menu paint, racking up >13s of HTTP and burning

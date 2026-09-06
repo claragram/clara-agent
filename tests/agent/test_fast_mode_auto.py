@@ -63,7 +63,7 @@ def test_bounded_fast_window_policy(monkeypatch):
 
     for provider, base_url in (
         ("openrouter", "https://openrouter.ai/api/v1"),
-        ("clara", "https://inference-api.claraprise.com/v1"),
+        ("clara", "https://inference-api.claragram.com/v1"),
         ("copilot", "https://api.githubcopilot.com"),
         ("azure", "https://foo.openai.azure.com"),
         ("custom", "http://10.0.0.1:8000/v1"),

@@ -71,7 +71,7 @@ async function captureScreen(page: Page, viewName: string) {
 
 // Allowlist for apps, connectors, plugins names, brands, third-party, codes
 const ALLOWED_BRAND_WORDS = new Set([
-  'clara', 'workprise', 'nous', 'agent', 'mock', 'model', 'gpt', 'claude', 'sonnet', 'opus',
+  'clara', 'claragram', 'nous', 'agent', 'mock', 'model', 'gpt', 'claude', 'sonnet', 'opus',
   'haiku', 'openai', 'anthropic', 'deepseek', 'openrouter', 'ollama', 'gemini', 'groq', 'xai',
   'grok', 'fireworks', 'mistral', 'qwen', 'llama', 'mcp', 'github', 'discord', 'docker', 'npm',
   'json', 'yaml', 'url', 'uri', 'api', 'http', 'https', 'stt', 'tts', 'hud', 'ram', 'vram', 'gpu',

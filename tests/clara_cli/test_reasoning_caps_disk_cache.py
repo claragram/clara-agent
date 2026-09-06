@@ -145,7 +145,7 @@ def test_staging_portal_does_not_read_productions_mirror(
     )
 
     cold_process()
-    monkeypatch.setenv("CLARA_INFERENCE_BASE_URL", "https://staging.workprise.com")
+    monkeypatch.setenv("CLARA_INFERENCE_BASE_URL", "https://staging.claragram.com")
     monkeypatch.setattr(models_mod, "_urlopen_model_catalog_request", offline)
 
     assert models_mod.clara_model_reasoning_capabilities(
@@ -197,7 +197,7 @@ def test_pricing_fetch_seeds_the_mirror(cold_process, offline, monkeypatch):
         lambda req, *, timeout: _response(_CATALOG),
     )
     models_mod.fetch_models_with_pricing(
-        base_url="https://inference-api.claraprise.com"
+        base_url="https://inference-api.claragram.com"
     )
 
     cold_process()

@@ -136,7 +136,7 @@ def clara_portal_billing_url(account_info: Optional[ClaraPortalAccountInfo] = No
     try:
         from clara_cli.auth import DEFAULT_CLARA_PORTAL_URL
     except Exception:
-        DEFAULT_CLARA_PORTAL_URL = "https://portal.claraprise.com"
+        DEFAULT_CLARA_PORTAL_URL = "https://portal.claragram.com"
 
     base = None
     if account_info is not None:
@@ -629,7 +629,7 @@ def _fetch_clara_account_info(
     access_token: str,
     portal_base_url: Optional[str] = None,
 ) -> dict[str, Any]:
-    base = (portal_base_url or "https://portal.claraprise.com").rstrip("/")
+    base = (portal_base_url or "https://portal.claragram.com").rstrip("/")
     url = f"{base}/api/oauth/account"
     headers = {
         "Authorization": f"Bearer {access_token}",

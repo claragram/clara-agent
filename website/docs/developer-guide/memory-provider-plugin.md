@@ -18,7 +18,7 @@ Clara discovers memory providers from four sources, in this precedence order:
 
 | Source | Location | Notes |
 |---|---|---|
-| Bundled | `plugins/memory/<name>/` | Ships with Clara. Closed to new providers — see [CONTRIBUTING](https://github.com/claraprise/clara-agent/blob/main/CONTRIBUTING.md). |
+| Bundled | `plugins/memory/<name>/` | Ships with Clara. Closed to new providers — see [CONTRIBUTING](https://github.com/claragram/clara-agent/blob/main/CONTRIBUTING.md). |
 | User | `$CLARA_HOME/plugins/<name>/` | Dropped in by the user, per profile. |
 | Project | `./.clara/plugins/<name>/` | Opt-in via `CLARA_ENABLE_PROJECT_PLUGINS=1`. |
 | Package | `clara_agent.memory_providers` entry point | `pip install`, nothing to copy. |

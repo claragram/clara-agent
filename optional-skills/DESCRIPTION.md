@@ -1,6 +1,6 @@
 # Optional Skills
 
-Official skills maintained by Workprise that are **not activated by default**.
+Official skills maintained by Claragram that are **not activated by default**.
 
 These skills ship with the clara-agent repository but are not copied to
 `~/.clara/skills/` during setup. They are discoverable via the Skills Hub:

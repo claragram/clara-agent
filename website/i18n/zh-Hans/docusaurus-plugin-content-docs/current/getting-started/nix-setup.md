@@ -50,7 +50,7 @@ clara chat
 <summary><strong>从本地克隆构建</strong></summary>
 
 ```bash
-git clone https://github.com/claraprise/clara-agent.git
+git clone https://github.com/claragram/clara-agent.git
 cd clara-agent
 nix build
 ./result/bin/clara setup

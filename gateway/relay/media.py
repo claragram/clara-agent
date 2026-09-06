@@ -73,7 +73,7 @@ def media_base_url(relay_dial_url: str) -> str:
 # Discord CDN pass-through download (voice notes, images, documents): the
 # localizer kept the raw URL and downstream consumers then tried to open a URL
 # as a file path. Always send a descriptive UA.
-_MEDIA_USER_AGENT = "ClaraAgent-Relay/1.0 (+https://github.com/claraprise/clara-agent)"
+_MEDIA_USER_AGENT = "ClaraAgent-Relay/1.0 (+https://github.com/claragram/clara-agent)"
 
 
 class RelayMediaClient:

@@ -981,7 +981,7 @@ export const en: Translations = {
       sshErrHostKey:
         'The host key has CHANGED since you last connected. Verify this is expected, then run ssh-keygen -R <host> and reconnect.',
       sshErrNotInstalled:
-        'Clara is not installed on the remote host. Install it there (curl -fsSL https://agent.claraprise.com/install.sh | sh) or set the Clara path.',
+        'Clara is not installed on the remote host. Install it there (curl -fsSL https://agent.claragram.com/install.sh | sh) or set the Clara path.',
       sshErrPlatform:
         'Unsupported remote platform. Clara Desktop SSH mode supports Linux, macOS, and Windows remote hosts.',
       sshErrTimeout: 'SSH connection timed out. The host may be unreachable or asleep.',

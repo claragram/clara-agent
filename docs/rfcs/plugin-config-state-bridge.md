@@ -139,6 +139,6 @@ The implementation is covered with real temporary-Clara-home tests for:
 
 ## Related
 
-- [Issue #64227](https://github.com/claraprise/clara-agent/issues/64227)
-- [RFC PR #58542](https://github.com/claraprise/clara-agent/pull/58542) by Topher Ross
+- [Issue #64227](https://github.com/claragram/clara-agent/issues/64227)
+- [RFC PR #58542](https://github.com/claragram/clara-agent/pull/58542) by Topher Ross
 - #67531 — standalone plugin settings namespace discussion

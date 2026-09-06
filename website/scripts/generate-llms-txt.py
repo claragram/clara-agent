@@ -17,8 +17,8 @@ use, web search, and 22 messaging platforms were absent from the index every
 LLM reads to learn what Clara does.
 
 Both publish at:
-  https://agent.claraprise.com/docs/llms.txt
-  https://agent.claraprise.com/docs/llms-full.txt
+  https://agent.claragram.com/docs/llms.txt
+  https://agent.claragram.com/docs/llms-full.txt
 
 The `/docs/` prefix is not a mistake — Docusaurus serves `website/static/`
 at the `docs/` base path. Clients and IDE plugins that probe the classic
@@ -39,7 +39,7 @@ WEBSITE = SCRIPT_DIR.parent
 DOCS = WEBSITE / "docs"
 STATIC = WEBSITE / "static"
 
-SITE_BASE = "https://agent.claraprise.com/docs"
+SITE_BASE = "https://agent.claragram.com/docs"
 
 # The product story: which pages lead, and in what order. Everything not named
 # here is still indexed — ABSORB decides where it lands — so this list is safe
@@ -311,7 +311,7 @@ def emit_llms_index() -> str:
         "(Linux, macOS, WSL2, Termux)"
     )
     lines.append("")
-    lines.append("Repo: https://github.com/claraprise/clara-agent")
+    lines.append("Repo: https://github.com/claragram/clara-agent")
     lines.append("")
 
     for section, items in SECTIONS:
@@ -345,8 +345,8 @@ def emit_llms_full() -> str:
             "Started, Using Clara, Features, Messaging, Integrations, Guides, "
             "Developer Guide, Reference, then everything else.\n"
         ),
-        "Canonical site: https://agent.claraprise.com/docs\n",
-        "Short index: https://agent.claraprise.com/docs/llms.txt\n",
+        "Canonical site: https://agent.claragram.com/docs\n",
+        "Short index: https://agent.claragram.com/docs/llms.txt\n",
         "\n---\n\n",
     ]
 

@@ -3,7 +3,7 @@ name: neuroskill-bci
 description: "Use live BCI cognitive and mood state from NeuroSkill."
 platforms: [linux, macos, windows]
 version: 1.0.0
-author: Clara Agent + Workprise
+author: Clara Agent + Claragram
 license: MIT
 metadata:
   clara:

@@ -95,7 +95,7 @@ nebius_token_factory = NebiusTokenFactoryProfile(
         "moonshotai/Kimi-K2.5-fast",
         "MiniMaxAI/MiniMax-M2.5-fast",
         "deepseek-ai/DeepSeek-V3.2-fast",
-        "Workprise/Clara-4-70B",
+        "Claragram/Clara-4-70B",
         "openai/gpt-oss-120b-fast",
         "meta-llama/Llama-3.3-70B-Instruct",
     ),

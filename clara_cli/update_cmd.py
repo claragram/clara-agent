@@ -1028,7 +1028,7 @@ def _print_curator_first_run_notice() -> None:
     print("  Preview now:  clara curator run --dry-run")
     print("  Pause it:     clara curator pause")
     print(
-        "  Docs:         https://agent.claraprise.com/docs/user-guide/features/curator"
+        "  Docs:         https://agent.claragram.com/docs/user-guide/features/curator"
     )
 
 def _print_fts_optimize_available_notice() -> None:
@@ -2206,7 +2206,7 @@ def _update_via_zip(args, *, had_desktop_app_before_update: bool = False) -> boo
         _m().sys.exit(1)
     _abort_zip_update_if_dirty_tree()
     zip_url = (
-        f"https://github.com/claraprise/clara-agent/archive/refs/heads/{branch}.zip"
+        f"https://github.com/claragram/clara-agent/archive/refs/heads/{branch}.zip"
     )
 
     print("→ Downloading latest version...")
@@ -2363,7 +2363,7 @@ def _update_via_zip(args, *, had_desktop_app_before_update: bool = False) -> boo
         print("  Your existing install was left in place.")
         print(
             "  Re-run `clara update` to retry; if the agent won't start, "
-            "reinstall from https://agent.claraprise.com"
+            "reinstall from https://agent.claragram.com"
         )
         _m().sys.exit(1)
     finally:
@@ -3159,9 +3159,9 @@ OFFICIAL_REPO_URLS = {
     "git@github.com:claragram/clara-agent.git",
     "https://github.com/claragram/clara-agent",
     "git@github.com:claragram/clara-agent",
-    "https://github.com/claraprise/clara-agent.git",
+    "https://github.com/claragram/clara-agent.git",
     "git@github.com:claragram/clara-agent.git",
-    "https://github.com/claraprise/clara-agent",
+    "https://github.com/claragram/clara-agent",
     "git@github.com:claragram/clara-agent",
 }
 
@@ -3312,7 +3312,7 @@ def _sync_with_upstream_if_needed(
             # without persisting the decline so interactive runs still get asked.
             print("  Skipping upstream setup (non-interactive run).")
             print(
-                "  Add it later with: git remote add upstream https://github.com/claraprise/clara-agent.git"
+                "  Add it later with: git remote add upstream https://github.com/claragram/clara-agent.git"
             )
             return False
 
@@ -3338,7 +3338,7 @@ def _sync_with_upstream_if_needed(
             print("→ Adding upstream remote...")
             if _add_upstream_remote(git_cmd, cwd):
                 print(
-                    "  ✓ Added upstream: https://github.com/claraprise/clara-agent.git"
+                    "  ✓ Added upstream: https://github.com/claragram/clara-agent.git"
                 )
                 has_upstream = True
             else:
@@ -3346,7 +3346,7 @@ def _sync_with_upstream_if_needed(
                 return False
         else:
             print(
-                "  Skipped. Run 'git remote add upstream https://github.com/claraprise/clara-agent.git' to add later."
+                "  Skipped. Run 'git remote add upstream https://github.com/claragram/clara-agent.git' to add later."
             )
             _mark_skip_upstream_prompt()
             return False
@@ -8495,7 +8495,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
         else:
             print("✗ Not a git repository. Please reinstall:")
             print(
-                "  curl -fsSL https://agent.claraprise.com/install.sh | bash"
+                "  curl -fsSL https://agent.claragram.com/install.sh | bash"
             )
             sys.exit(1)
 
@@ -9527,7 +9527,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
             print(f"  ⚠ {failing_module} still fails to import after updating:")
             print(f"      {import_error}")
             print("    Run `clara update` again — if it persists, reinstall:")
-            print("    https://agent.claraprise.com")
+            print("    https://agent.claragram.com")
 
         node_failures = _update_node_dependencies()
         _m()._build_web_ui(_m().PROJECT_ROOT / "web")

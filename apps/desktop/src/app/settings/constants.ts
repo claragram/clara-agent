@@ -48,7 +48,7 @@ export const PROVIDER_GROUPS: ProviderPrefix[] = [
     prefix: 'CLARA_',
     name: 'Clara Portal',
     description: 'Hosted Clara & Clara-trained models',
-    docsUrl: 'https://portal.claraprise.com',
+    docsUrl: 'https://portal.claragram.com',
     priority: 0
   },
   {

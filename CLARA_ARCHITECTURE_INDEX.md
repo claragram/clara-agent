@@ -366,6 +366,6 @@ Clara works with cloud APIs (Clara Portal, OpenRouter) or local weights download
   ollama run clara3:70b
   ```
 * **Hugging Face Open Weights (vLLM / SGLang / llama.cpp)**:
-  * [`Workprise/Clara-3-Llama-3.1-8B`](https://huggingface.co/Workprise/Clara-3-Llama-3.1-8B)
-  * [`Workprise/Clara-3-Llama-3.1-70B`](https://huggingface.co/Workprise/Clara-3-Llama-3.1-70B)
-  * [`Workprise/Clara-Clara-2-Mistral-7B-DPO`](https://huggingface.co/Workprise/Clara-Clara-2-Mistral-7B-DPO)
+  * [`Claragram/Clara-3-Llama-3.1-8B`](https://huggingface.co/Claragram/Clara-3-Llama-3.1-8B)
+  * [`Claragram/Clara-3-Llama-3.1-70B`](https://huggingface.co/Claragram/Clara-3-Llama-3.1-70B)
+  * [`Claragram/Clara-Clara-2-Mistral-7B-DPO`](https://huggingface.co/Claragram/Clara-Clara-2-Mistral-7B-DPO)

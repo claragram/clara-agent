@@ -1,7 +1,7 @@
 # Configuration, Toolsets & Voice
 
 Edit with `clara config edit` or `clara config set section.key value`.
-Full reference: https://agent.claraprise.com/docs/user-guide/configuration
+Full reference: https://agent.claragram.com/docs/user-guide/configuration
 
 ### Config Sections (most-used keys)
 

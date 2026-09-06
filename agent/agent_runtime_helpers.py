@@ -1453,7 +1453,7 @@ def try_recover_primary_transport(
     # pool *does* need the rebuild every other anthropic_messages provider
     # already gets — don't blanket-skip the dual-wire path.
     if (
-        provider_lower in {"clara", "clara-portal", "claragram", "workprise"}
+        provider_lower in {"clara", "clara-portal", "claragram"}
         and getattr(agent, "api_mode", None) != "anthropic_messages"
     ):
         return False

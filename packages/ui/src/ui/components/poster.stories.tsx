@@ -22,25 +22,25 @@ const TIERS = [
   },
   {
     label: 'Visor',
-    src: '/img/hermes-2.png',
+    src: '/img/clara-2.png',
     subtitle: 'helmeted figure, visor drawn',
     tint: '#99bbdd'
   },
   {
     label: 'Angel',
-    src: '/img/hermes-3.jpg',
+    src: '/img/clara-3.jpg',
     subtitle: 'winged, in flight',
     tint: '#ccaa88'
   },
   {
     label: 'Herald',
-    src: '/img/hermes-4.png',
+    src: '/img/clara-4.png',
     subtitle: 'plumed helm, armored',
     tint: '#dd8899'
   },
   {
     label: 'Muse',
-    src: '/img/hermes-1.png',
+    src: '/img/clara-1.png',
     subtitle: 'portrait, pensive',
     tint: '#ccaa88'
   }
@@ -110,7 +110,7 @@ const meta: Meta<typeof Poster> = {
     docs: {
       description: {
         component:
-          'A social-ready glitchy card built around the haptic-distortion image component. Defaults to the `vibe` variant — full-bleed distortion with minimal registration chrome — matching the overlay on the Hermes agent website. Switch to `variant="dispatch"` for the broadcast-card layout with copy + sidebar tags.\n\nPoster stories include all five tier images from the `manage-subscription` page so you can screen-record any character on-demand.'
+          'A social-ready glitchy card built around the haptic-distortion image component. Defaults to the `vibe` variant — full-bleed distortion with minimal registration chrome — matching the overlay on the Clara agent website. Switch to `variant="dispatch"` for the broadcast-card layout with copy + sidebar tags.\n\nPoster stories include all five tier images from the `manage-subscription` page so you can screen-record any character on-demand.'
       }
     },
     layout: 'centered'
@@ -124,7 +124,7 @@ type Story = StoryObj<typeof Poster>
 
 /**
  * Primary story. Full-bleed "Scout" scene (warrior approaching the giant),
- * minimal chrome, just the subtle `Hermes Agent` overlay at the bottom-right.
+ * minimal chrome, just the subtle `Clara Agent` overlay at the bottom-right.
  * Screen-record one ~7s pass (two 3.6s slash cycles) → export as GIF →
  * attach to the pricing tweet.
  *
@@ -136,7 +136,7 @@ export const Vibe: Story = {
     aspect: 'square',
     autoPlay: 'slash',
     scale: 1,
-    signature: 'Hermes Agent',
+    signature: 'Clara Agent',
     variant: 'vibe'
   }
 }
@@ -147,7 +147,7 @@ export const VibeStory: Story = {
     aspect: 'story',
     autoPlay: 'slash',
     scale: 1,
-    signature: 'Hermes Agent',
+    signature: 'Clara Agent',
     variant: 'vibe'
   },
   name: 'Vibe · Story (9:16)'
@@ -159,7 +159,7 @@ export const VibeLandscape: Story = {
     aspect: 'landscape',
     autoPlay: 'slash',
     scale: 1,
-    signature: 'Hermes Agent',
+    signature: 'Clara Agent',
     variant: 'vibe'
   },
   name: 'Vibe · Landscape (16:9)'
@@ -171,7 +171,7 @@ export const VibePortrait: Story = {
     aspect: 'portrait',
     autoPlay: 'slash',
     scale: 1,
-    signature: 'Hermes Agent',
+    signature: 'Clara Agent',
     variant: 'vibe'
   },
   name: 'Vibe · Portrait (4:5)'
@@ -238,7 +238,7 @@ export const TierScout: Story = {
     aspect: 'square',
     autoPlay: 'slash',
     scale: 1,
-    signature: 'Hermes Agent',
+    signature: 'Clara Agent',
     src: SCOUT_SRC,
     tint: TIERS[0].tint,
     variant: 'vibe'
@@ -251,7 +251,7 @@ export const TierVisor: Story = {
     aspect: 'square',
     autoPlay: 'slash',
     scale: 1,
-    signature: 'Hermes Agent',
+    signature: 'Clara Agent',
     src: TIERS[1].src,
     tint: TIERS[1].tint,
     variant: 'vibe'
@@ -264,7 +264,7 @@ export const TierAngel: Story = {
     aspect: 'square',
     autoPlay: 'gentle',
     scale: 1,
-    signature: 'Hermes Agent',
+    signature: 'Clara Agent',
     src: TIERS[2].src,
     tint: TIERS[2].tint,
     variant: 'vibe'
@@ -277,7 +277,7 @@ export const TierHerald: Story = {
     aspect: 'square',
     autoPlay: 'slash',
     scale: 1,
-    signature: 'Hermes Agent',
+    signature: 'Clara Agent',
     src: TIERS[3].src,
     tint: TIERS[3].tint,
     variant: 'vibe'
@@ -290,7 +290,7 @@ export const TierMuse: Story = {
     aspect: 'square',
     autoPlay: 'gentle',
     scale: 1,
-    signature: 'Hermes Agent',
+    signature: 'Clara Agent',
     src: TIERS[4].src,
     tint: TIERS[4].tint,
     variant: 'vibe'
@@ -307,7 +307,7 @@ export const TierApex: Story = {
     aspect: 'square',
     autoPlay: 'aggressive',
     scale: 1,
-    signature: 'Hermes · Apex',
+    signature: 'Clara · Apex',
     src: TIERS[3].src,
     tint: HIGHEST_TINT,
     tintStrength: HIGHEST_TINT_STRENGTH,
@@ -409,7 +409,7 @@ export const VibeGentle: Story = {
     aspect: 'square',
     autoPlay: 'gentle',
     scale: 1,
-    signature: 'Hermes Agent',
+    signature: 'Clara Agent',
     tint: '#88ccaa',
     variant: 'vibe'
   }
@@ -421,7 +421,7 @@ export const VibeAggressive: Story = {
     aspect: 'square',
     autoPlay: 'aggressive',
     scale: 1,
-    signature: 'Hermes Agent',
+    signature: 'Clara Agent',
     tint: HIGHEST_TINT,
     variant: 'vibe'
   }
@@ -434,12 +434,12 @@ export const DispatchPricingTeaser: Story = {
   args: {
     aspect: 'square',
     body: 'New tiers. Same autonomous agent, scaled to how you actually run it — solo on a laptop, shared across a team, or sovereign on your own hardware.',
-    channel: 'NOUS • HERMES AGENT',
+    channel: 'CLARAGRAM • CLARA AGENT',
     eyebrow: 'PRICING / 2026',
     headline: ['Pricing', 'That Grows', 'With You.'],
     scale: 1,
     seal: 'v0.9 · 2026',
-    signature: 'nousresearch.com/hermes-agent',
+    signature: 'claragram.com',
     tags: ['Studio · free', 'Pro · $20/mo', 'Sovereign · on-prem'],
     tint: '#ccaa88',
     variant: 'dispatch'
@@ -465,11 +465,11 @@ export const DispatchTriptych: TriptychStory = {
       <div className="flex items-stretch gap-4">
         <Poster
           {...args}
-          channel={showLabels ? 'NOUS • STUDIO' : undefined}
+          channel={showLabels ? 'CLARA • STUDIO' : undefined}
           eyebrow={showLabels ? 'TIER / 001' : undefined}
-          headline={showLabels ? ['Hermes', 'Studio.'] : ['']}
+          headline={showLabels ? ['Clara', 'Studio.'] : ['']}
           seal={showLabels ? 'FREE · MIT' : undefined}
-          signature={showLabels ? 'hermes.run / studio' : undefined}
+          signature={showLabels ? 'claragram.com / studio' : undefined}
           src={TIERS[0].src}
           tags={showLabels ? ['Local-first', 'Unlimited tools', 'MIT'] : []}
           tint={TIERS[0].tint}
@@ -477,11 +477,11 @@ export const DispatchTriptych: TriptychStory = {
 
         <Poster
           {...args}
-          channel={showLabels ? 'NOUS • PRO' : undefined}
+          channel={showLabels ? 'CLARA • PRO' : undefined}
           eyebrow={showLabels ? 'TIER / 002' : undefined}
-          headline={showLabels ? ['Hermes', 'Pro.'] : ['']}
+          headline={showLabels ? ['Clara', 'Pro.'] : ['']}
           seal={showLabels ? '$20/mo' : undefined}
-          signature={showLabels ? 'hermes.run / pro' : undefined}
+          signature={showLabels ? 'claragram.com / pro' : undefined}
           src={TIERS[2].src}
           tags={
             showLabels
@@ -493,11 +493,11 @@ export const DispatchTriptych: TriptychStory = {
 
         <Poster
           {...args}
-          channel={showLabels ? 'NOUS • SOVEREIGN' : undefined}
+          channel={showLabels ? 'CLARA • SOVEREIGN' : undefined}
           eyebrow={showLabels ? 'TIER / 003' : undefined}
-          headline={showLabels ? ['Hermes', 'Sovereign.'] : ['']}
+          headline={showLabels ? ['Clara', 'Sovereign.'] : ['']}
           seal={showLabels ? 'talk to us' : undefined}
-          signature={showLabels ? 'hermes.run / sovereign' : undefined}
+          signature={showLabels ? 'claragram.com / sovereign' : undefined}
           src={TIERS[3].src}
           tags={
             showLabels

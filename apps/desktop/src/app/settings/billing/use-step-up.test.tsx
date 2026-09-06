@@ -101,7 +101,7 @@ describe('useStepUpFlow', () => {
       gatewayMock.emit('billing.step_up.verification', {
         payload: {
           user_code: 'ABCD-1234',
-          verification_url: 'https://portal.claraprise.com/device'
+          verification_url: 'https://portal.claragram.com/device'
         },
         type: 'billing.step_up.verification'
       })
@@ -110,11 +110,11 @@ describe('useStepUpFlow', () => {
     expect(result.current.phase).toBe('verifying')
     expect(result.current.verification).toEqual({
       code: 'ABCD-1234',
-      url: 'https://portal.claraprise.com/device'
+      url: 'https://portal.claragram.com/device'
     })
 
     result.current.openVerification()
-    expect(window.claraDesktop?.openExternal).toHaveBeenCalledWith('https://portal.claraprise.com/device')
+    expect(window.claraDesktop?.openExternal).toHaveBeenCalledWith('https://portal.claragram.com/device')
 
     await act(async () => {
       resolveStepUp({ data: { granted: true, ok: true }, ok: true })

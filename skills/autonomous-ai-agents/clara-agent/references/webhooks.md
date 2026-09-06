@@ -83,7 +83,7 @@ clara webhook subscribe todoist-clara \
   --deliver telegram --deliver-chat-id "12345"
 ```
 
-Full filter syntax: https://agent.claraprise.com/docs/user-guide/messaging/webhooks#payload-filters
+Full filter syntax: https://agent.claragram.com/docs/user-guide/messaging/webhooks#payload-filters
 
 ### List subscriptions
 ```bash

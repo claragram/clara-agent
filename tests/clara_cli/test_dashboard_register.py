@@ -75,7 +75,7 @@ def _fake_http_ok(payload: dict):
 
 
 class TestHappyPath:
-    def _run(self, *, args, account_token="tok_abc", portal="https://portal.claraprise.com",
+    def _run(self, *, args, account_token="tok_abc", portal="https://portal.claragram.com",
              response=None, captured=None, existing_client_id=None):
         response = response or {
             "client_id": "agent:selfhost-1",
@@ -257,7 +257,7 @@ class TestCustomPortalPersistence:
         # No custom URL supplied, resolves to default → not written.
         saved = self._run(
             args=_ns(),
-            portal="https://portal.claraprise.com",
+            portal="https://portal.claragram.com",
             existing_portal=None,
         )
         assert "CLARA_DASHBOARD_PORTAL_URL" not in saved
@@ -309,7 +309,7 @@ class TestPublicUrlPersistence:
         ), patch("clara_cli.config.is_managed", return_value=False), patch.dict(
             dr.os.environ, {}, clear=False
         ), patch.object(
-            dr, "_resolve_portal_base_url", return_value="https://portal.claraprise.com"
+            dr, "_resolve_portal_base_url", return_value="https://portal.claragram.com"
         ), patch(
             "clara_cli.config.get_env_value", side_effect=fake_get_env_value
         ), patch(
@@ -401,7 +401,7 @@ class TestPortalResolution:
 class TestPortalErrors:
     def _run_http_error(self, code, body):
         err = urllib.error.HTTPError(
-            url="https://portal.claraprise.com/api/oauth/self-hosted-client",
+            url="https://portal.claragram.com/api/oauth/self-hosted-client",
             code=code,
             msg="err",
             hdrs=None,
@@ -411,7 +411,7 @@ class TestPortalErrors:
         with patch(
             "clara_cli.auth.resolve_clara_access_token", return_value="tok"
         ), patch("clara_cli.config.is_managed", return_value=False), patch.object(
-            dr, "_resolve_portal_base_url", return_value="https://portal.claraprise.com"
+            dr, "_resolve_portal_base_url", return_value="https://portal.claragram.com"
         ), patch.object(dr.urllib.request, "urlopen", side_effect=err):
             with pytest.raises(SystemExit) as exc:
                 dr.cmd_dashboard_register(_ns())

@@ -153,28 +153,28 @@ describe('buildToolView browser_navigate title', () => {
     const view = buildToolView(
       part({
         toolName: 'browser_navigate',
-        args: { url: 'https://agent.claraprise.com/docs' },
+        args: { url: 'https://agent.claragram.com/docs' },
         result: { success: false, error: 'Command timed out after 60 seconds' }
       }),
       ''
     )
 
     expect(view.status).toBe('error')
-    expect(view.title).toBe('Failed to open agent.claraprise.com/docs')
+    expect(view.title).toBe('Failed to open agent.claragram.com/docs')
   })
 
   it('shows opened title on success', () => {
     const view = buildToolView(
       part({
         toolName: 'browser_navigate',
-        args: { url: 'https://agent.claraprise.com/docs' },
-        result: { success: true, url: 'https://agent.claraprise.com/docs', title: 'Docs' }
+        args: { url: 'https://agent.claragram.com/docs' },
+        result: { success: true, url: 'https://agent.claragram.com/docs', title: 'Docs' }
       }),
       ''
     )
 
     expect(view.status).toBe('success')
-    expect(view.title).toBe('Opened agent.claraprise.com/docs')
+    expect(view.title).toBe('Opened agent.claragram.com/docs')
   })
 })
 

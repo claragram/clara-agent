@@ -392,9 +392,9 @@ test('isServerSideHttpError detects 502/503/504', () => {
 
 test('isClaraCloudAgentUrl detects cloud agent hosts', () => {
   // Positive cases
-  assert.equal(isClaraCloudAgentUrl('https://ares-3009.agents.workprise.com'), true)
-  assert.equal(isClaraCloudAgentUrl('https://ares-3009.agents.workprise.com/api/health'), true)
-  assert.equal(isClaraCloudAgentUrl('http://test.agents.workprise.com'), true)
+  assert.equal(isClaraCloudAgentUrl('https://ares-3009.agents.claragram.com'), true)
+  assert.equal(isClaraCloudAgentUrl('https://ares-3009.agents.claragram.com/api/health'), true)
+  assert.equal(isClaraCloudAgentUrl('http://test.agents.claragram.com'), true)
 
   // Negative cases
   assert.equal(isClaraCloudAgentUrl('http://127.0.0.1:9000'), false)
@@ -408,7 +408,7 @@ test('waitForClaraReady surfaces actionable error for cloud agent 503', async ()
   const currentTime = { value: 0 }
 
   try {
-    await waitForClaraReady('https://ares-3009.agents.workprise.com', {
+    await waitForClaraReady('https://ares-3009.agents.claragram.com', {
       fetchPublicJson: async () => {
         attempts++
         // Always return 503
@@ -508,18 +508,18 @@ test('isServerSideHttpError structured path excludes 500/401/403/404/429 even wh
 test('makeClaraCloudBackendDownError produces the Cloud shape and preserves cause', () => {
   const err = new Error('upstream unavailable') as any
   err.statusCode = 503
-  const result = makeClaraCloudBackendDownError('https://ares-3009.agents.workprise.com', err)
+  const result = makeClaraCloudBackendDownError('https://ares-3009.agents.claragram.com', err)
   assert.ok(result)
   assert.equal((result as any).isCloudBackendDown, true)
   assert.equal((result as any).statusCode, 503)
   assert.equal((result as any).cause, err)
-  assert.ok(result?.message.includes('Clara Cloud agent ares-3009.agents.workprise.com is down'))
+  assert.ok(result?.message.includes('Clara Cloud agent ares-3009.agents.claragram.com is down'))
 })
 
 test('makeClaraCloudBackendDownError returns null for a Cloud 401 (routes to reauth)', () => {
   const err = new Error('Unauthorized') as any
   err.statusCode = 401
-  assert.equal(makeClaraCloudBackendDownError('https://ares-3009.agents.workprise.com', err), null)
+  assert.equal(makeClaraCloudBackendDownError('https://ares-3009.agents.claragram.com', err), null)
 })
 
 test('makeClaraCloudBackendDownError returns null for a non-Cloud 503 (generic remote failure)', () => {
@@ -531,7 +531,7 @@ test('makeClaraCloudBackendDownError returns null for a non-Cloud 503 (generic r
 
 test('makeClaraCloudBackendDownError preserves legacy string-prefix compatibility', () => {
   const result = makeClaraCloudBackendDownError(
-    'https://ares-3009.agents.workprise.com',
+    'https://ares-3009.agents.claragram.com',
     new Error('503: Service Unavailable')
   )
 

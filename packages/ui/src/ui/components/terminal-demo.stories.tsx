@@ -40,7 +40,7 @@ const SEQUENCE: TerminalDemoStep[] = [
 ]
 
 const meta: Meta<typeof TerminalDemo> = {
-  args: { label: 'Hermes', sequence: SEQUENCE },
+  args: { label: 'Clara', sequence: SEQUENCE },
   component: TerminalDemo,
   title: 'Components/Data Display/TerminalDemo'
 }

@@ -127,7 +127,7 @@ def get_clara_home() -> Path:
     callers that import this at load time.  Subprocess spawners are
     expected to propagate ``CLARA_HOME`` explicitly (see the systemd
     template in ``clara_cli/gateway.py`` and the kanban dispatcher in
-    ``clara_cli/kanban_db.py``).  See https://github.com/claraprise/clara-agent/issues/18594.
+    ``clara_cli/kanban_db.py``).  See https://github.com/claragram/clara-agent/issues/18594.
     """
     override = get_clara_home_override()
     if override:
@@ -1150,8 +1150,8 @@ def secure_parent_dir(path: Path) -> None:
     0700 locks the runtime user out of traversing it when it does not own
     the dir, as in the Docker image. A warning is logged when this happens.
 
-    See https://github.com/claraprise/clara-agent/issues/25821 and
-    https://github.com/claraprise/clara-agent/pull/93050.
+    See https://github.com/claragram/clara-agent/issues/25821 and
+    https://github.com/claragram/clara-agent/pull/93050.
     """
     parent = path.parent.resolve()
     # Refuse root and its direct children (/usr, /home, /var, /tmp, …).
@@ -1858,7 +1858,7 @@ def partial_update_hint(exc: BaseException) -> list[str]:
         "and a related one was not.",
         "Re-run the update to bring the whole tree to the same version:",
         "    clara update",
-        "If that also fails, reinstall: https://agent.claraprise.com",
+        "If that also fails, reinstall: https://agent.claragram.com",
     ]
 
 
