@@ -1,6 +1,6 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
-import { getClaraConfigRecord, type ClaraConfigRecord, saveClaraConfig } from '@/clara'
+import { type ClaraConfigRecord, getClaraConfigRecord, saveClaraConfig } from '@/clara'
 
 import { TRANSLATIONS } from './catalog'
 import { DEFAULT_LOCALE, localeConfigValue, normalizeLocale } from './languages'

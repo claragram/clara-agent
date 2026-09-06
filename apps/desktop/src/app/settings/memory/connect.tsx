@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { Button } from '@/components/ui/button'
 import { getMemoryProviderOAuthStatus, startMemoryProviderOAuth } from '@/clara'
+import { Button } from '@/components/ui/button'
 import { useI18n } from '@/i18n'
 import { Check, ExternalLink, Loader2 } from '@/lib/icons'
 import { notifyError } from '@/store/notifications'

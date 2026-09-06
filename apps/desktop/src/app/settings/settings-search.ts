@@ -1,6 +1,6 @@
 import type { IconComponent } from '@/lib/icons'
 import { normalize } from '@/lib/text'
-import type { ConfigFieldSchema, EnvVarInfo, ClaraConfigRecord } from '@/types/clara'
+import type { ClaraConfigRecord, ConfigFieldSchema, EnvVarInfo } from '@/types/clara'
 
 import { FIELD_LABELS, SECTIONS } from './constants'
 import { credentialRowLabel } from './credential-key-ui'

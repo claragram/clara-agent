@@ -6,9 +6,9 @@ import { $connection } from '@/store/session'
 
 import {
   attachmentPreviewDataUrl,
+  CLARA_PATHS_MIME,
   type DroppedFile,
   extractDroppedFiles,
-  CLARA_PATHS_MIME,
   partitionDroppedFiles,
   useComposerActions
 } from './use-composer-actions'

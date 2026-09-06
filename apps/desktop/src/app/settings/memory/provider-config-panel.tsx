@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { getMemoryProviderConfig, saveMemoryProviderConfig } from '@/clara'
 import { PageLoader } from '@/components/page-loader'
 import { Button } from '@/components/ui/button'
 import { DisclosureCaret } from '@/components/ui/disclosure-caret'
-import { getMemoryProviderConfig, saveMemoryProviderConfig } from '@/clara'
 import { useI18n } from '@/i18n'
 import { SlidersHorizontal } from '@/lib/icons'
 import { notifyError } from '@/store/notifications'

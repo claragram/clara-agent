@@ -19,9 +19,9 @@ import { Small } from './components/typography/small'
 
 const DEFAULT_BRAND = (
   <hgroup className="flex flex-col gap-2">
-    <Small>Nous</Small>
+    <Small>Clara</Small>
 
-    <H2>Research</H2>
+    <H2>Agent</H2>
   </hgroup>
 )
 

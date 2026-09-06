@@ -153,8 +153,8 @@ export {
   appendUniquePathEntries,
   buildDesktopBackendEnv,
   buildDesktopBackendPath,
-  delimiterForPlatform,
   claraManagedNodePathEntries,
+  delimiterForPlatform,
   normalizeClaraHomeRoot,
   pathEnvKey,
   POSIX_SANE_PATH_ENTRIES

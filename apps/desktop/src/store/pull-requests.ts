@@ -1,7 +1,7 @@
 import { atom } from 'nanostores'
 
-import type { ClaraBranchPullRequest } from '@/global'
 import { scanSessionPullRequests, type SessionInfo } from '@/clara'
+import type { ClaraBranchPullRequest } from '@/global'
 import { desktopGit } from '@/lib/desktop-git'
 import { Codecs, persistentAtom } from '@/lib/persisted'
 

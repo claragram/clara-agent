@@ -1,3 +1,4 @@
+import { claraApi } from '@/clara'
 import type {
   ClaraGitBaseBranch,
   ClaraGitBranch,
@@ -7,7 +8,6 @@ import type {
   ClaraReviewList,
   ClaraReviewShipInfo
 } from '@/global'
-import { claraApi } from '@/clara'
 
 import { desktopFsProfile, isDesktopFsRemoteMode } from './desktop-fs'
 

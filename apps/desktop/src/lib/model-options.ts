@@ -1,4 +1,4 @@
-import { getGlobalModelOptions, type ClaraGateway, type ModelOptionsResponse } from '@/clara'
+import { type ClaraGateway, getGlobalModelOptions, type ModelOptionsResponse } from '@/clara'
 import type { ModelOptionProvider } from '@/types/clara'
 
 /**

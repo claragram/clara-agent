@@ -5,10 +5,10 @@
 // capabilityScoped are shared across api/ but must not reach call sites, or
 // request scoping stops having a single owner.
 export {
-  getApiRequestConnection,
-  getApiRequestProfile,
   claraApi,
   ClaraGateway,
+  getApiRequestConnection,
+  getApiRequestProfile,
   profileScopeKey,
   PROMPT_SUBMIT_REQUEST_TIMEOUT_MS,
   setApiRequestConnection,
@@ -45,6 +45,8 @@ export type {
   AutomationBlueprintField,
   AuxiliaryModelsResponse,
   BackendUpdateCheckResponse,
+  ClaraConfig,
+  ClaraConfigRecord,
   ComputerUseCheck,
   ComputerUsePermissionSource,
   ComputerUseStatus,
@@ -65,8 +67,6 @@ export type {
   ElevenLabsVoicesResponse,
   EnvVarInfo,
   GatewayReadyPayload,
-  ClaraConfig,
-  ClaraConfigRecord,
   LogsResponse,
   McpCatalogEntry,
   McpCatalogResponse,

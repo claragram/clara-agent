@@ -31,7 +31,7 @@
 import { installPluginSdk, sdkImportMap } from '@/sdk/runtime'
 import { notifyError } from '@/store/notifications'
 
-import { createPluginContext, type ClaraPlugin } from './plugin'
+import { type ClaraPlugin, createPluginContext } from './plugin'
 import { $pluginRecords, dropPlugin, pluginActive, type PluginKind, publishPlugin } from './plugins-store'
 
 interface LoadOptions {

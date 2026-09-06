@@ -1,8 +1,8 @@
 import { LOCAL_CONNECTION_ID } from '@clara/shared'
 import { atom, batch, computed } from 'nanostores'
 
+import { claraApi, getProfiles, setApiRequestProfile, STARTUP_REQUEST_TIMEOUT_MS } from '@/clara'
 import type { ClaraConnection } from '@/global'
-import { getProfiles, claraApi, setApiRequestProfile, STARTUP_REQUEST_TIMEOUT_MS } from '@/clara'
 import { invalidateProfileScopedQueries } from '@/lib/query-client'
 import {
   arraysEqual,

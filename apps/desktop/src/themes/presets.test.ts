@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest'
 import {
   BUILTIN_THEME_LIST,
   BUILTIN_THEMES,
+  claraAltTheme,
   DEFAULT_SKIN_NAME,
   DEFAULT_TYPOGRAPHY,
-  EMOJI_FALLBACK,
-  claraAltTheme
+  EMOJI_FALLBACK
 } from './presets'
 
 // #40364: none of the UI text/mono fonts carry emoji glyphs, so every font

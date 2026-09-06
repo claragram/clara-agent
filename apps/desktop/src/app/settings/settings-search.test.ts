@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { Settings2, Wrench } from '@/lib/icons'
-import type { ConfigFieldSchema, ClaraConfigRecord } from '@/types/clara'
+import type { ClaraConfigRecord, ConfigFieldSchema } from '@/types/clara'
 
 import {
   buildConfigSearchEntries,

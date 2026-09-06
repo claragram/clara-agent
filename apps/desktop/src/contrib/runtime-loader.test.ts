@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { ClaraReadDirResult } from '@/global'
 import type * as ClaraModule from '@/clara'
+import type { ClaraReadDirResult } from '@/global'
 
 import { $pluginRecords, publishPlugin, setPluginEnabled } from './plugins-store'
 import { discoverRuntimePlugins, loadRuntimePlugin, watchRuntimePlugins } from './runtime-loader'

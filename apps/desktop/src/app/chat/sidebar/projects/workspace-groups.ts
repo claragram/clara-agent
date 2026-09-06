@@ -1,5 +1,5 @@
-import type { ClaraGitWorktree } from '@/global'
 import type { ProjectInfo, SessionInfo } from '@/clara'
+import type { ClaraGitWorktree } from '@/global'
 import { normalize } from '@/lib/text'
 
 import { rankSessions } from '../order'

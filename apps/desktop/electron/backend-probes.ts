@@ -211,9 +211,9 @@ function verifyClaraCli(claraCommand: string, opts?: { shell?: boolean }) {
 
 export {
   canImportClaraCli,
+  claraRuntimeImportProbe,
   DEFAULT_PROBE_TIMEOUT_MS,
   execProbeSync,
-  claraRuntimeImportProbe,
   PROBE_TIMEOUT_MS,
   resolveProbeTimeoutMs,
   shouldTrustClaraOverride,

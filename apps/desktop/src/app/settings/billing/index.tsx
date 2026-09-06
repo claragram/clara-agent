@@ -1,5 +1,4 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { useI18n } from '@/i18n'
 import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -8,6 +7,7 @@ import { Progress } from '@/components/ui/progress'
 import { SegmentedControl } from '@/components/ui/segmented-control'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useI18n } from '@/i18n'
 import { BarChart3, CreditCard, ExternalLink, Package, Wrench } from '@/lib/icons'
 import { cn } from '@/lib/utils'
 
@@ -59,6 +59,7 @@ type BillingFixtureSelection = 'live' | BillingDevFixtureName
 function SummaryCard({ label, value, tone }: { label: string; tone?: 'muted' | 'primary'; value: string }) {
   const { locale } = useI18n()
   const isFr = locale === 'fr'
+
   const localizedLabel = isFr
     ? label === 'Current balance' || label === 'Balance'
       ? 'Solde'
@@ -149,6 +150,7 @@ function NoticeCard({ notice }: { notice: BillingNoticeView }) {
 function PaymentMethodAside({ row }: { row: BillingAccountRowView }) {
   const { locale } = useI18n()
   const isFr = locale === 'fr'
+
   const actionLabel = isFr
     ? row.action?.label === 'Update'
       ? 'Mettre à jour'
@@ -245,6 +247,7 @@ function AccountRow({ billing, row }: { billing?: BillingStateResponse; row: Bil
 function BuyCreditsRow({ billing, row }: { billing: BillingStateResponse; row: BillingAccountRowView }) {
   const { locale } = useI18n()
   const isFr = locale === 'fr'
+
   const presets = useMemo(
     () =>
       billing.charge_presets.map((amount, index) => ({

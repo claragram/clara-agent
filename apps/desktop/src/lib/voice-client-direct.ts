@@ -1,5 +1,5 @@
 import { profileScoped } from '@/api/client'
-import { getApiRequestConnection, getApiRequestProfile, claraApi } from '@/clara'
+import { claraApi, getApiRequestConnection, getApiRequestProfile } from '@/clara'
 
 /**
  * Client-direct voice: call the active profile's STT/TTS providers straight

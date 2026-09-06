@@ -6,7 +6,7 @@ import { TierCard } from './tier-card'
 const SCOUT_SRC = fillerBg.src ?? (fillerBg as unknown as string)
 
 // Same tier palette referenced in `Poster.stories.tsx` and originally from
-// `nous-account-service/src/app/manage-subscription/_components/TierCard.tsx`.
+// account service `TierCard.tsx`.
 // Keep the two in sync so a design review can compare the card layout and
 // the bare poster side-by-side.
 const TIERS = [

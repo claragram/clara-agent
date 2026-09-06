@@ -12,9 +12,9 @@
 import './kanban.css'
 
 import {
+  type ClaraPlugin,
   cn,
   Codicon,
-  type ClaraPlugin,
   host,
   type KeybindContribution,
   KEYBINDS_AREA,

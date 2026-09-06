@@ -14,8 +14,8 @@ import { test } from 'vitest'
 
 import {
   canImportClaraCli,
-  DEFAULT_PROBE_TIMEOUT_MS,
   claraRuntimeImportProbe,
+  DEFAULT_PROBE_TIMEOUT_MS,
   PROBE_TIMEOUT_MS,
   resolveProbeTimeoutMs,
   shouldTrustClaraOverride,

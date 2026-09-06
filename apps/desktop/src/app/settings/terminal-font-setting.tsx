@@ -6,9 +6,9 @@ import {
   setTerminalFontFamilyFromConfig,
   TERMINAL_FONT_SUGGESTIONS
 } from '@/app/right-sidebar/terminal/terminal-font'
+import { saveClaraConfig } from '@/clara'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { saveClaraConfig } from '@/clara'
 import { useI18n } from '@/i18n'
 import { notifyError } from '@/store/notifications'
 import type { ClaraConfigRecord } from '@/types/clara'

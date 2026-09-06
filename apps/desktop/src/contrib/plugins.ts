@@ -13,7 +13,7 @@
  *    — the agent's/user's doors, watched + hot-reloaded by the runtime loader.
  */
 
-import { createPluginContext, type ClaraPlugin } from './plugin'
+import { type ClaraPlugin, createPluginContext } from './plugin'
 import { pluginActive, publishPlugin } from './plugins-store'
 import { watchRuntimePlugins } from './runtime-loader'
 

@@ -10,7 +10,7 @@ import type {
   SessionSearchResponse
 } from '@/types/clara'
 
-import { capabilityScoped, getApiRequestConnection, claraApi, type ProfileScope, profileScoped } from './client'
+import { capabilityScoped, claraApi, getApiRequestConnection, type ProfileScope, profileScoped } from './client'
 
 const SESSION_LIST_REQUEST_TIMEOUT_MS = 60_000
 

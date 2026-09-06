@@ -4,10 +4,10 @@ import type * as React from 'react'
 import { useCallback, useEffect, useMemo } from 'react'
 
 import { SidebarPanelLabel } from '@/app/shell/sidebar-label'
+import type { SessionInfo } from '@/clara'
 import { DisclosureCaret } from '@/components/ui/disclosure-caret'
 import { SidebarGroup, SidebarGroupContent } from '@/components/ui/sidebar'
 import type { ClaraGitWorktree } from '@/global'
-import type { SessionInfo } from '@/clara'
 import { useI18n } from '@/i18n'
 import { flattenSessionsWithBranches } from '@/lib/session-branch-tree'
 import {

@@ -5,8 +5,8 @@ import {
   NO_PROJECT_ID,
   type SidebarProjectTree
 } from '@/app/chat/sidebar/projects/workspace-groups'
+import { claraApi, type ClaraGateway, getClaraConfig } from '@/clara'
 import type { ClaraGitBaseBranch, ClaraGitBranch } from '@/global'
-import { getClaraConfig, claraApi, type ClaraGateway } from '@/clara'
 import { translateNow } from '@/i18n'
 import { desktopDefaultCwd, isDesktopFsRemoteMode, selectDesktopPaths, writeDesktopFileText } from '@/lib/desktop-fs'
 import { desktopGit } from '@/lib/desktop-git'

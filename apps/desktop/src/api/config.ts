@@ -1,11 +1,11 @@
 import type {
+  ClaraConfig,
+  ClaraConfigRecord,
   ConfigSchemaResponse,
   CustomEndpointsResponse,
   CustomEndpointUpdate,
   CustomEndpointValidationResponse,
   EnvVarInfo,
-  ClaraConfig,
-  ClaraConfigRecord,
   LogsResponse,
   OAuthPollResponse,
   OAuthProvidersResponse,

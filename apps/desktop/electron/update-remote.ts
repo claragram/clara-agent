@@ -14,6 +14,7 @@
 
 const OFFICIAL_REPO_HTTPS_URL = 'https://github.com/claragram/clara-agent.git'
 const OFFICIAL_REPO_CANONICAL = 'github.com/claragram/clara-agent'
+
 const OFFICIAL_REPO_CANONICALS = new Set([
   'github.com/claragram/clara-agent',
   'github.com/claragram/clara-agent',

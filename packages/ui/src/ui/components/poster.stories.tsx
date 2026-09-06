@@ -12,7 +12,7 @@ type TriptychStory = StoryObj<TriptychArgs>
 
 const SCOUT_SRC = fillerBg.src ?? (fillerBg as unknown as string)
 
-// Matches the tier visuals from nous-account-service/src/app/manage-subscription/_components/TierCard.tsx
+// Matches the tier visuals from account service
 const TIERS = [
   {
     label: 'Scout',

@@ -5,9 +5,9 @@ import { test } from 'vitest'
 import {
   DEFAULT_HEALTH_PROBE_TIMEOUT_MS,
   isAuthRejectionError,
+  isClaraCloudAgentUrl,
   isGatedMissingHealthError,
   isMissingHealthEndpointError,
-  isClaraCloudAgentUrl,
   isReauthRequiredError,
   isServerSideHttpError,
   makeClaraCloudBackendDownError,

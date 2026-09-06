@@ -1,4 +1,3 @@
-import { FIELD_DESCRIPTIONS, FIELD_LABELS } from '@/app/settings/constants'
 
 import type { Translations } from './types'
 
@@ -59,7 +58,7 @@ export const fr: Translations = {
     delete: 'Supprimer',
     renameTitle: 'Rename',
     renameLabel: 'Nouveau nom',
-    deleteTitle: name => `Supprimer ${name} ?`,
+    deleteTitle: name => `Supprimer ${name} ?`,
     deleteBody: 'Il sera déplacé vers la corbeille — vous pourrez le restaurer depuis celle-ci.',
     pathCopied: 'Chemin d\'accès copié'
   },
@@ -548,7 +547,7 @@ export const fr: Translations = {
       reasoningCollapsedDesc: 'Conserve le flux de réflexion accessible sans l\'étendre automatiquement.',
       uiScaleTitle: 'Échelle de l\'interface',
       uiScaleDesc: (percent: number) =>
-        `Ajuste la taille du texte et des éléments. Raccourcis : Cmd/Ctrl avec +, - et 0. Actuel : ${percent} %.`,
+        `Ajuste la taille du texte et des éléments. Raccourcis : Cmd/Ctrl avec +, - et 0. Actuel : ${percent} %.`,
       sessionDensityTitle: 'Densité de la liste des sessions',
       sessionDensityDesc: 'Choisissez la quantité de contexte affichée sous les titres de sessions.',
       sessionDensityCompact: 'Compact',
@@ -626,7 +625,7 @@ export const fr: Translations = {
       installButton: 'Installer',
       installing: 'Installing…',
       installError: 'Impossible d\'installer ce thème.',
-      installed: name => `Thème « ${name} » installé.`,
+      installed: name => `Thème « ${name} » installé.`,
       removeTheme: 'Supprimer le thème',
       importedBadge: 'Importé',
       pet: {
@@ -645,14 +644,14 @@ export const fr: Translations = {
         chooseDesc: 'Sélectionnez une mascotte pour l\'activer.',
         searchPlaceholder: 'Rechercher une mascotte…',
         unreachable: "Impossible de joindre la galerie des mascottes. Vérifiez votre connexion.",
-        noMatch: query => `Aucune mascotte ne correspond à « ${query} ».`,
+        noMatch: query => `Aucune mascotte ne correspond à « ${query} ».`,
         installedTag: 'installée',
         generatedTag: 'Générée',
         countCapped: (cap, total) => `Affichage de ${cap} sur ${total} — tapez pour filtrer.`,
         count: n => `${n} mascotte${n === 1 ? '' : 's'}.`,
         uninstall: name => `Désinstaller ${name}`,
         delete: name => `Supprimer ${name}`,
-        deleteTitle: name => `Supprimer ${name} ?`,
+        deleteTitle: name => `Supprimer ${name} ?`,
         deleteBody: "Cela supprime définitivement la mascotte.",
         deleteConfirm: 'Supprimer',
         rename: name => `Renommer ${name}`,
@@ -660,10 +659,10 @@ export const fr: Translations = {
         renamePlaceholder: 'Nom de votre mascotte',
         renameSave: 'Enregistrer',
         exportPet: name => `Exporter ${name}`,
-        adoptFailed: slug => `Impossible d\'adopter ${slug}`,
+        adoptFailed: slug => `Impossible d'adopter ${slug}`,
         uninstallFailed: slug => `Impossible de désinstaller ${slug}`,
         renameFailed: slug => `Impossible de renommer ${slug}`,
-        exportFailed: slug => `Impossible d\'exporter ${slug}`,
+        exportFailed: slug => `Impossible d'exporter ${slug}`,
         noneAvailable: 'Aucune mascotte disponible pour le moment.',
         turnOnFailed: 'Impossible d\'activer la mascotte.',
         turnOffFailed: 'Impossible de désactiver la mascotte.'
@@ -2029,8 +2028,8 @@ export const fr: Translations = {
     keyCleared: key => `${key} effacé`,
     setupUpdated: name => `La configuration de ${name} a été mise à jour.`,
     failedUpdate: name => `Échec de la mise à jour de ${name}`,
-    failedSave: name => `Échec de l\'enregistrement de ${name}`,
-    failedClear: key => `Échec de l\'effacement de ${key}`,
+    failedSave: name => `Échec de l'enregistrement de ${name}`,
+    failedClear: key => `Échec de l'effacement de ${key}`,
     pendingRequests: count => `Pending requests (${count})`,
     pendingAria: count => `${count} pending pairing ${count === 1 ? 'request' : 'requests'}`,
     approvedUsers: count => `Approved users (${count})`,

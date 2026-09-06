@@ -1,5 +1,5 @@
 import { asText, normalize } from '@/lib/text'
-import type { ConfigFieldSchema, ClaraConfigRecord, ToolsetInfo } from '@/types/clara'
+import type { ClaraConfigRecord, ConfigFieldSchema, ToolsetInfo } from '@/types/clara'
 
 import { BUILTIN_PERSONALITIES, ENUM_OPTIONS, PROVIDER_GROUPS, SECTIONS } from './constants'
 

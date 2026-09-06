@@ -1,9 +1,9 @@
 import { isGatewayReauthRequired, JsonRpcGatewayError, resolveGatewayWsUrl } from '@clara/shared'
 import { useEffect, useRef } from 'react'
 
+import { ClaraGateway } from '@/clara'
 import { shouldApplyPostBootProgressError } from '@/components/boot-failure-reauth'
 import type { ClaraConnection } from '@/global'
-import { ClaraGateway } from '@/clara'
 import { translateNow } from '@/i18n'
 import { desktopDefaultCwd } from '@/lib/desktop-fs'
 import { decideLivenessForceClose, LIVENESS_REPROBE_DELAY_MS } from '@/lib/gateway-liveness-policy'
