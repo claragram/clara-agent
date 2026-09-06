@@ -57,6 +57,34 @@ export type ProviderView = (typeof PROVIDER_VIEWS)[number]
 // advanced overrides (base URL, region, etc.). Groups without a key field are
 // skipped.
 //
+const PROVIDER_DESCRIPTIONS_FR: Record<string, string> = {
+  'Clara Portal': 'Modèles Clara hébergés et entraînés par Clara',
+  'Fireworks AI': 'API de modèles directs compatible OpenAI',
+  'OpenRouter': 'Agrégateur de centaines de modèles de pointe',
+  Anthropic: 'Accès API Claude (Sonnet, Opus, Haiku)',
+  xAI: 'Modèles Grok (utilisez OAuth pour SuperGrok / Premium+)',
+  Gemini: 'Google AI Studio (Gemini 1.5 / 2.0 / 2.5)',
+  DeepSeek: 'API directe DeepSeek (V3.x, R1)',
+  'DashScope (Qwen)': 'Alibaba Cloud DashScope — Qwen et modèles multi-fournisseurs',
+  'GLM / Z.AI': 'Points de terminaison hébergés Zhipu GLM-4.6 et Z.AI',
+  'Kimi / Moonshot': 'Points de terminaison Moonshot Kimi K2 / programmation',
+  'Kimi (China)': 'Point de terminaison Moonshot Chine',
+  MiniMax: 'Points de terminaison internationaux MiniMax-M2 et Hailuo',
+  'MiniMax (China)': 'Point de terminaison MiniMax Chine continentale',
+  'Hugging Face': 'Fournisseurs d\'inférence — 20+ modèles ouverts via router.huggingface.co',
+  'OpenCode Zen': 'Accès au paiement à l\'usage aux modèles de code sélectionnés',
+  'OpenCode Go': 'Abonnement à 10\xa0$/mois pour les modèles de code ouverts',
+  'NVIDIA NIM': 'build.nvidia.com ou votre propre point de terminaison NIM local',
+  'Ollama Cloud': 'Modèles ouverts hébergés dans le cloud depuis ollama.com',
+  'LM Studio': 'Serveur local LM Studio (compatible OpenAI)',
+  StepFun: 'Modèles de programmation StepFun Step Plan',
+  'Xiaomi MiMo': 'Modèles MiMo-V2.5 et propriétaires Xiaomi',
+  'Arcee AI': 'Modèles de petite et moyenne taille hébergés par Arcee',
+  'GMI Cloud': 'GPU dans le cloud et hébergement de modèles GMI',
+  'Azure Foundry': 'Points de terminaison Azure AI Foundry personnalisés (compatibles OpenAI / Anthropic)',
+  'AWS Bedrock': 'Authentification via le profil et la région AWS'
+}
+
 // Grouping key precedence:
 //   1. Backend `provider_label` / `provider` (from the unified provider catalog
 //      in clara_cli/provider_catalog.py) — the SAME provider identity
@@ -65,7 +93,7 @@ export type ProviderView = (typeof PROVIDER_VIEWS)[number]
 //   2. Desktop prefix match (`providerGroup`) — legacy fallback for provider
 //      env vars that predate the backend tagging.
 // Only entries that resolve to neither (the "Other" bucket) are skipped.
-function buildProviderKeyGroups(vars: Record<string, EnvVarInfo>): ProviderKeyGroup[] {
+function buildProviderKeyGroups(vars: Record<string, EnvVarInfo>, isFr?: boolean): ProviderKeyGroup[] {
   const buckets = new Map<string, [string, EnvVarInfo][]>()
 
   for (const [key, info] of Object.entries(vars)) {
@@ -106,7 +134,7 @@ function buildProviderKeyGroups(vars: Record<string, EnvVarInfo>): ProviderKeyGr
       advanced: entries
         .filter(([k, i]) => k !== primary[0] && (!isKeyVar(k, i) || i.is_set))
         .sort(([a], [b]) => a.localeCompare(b)),
-      description: meta?.description ?? primary[1].description,
+      description: (isFr && PROVIDER_DESCRIPTIONS_FR[name]) ? PROVIDER_DESCRIPTIONS_FR[name] : (meta?.description ?? primary[1].description),
       docsUrl: meta?.docsUrl ?? primary[1].url ?? undefined,
       hasAnySet: entries.some(([, i]) => i.is_set),
       name,
@@ -346,7 +374,7 @@ export function ProvidersSettings({
   onViewChange,
   view
 }: ProvidersSettingsProps) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const { rowProps, vars } = useEnvCredentials()
   const [oauthProviders, setOauthProviders] = useState<OAuthProvider[]>([])
   const [openProvider, setOpenProvider] = useState<null | string>(null)
@@ -459,7 +487,7 @@ export function ProvidersSettings({
   // providers there's nothing for the "Accounts" view to show, so fall to keys.
   const showApiKeys = view === 'keys' || (!hasOauth && view !== 'custom-endpoints')
 
-  const keyGroups = buildProviderKeyGroups(vars)
+  const keyGroups = buildProviderKeyGroups(vars, locale === 'fr')
 
   if (showApiKeys) {
     const q = normalize(keyQuery)

@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
+import { useI18n } from '@/i18n'
 import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -56,9 +57,23 @@ const BILLING_DEV_FIXTURE_NAMES = import.meta.env.DEV
 type BillingFixtureSelection = 'live' | BillingDevFixtureName
 
 function SummaryCard({ label, value, tone }: { label: string; tone?: 'muted' | 'primary'; value: string }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
+  const localizedLabel = isFr
+    ? label === 'Current balance' || label === 'Balance'
+      ? 'Solde'
+      : label === 'Active plan' || label === 'Plan'
+        ? 'Forfait'
+        : label === 'Next renewal'
+          ? 'Prochain renouvellement'
+          : label === 'Auto-refill'
+            ? 'Rechargement auto'
+            : label
+    : label
+
   return (
     <div className="min-w-0">
-      <div className="text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">{label}</div>
+      <div className="text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">{localizedLabel}</div>
       <div
         className={cn(
           'mt-1 min-w-0 truncate text-lg font-semibold tabular-nums',
@@ -72,7 +87,33 @@ function SummaryCard({ label, value, tone }: { label: string; tone?: 'muted' | '
 }
 
 function NoticeCard({ notice }: { notice: BillingNoticeView }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
   const warn = notice.tone === 'warn'
+
+  const title = isFr
+    ? notice.title === 'Connect your Clara account'
+      ? 'Connecter votre compte Clara'
+      : notice.title === 'No payment method on file'
+        ? 'Aucun moyen de paiement enregistré'
+        : notice.title
+    : notice.title
+
+  const message = isFr
+    ? notice.message === 'Run /portal in the TUI or open the Clara portal to connect your account.'
+      ? 'Exécutez /portal dans le terminal ou ouvrez le portail Clara pour connecter votre compte.'
+      : notice.message === 'Buying top-up credits and auto-refill stay disabled until a card is on file. Add one on the portal.'
+        ? 'L\'achat de crédits et le rechargement automatique restent désactivés tant qu\'aucune carte n\'est enregistrée. Ajoutez-en une sur le portail.'
+        : notice.message
+    : notice.message
+
+  const actionLabel = isFr
+    ? notice.action?.label === 'Open portal ↗'
+      ? 'Ouvrir le portail ↗'
+      : notice.action?.label === 'Add card ↗'
+        ? 'Ajouter une carte ↗'
+        : notice.action?.label
+    : notice.action?.label
 
   return (
     <div className={cn('mb-6 rounded-xl p-4', warn ? 'bg-(--ui-yellow)/10' : 'bg-(--ui-bg-quaternary)')}>
@@ -82,10 +123,10 @@ function NoticeCard({ notice }: { notice: BillingNoticeView }) {
           warn ? 'text-(--ui-yellow)' : 'text-foreground'
         )}
       >
-        {notice.title}
+        {title}
       </div>
       <div className="mt-1 text-[length:var(--conversation-caption-font-size)] leading-(--conversation-caption-line-height) text-(--ui-text-tertiary)">
-        {notice.message}
+        {message}
       </div>
       {notice.action && (
         <Button
@@ -95,7 +136,7 @@ function NoticeCard({ notice }: { notice: BillingNoticeView }) {
           type="button"
           variant="outline"
         >
-          {notice.action.label}
+          {actionLabel}
           <ExternalLink className="size-3.5" />
         </Button>
       )}
@@ -106,11 +147,23 @@ function NoticeCard({ notice }: { notice: BillingNoticeView }) {
 // The payment method as it rides in the "Payment & credits" heading: the current
 // card (muted) plus a single underline text action (Update / Add payment method).
 function PaymentMethodAside({ row }: { row: BillingAccountRowView }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
+  const actionLabel = isFr
+    ? row.action?.label === 'Update'
+      ? 'Mettre à jour'
+      : row.action?.label === 'Add payment method'
+        ? 'Ajouter un moyen de paiement'
+        : row.action?.label
+    : row.action?.label
+
+  const val = isFr && row.value === 'None' ? 'Aucun' : row.value
+
   return (
     <div className="flex min-w-0 items-center gap-2.5">
-      {row.value && (
+      {val && (
         <span className="min-w-0 truncate text-[length:var(--conversation-caption-font-size)] font-normal text-(--ui-text-tertiary)">
-          {row.value}
+          {val}
         </span>
       )}
       {row.action && (
@@ -121,7 +174,7 @@ function PaymentMethodAside({ row }: { row: BillingAccountRowView }) {
           type="button"
           variant="textStrong"
         >
-          {row.action.label}
+          {actionLabel}
         </Button>
       )}
     </div>
@@ -129,6 +182,9 @@ function PaymentMethodAside({ row }: { row: BillingAccountRowView }) {
 }
 
 function AccountRow({ billing, row }: { billing?: BillingStateResponse; row: BillingAccountRowView }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
+
   if (row.id === 'buy_credits' && row.action && row.chips && billing?.can_charge && billing.cli_billing_enabled) {
     return <BuyCreditsRow billing={billing} row={row} />
   }
@@ -137,24 +193,58 @@ function AccountRow({ billing, row }: { billing?: BillingStateResponse; row: Bil
     return <AutoReloadRow autoReload={billing.auto_reload} bounds={billing} row={row} />
   }
 
+  const title = isFr
+    ? row.title === 'Payment method'
+      ? 'Moyen de paiement'
+      : row.title === 'Buy credits now'
+        ? 'Acheter des crédits'
+        : row.title === 'Refill when low'
+          ? 'Recharger si solde bas'
+          : row.title
+    : row.title
+
+  const description = isFr
+    ? row.description === 'Manage the card used for top-ups and subscription renewals.'
+      ? 'Gérer la carte utilisée pour les recharges et les renouvellements.'
+      : row.description === 'A single charge on your card, added to your balance today.'
+        ? 'Un débit unique sur votre carte, crédité sur votre solde aujourd\'hui.'
+        : row.description === 'Keep your balance topped up when it drops below your threshold.'
+          ? 'Maintenez votre solde approvisionné lorsqu\'il passe sous votre seuil.'
+          : row.description?.startsWith('Charges ') && row.description.includes(' automatically when your balance falls below ')
+            ? row.description
+                .replace('Charges ', 'Débite ')
+                .replace(' automatically when your balance falls below ', ' automatiquement lorsque votre solde descend sous ')
+            : row.description
+    : row.description
+
+  const caption = isFr
+    ? row.caption === 'Manage auto-refill from the portal.'
+      ? 'Gérez le rechargement automatique depuis le portail.'
+      : row.caption === 'Turn on auto-refill from the portal'
+        ? 'Activez le rechargement automatique depuis le portail'
+        : row.caption
+    : row.caption
+
   return (
     <ListRow
       action={<RowValue row={row} />}
       below={
-        row.caption ? (
+        caption ? (
           <div className="mt-1 text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">
-            {row.caption}
+            {caption}
           </div>
         ) : undefined
       }
-      description={row.description}
+      description={description}
       key={row.id}
-      title={row.title}
+      title={title}
     />
   )
 }
 
 function BuyCreditsRow({ billing, row }: { billing: BillingStateResponse; row: BillingAccountRowView }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
   const presets = useMemo(
     () =>
       billing.charge_presets.map((amount, index) => ({
@@ -192,7 +282,7 @@ function BuyCreditsRow({ billing, row }: { billing: BillingStateResponse; row: B
             value={amount}
           />
           <Input
-            aria-label="Custom credit amount"
+            aria-label={isFr ? 'Montant de crédit personnalisé' : 'Custom credit amount'}
             containerClassName="w-16"
             disabled={controlsDisabled}
             inputMode="decimal"
@@ -211,7 +301,7 @@ function BuyCreditsRow({ billing, row }: { billing: BillingStateResponse; row: B
             value={amount}
           />
           <Button disabled={!canBuy} onClick={startBuy} size="xs" type="button" variant="secondary">
-            Buy
+            {isFr ? 'Acheter' : 'Buy'}
           </Button>
         </div>
       }
@@ -250,12 +340,14 @@ function BuyCreditsOutcome({
   onRetry: () => void
   outcome: ReturnType<typeof useChargeFlow>['outcome']
 }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
   const stepUp = useStepUpFlow()
 
   if (busy) {
     return (
       <div className="mt-2 text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">
-        Processing… checking settlement
+        {isFr ? 'Traitement en cours… vérification du règlement' : 'Processing… checking settlement'}
       </div>
     )
   }
@@ -267,7 +359,9 @@ function BuyCreditsOutcome({
   if (outcome.kind === 'success') {
     return (
       <div className="mt-2 text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">
-        {formatMoney(outcome.amountUsd ?? amount)} added. Balance is refreshing.
+        {isFr
+          ? `${formatMoney(outcome.amountUsd ?? amount)} ajoutés. Le solde s'actualise.`
+          : `${formatMoney(outcome.amountUsd ?? amount)} added. Balance is refreshing.`}
       </div>
     )
   }
@@ -280,7 +374,7 @@ function BuyCreditsOutcome({
         </span>
         {outcome.portalUrl && (
           <Button onClick={() => onPortal(outcome.portalUrl)} size="sm" type="button" variant="outline">
-            Open portal
+            {isFr ? 'Ouvrir le portail' : 'Open portal'}
             <ExternalLink className="size-3.5" />
           </Button>
         )}
@@ -297,13 +391,13 @@ function BuyCreditsOutcome({
       </span>
       {outcome.action?.type === 'retry' && (
         <Button onClick={onRetry} size="sm" type="button" variant="outline">
-          Retry
+          {isFr ? 'Réessayer' : 'Retry'}
         </Button>
       )}
       {outcome.action?.type === 'step_up' && <StepUpInlineAction flow={stepUp} />}
       {portalUrl && (
         <Button onClick={() => onPortal(portalUrl)} size="sm" type="button" variant="outline">
-          Open portal
+          {isFr ? 'Ouvrir le portail' : 'Open portal'}
           <ExternalLink className="size-3.5" />
         </Button>
       )}
@@ -337,19 +431,44 @@ function UsageBar({ bar, fallbackLabel }: { bar?: BillingUsageRowView['bar']; fa
 }
 
 function UsageRow({ row }: { row: BillingUsageRowView }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
+
+  const title = isFr
+    ? row.title === 'Subscription credits'
+      ? 'Crédits d\'abonnement'
+      : row.title === 'Top-up credits'
+        ? 'Crédits de recharge'
+        : row.title === 'Free credits'
+          ? 'Crédits gratuits'
+          : row.title
+    : row.title
+
+  const caption = isFr
+    ? row.caption === 'Does not expire'
+      ? 'N\'expire pas'
+      : row.caption === 'Default ceiling'
+        ? 'Plafond par défaut'
+        : row.caption === 'customer default'
+          ? 'par défaut'
+          : row.caption?.startsWith('Renews ')
+            ? 'Renouvellement le ' + row.caption.slice(7)
+            : row.caption
+    : row.caption
+
   return (
     <div className="@container">
       <div className="grid min-w-0 gap-2 py-3 @2xl:grid-cols-[minmax(0,180px)_minmax(0,1fr)_220px] @2xl:items-center @2xl:gap-4">
         <div className="min-w-0">
           <div className="text-[length:var(--conversation-text-font-size)] font-medium text-foreground">
-            {row.title}
+            {title}
           </div>
           <div className="mt-1 text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">
-            {row.caption}
+            {caption}
           </div>
         </div>
         <div className="min-w-0">
-          <UsageBar bar={row.bar} fallbackLabel={row.title} />
+          <UsageBar bar={row.bar} fallbackLabel={title} />
         </div>
         <div
           className={cn(
@@ -407,11 +526,14 @@ function BillingHeader({
   fixtureName?: BillingFixtureSelection
   onFixtureChange?: (value: BillingFixtureSelection) => void
 }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
+
   return (
     <div className="mb-2.5 flex items-center justify-between gap-3 pt-2 text-[length:var(--conversation-text-font-size)] font-medium">
       <div className="flex min-w-0 items-center gap-2">
         <BarChart3 className="size-4 shrink-0 text-muted-foreground" />
-        <span>Billing</span>
+        <span>{isFr ? 'Facturation' : 'Billing'}</span>
       </div>
       {import.meta.env.DEV && fixtureName && onFixtureChange ? (
         <BillingFixtureSelect onValueChange={onFixtureChange} value={fixtureName} />
@@ -455,6 +577,8 @@ function BillingSettingsContent({
   fixtureName?: BillingFixtureSelection
   onFixtureChange?: (value: BillingFixtureSelection) => void
 }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
   const [subView, setSubView] = useRouteEnumParam<BillingSubView>('bview', BILLING_VIEWS, 'overview')
 
   // Fixture mode flows through the SAME query path — the simulated api (supplied by
@@ -515,7 +639,7 @@ function BillingSettingsContent({
       </div>
 
       {view.plan && (
-        <SettingsSection icon={Package} title="Plan">
+        <SettingsSection icon={Package} title={isFr ? 'Abonnement' : 'Plan'}>
           <CurrentPlanCard onViewPlans={() => setSubView('plans')} plan={view.plan} />
         </SettingsSection>
       )}
@@ -524,7 +648,7 @@ function BillingSettingsContent({
         <SettingsSection
           aside={paymentRow ? <PaymentMethodAside row={paymentRow} /> : undefined}
           icon={CreditCard}
-          title="Payment & credits"
+          title={isFr ? 'Paiement et crédits' : 'Payment & credits'}
         >
           {accountRows.map(row => (
             <AccountRow billing={billing} key={row.id} row={row} />
@@ -533,7 +657,7 @@ function BillingSettingsContent({
       )}
 
       {view.usageRows.length > 0 && (
-        <SettingsSection icon={BarChart3} title="Usage">
+        <SettingsSection icon={BarChart3} title={isFr ? 'Consommation' : 'Usage'}>
           <div className="@container">
             {view.usageRows.map(row => (
               <UsageRow key={row.id} row={row} />
@@ -544,7 +668,7 @@ function BillingSettingsContent({
 
       {
         // no endpoint yet — NAS capability-board gap
-        FEATURE_BILLING_INVOICES ? <SectionHeading icon={BarChart3} title="Invoices" /> : null
+        FEATURE_BILLING_INVOICES ? <SectionHeading icon={BarChart3} title={isFr ? 'Factures' : 'Invoices'} /> : null
       }
     </SettingsContent>
   )

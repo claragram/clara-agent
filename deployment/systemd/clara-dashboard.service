@@ -1,5 +1,5 @@
 [Unit]
-Description=Clara Web Dashboard & Session Manager (Workprise)
+Description=Clara Web Dashboard & Session Manager (Claragram)
 After=network.target clara-gateway.service
 Wants=clara-gateway.service
 

@@ -2,12 +2,12 @@
 
 <p align="center">
   <a href="https://github.com/claraprise/clara-agent/releases"><img src="https://img.shields.io/badge/Download-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-FFD700?style=for-the-badge" alt="Download"></a>
-  <a href="https://agent.claraprise.com/docs/"><img src="https://img.shields.io/badge/Docs-clara--agent.workprise.com-FFD700?style=for-the-badge" alt="Documentation"></a>
+  <a href="https://claragram.com/docs/"><img src="https://img.shields.io/badge/Docs-claragram.com-FFD700?style=for-the-badge" alt="Documentation"></a>
   <a href="https://discord.gg/Workprise"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
   <a href="https://github.com/claraprise/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
 </p>
 
-**The native desktop app for [Clara Agent](../../README.md) — the self-improving AI agent from [Workprise](https://workprise.com).** Same agent, same skills, same memory as the CLI and gateway, in a polished native window — chat with streaming tool output, side-by-side previews, a file browser, voice, and settings, no terminal required. Available for **macOS, Windows, and Linux**.
+**The native desktop app for [Clara Agent](../../README.md) — the self-improving AI agent from [Claragram](https://claragram.com).** Same agent, same skills, same memory as the CLI and gateway, in a polished native window — chat with streaming tool output, side-by-side previews, a file browser, voice, and settings, no terminal required. Available for **macOS, Windows, and Linux**.
 
 <table>
 <tr><td><b>Chat with the full agent</b></td><td>Streaming responses, live tool activity, structured tool summaries, and the same conversation history as every other Clara surface.</td></tr>
@@ -34,7 +34,7 @@ It builds and launches the GUI against your existing install — same config, ke
 
 ### Prebuilt installers
 
-Prebuilt installers are built and distributed via [the Clara Desktop website.](https://agent.claraprise.com/).
+Prebuilt installers are built and distributed via [the Clara Desktop website.](https://claragram.com/).
 
 ---
 
@@ -232,7 +232,7 @@ Remove-Item -Recurse -Force "$env:LOCALAPPDATA\clara\clara-agent\venv"
 ## Community
 
 - 💬 [Discord](https://discord.gg/Workprise)
-- 📖 [Documentation](https://agent.claraprise.com/docs/)
+- 📖 [Documentation](https://claragram.com/docs/)
 - 🐛 [Issues](https://github.com/claraprise/clara-agent/issues)
 
 ---
@@ -241,4 +241,4 @@ Remove-Item -Recurse -Force "$env:LOCALAPPDATA\clara\clara-agent\venv"
 
 MIT — see [LICENSE](../../LICENSE).
 
-Built by [Workprise](https://workprise.com).
+Built by [Claragram](https://claragram.com).

@@ -1,3 +1,24 @@
+const THEME_DESCRIPTIONS_FR: Record<string, string> = {
+  github: 'Thèmes clair et sombre par défaut de GitHub',
+  catppuccin: 'Pastels apaisants — Latte et Mocha',
+  'high-contrast': 'Clair et sombre à contraste fixe',
+  midnight: 'Bleu-violet profond avec accents froids',
+  solarized: 'Classique d\'Ethan Schoonover — précision chaude',
+  'rose-pine': 'Pins mystiques et mousse crépusculaire',
+  monokai: 'Code vif sur fond sombre classique',
+  synthwave: 'Néon rétro des années 80',
+  'tokyo-night': 'Lumières nocturnes de Tokyo',
+  nord: 'Palette arctique et nordique',
+  dracula: 'Thème sombre emblématique aux teintes violettes',
+  gruvbox: 'Teintes chaudes rétro et terreuses',
+  flexoki: 'Palette d\'encre chaleureuse pour la lecture',
+  aura: 'Dégradés harmonieux et ambiance nocturne',
+  laserwave: 'Vague rétro-futuriste néon',
+  vesper: 'Minimalisme sombre et élégant',
+  ember: 'Pourpre chaleureux et bronze',
+  mono: 'Nuances de gris épurées — minimaliste et concentré'
+}
+
 import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -175,7 +196,7 @@ function MarketplaceThemeResults({
   installs: ReadonlyMap<string, DesktopTheme>
   onInstalled: (name: string) => void
 }) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const copy = t.commandCenter.installTheme
   const debounced = useDebounced(query.trim(), 300)
   const [installingId, setInstallingId] = useState<string | null>(null)
@@ -228,7 +249,7 @@ function MarketplaceThemeResults({
 
   const header = (
     <p className="mb-2 mt-4 text-[length:var(--conversation-caption-font-size)] font-medium text-(--ui-text-tertiary)">
-      From the VS Code Marketplace
+      {locale === 'fr' ? 'Depuis le VS Code Marketplace' : 'From the VS Code Marketplace'}
     </p>
   )
 
@@ -390,7 +411,7 @@ function GlassRow({ children, label }: GlassRowProps) {
 }
 
 export function AppearanceSettings() {
-  const { t, isSavingLocale } = useI18n()
+  const { locale, t, isSavingLocale } = useI18n()
   const { themeName, mode, resolvedMode, availableThemes, setTheme, setMode } = useTheme()
   const toolViewMode = useStore($toolViewMode)
   const reasoningCollapsedByDefault = useStore($reasoningCollapsedByDefault)
@@ -519,7 +540,11 @@ export function AppearanceSettings() {
                   <input
                     className="w-full rounded-lg border border-(--ui-stroke-tertiary) bg-(--ui-bg-quinary) px-3 py-1.5 text-[length:var(--conversation-caption-font-size)] outline-none placeholder:text-(--ui-text-tertiary) focus:border-(--ui-stroke-secondary)"
                     onChange={event => setQuery(event.target.value)}
-                    placeholder="Search your themes or the VS Code Marketplace…"
+                    placeholder={
+                      locale === 'fr'
+                        ? 'Recherchez vos thèmes ou sur le Marketplace VS Code…'
+                        : 'Search your themes or the VS Code Marketplace…'
+                    }
                     spellCheck={false}
                     value={query}
                   />
@@ -531,7 +556,9 @@ export function AppearanceSettings() {
                   {filteredThemes.length === 0 ? (
                     needle ? (
                       <p className="text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">
-                        No installed themes match "{query.trim()}".
+                        {locale === 'fr'
+                          ? `Aucun thème installé ne correspond à «\xa0${query.trim()}\xa0».`
+                          : `No installed themes match "${query.trim()}".`}
                       </p>
                     ) : null
                   ) : (
@@ -556,7 +583,7 @@ export function AppearanceSettings() {
                                   {theme.label}
                                 </div>
                                 <div className="mt-0.5 line-clamp-2 text-[length:var(--conversation-caption-font-size)] leading-(--conversation-caption-line-height) text-(--ui-text-tertiary)">
-                                  {theme.description}
+                                  {locale === 'fr' && THEME_DESCRIPTIONS_FR[theme.name] ? THEME_DESCRIPTIONS_FR[theme.name] : theme.description}
                                 </div>
                               </div>
                             </button>

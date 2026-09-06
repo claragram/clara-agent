@@ -3,6 +3,7 @@ import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useI18n } from '@/i18n'
 import { cn } from '@/lib/utils'
 
 import { ListRow, Pill } from '../primitives'
@@ -24,6 +25,8 @@ export function AutoReloadRow({
   bounds: Pick<BillingStateResponse, 'max_usd' | 'min_usd'>
   row: BillingAccountRowView
 }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
   const api = useBillingApi()
   const queryClient = useQueryClient()
   const [confirmDisable, setConfirmDisable] = useState(false)
@@ -95,7 +98,7 @@ export function AutoReloadRow({
     }
 
     await queryClient.invalidateQueries({ queryKey: ['billing', 'state'] })
-    setMessage({ kind: 'success', text: 'Auto-refill updated.' })
+    setMessage({ kind: 'success', text: isFr ? 'Rechargement automatique mis à jour.' : 'Auto-refill updated.' })
     setEditing(false)
   }
 
@@ -125,7 +128,7 @@ export function AutoReloadRow({
     }
 
     await queryClient.invalidateQueries({ queryKey: ['billing', 'state'] })
-    setMessage({ kind: 'success', text: 'Auto-refill turned off.' })
+    setMessage({ kind: 'success', text: isFr ? 'Rechargement automatique désactivé.' : 'Auto-refill turned off.' })
     setEditing(false)
   }
 
@@ -178,9 +181,9 @@ export function AutoReloadRow({
             <div aria-hidden={!editing} className={cn('space-y-2 [grid-area:stack]', !editing && 'invisible')}>
               <div className="grid gap-2 @2xl:grid-cols-2">
                 <label className="min-w-0 text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">
-                  Threshold
+                  {isFr ? 'Seuil' : 'Threshold'}
                   <Input
-                    aria-label="Auto-refill threshold"
+                    aria-label={isFr ? 'Seuil de rechargement automatique' : 'Auto-refill threshold'}
                     className="mt-1 py-[3px]"
                     disabled={busy || !editing}
                     inputMode="decimal"
@@ -195,9 +198,9 @@ export function AutoReloadRow({
                   />
                 </label>
                 <label className="min-w-0 text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">
-                  Reload to
+                  {isFr ? 'Recharger jusqu\'à' : 'Reload to'}
                   <Input
-                    aria-label="Auto-refill reload-to amount"
+                    aria-label={isFr ? 'Montant de rechargement automatique' : 'Auto-refill reload-to amount'}
                     className="mt-1 py-[3px]"
                     disabled={busy || !editing}
                     inputMode="decimal"
@@ -218,9 +221,9 @@ export function AutoReloadRow({
               </div>
               {confirmDisable ? (
                 <div className="flex min-w-0 flex-wrap items-center gap-2 text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">
-                  <span>Turn off auto-refill?</span>
+                  <span>{isFr ? 'Désactiver le rechargement automatique\xa0?' : 'Turn off auto-refill?'}</span>
                   <Button disabled={busy} onClick={() => void disable()} size="sm" type="button" variant="outline">
-                    Turn off
+                    {isFr ? 'Désactiver' : 'Turn off'}
                   </Button>
                   <Button
                     disabled={busy}
@@ -229,7 +232,7 @@ export function AutoReloadRow({
                     type="button"
                     variant="ghost"
                   >
-                    Cancel
+                    {isFr ? 'Annuler' : 'Cancel'}
                   </Button>
                 </div>
               ) : (
@@ -241,7 +244,7 @@ export function AutoReloadRow({
                   type="button"
                   variant="outline"
                 >
-                  Disable
+                  {isFr ? 'Désactiver' : 'Disable'}
                 </Button>
               )}
               {/* Refusal stays INSIDE the reserved layer so it never pushes Usage. */}
@@ -257,19 +260,19 @@ export function AutoReloadRow({
         </div>
         {/* Action column swaps Manage ↔ Save/Cancel in place (top-aligned, no move). */}
         <div className="flex min-w-0 flex-wrap items-center justify-start gap-2 @2xl:justify-end">
-          {row.pill && <Pill tone={row.pill.tone}>{row.pill.label}</Pill>}
+          {row.pill && <Pill tone={row.pill.tone}>{isFr && row.pill.label === 'Active' ? 'Actif' : row.pill.label}</Pill>}
           {editing ? (
             <>
               <Button disabled={busy || !validation.values} onClick={() => void save()} size="sm" type="button">
-                {busy ? 'Saving…' : 'Save'}
+                {busy ? (isFr ? 'Enregistrement…' : 'Saving…') : (isFr ? 'Enregistrer' : 'Save')}
               </Button>
               <Button disabled={busy} onClick={cancelEdit} size="sm" type="button" variant="outline">
-                Cancel
+                {isFr ? 'Annuler' : 'Cancel'}
               </Button>
             </>
           ) : (
             <Button onClick={openEdit} size="sm" type="button" variant="outline">
-              Manage
+              {isFr ? 'Gérer' : 'Manage'}
             </Button>
           )}
         </div>

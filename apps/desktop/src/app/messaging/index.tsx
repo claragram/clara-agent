@@ -126,7 +126,7 @@ function fieldCopy(field: MessagingEnvVarInfo, m: Translations['messaging']) {
 }
 
 export function MessagingView({ setStatusbarItemGroup: _setStatusbarItemGroup, ...props }: MessagingViewProps) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const m = t.messaging
   // Shared settings "Applies to" scope, request-shaped (undefined → follow
   // the active profile; the API helpers treat null as "target primary").
@@ -521,7 +521,7 @@ function PlatformRow({
   pendingCount: number
   platform: MessagingPlatformInfo
 }) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
 
   return (
     <button
@@ -579,7 +579,7 @@ function PlatformDetail({
   platform: MessagingPlatformInfo
   saving: string | null
 }) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const m = t.messaging
   const [showAdvanced, setShowAdvanced] = useState(false)
 
@@ -601,7 +601,28 @@ function PlatformDetail({
             {!platform.gateway_running && <SetupPill active={false}>{m.gatewayStopped}</SetupPill>}
           </div>
           <p className="mt-1 text-[length:var(--conversation-caption-font-size)] leading-(--conversation-caption-line-height) text-(--ui-text-tertiary)">
-            {platform.description}
+            {locale === 'fr' ? (
+              platform.id === 'telegram' ? 'Exécutez Clara depuis les messages directs, groupes et sujets Telegram.' :
+              platform.id === 'discord' ? 'Connectez Clara à vos serveurs et salons Discord.' :
+              platform.id === 'slack' ? 'Intégrez Clara à vos canaux et espaces de travail Slack.' :
+              platform.id === 'mattermost' ? 'Connectez Clara à votre instance Mattermost.' :
+              platform.id === 'matrix' ? 'Discutez avec Clara via le réseau décentralisé Matrix.' :
+              platform.id === 'signal' ? 'Échangez avec Clara en toute confidentialité sur Signal.' :
+              platform.id === 'whatsapp' ? 'Connectez Clara à votre compte WhatsApp.' :
+              platform.id === 'bluebubbles' ? 'Utilisez Clara au travers d\'iMessage via BlueBubbles.' :
+              platform.id === 'homeassistant' ? 'Contrôlez vos appareils Home Assistant avec Clara.' :
+              platform.id === 'email' ? 'Envoyez des instructions et recevez des réponses par e-mail.' :
+              platform.id === 'sms' ? 'Communiquez avec Clara par SMS via Twilio.' :
+              platform.id === 'dingtalk' ? 'Intégrez Clara à vos discussions DingTalk.' :
+              platform.id === 'feishu' ? 'Connectez Clara à Feishu / Lark.' :
+              platform.id === 'wecom' ? 'Utilisez Clara dans vos groupes WeCom.' :
+              platform.id === 'wecom_callback' ? 'Application personnalisée WeCom bidirectionnelle.' :
+              platform.id === 'weixin' ? 'Connectez Clara à WeChat via le protocole iLink.' :
+              platform.id === 'qqbot' ? 'Intégrez Clara à vos échanges QQ.' :
+              platform.id === 'api_server' ? 'Exposez Clara sous la forme d\'une API compatible OpenAI.' :
+              platform.id === 'webhook' ? 'Réception d\'événements HTTP entrants pour automatiser Clara.' :
+              platform.description
+            ) : platform.description}
           </p>
           <PlatformHint platform={platform} />
         </div>
@@ -784,7 +805,7 @@ function PlatformActionBar({
   platform: MessagingPlatformInfo
   saving: string | null
 }) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const m = t.messaging
   const isSavingEnv = saving === `env:${platform.id}`
 
@@ -862,7 +883,7 @@ function MessagingField({
   onEdit: (key: string, value: string) => void
   saving: string | null
 }) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const m = t.messaging
   const copy = fieldCopy(field, m)
   const fieldId = `messaging-field-${field.key}`
@@ -918,7 +939,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 function PlatformHint({ platform }: { platform: MessagingPlatformInfo }) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
 
   if (!platform.enabled || platform.state === 'connected') {
     return null

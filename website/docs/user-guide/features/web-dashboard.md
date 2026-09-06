@@ -604,7 +604,7 @@ same auth gate as the rest of `/api/`.
 When the dashboard is bound to a public or non-loopback address — anything other than `127.0.0.1` / `localhost` — Clara Agent engages an auth gate. Every request must carry a verified session cookie or it's bounced to the login page. Three providers ship in the box:
 
 - **[Username/password](#usernamepassword-provider-no-oauth-idp)** — the simplest way to put auth on a self-hosted / on-prem / homelab dashboard. No external identity provider. **Use it only on a trusted network or behind a VPN — not for public-internet exposure.**
-- **[OAuth (Clara Portal)](#default-provider-workprise)** — for hosted deployments and any dashboard reachable over the public internet, and the recommended path for a [remote Clara Desktop connection](#connecting-clara-desktop-to-a-remote-backend). Every login is verified against your Clara account, so this is the provider suitable for internet-facing use.
+- **[OAuth (Clara Portal)](#default-provider-claragram)** — for hosted deployments and any dashboard reachable over the public internet, and the recommended path for a [remote Clara Desktop connection](#connecting-clara-desktop-to-a-remote-backend). Every login is verified against your Clara account, so this is the provider suitable for internet-facing use.
 - **[Self-hosted OIDC](#self-hosted-oidc-provider)** — for bringing your own identity provider via standard OpenID Connect (Keycloak, Auth0, Okta, Google, GitHub via an OIDC bridge, etc.). No Clara Portal involved; suitable for public-internet exposure when fronted by a conformant OIDC server.
 
 Operator-owned dashboards bound to loopback are unaffected — no auth, no login page.
@@ -628,7 +628,7 @@ If the gate would engage but **no** `DashboardAuthProvider` is registered (no Cl
 
 When you run `clara dashboard --host 0.0.0.0` **interactively** (a real terminal) and no provider is configured yet, Clara doesn't just fail — it offers to set one up on the spot: pick **username & password** (writes `dashboard.basic_auth` to `config.yaml` and you're running in seconds) or **OAuth** (points you at `clara dashboard register`). Non-interactive callers — Docker/s6, CI, piped runs — skip the prompt and hit the fail-closed error above, so an unattended deploy still never starts without auth.
 
-### Default provider: Workprise
+### Default provider: Claragram
 
 The bundled `plugins/dashboard_auth/clara` plugin is **always installed** and auto-loaded. It auto-registers a `DashboardAuthProvider` named `clara` when a client ID is configured.
 
@@ -688,7 +688,7 @@ There is no unauthenticated public-bind option — to keep it local, bind
 127.0.0.1 and tunnel in (SSH / Tailscale).
 ```
 
-#### Worked example: Workprise
+#### Worked example: Claragram
 
 From a logged-in Clara install to a Clara-gated dashboard in three steps.
 
@@ -707,7 +707,7 @@ clara dashboard register
 clara dashboard --host 0.0.0.0 --port 9119 --no-open
 ```
 
-**3. Log in.** Open `http://<host>:9119/`, you'll be bounced to `/login`. Click **Sign in with Workprise** → authenticate at the Portal → land back on the authenticated dashboard. Verify the gate from any machine:
+**3. Log in.** Open `http://<host>:9119/`, you'll be bounced to `/login`. Click **Sign in with Claragram** → authenticate at the Portal → land back on the authenticated dashboard. Verify the gate from any machine:
 
 ```bash
 curl -s http://<host>:9119/api/status | jq '.auth_required, .auth_providers'
@@ -724,7 +724,7 @@ If you don't want to wire up an OAuth identity provider — a self-hosted "just 
 It plugs into the same gate as the OAuth provider: the gate engages on a non-loopback bind, the login page renders a credential form for this provider (instead of a "Log in with X" button), and everything downstream of login — session cookies, transparent refresh, WS tickets, logout, the audit log — is identical to the OAuth path. Sessions are stateless HMAC-signed tokens the provider mints itself, so there's **no database and no external IDP**. Password hashing uses stdlib `scrypt` (no third-party dependency).
 
 :::warning Use this on trusted networks only — not the public internet
-The username/password provider is intended for self-hosted / on-prem / homelab dashboards on a **trusted network**, or reachable only over a **VPN**. It protects a single shared credential with no external identity provider, MFA, or per-user accounts behind it, so it is **not suitable for exposing a dashboard directly to the public internet**. For an internet-facing dashboard, use the [Workprise provider](#default-provider-workprise) (or your own [self-hosted OIDC](#self-hosted-oidc-provider) / [custom OAuth](#custom-providers) provider) instead.
+The username/password provider is intended for self-hosted / on-prem / homelab dashboards on a **trusted network**, or reachable only over a **VPN**. It protects a single shared credential with no external identity provider, MFA, or per-user accounts behind it, so it is **not suitable for exposing a dashboard directly to the public internet**. For an internet-facing dashboard, use the [Claragram provider](#default-provider-claragram) (or your own [self-hosted OIDC](#self-hosted-oidc-provider) / [custom OAuth](#custom-providers) provider) instead.
 :::
 
 #### Configuration
@@ -794,7 +794,7 @@ curl -s http://<host>:9119/api/status | jq '.auth_required, .auth_providers'
 # ["basic"]
 ```
 
-`GET /api/auth/me` then returns the verified session (`provider: basic`). Keep this behind a VPN — see the warning above; for a public host use the [Workprise](#default-provider-workprise) or [self-hosted OIDC](#self-hosted-oidc-provider) provider instead.
+`GET /api/auth/me` then returns the verified session (`provider: basic`). Keep this behind a VPN — see the warning above; for a public host use the [Claragram](#default-provider-claragram) or [self-hosted OIDC](#self-hosted-oidc-provider) provider instead.
 
 #### Writing your own password provider
 
@@ -1002,7 +1002,7 @@ Validation rejects values without `http://` / `https://` scheme, without a host,
 The provider implements the [Clara Portal OAuth contract v1](https://github.com/claraprise/clara-account-service/blob/main/docs/agent-dashboard-oauth-contract.md) — authorization-code grant with PKCE (S256):
 
 1. User hits `/` without a session cookie → gate redirects to `/login`.
-2. Login page shows a "Continue with Workprise" button → `/auth/login?provider=clara`.
+2. Login page shows a "Continue with Claragram" button → `/auth/login?provider=clara`.
 3. Server stashes PKCE state in a short-lived cookie, redirects user to `https://portal.claraprise.com/oauth/authorize?…`.
 4. User authenticates with Portal, lands at `/auth/callback?code=…&state=…`.
 5. Server exchanges the code for an access token at `POST /api/oauth/token`, verifies the JWT signature against the Portal's JWKS (`/.well-known/jwks.json`), and sets the `clara_session_at` cookie.
@@ -1088,9 +1088,9 @@ The dashboard's React StatusPage shows the same fields under "Web server". A sid
 
 Clara Desktop can drive a Clara backend running on another machine (a VPS, a home server, a Mini behind Tailscale). In the app this lives under **Settings → Gateways → Remote gateway**, which asks for a **Remote URL** and a way to **Sign in**. (For the desktop app itself — install, settings, chat — see the [Clara Desktop](/user-guide/desktop) page.)
 
-You protect the remote dashboard with one of the bundled auth providers, and the desktop app signs in against whichever one the backend advertises. For a backend reachable beyond your own machine — a VPS, a public host, anything internet-facing — the recommended provider is **OAuth (Clara Portal)** (register it with [`clara dashboard register`](#registering-a-dashboard) and sign in with *Sign in with Workprise*). The bundled [username/password provider](#usernamepassword-provider-no-oauth-idp) is the quickest option when the backend is on a trusted LAN or reachable only over a VPN, but is **not suitable for direct public-internet exposure**. Binding the dashboard to a non-loopback address engages its auth gate; once signed in, Desktop reuses the session for the chat WebSocket automatically — there is no token to copy or paste.
+You protect the remote dashboard with one of the bundled auth providers, and the desktop app signs in against whichever one the backend advertises. For a backend reachable beyond your own machine — a VPS, a public host, anything internet-facing — the recommended provider is **OAuth (Clara Portal)** (register it with [`clara dashboard register`](#registering-a-dashboard) and sign in with *Sign in with Claragram*). The bundled [username/password provider](#usernamepassword-provider-no-oauth-idp) is the quickest option when the backend is on a trusted LAN or reachable only over a VPN, but is **not suitable for direct public-internet exposure**. Binding the dashboard to a non-loopback address engages its auth gate; once signed in, Desktop reuses the session for the chat WebSocket automatically — there is no token to copy or paste.
 
-The recipe below uses the username/password path because it's the quickest to stand up on a trusted network; for the OAuth path see [Default provider: Workprise](#default-provider-workprise).
+The recipe below uses the username/password path because it's the quickest to stand up on a trusted network; for the OAuth path see [Default provider: Claragram](#default-provider-claragram).
 
 ### On the backend (the remote machine)
 

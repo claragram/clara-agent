@@ -1,3 +1,9 @@
+const CONTRIBUTED_LABELS_FR: Record<string, string> = {
+  'keybinds.panel': 'Raccourcis clavier',
+  'profile.export': 'Exporter le profil…',
+  'profile.import': 'Importer le profil…'
+}
+
 import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
 import { Dialog as DialogPrimitive } from 'radix-ui'
@@ -549,7 +555,7 @@ export function CommandPalette() {
 }
 
 function CommandPaletteBody({ onExited }: { onExited: () => void }) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const pendingPage = useStore($commandPalettePage)
   const pendingSeed = useStore($commandPaletteSeed)
   const bindings = useStore($bindings)
@@ -882,7 +888,7 @@ function CommandPaletteBody({ onExited }: { onExited: () => void }) {
                 id: item.key,
                 keepOpen: item.keepOpen,
                 keywords: item.keywords,
-                label: item.label,
+                label: (locale === 'fr' && CONTRIBUTED_LABELS_FR[item.id]) ? CONTRIBUTED_LABELS_FR[item.id] : item.label,
                 run: item.run
               }))
             }

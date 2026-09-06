@@ -13,7 +13,7 @@ Clara 从托管于文档站点旁的 JSON 清单中获取 **OpenRouter** 和 **C
 ## 线上清单 URL
 
 ```
-https://workprise.fr/docs/api/model-catalog.json
+https://claragram.com/docs/api/model-catalog.json
 ```
 
 每次合并到 `main` 时，通过现有的 `deploy-site.yml` GitHub Pages 流水线发布。真实来源位于仓库的 `website/static/api/model-catalog.json`。
@@ -68,7 +68,7 @@ https://workprise.fr/docs/api/model-catalog.json
 ```yaml
 model_catalog:
   enabled: true
-  url: https://workprise.fr/docs/api/model-catalog.json
+  url: https://claragram.com/docs/api/model-catalog.json
   ttl_hours: 1
   providers: {}
 ```

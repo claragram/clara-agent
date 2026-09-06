@@ -4,17 +4,17 @@
 
 # Clara Agent ☤
 <p align="center">
-  <a href="https://agent.claraprise.com/">Clara Agent</a> | <a href="https://agent.claraprise.com/">Clara Desktop</a> | <a href="https://workprise.fr/">Site Français (Workprise.fr)</a>
+  <a href="https://agent.claraprise.com/">Clara Agent</a> | <a href="https://agent.claraprise.com/">Clara Desktop</a> | <a href="https://claragram.com/">Claragram (claragram.com)</a>
 </p>
 <p align="center">
-  <a href="https://workprise.fr"><img src="https://img.shields.io/badge/Portail%20France-workprise.fr-blue?style=for-the-badge" alt="Workprise France"></a>
+  <a href="https://claragram.com"><img src="https://img.shields.io/badge/Claragram-claragram.com-blue?style=for-the-badge" alt="Claragram"></a>
   <a href="https://agent.claraprise.com/docs/"><img src="https://img.shields.io/badge/Docs-agent.claraprise.com-FFD700?style=for-the-badge" alt="Documentation"></a>
   <a href="https://github.com/claraprise/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="Licence MIT"></a>
-  <a href="https://workprise.com"><img src="https://img.shields.io/badge/Développé%20par-Workprise-blueviolet?style=for-the-badge" alt="Workprise"></a>
+  <a href="https://claragram.com"><img src="https://img.shields.io/badge/Développé%20par-Claragram-blueviolet?style=for-the-badge" alt="Claragram"></a>
   <a href="README.md"><img src="https://img.shields.io/badge/Lang-English-blue?style=for-the-badge" alt="English"></a>
 </p>
 
-**L'agent IA autonome et auto-apprenant développé par [Workprise](https://workprise.com) et propulsé par les services [Claraprise](https://claraprise.com) / [Workprise.fr](https://workprise.fr).**
+**L'agent IA autonome et auto-apprenant développé par [Claragram](https://claragram.com).**
 
 Clara est un agent IA conçu pour apprendre de ses expériences, créer des compétences de manière autonome, persister son contexte et exécuter des tâches complexes sur votre machine locale, VPS ou infrastructure cloud.
 
@@ -61,6 +61,6 @@ clara gateway run
 ---
 
 ## Services & Support
-- **Portail France** : [workprise.fr](https://workprise.fr)
+- **Claragram** : [claragram.com](https://claragram.com)
 - **Suite Claraprise** : [claraprise.com](https://claraprise.com)
-- **Société mère** : [workprise.com](https://workprise.com)
+- **Organisation parente** : [Claragram](https://claragram.com)

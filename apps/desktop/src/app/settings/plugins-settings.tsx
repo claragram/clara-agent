@@ -48,14 +48,17 @@ function reveal(file: string) {
   void window.claraDesktop?.revealPath?.(file)?.catch(() => undefined)
 }
 
-async function revealPluginsDir() {
+async function revealPluginsDir(isFr?: boolean) {
   try {
     // Electron owns the local plugin root — deriving it from the backend's
     // clara_home breaks against a remote backend (#66899).
     const dir = await window.claraDesktop?.desktopPluginsRoot?.()
 
     if (!dir) {
-      notifyError('Desktop plugins are unavailable', 'Could not resolve the plugins folder')
+      notifyError(
+        isFr ? 'Les plugins de bureau sont indisponibles' : 'Desktop plugins are unavailable',
+        isFr ? 'Impossible de trouver le dossier des plugins' : 'Could not resolve the plugins folder'
+      )
 
       return
     }
@@ -65,10 +68,13 @@ async function revealPluginsDir() {
     const result = await window.claraDesktop?.openDir?.(dir)
 
     if (result && !result.ok) {
-      notifyError(result.error ?? 'unknown error', 'Could not open the plugins folder')
+      notifyError(
+        result.error ?? (isFr ? 'erreur inconnue' : 'unknown error'),
+        isFr ? 'Impossible d\'ouvrir le dossier des plugins' : 'Could not open the plugins folder'
+      )
     }
   } catch (err) {
-    notifyError(err, 'Could not resolve the plugins folder')
+    notifyError(err, isFr ? 'Impossible de trouver le dossier des plugins' : 'Could not resolve the plugins folder')
   }
 }
 
@@ -76,13 +82,16 @@ async function revealPluginsDir() {
 // path comes from the gateway — not from the renderer's local CLARA_HOME.
 // Callers gate on a local connection: openDir mkdir-creates the path, which
 // must never happen for a directory that belongs to a remote box.
-async function revealAgentPluginsDir(request: GatewayRequest) {
+async function revealAgentPluginsDir(request: GatewayRequest, isFr?: boolean) {
   try {
     const result = await request<{ home?: string }>('config.get', { key: 'profile' })
     const home = (result?.home ?? '').trim()
 
     if (!home) {
-      notifyError('The backend did not report its home directory', 'Could not open the plugins folder')
+      notifyError(
+        isFr ? 'Le backend n\'a pas indiqué son répertoire de base' : 'The backend did not report its home directory',
+        isFr ? 'Impossible d\'ouvrir le dossier des plugins' : 'Could not open the plugins folder'
+      )
 
       return
     }
@@ -90,10 +99,13 @@ async function revealAgentPluginsDir(request: GatewayRequest) {
     const opened = await window.claraDesktop?.openDir?.(`${home}/plugins`)
 
     if (opened && !opened.ok) {
-      notifyError(opened.error ?? 'unknown error', 'Could not open the plugins folder')
+      notifyError(
+        opened.error ?? (isFr ? 'erreur inconnue' : 'unknown error'),
+        isFr ? 'Impossible d\'ouvrir le dossier des plugins' : 'Could not open the plugins folder'
+      )
     }
   } catch (err) {
-    notifyError(err, 'Could not open the plugins folder')
+    notifyError(err, isFr ? 'Impossible d\'ouvrir le dossier des plugins' : 'Could not open the plugins folder')
   }
 }
 
@@ -171,7 +183,8 @@ function AgentPluginRowView({ row, profile }: { row: AgentPluginRow; profile: st
 }
 
 function AgentPluginsSection() {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
+  const isFr = locale === 'fr'
   const p = t.settings.plugins
   const { requestGateway } = useGatewayRequest()
   const gatewayState = useStore($gatewayState)
@@ -253,7 +266,7 @@ function AgentPluginsSection() {
             <SelectContent>
               {profiles.map(profile => (
                 <SelectItem key={profile.name} value={profile.name}>
-                  {profile.is_default ? 'Clara (default)' : profile.name}
+                  {profile.is_default ? (isFr ? 'Clara (par défaut)' : 'Clara (default)') : profile.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -264,7 +277,7 @@ function AgentPluginsSection() {
       {connection?.mode !== 'remote' && !requestProfile && (
         <div className="mb-2 flex items-center gap-3">
           <Button
-            onClick={() => void revealAgentPluginsDir(requestGateway)}
+            onClick={() => void revealAgentPluginsDir(requestGateway, isFr)}
             size="sm"
             type="button"
             variant="textStrong"
@@ -355,7 +368,7 @@ function PluginRow({ record }: { record: PluginRecord }) {
 }
 
 export function PluginsSettings() {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const p = t.settings.plugins
   const records = useStore($pluginRecords)
 
@@ -378,7 +391,7 @@ export function PluginsSettings() {
         <p className="mb-2 text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">{p.blurb}</p>
 
         <div className="mb-2 flex items-center gap-3">
-          <Button onClick={() => void revealPluginsDir()} size="sm" type="button" variant="textStrong">
+          <Button onClick={() => void revealPluginsDir(locale === 'fr')} size="sm" type="button" variant="textStrong">
             <FolderOpen className="size-3.5" />
             <span>{p.openFolder}</span>
           </Button>

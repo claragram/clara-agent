@@ -3,8 +3,8 @@
   "productName": "Clara",
   "private": true,
   "version": "0.17.0",
-  "description": "Native desktop shell for Clara Agent.",
-  "author": "Workprise",
+  "description": "Native desktop shell for Clara Agent by Claragram.",
+  "author": "Claragram",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/claraprise/clara-agent.git"
@@ -186,14 +186,15 @@
   },
   "build": {
     "electronVersion": "40.10.2",
-    "appId": "com.workprise.clara",
+    "appId": "com.claragram.clara",
     "productName": "Clara",
     "executableName": "Clara",
     "protocols": [
       {
         "name": "Clara Protocol",
         "schemes": [
-          "clara"
+          "clara",
+          "claragram"
         ]
       }
     ],
@@ -286,8 +287,8 @@
     },
     "linux": {
       "category": "Development",
-      "maintainer": "Workprise <support@workprise.com>",
-      "synopsis": "Native desktop shell for Clara Agent.",
+      "maintainer": "Claragram <support@claragram.com>",
+      "synopsis": "Native desktop shell for Clara Agent by Claragram.",
       "target": [
         "AppImage",
         "deb",

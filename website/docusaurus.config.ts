@@ -7,7 +7,7 @@ const config: Config = {
   tagline: 'The self-improving AI agent',
   favicon: 'img/favicon.ico',
 
-  url: 'https://workprise.fr',
+  url: 'https://claragram.com',
   baseUrl: '/docs/',
 
   organizationName: 'claraprise',
@@ -138,8 +138,8 @@ const config: Config = {
           position: 'left',
         },
         {
-          href: 'https://workprise.fr',
-          label: 'Workprise',
+          href: 'https://claragram.com',
+          label: 'Claragram',
           position: 'left',
         },
         {
@@ -147,7 +147,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://portal.workprise.fr',
+          href: 'https://portal.claragram.com',
           label: 'Portal',
           position: 'right',
         },
@@ -173,7 +173,7 @@ const config: Config = {
         {
           title: 'Ecosystem',
           items: [
-            { label: 'Web Portal', href: 'https://portal.workprise.fr' },
+            { label: 'Web Portal', href: 'https://portal.claragram.com' },
             { label: 'GitHub Organization', href: 'https://github.com/claraprise' },
             { label: 'Contact', href: 'mailto:contact@workprise.com' },
           ],
@@ -181,7 +181,7 @@ const config: Config = {
         {
           title: 'Company',
           items: [
-            { label: 'Workprise', href: 'https://workprise.fr' },
+            { label: 'Claragram', href: 'https://claragram.com' },
             { label: 'Claraprise', href: 'https://claraprise.com' },
           ],
         },

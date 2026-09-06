@@ -30,7 +30,7 @@ const DEFAULT_AUTO_ARCHIVE_DAYS = 3
 const ARCHIVED_FETCH_LIMIT = 200
 
 export function SessionsSettings() {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const s = t.settings.sessions
   const [sessions, setLocalSessions] = useState<SessionInfo[]>([])
   const [loading, setLoading] = useState(true)
@@ -187,7 +187,7 @@ export function SessionsSettings() {
 // just toggles the config keys, so CLI / gateway / Desktop all honour one
 // setting. Pins are exempt on the backend, so pinned chats survive regardless.
 function AutoArchiveSetting() {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const s = t.settings.sessions
   const [config, setConfig] = useState<ClaraConfigRecord | null>(null)
   const [enabled, setEnabled] = useState(false)
@@ -291,7 +291,7 @@ function AutoArchiveSetting() {
 // builds on Windows used to spawn sessions in the install dir (`win-unpacked`
 // / Program Files), which buried any files Clara wrote there.
 function DefaultProjectDirSetting() {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const s = t.settings.sessions
   const [dir, setDir] = useState<null | string>(null)
   const [fallback, setFallback] = useState<string>('')

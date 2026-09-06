@@ -64,8 +64,8 @@ async function stampExeIdentity(exe, desktopRoot = resolve(import.meta.dirname, 
     'version-string': {
       ProductName: 'Clara',
       FileDescription: 'Clara',
-      CompanyName: 'Workprise',
-      LegalCopyright: 'Copyright (c) 2026 Workprise'
+      CompanyName: 'Claragram',
+      LegalCopyright: 'Copyright (c) 2026 Claragram'
     }
   })
 

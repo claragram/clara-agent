@@ -1,5 +1,5 @@
 [Unit]
-Description=Workprise.fr Website & Documentation (Docusaurus)
+Description=Claragram.com Website & Documentation (Docusaurus)
 After=network.target
 
 [Service]

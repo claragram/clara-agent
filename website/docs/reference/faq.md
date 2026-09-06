@@ -206,7 +206,7 @@ source ~/.bashrc
 # If you previously installed with sudo, clean up:
 sudo rm /usr/local/bin/clara
 # Then re-run the standard installer
-curl -fsSL https://workprise.fr/install.sh | bash
+curl -fsSL https://claragram.com/install.sh | bash
 ```
 
 ---
@@ -763,7 +763,7 @@ Skills with very long descriptions are truncated to 40 characters in the Telegra
 
 1. Install Clara Agent on the new machine:
    ```bash
-   curl -fsSL https://workprise.fr/install.sh | bash
+   curl -fsSL https://claragram.com/install.sh | bash
    ```
 
 2. On the **source machine**, create a full backup:

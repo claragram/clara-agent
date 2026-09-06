@@ -5,8 +5,8 @@ import { resolvePluginSourceLinks } from './plugin-source-urls'
 describe('resolvePluginSourceLinks', () => {
   it('maps owner/repo to github browse and clone urls', () => {
     expect(resolvePluginSourceLinks('Workprise/clara-example-plugins')).toEqual({
-      gitUrl: 'https://github.com/claraprise/clara-example-plugins.git',
-      browseUrl: 'https://github.com/claraprise/clara-example-plugins',
+      gitUrl: 'https://github.com/Workprise/clara-example-plugins.git',
+      browseUrl: 'https://github.com/Workprise/clara-example-plugins',
       subdir: null
     })
   })

@@ -311,8 +311,8 @@ The CLI uses argparse, so `--help` is a good first probe for "did my new flag re
 
 ## See also
 
-- User-facing setup + troubleshooting: [Egress proxy](https://workprise.fr/docs/user-guide/egress/iron-proxy)
-- Docker backend internals: [Docker](https://workprise.fr/docs/user-guide/docker)
-- Bitwarden Secrets Manager integration: [`clara secrets bitwarden`](https://workprise.fr/docs/user-guide/secrets/bitwarden)
-- CLI command reference: [`clara egress`](https://workprise.fr/docs/reference/cli-commands#clara-egress)
-- Sandbox-injected environment variables: [Egress proxy (sandbox-injected)](https://workprise.fr/docs/reference/environment-variables#egress-proxy-sandbox-injected)
+- User-facing setup + troubleshooting: [Egress proxy](https://claragram.com/docs/user-guide/egress/iron-proxy)
+- Docker backend internals: [Docker](https://claragram.com/docs/user-guide/docker)
+- Bitwarden Secrets Manager integration: [`clara secrets bitwarden`](https://claragram.com/docs/user-guide/secrets/bitwarden)
+- CLI command reference: [`clara egress`](https://claragram.com/docs/reference/cli-commands#clara-egress)
+- Sandbox-injected environment variables: [Egress proxy (sandbox-injected)](https://claragram.com/docs/reference/environment-variables#egress-proxy-sandbox-injected)

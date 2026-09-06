@@ -27,8 +27,25 @@ function Caption({ children, className }: { children: ReactNode; className?: str
   return <p className={cn(CAPTION, className)}>{children}</p>
 }
 
+const SOUND_NAMES_FR: Record<number, string> = {
+  1: 'Confort à deux notes',
+  2: 'Tintement de verre',
+  3: 'Marimba douce',
+  4: 'Message à trois tons',
+  5: 'Souffle aérien',
+  6: 'Grappe de découverte',
+  7: 'Systèmes en ligne',
+  8: 'Terminal IBM',
+  9: 'Gazouillis de modem',
+  10: 'Carillon à vent',
+  11: 'Bol chantant',
+  12: 'Envolée de harpe',
+  13: 'Ping sonar',
+  14: 'Boîte à musique'
+}
+
 export function NotificationsSettings() {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const prefs = useStore($nativeNotifyPrefs)
   const completionSoundVariantId = useStore($completionSoundVariantId)
   const copy = t.settings.notifications
@@ -82,7 +99,7 @@ export function NotificationsSettings() {
               <SelectContent>
                 {COMPLETION_SOUND_VARIANTS.map(variant => (
                   <SelectItem key={variant.id} value={String(variant.id)}>
-                    {variant.name}
+                    {locale === 'fr' ? (SOUND_NAMES_FR[variant.id] ?? variant.name) : variant.name}
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -1,5 +1,5 @@
 [Unit]
-Description=Clara AI Agent Gateway & API Server (Workprise)
+Description=Clara AI Agent Gateway & API Server (Claragram)
 After=network.target
 
 [Service]

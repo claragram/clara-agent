@@ -4,6 +4,7 @@ import { PageLoader } from '@/components/page-loader'
 import { Button } from '@/components/ui/button'
 import { DisclosureCaret } from '@/components/ui/disclosure-caret'
 import { getMemoryProviderConfig, saveMemoryProviderConfig } from '@/clara'
+import { useI18n } from '@/i18n'
 import { SlidersHorizontal } from '@/lib/icons'
 import { notifyError } from '@/store/notifications'
 import type { MemoryProviderConfig, MemoryProviderField } from '@/types/clara'
@@ -21,6 +22,8 @@ function seedValues(config: MemoryProviderConfig): Record<string, string> {
 }
 
 export function ProviderConfigPanel({ profile, provider }: { profile?: string; provider: string }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
   const [config, setConfig] = useState<MemoryProviderConfig | null>(null)
   const [loadError, setLoadError] = useState<null | string>(null)
   const [values, setValues] = useState<Record<string, string>>({})
@@ -38,9 +41,9 @@ export function ProviderConfigPanel({ profile, provider }: { profile?: string; p
       setLoadError(null)
     } catch (err) {
       setConfig(null)
-      setLoadError(err instanceof Error ? err.message : 'Memory provider settings failed to load')
+      setLoadError(err instanceof Error ? err.message : (isFr ? 'Échec du chargement des paramètres du fournisseur de mémoire' : 'Memory provider settings failed to load'))
     }
-  }, [profile, provider])
+  }, [isFr, profile, provider])
 
   useEffect(() => {
     setConfig(null)
@@ -71,10 +74,10 @@ export function ProviderConfigPanel({ profile, provider }: { profile?: string; p
           setSaved(current => ({ ...current, [field.key]: value }))
         }
       } catch (err) {
-        notifyError(err, `Failed to save ${field.label}`)
+        notifyError(err, isFr ? `Échec de l'enregistrement de ${field.label}` : `Failed to save ${field.label}`)
       }
     },
-    [profile, provider, saved]
+    [isFr, profile, provider, saved]
   )
 
   // Providers without a declared config surface (e.g. builtin) render nothing.
@@ -87,16 +90,16 @@ export function ProviderConfigPanel({ profile, provider }: { profile?: string; p
       return (
         <div className="flex items-center justify-between gap-3 py-2">
           <span className="text-[length:var(--conversation-caption-font-size)] text-muted-foreground">
-            Memory provider settings failed to load: {loadError}
+            {isFr ? `Échec du chargement des paramètres du fournisseur de mémoire : ${loadError}` : `Memory provider settings failed to load: ${loadError}`}
           </span>
           <Button onClick={() => void refresh()} size="sm" type="button" variant="secondary">
-            Retry
+            {isFr ? 'Réessayer' : 'Retry'}
           </Button>
         </div>
       )
     }
 
-    return <PageLoader className="min-h-24" label="Loading memory provider settings..." />
+    return <PageLoader className="min-h-24" label={isFr ? 'Chargement des paramètres du fournisseur de mémoire…' : 'Loading memory provider settings...'} />
   }
 
   const inlineFields = config.fields.filter(field => field.inline)
@@ -114,16 +117,16 @@ export function ProviderConfigPanel({ profile, provider }: { profile?: string; p
         >
           <DisclosureCaret open={expanded} />
           <span className="text-[length:var(--conversation-text-font-size)] font-medium text-foreground">
-            {config.label} settings
+            {isFr ? `Paramètres de ${config.label}` : `${config.label} settings`}
           </span>
           {secretFields.map(field => (
-            <Pill key={field.key}>{field.is_set ? `${field.label} set` : `${field.label} not set`}</Pill>
+            <Pill key={field.key}>{field.is_set ? (isFr ? `${field.label} configuré` : `${field.label} set`) : (isFr ? `${field.label} non configuré` : `${field.label} not set`)}</Pill>
           ))}
         </button>
         {hasFullConfig && (
           <Button onClick={() => setShowModal(true)} size="sm" type="button" variant="secondary">
             <SlidersHorizontal className="size-3.5" />
-            Full config…
+            {isFr ? 'Configuration complète…' : 'Full config…'}
           </Button>
         )}
       </div>

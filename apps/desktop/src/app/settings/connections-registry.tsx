@@ -235,7 +235,7 @@ function scrollableAncestor(element: HTMLElement): HTMLElement | null {
  * switchover UX is the connection-mode controls above this section.
  */
 export function ConnectionsRegistrySection() {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const s = t.settings.connections
   const activeConnectionId = useStore($activeConnectionId)
   const [registry, setRegistry] = useState<DesktopConnectionsRegistry | null>(null)
@@ -742,7 +742,7 @@ export function ConnectionsRegistrySection() {
               title={
                 <span className="flex items-center gap-2">
                   <Icon className="size-4 shrink-0 text-muted-foreground" />
-                  <span className="truncate">{conn.label}</span>
+                  <span className="truncate">{locale === 'fr' && conn.kind === 'local' ? 'Cet appareil' : conn.label}</span>
                   {isCurrent && <Pill tone="primary">{s.currentPill}</Pill>}
                   {isPrimary && <Pill>{s.primaryPill}</Pill>}
                   {conn.kind === 'local' && <Pill>{s.managedPill}</Pill>}

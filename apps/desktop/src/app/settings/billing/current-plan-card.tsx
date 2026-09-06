@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { useI18n } from '@/i18n'
 import { ExternalLink } from '@/lib/icons'
 
 import { BillingRefusalInline } from './inline-feedback'
@@ -8,7 +9,23 @@ import type { BillingPlanCardView } from './use-billing-state'
 import { useResumeFlow } from './use-subscription-change'
 
 export function CurrentPlanCard({ onViewPlans, plan }: { onViewPlans: () => void; plan: BillingPlanCardView }) {
+  const { locale } = useI18n()
+  const isFr = locale === 'fr'
   const resumeFlow = useResumeFlow()
+
+  const actionLabel = isFr
+    ? plan.action?.label === 'Change plan'
+      ? 'Changer de forfait'
+      : plan.action?.label === 'View plans'
+        ? 'Voir les forfaits'
+        : plan.action?.label
+    : plan.action?.label
+
+  const linkLabel = isFr
+    ? plan.link?.label === 'Adjust plan'
+      ? 'Gérer le forfait'
+      : plan.link?.label
+    : plan.link?.label
 
   return (
     <div className="@container">
@@ -22,7 +39,7 @@ export function CurrentPlanCard({ onViewPlans, plan }: { onViewPlans: () => void
               </span>
               {plan.price && (
                 <span className="text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">
-                  {plan.price}/mo
+                  {plan.price}{isFr ? '/mois' : '/mo'}
                 </span>
               )}
             </div>
@@ -34,18 +51,18 @@ export function CurrentPlanCard({ onViewPlans, plan }: { onViewPlans: () => void
         <div className="flex min-w-0 flex-wrap items-center justify-start gap-2 @2xl:justify-end">
           {plan.action && (
             <Button onClick={onViewPlans} size="sm" type="button" variant="outline">
-              {plan.action.label}
+              {actionLabel}
             </Button>
           )}
           {/* Scheduled downgrade → chargeless undo (subscription.resume), no confirm. */}
           {plan.pending && (
             <Button disabled={resumeFlow.busy} onClick={() => void resumeFlow.resume()} size="sm" type="button">
-              {resumeFlow.busy ? 'Undoing…' : 'Undo'}
+              {resumeFlow.busy ? (isFr ? 'Annulation…' : 'Undoing…') : (isFr ? 'Annuler' : 'Undo')}
             </Button>
           )}
           {plan.link && (
             <Button onClick={() => plan.link && openExternal(plan.link.url)} size="sm" type="button" variant="outline">
-              {plan.link.label}
+              {linkLabel}
               <ExternalLink className="size-3.5" />
             </Button>
           )}

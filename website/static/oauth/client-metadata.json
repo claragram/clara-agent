@@ -1,7 +1,7 @@
 {
   "client_id": "https://workprise.github.io/clara-agent/docs/oauth/client-metadata.json",
   "client_name": "Clara Agent",
-  "client_uri": "https://workprise.fr",
+  "client_uri": "https://claragram.com",
   "logo_uri": "https://workprise.github.io/clara-agent/docs/img/logo.png",
   "application_type": "native",
   "grant_types": ["authorization_code", "refresh_token"],

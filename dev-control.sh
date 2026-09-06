@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# ☤ Clara Agent & Workprise: Unified Master Control & Dev Orchestrator
+# ☤ Clara Agent & Claragram: Unified Master Control & Dev Orchestrator
 # ==============================================================================
 # Usage:
 #   ./dev-control.sh <command>
@@ -40,7 +40,7 @@ activate_venv() {
 print_header() {
   echo ""
   echo "======================================================================"
-  echo " ☤ Clara Agent / Workprise: $1"
+  echo " ☤ Clara Agent / Claragram: $1"
   echo "======================================================================"
   echo ""
 }

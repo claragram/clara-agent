@@ -1,6 +1,6 @@
-# ☤ Clara Agent & Workprise: Complete Architectural Blueprint & Ecosystem Index
+# ☤ Clara Agent & Claragram: Complete Architectural Blueprint & Ecosystem Index
 
-This document provides an exhaustive, production-grade architectural specification and technical index of the **Clara Agent** platform built by **Workprise**. It covers the agent runtime, API servers, web dashboards, desktop applications, multi-platform gateways, tool execution environments, memory systems, and plugin infrastructure.
+This document provides an exhaustive, production-grade architectural specification and technical index of the **Clara Agent** platform built by **Claragram**. It covers the agent runtime, API servers, web dashboards, desktop applications, multi-platform gateways, tool execution environments, memory systems, and plugin infrastructure.
 
 ---
 
@@ -25,7 +25,7 @@ This document provides an exhaustive, production-grade architectural specificati
 
 ```
                                   ┌────────────────────────────────────────┐
-                                  │       WORKPRISE PORTAL / API       │
+                                  │       CLARAGRAM PORTAL / API       │
                                   │   (Inference, Models, Data Synthesis)   │
                                   └───────────────────┬────────────────────┘
                                                       │ HTTPS / OAuth2
@@ -248,7 +248,7 @@ Clara features a multi-tiered memory architecture:
   * `pre_tool_call` / `post_tool_call`
   * `on_session_start` / `on_session_end`
 
-### 9.2 Workprise Portal (`docs/integrations/clara-portal.md`)
+### 9.2 Claragram Portal (`docs/integrations/clara-portal.md`)
 * Integrated OAuth2 provider with token refresh.
 * Direct access to fine-tuned Clara models, dataset synthesis pipelines, and hosted inference clusters.
 

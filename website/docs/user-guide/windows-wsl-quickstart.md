@@ -100,7 +100,7 @@ The `metadata` mount option above is important — without it, files on `/mnt/c/
 Once you have a WSL2 shell open:
 
 ```bash
-curl -fsSL https://workprise.fr/install.sh | bash
+curl -fsSL https://claragram.com/install.sh | bash
 source ~/.bashrc
 clara
 ```

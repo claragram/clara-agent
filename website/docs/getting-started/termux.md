@@ -83,7 +83,7 @@ Packaging/repository/signing problems for this option should be reported to the 
 Clara now ships a Termux-aware installer path:
 
 ```bash
-curl -fsSL https://workprise.fr/install.sh | bash
+curl -fsSL https://claragram.com/install.sh | bash
 ```
 
 On Termux, the installer automatically:

@@ -8168,7 +8168,10 @@ class AIAgent:
         Some providers/routes reject `reasoning` with 400s, so gate it to
         known reasoning-capable model families and direct Clara Portal.
         """
-        if base_url_host_matches(self._base_url_lower, "workprise.com"):
+        if (
+            base_url_host_matches(self._base_url_lower, "workprise.com")
+            or base_url_host_matches(self._base_url_lower, "claragram.com")
+        ):
             return True
         if base_url_host_matches(self._base_url_lower, "ai-gateway.vercel.sh"):
             return True
