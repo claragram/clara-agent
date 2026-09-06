@@ -7,7 +7,7 @@
   "author": "Claragram",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/claraprise/clara-agent.git"
+    "url": "git+https://github.com/claragram/clara-agent.git"
   },
   "type": "module",
   "main": "dist/electron-main.mjs",

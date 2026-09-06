@@ -8,8 +8,8 @@
 </p>
 <p align="center">
   <a href="https://claragram.com/docs/"><img src="https://img.shields.io/badge/Docs-claragram.com-FFD700?style=for-the-badge" alt="Documentación"></a>
-  <a href="https://discord.gg/Workprise"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/claraprise/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/Licencia-MIT-green?style=for-the-badge" alt="Licencia: MIT"></a>
+  <a href="https://discord.gg/Claragram"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
+  <a href="https://github.com/claragram/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/Licencia-MIT-green?style=for-the-badge" alt="Licencia: MIT"></a>
   <a href="https://claragram.com"><img src="https://img.shields.io/badge/Creado%20por-Claragram-blueviolet?style=for-the-badge" alt="Creado por Claragram"></a>
   <a href="README.md"><img src="https://img.shields.io/badge/Lang-English-blue?style=for-the-badge" alt="English"></a>
   <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/Lang-中文-red?style=for-the-badge" alt="中文"></a>
@@ -42,7 +42,7 @@ curl -fsSL https://agent.claraprise.com/install.sh | bash
 
 ### Windows (nativo, PowerShell)
 
-> **Nota:** En Windows nativo, Clara funciona sin WSL — la CLI, el gateway, la TUI y las herramientas funcionan de forma nativa. Si prefieres usar WSL2, el comando de Linux/macOS de arriba también funciona allí. ¿Encontraste un error? Por favor [crea un issue](https://github.com/claraprise/clara-agent/issues).
+> **Nota:** En Windows nativo, Clara funciona sin WSL — la CLI, el gateway, la TUI y las herramientas funcionan de forma nativa. Si prefieres usar WSL2, el comando de Linux/macOS de arriba también funciona allí. ¿Encontraste un error? Por favor [crea un issue](https://github.com/claragram/clara-agent/issues).
 
 Ejecuta esto en PowerShell:
 
@@ -185,7 +185,7 @@ Consulta `clara claw migrate --help` para todas las opciones, o usa la habilidad
 Inicio rápido para colaboradores — clona y comienza con `setup-clara.sh`:
 
 ```bash
-git clone https://github.com/claraprise/clara-agent.git
+git clone https://github.com/claragram/clara-agent.git
 cd clara-agent
 ./setup-clara.sh     # instala uv, crea venv, instala .[all], enlaza ~/.local/bin/clara
 ./clara              # detecta automáticamente el venv, no necesitas hacer `source` primero
@@ -205,9 +205,9 @@ scripts/run_tests.sh
 
 ## Comunidad
 
-- 💬 [Discord](https://discord.gg/Workprise)
+- 💬 [Discord](https://discord.gg/Claragram)
 - 📚 [Skills Hub](https://agentskills.io)
-- 🐛 [Issues](https://github.com/claraprise/clara-agent/issues)
+- 🐛 [Issues](https://github.com/claragram/clara-agent/issues)
 - 🔌 [computer-use-linux](https://github.com/avifenesh/computer-use-linux) — Servidor MCP de control de escritorio Linux para Clara y otros hosts MCP, con árboles de accesibilidad AT-SPI, entrada Wayland/X11, capturas de pantalla y targeting de ventanas del compositor.
 - 🔌 [ClaraClaw](https://github.com/AaronWong1999/claraclaw) — Puente WeChat comunitario: Ejecuta Clara Agent y OpenClaw en la misma cuenta de WeChat.
 

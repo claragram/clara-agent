@@ -6,8 +6,8 @@
 
 <p align="center">
   <a href="https://claragram.com/docs/"><img src="https://img.shields.io/badge/Docs-claragram.com-FFD700?style=for-the-badge" alt="Documentation"></a>
-  <a href="https://discord.gg/Workprise"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/claraprise/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
+  <a href="https://discord.gg/Claragram"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
+  <a href="https://github.com/claragram/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
   <a href="https://claragram.com"><img src="https://img.shields.io/badge/Built%20by-Claragram-blueviolet?style=for-the-badge" alt="Built by Claragram"></a>
   <a href="README.md"><img src="https://img.shields.io/badge/Lang-English-lightgrey?style=for-the-badge" alt="English"></a>
   <a href="README.ur-pk.md"><img src="https://img.shields.io/badge/Lang-اردو-green?style=for-the-badge" alt="اردو"></a>
@@ -193,10 +193,10 @@ python -m pytest tests/ -q
 
 ## 社区
 
-- 💬 [Discord](https://discord.gg/Workprise)
+- 💬 [Discord](https://discord.gg/Claragram)
 - 📚 [技能中心](https://agentskills.io)
-- 🐛 [问题反馈](https://github.com/claraprise/clara-agent/issues)
-- 💡 [讨论区](https://github.com/claraprise/clara-agent/discussions)
+- 🐛 [问题反馈](https://github.com/claragram/clara-agent/issues)
+- 💡 [讨论区](https://github.com/claragram/clara-agent/discussions)
 - 🔌 [ClaraClaw](https://github.com/AaronWong1999/claraclaw) — 社区微信桥接：在同一微信账号上运行 Clara Agent 和 OpenClaw。
 
 ---

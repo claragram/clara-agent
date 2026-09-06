@@ -1549,7 +1549,7 @@ stt:
   #   local_command/xai/
   #   elevenlabs             -> unsupported; DEBUG log, then continue
   #   plugin providers       -> `prompt` in `**extra`; plugin owns limits
-  # prompt: "Clara, Teknium, Workprise, kanban"
+  # prompt: "Clara, Teknium, Claragram, kanban"
   local:
     model: "base"              # tiny | base | small | medium | large-v3 | turbo
     # language: ""             # auto-detect; set to "en", "es", "fr", etc. to force
@@ -1974,7 +1974,7 @@ telemetry:
   shared_metrics:
     enabled: false
     send: false
-    # endpoint: https://telemetry.workprise.com/v1/telemetry
+    # endpoint: https://telemetry.claragram.com/v1/telemetry
 
 
 # =============================================================================

@@ -138,8 +138,13 @@ _UPDATE_CHECK_CACHE_SECONDS = 6 * 3600
 # (e.g. nix-built clara — no local git history to count against).
 UPDATE_AVAILABLE_NO_COUNT = -1
 
-_UPSTREAM_REPO_URL = "https://github.com/claraprise/clara-agent.git"
-_OFFICIAL_REPO_CANONICAL = "github.com/claraprise/clara-agent"
+_UPSTREAM_REPO_URL = "https://github.com/claragram/clara-agent.git"
+_OFFICIAL_REPO_CANONICAL = "github.com/claragram/clara-agent"
+_OFFICIAL_REPO_CANONICALS = {
+    "github.com/claragram/clara-agent",
+    "github.com/claraprise/clara-agent",
+    "github.com/workprise/clara-agent",
+}
 
 
 def _canonical_github_remote(url: str | None) -> str:
@@ -169,7 +174,7 @@ def _is_ssh_remote(url: str | None) -> bool:
 
 
 def _is_official_ssh_remote(url: str | None) -> bool:
-    return _is_ssh_remote(url) and _canonical_github_remote(url) == _OFFICIAL_REPO_CANONICAL
+    return _is_ssh_remote(url) and _canonical_github_remote(url) in _OFFICIAL_REPO_CANONICALS
 
 
 def _git_stdout(args: list[str], *, cwd: Path, timeout: int = 5) -> Optional[str]:
@@ -207,7 +212,7 @@ def _github_compare_behind(current_rev: str, target_rev: str) -> Optional[int]:
     if not (_is_full_sha(current_rev) and _is_full_sha(target_rev)):
         return None
     url = (
-        "https://api.github.com/repos/workprise/clara-agent/"
+        "https://api.github.com/repos/claragram/clara-agent/"
         f"compare/{current_rev}...{target_rev}"
     )
     try:
@@ -599,7 +604,7 @@ def _compute_git_banner_state(repo_dir: Optional[Path] = None) -> Optional[dict]
     return {"upstream": upstream, "local": local, "ahead": max(ahead, 0)}
 
 
-_RELEASE_URL_BASE = "https://github.com/claraprise/clara-agent/releases/tag"
+_RELEASE_URL_BASE = "https://github.com/claragram/clara-agent/releases/tag"
 _latest_release_cache: Optional[tuple] = None  # (tag, url) once resolved
 
 
@@ -608,7 +613,7 @@ def get_latest_release_tag(repo_dir: Optional[Path] = None) -> Optional[tuple]:
 
     Local-only — runs ``git describe --tags --abbrev=0`` against the
     Clara checkout. Cached per-process. Release URL always points at the
-    canonical Workprise/clara-agent repo (forks don't get a link).
+    canonical Claragram/clara-agent repo (forks don't get a link).
     """
     global _latest_release_cache
     if _latest_release_cache is not None:

@@ -12,8 +12,13 @@
  * testable without booting Electron (main.ts requires('electron') at load).
  */
 
-const OFFICIAL_REPO_HTTPS_URL = 'https://github.com/claraprise/clara-agent.git'
-const OFFICIAL_REPO_CANONICAL = 'github.com/claraprise/clara-agent'
+const OFFICIAL_REPO_HTTPS_URL = 'https://github.com/claragram/clara-agent.git'
+const OFFICIAL_REPO_CANONICAL = 'github.com/claragram/clara-agent'
+const OFFICIAL_REPO_CANONICALS = new Set([
+  'github.com/claragram/clara-agent',
+  'github.com/claraprise/clara-agent',
+  'github.com/workprise/clara-agent'
+])
 
 // Normalize common GitHub remote URL forms to `host/owner/repo` (lowercased,
 // no trailing slash, no .git suffix) so SSH and HTTPS forms of the same repo
@@ -59,7 +64,7 @@ function isSshRemote(url) {
 }
 
 function isOfficialSshRemote(url) {
-  return isSshRemote(url) && canonicalGitHubRemote(url) === OFFICIAL_REPO_CANONICAL
+  return isSshRemote(url) && OFFICIAL_REPO_CANONICALS.has(canonicalGitHubRemote(url))
 }
 
 export { canonicalGitHubRemote, isOfficialSshRemote, isSshRemote, OFFICIAL_REPO_CANONICAL, OFFICIAL_REPO_HTTPS_URL }

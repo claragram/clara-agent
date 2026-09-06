@@ -3155,13 +3155,17 @@ def _discard_stashed_changes(
     return True
 
 OFFICIAL_REPO_URLS = {
+    "https://github.com/claragram/clara-agent.git",
+    "git@github.com:claragram/clara-agent.git",
+    "https://github.com/claragram/clara-agent",
+    "git@github.com:claragram/clara-agent",
     "https://github.com/claraprise/clara-agent.git",
     "git@github.com:Workprise/clara-agent.git",
     "https://github.com/claraprise/clara-agent",
     "git@github.com:Workprise/clara-agent",
 }
 
-OFFICIAL_REPO_URL = "https://github.com/claraprise/clara-agent.git"
+OFFICIAL_REPO_URL = "https://github.com/claragram/clara-agent.git"
 
 SKIP_UPSTREAM_PROMPT_FILE = ".skip_upstream_prompt"
 

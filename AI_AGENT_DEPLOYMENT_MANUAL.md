@@ -98,7 +98,7 @@ node -v && npm -v
 ```bash
 if [ ! -d ".git" ]; then
   git init
-  git remote add origin https://github.com/claraprise/clara-agent.git
+  git remote add origin https://github.com/claragram/clara-agent.git
   git fetch origin main --tags
   git reset --hard origin/main
 fi
@@ -326,7 +326,7 @@ pytest tests/tools/test_sandbox_failure_hints.py -v
 |---|---|---|
 | `cannot execute binary file: node` | Linux ELF node binary invoked on macOS Darwin | Re-link: `ln -sf /opt/homebrew/bin/node ~/.local/bin/node` |
 | `database disk image is malformed (11)` | Corrupted SQLite pages in `state.db` | Run recovery: `sqlite3 ~/.clara/state.db ".recover" \| sqlite3 recovered.db && mv recovered.db ~/.clara/state.db` |
-| `fatal: not a git repository` | Cloned folder lacks `.git` metadata | Run `git init && git remote add origin https://github.com/claraprise/clara-agent.git && git fetch` |
+| `fatal: not a git repository` | Cloned folder lacks `.git` metadata | Run `git init && git remote add origin https://github.com/claragram/clara-agent.git && git fetch` |
 | `dev-sandbox.sh: unshare/bwrap not found` | Attempting to run Linux namespace sandbox on macOS | Use Docker dev container instead: `./dev-control.sh docker:dev` |
 | `Address already in use: 8642` | Port collision on API server | Find & kill process: `lsof -ti:8642 \| xargs kill -9` |
 | `Missing API key for provider` | `.env` has no active LLM key | Run `python cli.py setup` or append `OPENROUTER_API_KEY=...` to `~/.clara/.env` |

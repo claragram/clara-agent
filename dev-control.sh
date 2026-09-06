@@ -118,7 +118,7 @@ case "${1:-help}" in
       -v "$SCRIPT_DIR":/opt/clara-src \
       -v "$HOME/.clara":/opt/data \
       -w /opt/clara-src \
-      workprise/clara-agent bash
+      claragram/clara-agent bash
     ;;
 
   test)
@@ -146,7 +146,7 @@ case "${1:-help}" in
     ;;
 
   *)
-    echo "☤ Clara Agent / Workprise Orchestration Script"
+    echo "☤ Clara Agent / Claragram Orchestration Script"
     echo ""
     echo "Usage: ./dev-control.sh [command]"
     echo ""

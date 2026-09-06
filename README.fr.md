@@ -8,8 +8,8 @@
 </p>
 <p align="center">
   <a href="https://claragram.com"><img src="https://img.shields.io/badge/Claragram-claragram.com-blue?style=for-the-badge" alt="Claragram"></a>
-  <a href="https://agent.claraprise.com/docs/"><img src="https://img.shields.io/badge/Docs-agent.claraprise.com-FFD700?style=for-the-badge" alt="Documentation"></a>
-  <a href="https://github.com/claraprise/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="Licence MIT"></a>
+  <a href="https://claragram.com/docs/"><img src="https://img.shields.io/badge/Docs-claragram.com-FFD700?style=for-the-badge" alt="Documentation"></a>
+  <a href="https://github.com/claragram/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="Licence MIT"></a>
   <a href="https://claragram.com"><img src="https://img.shields.io/badge/Développé%20par-Claragram-blueviolet?style=for-the-badge" alt="Claragram"></a>
   <a href="README.md"><img src="https://img.shields.io/badge/Lang-English-blue?style=for-the-badge" alt="English"></a>
 </p>

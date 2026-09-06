@@ -10,8 +10,8 @@
   <a href="AI_AGENT_DEPLOYMENT_MANUAL.md"><img src="https://img.shields.io/badge/AI%20Agent-Deployment%20Manual-success?style=for-the-badge" alt="AI Agent Manual"></a>
   <a href="CLARA_ARCHITECTURE_INDEX.md"><img src="https://img.shields.io/badge/Architecture-Blueprint_%26_Index-blueviolet?style=for-the-badge" alt="Architecture Blueprint"></a>
   <a href="https://claragram.com/docs/"><img src="https://img.shields.io/badge/Docs-claragram.com-FFD700?style=for-the-badge" alt="Documentation"></a>
-  <a href="https://discord.gg/Workprise"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/claraprise/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
+  <a href="https://discord.gg/Claragram"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
+  <a href="https://github.com/claragram/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
   <a href="https://claragram.com"><img src="https://img.shields.io/badge/Built%20by-Claragram-blueviolet?style=for-the-badge" alt="Built by Claragram"></a>
   <a href="README.fr.md"><img src="https://img.shields.io/badge/Lang-Français-blue?style=for-the-badge" alt="Français"></a>
   <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/Lang-中文-red?style=for-the-badge" alt="中文"></a>
@@ -45,7 +45,7 @@ curl -fsSL https://agent.claraprise.com/install.sh | bash
 
 ### Windows (native, PowerShell)
 
-> **Heads up:** Native Windows runs Clara without WSL — CLI, gateway, TUI, and tools all work natively. If you'd rather use WSL2, the Linux/macOS one-liner above works there too. Found a bug? Please [file issues](https://github.com/claraprise/clara-agent/issues).
+> **Heads up:** Native Windows runs Clara without WSL — CLI, gateway, TUI, and tools all work natively. If you'd rather use WSL2, the Linux/macOS one-liner above works there too. Found a bug? Please [file issues](https://github.com/claragram/clara-agent/issues).
 
 Run this in PowerShell:
 
@@ -252,9 +252,9 @@ scripts/run_tests.sh
 
 ## Community
 
-- 💬 [Discord](https://discord.gg/Workprise)
+- 💬 [Discord](https://discord.gg/Claragram)
 - 📚 [Skills Hub](https://agentskills.io)
-- 🐛 [Issues](https://github.com/claraprise/clara-agent/issues)
+- 🐛 [Issues](https://github.com/claragram/clara-agent/issues)
 - 🔌 [computer-use-linux](https://github.com/avifenesh/computer-use-linux) — Linux desktop-control MCP server for Clara and other MCP hosts, with AT-SPI accessibility trees, Wayland/X11 input, screenshots, and compositor window targeting.
 - 🔌 [ClaraClaw](https://github.com/AaronWong1999/claraclaw) — Community WeChat bridge: Run Clara Agent and OpenClaw on the same WeChat account.
 

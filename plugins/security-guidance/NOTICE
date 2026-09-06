@@ -24,7 +24,7 @@ Original work
 -------------
 
 The Clara-side plugin glue code (__init__.py, plugin.yaml, README.md,
-tests) is original work by Workprise and is licensed under the MIT
+tests) is original work by Claragram and is licensed under the MIT
 License that applies to the rest of the clara-agent project, except
 where it imports from patterns.py — that import does not change the
 license of either file.
