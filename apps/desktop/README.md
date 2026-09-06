@@ -213,7 +213,7 @@ rm "$HOME/.clara/clara-agent/.clara-bootstrap-complete"
 # Rebuild a broken Python venv
 rm -rf "$HOME/.clara/clara-agent/venv"
 # Reset a stuck macOS microphone prompt (macOS only)
-tccutil reset Microphone com.workprise.clara
+tccutil reset Microphone com.claragram.clara
 ```
 
 **Windows (PowerShell):**

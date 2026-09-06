@@ -35,11 +35,11 @@ Clara Agent 提供了一个 Nix flake，支持三个层级的集成：
 
 ```bash
 # 直接运行（首次使用时构建，之后使用缓存）
-nix run github:Workprise/clara-agent -- setup
-nix run github:Workprise/clara-agent -- chat
+nix run github:claragram/clara-agent -- setup
+nix run github:claragram/clara-agent -- chat
 
 # 或持久化安装
-nix profile install github:Workprise/clara-agent
+nix profile install github:claragram/clara-agent
 clara setup
 clara chat
 ```
@@ -75,7 +75,7 @@ nix build
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    clara-agent.url = "github:Workprise/clara-agent";
+    clara-agent.url = "github:claragram/clara-agent";
   };
 
   outputs = { nixpkgs, clara-agent, ... }: {
@@ -685,7 +685,7 @@ services.clara-agent = {
 
 ```nix
 {
-  inputs.clara-agent.url = "github:Workprise/clara-agent";
+  inputs.clara-agent.url = "github:claragram/clara-agent";
   outputs = { clara-agent, nixpkgs, ... }: {
     nixpkgs.overlays = [ clara-agent.overlays.default ];
     # 然后：

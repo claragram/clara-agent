@@ -17,7 +17,7 @@ Quick answers and fixes for the most common questions and issues.
 Clara Agent works with any OpenAI-compatible API. Supported providers include:
 
 - **[OpenRouter](https://openrouter.ai/)** — access hundreds of models through one API key (recommended for flexibility)
-- **[Clara Portal](/integrations/clara-portal)** — Workprise's subscription gateway — 300+ models plus web/image/TTS/browser through one OAuth login (recommended for newcomers)
+- **[Clara Portal](/integrations/clara-portal)** — Claragram's subscription gateway — 300+ models plus web/image/TTS/browser through one OAuth login (recommended for newcomers)
 - **OpenAI** — GPT-5.4, GPT-5-codex, GPT-4.1, GPT-4o, etc.
 - **Anthropic** — Claude models (direct API, OAuth via `clara auth add anthropic`, OpenRouter, or any compatible proxy)
 - **Google** — Gemini models (direct API via `gemini` provider, OpenRouter, or compatible proxy)
@@ -868,5 +868,5 @@ If using OpenRouter, make sure your API key has credits. A 400 from OpenRouter o
 If your issue isn't covered here:
 
 1. **Search existing issues:** [GitHub Issues](https://github.com/claraprise/clara-agent/issues)
-2. **Ask the community:** [Workprise Discord](https://discord.gg/workprise)
+2. **Ask the community:** [Claragram Discord](https://discord.gg/claragram)
 3. **File a bug report:** Include your OS, Python version (`python3 --version`), Clara version (`clara --version`), and the full error message

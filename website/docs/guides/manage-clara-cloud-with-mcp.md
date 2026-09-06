@@ -8,7 +8,7 @@ description: "Connect Clara Agent to the Clara Portal MCP server so your local a
 
 [Clara Cloud](https://portal.claraprise.com/cloud) runs hosted Clara Agent instances for you. Normally you manage them from the `/agents` page in the [Clara Portal](/integrations/clara-portal). This guide connects your **local** Clara Agent to the Portal's MCP server so you can manage those cloud instances by just asking — "list my cloud agents", "restart the stopped one", "what's it costing me" — without leaving your terminal.
 
-It's a standard [MCP](/user-guide/features/mcp) server hosted by Workprise, gated by the same OAuth login you already use for the Portal. Once connected, Clara gets two tools it can call on your behalf.
+It's a standard [MCP](/user-guide/features/mcp) server hosted by Claragram, gated by the same OAuth login you already use for the Portal. Once connected, Clara gets two tools it can call on your behalf.
 
 ## What you can do with it
 

@@ -521,7 +521,7 @@ index and keep working exactly as before. An explicit `--ref <sha>` always
 overrides the index pin.
 
 **How the index is fetched.** The index lives at a canonical URL
-(`https://raw.githubusercontent.com/Workprise/clara-plugin-index/main/index.json`,
+(`https://raw.githubusercontent.com/Claragram/clara-plugin-index/main/index.json`,
 overridable via `clara config set plugins.index_url <url>`). Fetches are
 cached under `~/.clara/cache/plugin_index.json` for 24 hours; when the
 remote is unreachable the stale cache is used, and when there is no cache at
@@ -533,9 +533,9 @@ all a bundled seed copy ships with Clara — so search works fully offline.
 {
   "name": "clara-media-studio",
   "description": "Generative media workspace plugin.",
-  "author": "Workprise",
+  "author": "Claragram",
   "tags": ["media", "image-gen"],
-  "repo": "Workprise/clara-media-studio",
+  "repo": "Claragram/clara-media-studio",
   "ref": "<40-char commit SHA>",
   "subdir": null,
   "homepage": "https://github.com/claraprise/clara-media-studio",

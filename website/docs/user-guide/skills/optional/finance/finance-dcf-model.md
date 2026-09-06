@@ -17,7 +17,7 @@ Build discounted cash flow valuation workbooks in Excel.
 | Source | Optional — install with `clara skills install official/finance/dcf-model` |
 | Path | `optional-skills/finance\dcf-model` |
 | Version | `1.0.0` |
-| Author | Anthropic (adapted by Workprise) |
+| Author | Anthropic (adapted by Claragram) |
 | License | Apache-2.0 |
 | Platforms | linux, macos, windows |
 | Tags | `finance`, `valuation`, `dcf`, `excel`, `openpyxl`, `modeling`, `investment-banking` |

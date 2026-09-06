@@ -6,7 +6,7 @@ Usage (via cron with --no-agent):
     clara cron create clara-issues \\
       --schedule "*/5 * * * *" --no-agent \\
       --script "$CLARA_HOME/skills/devops/watchers/scripts/watch_github.py" \\
-      --script-args "--name clara-issues --repo Workprise/clara-agent --scope issues"
+      --script-args "--name clara-issues --repo claragram/clara-agent --scope issues"
 
 Set GITHUB_TOKEN (or GH_TOKEN) in the Clara .env file
 (``${CLARA_HOME:-~/.clara}/.env``) to avoid the 60 req/hr

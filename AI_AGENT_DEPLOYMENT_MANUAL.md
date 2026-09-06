@@ -1,6 +1,6 @@
 # ☤ AI Agent Operating Manual: Autonomous Deployment, Orchestration & Reverse-Engineering
 
-> **Document Purpose**: This operational runbook is designed for autonomous AI coding agents (Antigravity, Codex, Cursor, Claude Code, etc.) to reliably inspect, bootstrap, deploy, build, debug, and reverse-engineer the **Clara Agent & Workprise** ecosystem without human intervention.
+> **Document Purpose**: This operational runbook is designed for autonomous AI coding agents (Antigravity, Codex, Cursor, Claude Code, etc.) to reliably inspect, bootstrap, deploy, build, debug, and reverse-engineer the **Clara Agent & Claragram** ecosystem without human intervention.
 
 ---
 
@@ -278,7 +278,7 @@ sqlite3 ~/.clara/state.db "PRAGMA integrity_check;"
 
 ## 6. Master Orchestrator Script Reference (`./dev-control.sh`)
 
-The root [`dev-control.sh`](file:///Users/elhamaida-marouan/AI-Projects/Workprise/clara-agent-main/dev-control.sh) script provides standard execution entry points for agents:
+The root [`dev-control.sh`](file:///Users/elhamaida-marouan/AI-Projects/claragram/clara-agent-main/dev-control.sh) script provides standard execution entry points for agents:
 
 | Command | Action Executed |
 |---|---|

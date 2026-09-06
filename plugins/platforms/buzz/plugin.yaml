@@ -9,7 +9,7 @@ description: >
   channels/DMs and the Clara agent. Relay operations shell out to the
   buzz CLI binary (JSON in/out); verified inbound media uses Clara' bundled
   HTTP client.
-author: Workprise
+author: Claragram
 # ``requires_env`` entries are surfaced in ``clara config`` UI via the
 # platform-plugin env var injector in ``clara_cli/config.py``.
 requires_env:

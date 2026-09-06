@@ -1613,7 +1613,7 @@ def is_container() -> bool:
 
     Result is cached for the process lifetime.  Import-safe — no heavy deps.
 
-    See: Workprise/clara-agent#47111
+    See: claragram/clara-agent#47111
     """
     global _container_detected
     if _container_detected is not None:

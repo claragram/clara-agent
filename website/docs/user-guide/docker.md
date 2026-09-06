@@ -34,7 +34,7 @@ result before hitting Enter.
 mkdir -p ~/.clara
 docker run -it --rm \
   -v ~/.clara:/opt/data \
-  workprise/clara-agent setup
+  claragram/clara-agent setup
 ```
 
 This drops you into the setup wizard, which will prompt you for your API keys and write them to `~/.clara/.env`. You only need to do this once. It is highly recommended to set up a chat system for the gateway to work with at this point.
@@ -53,7 +53,7 @@ docker run -d \
   --restart unless-stopped \
   -v ~/.clara:/opt/data \
   -p 8642:8642 \
-  workprise/clara-agent gateway run
+  claragram/clara-agent gateway run
 ```
 
 Port 8642 exposes the gateway's [OpenAI-compatible API server](./features/api-server.md) and health endpoint. It's optional if you only use chat platforms (Telegram, Discord, etc.), but required if you want the dashboard or external tools to reach the gateway.
@@ -91,7 +91,7 @@ docker run -d \
   -e API_SERVER_HOST=0.0.0.0 \
   -e API_SERVER_KEY="$(openssl rand -hex 32)" \
   -e API_SERVER_CORS_ORIGINS='*' \
-  workprise/clara-agent gateway run
+  claragram/clara-agent gateway run
 ```
 
 Opening any port on an internet facing machine is a security risk. You should not do it unless you understand the risks.
@@ -108,7 +108,7 @@ docker run -d \
   -p 8642:8642 \
   -p 9119:9119 \
   -e CLARA_DASHBOARD=1 \
-  workprise/clara-agent gateway run
+  claragram/clara-agent gateway run
 ```
 
 The dashboard is supervised by s6 — if it crashes, `s6-supervise` restarts it automatically after a short backoff. Dashboard stdout/stderr is forwarded to `docker logs <container>` (no prefix; the gateway's own output now lives in a per-profile s6-log file — see [Where the logs go](#where-the-logs-go) below — so the two streams don't clash).
@@ -168,7 +168,7 @@ To open an interactive chat session against a running data directory:
 ```sh
 docker run -it --rm \
   -v ~/.clara:/opt/data \
-  workprise/clara-agent
+  claragram/clara-agent
 ```
 
 Or if you have already opened a terminal in your running container (via Docker Desktop for instance), just run:
@@ -294,7 +294,7 @@ In those cases, declare one service per profile with distinct `container_name`, 
 ```yaml
 services:
   clara-work:
-    image: workprise/clara-agent:latest
+    image: claragram/clara-agent:latest
     container_name: clara-work
     restart: unless-stopped
     command: gateway run
@@ -304,7 +304,7 @@ services:
       - ~/.clara-work:/opt/data
 
   clara-personal:
-    image: workprise/clara-agent:latest
+    image: claragram/clara-agent:latest
     container_name: clara-personal
     restart: unless-stopped
     command: gateway run
@@ -341,7 +341,7 @@ docker run -it --rm \
   -v ~/.clara:/opt/data \
   -e ANTHROPIC_API_KEY="sk-ant-..." \
   -e OPENAI_API_KEY="sk-..." \
-  workprise/clara-agent
+  claragram/clara-agent
 ```
 
 Direct `-e` flags override values from `.env`. This is useful for CI/CD or secrets-manager integrations where you don't want keys on disk.
@@ -357,7 +357,7 @@ For persistent deployment with both the gateway and dashboard, a `docker-compose
 ```yaml
 services:
   clara:
-    image: workprise/clara-agent:latest
+    image: claragram/clara-agent:latest
     container_name: clara
     restart: unless-stopped
     command: gateway run
@@ -412,7 +412,7 @@ ctl.!default {
 Then build a small derived image with the ALSA PulseAudio plugin installed:
 
 ```dockerfile title="Dockerfile.audio"
-FROM workprise/clara-agent:latest
+FROM claragram/clara-agent:latest
 
 USER root
 RUN apt-get update \
@@ -479,7 +479,7 @@ docker run -d \
   --restart unless-stopped \
   --memory=4g --cpus=2 \
   -v ~/.clara:/opt/data \
-  workprise/clara-agent gateway run
+  claragram/clara-agent gateway run
 ```
 
 ## What the Dockerfile does
@@ -551,13 +551,13 @@ When a migration is needed, Clara writes timestamped backups next to
 `config.yaml` and `.env` first.
 
 ```sh
-docker pull workprise/clara-agent:latest
+docker pull claragram/clara-agent:latest
 docker rm -f clara
 docker run -d \
   --name clara \
   --restart unless-stopped \
   -v ~/.clara:/opt/data \
-  workprise/clara-agent gateway run
+  claragram/clara-agent gateway run
 ```
 
 Or with Docker Compose:
@@ -594,10 +594,10 @@ This is a good fit for tools that are quick to install and used occasionally. Fo
 
 ### Durable installs — build a derived image
 
-When a tool must be available immediately on every container start with no re-install delay, build a new image that inherits from `workprise/clara-agent` and installs the tool in a layer:
+When a tool must be available immediately on every container start with no re-install delay, build a new image that inherits from `claragram/clara-agent` and installs the tool in a layer:
 
 ```dockerfile
-FROM workprise/clara-agent:latest
+FROM claragram/clara-agent:latest
 
 USER root
 RUN apt-get update \
@@ -618,7 +618,7 @@ docker run -d \
   my-clara:latest gateway run
 ```
 
-The entrypoint script and `/opt/data` semantics are inherited unchanged, so the rest of this page still applies. Remember to rebuild the image when pulling a newer upstream `workprise/clara-agent`.
+The entrypoint script and `/opt/data` semantics are inherited unchanged, so the rest of this page still applies. Remember to rebuild the image when pulling a newer upstream `claragram/clara-agent`.
 
 ### Complex tools or multi-service stacks — run a sidecar container
 
@@ -627,7 +627,7 @@ For tools that bring their own service (a database, a web server, a queue, a hea
 ```yaml
 services:
   clara:
-    image: workprise/clara-agent:latest
+    image: claragram/clara-agent:latest
     container_name: clara
     restart: unless-stopped
     command: gateway run
@@ -685,7 +685,7 @@ services:
             - capabilities: [gpu]
 
   clara:
-    image: workprise/clara-agent:latest
+    image: claragram/clara-agent:latest
     container_name: clara
     restart: unless-stopped
     command: gateway run
@@ -729,7 +729,7 @@ docker run -d \
   --name clara \
   -v ~/.clara:/opt/data \
   -p 8642:8642 \
-  workprise/clara-agent gateway run
+  claragram/clara-agent gateway run
 ```
 
 ```yaml
@@ -748,7 +748,7 @@ docker run -d \
   --name clara \
   --network host \
   -v ~/.clara:/opt/data \
-  workprise/clara-agent gateway run
+  claragram/clara-agent gateway run
 ```
 
 ```yaml
@@ -812,7 +812,7 @@ docker run -d \
   --name clara \
   -e PUID=1000 -e PGID=10 \
   -v /volume1/docker/clara:/opt/data \
-  workprise/clara-agent gateway run
+  claragram/clara-agent gateway run
 ```
 
 `docker exec clara <cmd>` automatically drops to UID 10000 too — see [`docker exec` automatically drops to the `clara` user](#docker-exec-automatically-drops-to-the-clara-user) for details and the per-invocation opt-out.
@@ -836,7 +836,7 @@ docker run -d \
   --name clara \
   --shm-size=1g \
   -v ~/.clara:/opt/data \
-  workprise/clara-agent gateway run
+  claragram/clara-agent gateway run
 ```
 
 ### Gateway not reconnecting after network issues
@@ -851,6 +851,6 @@ docker restart clara
 
 ```sh
 docker logs --tail 50 clara          # Recent logs
-docker run -it --rm workprise/clara-agent:latest version     # Verify version
+docker run -it --rm claragram/clara-agent:latest version     # Verify version
 docker stats clara                    # Resource usage
 ```

@@ -296,7 +296,7 @@ def emit_llms_index() -> str:
     lines.append("# Clara Agent")
     lines.append("")
     lines.append(
-        "> The self-improving AI agent built by Workprise. A terminal-native "
+        "> The self-improving AI agent built by Claragram. A terminal-native "
         "autonomous coding and task agent with persistent memory, agent-created skills, "
         "and a messaging gateway that lives on 21+ messaging platforms — 19 native to "
         "the gateway plus IRC and Microsoft Teams via plugins (Telegram, Discord, Slack, "
@@ -306,7 +306,7 @@ def emit_llms_index() -> str:
     )
     lines.append("")
     lines.append(
-        "Install: `curl -fsSL https://raw.githubusercontent.com/Workprise/"
+        "Install: `curl -fsSL https://raw.githubusercontent.com/Claragram/"
         "clara-agent/main/scripts/install.sh | bash`  "
         "(Linux, macOS, WSL2, Termux)"
     )

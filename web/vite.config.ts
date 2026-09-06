@@ -80,7 +80,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       "@clara/shared": path.resolve(__dirname, "../apps/shared/src"),
     },
-    // When @workprise/ui is symlinked via `file:../../design-language`,
+    // When @claragram/ui is symlinked via `file:../../design-language`,
     // Node's module resolution would pick up shared deps from
     // design-language/node_modules/*, giving us two copies + breaking
     // hooks (useRef-of-null), webgl contexts, etc. Force everything that

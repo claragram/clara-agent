@@ -383,8 +383,8 @@ $script:ResolvedPathReport = @{
 # Configuration
 # ============================================================================
 
-$RepoUrlSsh = "git@github.com:Workprise/clara-agent.git"
-$RepoUrlHttps = "https://github.com/claraprise/clara-agent.git"
+$RepoUrlSsh = "git@github.com:claragram/clara-agent.git"
+$RepoUrlHttps = "https://github.com/claragram/clara-agent.git"
 $PythonVersion = "3.11"
 # Minor versions the installer accepts when the requested $PythonVersion isn't
 # available, in preference order. Only checkout-private uv-managed interpreters
@@ -463,7 +463,7 @@ function Write-Banner {
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
     Write-Host "|             * Clara Agent Installer                    |" -ForegroundColor Magenta
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
-    Write-Host "|  An open source AI agent by Workprise.              |" -ForegroundColor Magenta
+    Write-Host "|  An open source AI agent by Claragram.              |" -ForegroundColor Magenta
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
     Write-Host ""
 }

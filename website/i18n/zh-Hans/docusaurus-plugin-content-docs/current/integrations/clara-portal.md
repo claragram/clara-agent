@@ -6,7 +6,7 @@ description: "一个订阅，300+ 前沿模型，以及 Tool Gateway —— 运�
 
 # Clara Portal
 
-[Clara Portal](https://portal.claraprise.com) 是 Workprise 的统一订阅网关，也是**运行 Clara Agent 的推荐方式**。一次 OAuth 登录，即可替代原本需要手动配置的各模型厂商独立账号、API 密钥和计费关系。
+[Clara Portal](https://portal.claraprise.com) 是 Claragram 的统一订阅网关，也是**运行 Clara Agent 的推荐方式**。一次 OAuth 登录，即可替代原本需要手动配置的各模型厂商独立账号、API 密钥和计费关系。
 
 如果你只有时间配置一件事，就配置这个。最快路径：
 
@@ -70,7 +70,7 @@ Portal 代理了来自整个生态系统的精选 agentic 模型目录——统�
 
 ## 关于 Clara 4 的说明
 
-Workprise 自家的 **Clara 4** 系列（Clara-4-70B、Clara-4-405B）通过 Portal 提供，享有大幅折扣。这些是**前沿混合推理对话模型**——在数学、科学、指令遵循、schema 遵从、角色扮演和长文写作方面表现出色。
+Claragram 自家的 **Clara 4** 系列（Clara-4-70B、Clara-4-405B）通过 Portal 提供，享有大幅折扣。这些是**前沿混合推理对话模型**——在数学、科学、指令遵循、schema 遵从、角色扮演和长文写作方面表现出色。
 
 但**不建议在 Clara Agent 内部使用它们**。Clara 4 针对对话和推理进行了调优，而非 agent 所依赖的高频工具调用循环。请将它们用于研究工作流，或通过[订阅代理](/user-guide/features/subscription-proxy)从其他工具调用——但在 agent 场景下，请从目录中选择前沿 agentic 模型：
 
@@ -81,7 +81,7 @@ Workprise 自家的 **Clara 4** 系列（Clara-4-70B、Clara-4-405B）通过 Por
 /model deepseek/deepseek-v3.2          # 高性价比代码模型
 ```
 
-Portal 自身的[模型信息页](https://portal.claraprise.com/info)也有相同警告，因此这不是 Clara 侧的主观意见——这是 Workprise 的官方指导。
+Portal 自身的[模型信息页](https://portal.claraprise.com/info)也有相同警告，因此这不是 Clara 侧的主观意见——这是 Claragram 的官方指导。
 
 ## 配置
 
@@ -205,7 +205,7 @@ Tool Gateway 是按工具单独选择启用的，而非全部或全不。完整�
 model:
   provider: clara
   default: anthropic/claude-sonnet-4.6     # 或你选择的其他模型
-  base_url: https://inference.workprise.com/v1
+  base_url: https://inference.claragram.com/v1
 ```
 
 Tool Gateway 设置位于各自工具的配置节下：

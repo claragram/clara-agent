@@ -22,8 +22,8 @@ function mkdtemp(prefix: string) {
 
 describe('resolvePluginGitUrl', () => {
   it('maps owner/repo shorthand to github git url', () => {
-    expect(resolvePluginGitUrl('Workprise/clara-example-plugins')).toEqual({
-      gitUrl: 'https://github.com/claraprise/clara-example-plugins.git',
+    expect(resolvePluginGitUrl('claragram/clara-example-plugins')).toEqual({
+      gitUrl: 'https://github.com/claragram/clara-example-plugins.git',
       subdir: null
     })
   })

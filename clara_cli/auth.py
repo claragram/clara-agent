@@ -3139,7 +3139,7 @@ def _clara_portal_env_override() -> Optional[str]:
     ``CLARA_PORTAL_BASE_URL`` are the documented dev/staging escape hatch for
     pointing Clara at a non-production Clara Portal (e.g. a hosted agent
     provisioned on clara-account-service's `staging` environment, which stamps
-    ``CLARA_PORTAL_BASE_URL=https://portal.staging-workprise.com`` into
+    ``CLARA_PORTAL_BASE_URL=https://portal.staging-claragram.com`` into
     the container env). The env source is trusted (the OS user/deployment
     set it themselves), so — like the inference override — it must NOT be
     gated by ``_CLARA_PORTAL_ALLOWED_HOSTS``: that allowlist exists to reject

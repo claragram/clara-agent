@@ -1,4 +1,4 @@
-"""Workprise/clara-agent#7718 — actionable message when local_embedded
+"""claragram/clara-agent#7718 — actionable message when local_embedded
 runtime (`hindsight-all`) is missing.
 
 `local_embedded` imports `from hindsight import HindsightEmbedded`, provided

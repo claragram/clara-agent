@@ -76,10 +76,10 @@ describe('resolveOauthPartition (#92183 per-connection cookie jars)', () => {
 
   it('keeps cloud connections on the legacy partition (silent portal cascade needs the shared jar)', () => {
     const reg = registry('local', [
-      { id: 'cloud-1', kind: 'cloud', url: 'https://agent.workprise.com', authMode: 'oauth' }
+      { id: 'cloud-1', kind: 'cloud', url: 'https://agent.claragram.com', authMode: 'oauth' }
     ])
 
-    expect(resolveOauthPartition('https://agent.workprise.com/api/status', { registry: reg })).toBe(
+    expect(resolveOauthPartition('https://agent.claragram.com/api/status', { registry: reg })).toBe(
       LEGACY_OAUTH_PARTITION
     )
   })

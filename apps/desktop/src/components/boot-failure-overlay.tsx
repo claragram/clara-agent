@@ -313,7 +313,7 @@ export function BootFailureOverlay() {
       {
         key: 'discord',
         label: copy.cloudDownDiscord,
-        onClick: () => openExternalLink('https://discord.gg/Workprise'),
+        onClick: () => openExternalLink('https://discord.gg/claragram'),
         variant: 'ghost'
       },
       { ...settingsAction, variant: 'ghost' }

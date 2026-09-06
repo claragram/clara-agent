@@ -3609,7 +3609,7 @@ DEFAULT_CONFIG = {
             # environment variable: that would let an inherited value silently
             # redirect telemetry a user consented to send to Clara. Non-HTTPS
             # is refused unless the host is localhost.
-            "endpoint": "https://telemetry.workprise.com/v1/telemetry",
+            "endpoint": "https://telemetry.claragram.com/v1/telemetry",
         },
     },
 

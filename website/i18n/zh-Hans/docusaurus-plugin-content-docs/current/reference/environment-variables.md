@@ -180,7 +180,7 @@ description: "Clara Agent 使用的所有环境变量完整参考"
 
 | 变量 | 描述 |
 |----------|-------------|
-| `TOOL_GATEWAY_DOMAIN` | Tool Gateway 路由的基础域名（默认：`workprise.com`） |
+| `TOOL_GATEWAY_DOMAIN` | Tool Gateway 路由的基础域名（默认：`claragram.com`） |
 | `TOOL_GATEWAY_SCHEME` | gateway URL 的 HTTP 或 HTTPS 协议（默认：`https`） |
 | `TOOL_GATEWAY_USER_TOKEN` | Tool Gateway 的认证 token（通常由 Clara 认证自动填充） |
 | `FIRECRAWL_GATEWAY_URL` | 专门覆盖 Firecrawl gateway 端点的 URL |

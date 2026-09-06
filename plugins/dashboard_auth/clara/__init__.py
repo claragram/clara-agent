@@ -155,7 +155,7 @@ class ClaraDashboardAuthProvider(DashboardAuthProvider):
     """Clara Portal OAuth via authorization-code + PKCE (S256)."""
 
     name = "clara"
-    display_name = "Workprise"
+    display_name = "Claragram"
 
     def __init__(self, *, client_id: str, portal_url: str) -> None:
         if not client_id.startswith("agent:"):

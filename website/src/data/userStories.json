@@ -568,7 +568,7 @@
     "date": "2026-04-12",
     "category": "meta",
     "headline": "A research task turned into a live map of 80+ ecosystem projects",
-    "quote": "What started as a research task turned into full-blown community project It spent the week mapping every tool, skill, and integration built for @Workprise's Clara Agent",
+    "quote": "What started as a research task turned into full-blown community project It spent the week mapping every tool, skill, and integration built for @Claragram's Clara Agent",
     "size": "md"
   },
   {
@@ -656,7 +656,7 @@
     "date": "2026-06-12",
     "category": "general",
     "headline": "Runs on a five-year-old Dell with a busted GPU",
-    "quote": "My Clara agent by @Workprise runs on an old @DellTech @DellXPS laptop with a busted GPU. I bought it 5 years ago just for Zoom calls and Spotify. It still works.",
+    "quote": "My Clara agent by @Claragram runs on an old @DellTech @DellXPS laptop with a busted GPU. I bought it 5 years ago just for Zoom calls and Spotify. It still works.",
     "size": "sm"
   },
   {
@@ -740,11 +740,11 @@
     "id": "vectorize-hindsight",
     "source": "linkedin",
     "author": "Vectorize.io",
-    "url": "https://www.linkedin.com/posts/vectorizeio_connect-your-workprise-clara-agent-to-activity-7447280348457107456-_Y7L",
+    "url": "https://www.linkedin.com/posts/vectorizeio_connect-your-claragram-clara-agent-to-activity-7447280348457107456-_Y7L",
     "date": "2026",
     "category": "integrations",
     "headline": "Hindsight Cloud memory, connected",
-    "quote": "Connect your Workprise Clara Agent to Hindsight Cloud, the best-performing AI Agent memory, in a few easy steps!",
+    "quote": "Connect your Claragram Clara Agent to Hindsight Cloud, the best-performing AI Agent memory, in a few easy steps!",
     "size": "sm"
   },
   {
@@ -1195,7 +1195,7 @@
     "date": "2026-04-14",
     "category": "personal-assistant",
     "headline": "Sometimes Clara Agent melts my heart",
-    "quote": "Sometimes Clara Agent melts my heart @Workprise.",
+    "quote": "Sometimes Clara Agent melts my heart @Claragram.",
     "size": "sm"
   },
   {
@@ -1701,18 +1701,18 @@
     "date": "2026",
     "category": "dev-workflow",
     "headline": "5 apps built and launched in a single day",
-    "quote": "I've switched to Workprise Clara-Agent from previous Agents I've been experimenting with. Clara is unique in that it self-learns. Within a single day, I built and launched five small applications.",
+    "quote": "I've switched to Claragram Clara-Agent from previous Agents I've been experimenting with. Clara is unique in that it self-learns. Within a single day, I built and launched five small applications.",
     "size": "sm"
   },
   {
     "id": "firecrawl-integration",
     "source": "linkedin",
     "author": "Firecrawl",
-    "url": "https://www.linkedin.com/posts/firecrawl_clara-agent-by-workprise-can-now-scrape-activity-7445140884683395072-sm2d",
+    "url": "https://www.linkedin.com/posts/firecrawl_clara-agent-by-claragram-can-now-scrape-activity-7445140884683395072-sm2d",
     "date": "2026",
     "category": "integrations",
     "headline": "Firecrawl for scrape/search/browse",
-    "quote": "Clara Agent by Workprise can now scrape, search, and interact with the web using Firecrawl. Enable it during setup to give Clara the ability.",
+    "quote": "Clara Agent by Claragram can now scrape, search, and interact with the web using Firecrawl. Enable it during setup to give Clara the ability.",
     "size": "sm"
   },
   {
@@ -2456,7 +2456,7 @@
     "id": "discord-denis-skripnik-nvda-translator",
     "source": "discord",
     "author": "@denis_skripnik",
-    "url": "https://github.com/teknium1/clara-discord-archive/blob/main/archives/community-projects-showcase/1477982563099349036-AI-translater-NVDA-addon-with-workprise.txt",
+    "url": "https://github.com/teknium1/clara-discord-archive/blob/main/archives/community-projects-showcase/1477982563099349036-AI-translater-NVDA-addon-with-claragram.txt",
     "date": "",
     "category": "general",
     "headline": "Blind since birth, I built an NVDA translator addon with Clara",
@@ -2467,7 +2467,7 @@
     "id": "kisztof-modal",
     "source": "blog",
     "author": "Krzysztof Słomka (Medium)",
-    "url": "https://kisztof.medium.com/clara-agent-review-workprises-self-improving-ai-agent-e72bc244435a",
+    "url": "https://kisztof.medium.com/clara-agent-review-claragrams-self-improving-ai-agent-e72bc244435a",
     "date": "2026-04-20",
     "category": "dev-workflow",
     "headline": "Telegram → Modal serverless. 40% faster on research tasks.",
@@ -2522,11 +2522,11 @@
     "id": "reddit-windows-wrapper",
     "source": "reddit",
     "author": "r/SideProject",
-    "url": "https://www.reddit.com/r/SideProject/comments/1sdaojm/i_took_the_workprise_clara_agent_and_built_a/",
+    "url": "https://www.reddit.com/r/SideProject/comments/1sdaojm/i_took_the_claragram_clara_agent_and_built_a/",
     "date": "2026",
     "category": "meta",
     "headline": "Native Windows app wrapper for Clara",
-    "quote": "The Workprise team built Clara Agent — an open-source agentic AI system with tools, skills, memory, and multi-platform messaging. It's good. So I built a native Windows app around it.",
+    "quote": "The Claragram team built Clara Agent — an open-source agentic AI system with tools, skills, memory, and multi-platform messaging. It's good. So I built a native Windows app around it.",
     "size": "sm"
   },
   {
@@ -2581,7 +2581,7 @@
     "date": "2026",
     "category": "integrations",
     "headline": "Vessel Browser: agent-native browser born at the Clara hackathon",
-    "quote": "I recently participated in Workprise's Clara Agent Hackathon, which is where this project was born. Every tool out there assumes a human operator with automation bolted on. I wanted to flip that — make the agent the primary driver and give the human a supervisory role.",
+    "quote": "I recently participated in Claragram's Clara Agent Hackathon, which is where this project was born. Every tool out there assumes a human operator with automation bolted on. I wanted to flip that — make the agent the primary driver and give the human a supervisory role.",
     "size": "md"
   },
   {
@@ -2811,7 +2811,7 @@
     "date": "2026-03-16",
     "category": "enterprise",
     "headline": "Why 95% of AI users see no results — Hype's Clara deep dive",
-    "quote": "Of the 95% of people who use AI, only 5% see real results. Hype's VP of AI, @glitch_, on why the gap isn't the models, but the architecture. Read his deep dive on building with Clara Agent, @Workprise, agent swarms, experiment loops, and what actually compounds.",
+    "quote": "Of the 95% of people who use AI, only 5% see real results. Hype's VP of AI, @glitch_, on why the gap isn't the models, but the architecture. Read his deep dive on building with Clara Agent, @Claragram, agent swarms, experiment loops, and what actually compounds.",
     "size": "md",
     "id": "x-hypepartners-why-of"
   },
@@ -2896,7 +2896,7 @@
     "id": "reddit-hermify",
     "source": "reddit",
     "author": "r/vibecoding",
-    "url": "https://www.reddit.com/r/vibecoding/comments/1slhhj1/i_took_the_workprise_clara_agent_and_built_a/",
+    "url": "https://www.reddit.com/r/vibecoding/comments/1slhhj1/i_took_the_claragram_clara_agent_and_built_a/",
     "date": "2026",
     "category": "meta",
     "headline": "Hermify: managed hosting for Clara",
@@ -3131,7 +3131,7 @@
     "date": "2026-04-21",
     "category": "business-ops",
     "headline": "Live inventory tracking on Clara",
-    "quote": "With Clara (built by @Workprise) providing 40+ built-in tools, persistent memory, and subagent parallelization, the development experience is best-in-class. Built for operations like inventory tracking where context, memory, and real-time inputs are non-negotiable.",
+    "quote": "With Clara (built by @Claragram) providing 40+ built-in tools, persistent memory, and subagent parallelization, the development experience is best-in-class. Built for operations like inventory tracking where context, memory, and real-time inputs are non-negotiable.",
     "size": "md"
   },
   {
@@ -3197,7 +3197,7 @@
     "date": "2026-04-21",
     "category": "creative",
     "headline": "My Clara agent makes movies now",
-    "quote": "My @Workprise clara-agent can make movies now using @browser_use skill. No API needed. No human intervention. I told it to set the mood, action, camera movement, dialog and overall story — it used Browser-Use and Seedance 2.0 to generate a video.",
+    "quote": "My @Claragram clara-agent can make movies now using @browser_use skill. No API needed. No human intervention. I told it to set the mood, action, camera movement, dialog and overall story — it used Browser-Use and Seedance 2.0 to generate a video.",
     "size": "md"
   },
   {

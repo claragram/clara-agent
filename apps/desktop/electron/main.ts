@@ -1301,7 +1301,7 @@ app.setName(APP_NAME)
 // Windows toast notifications silently no-op unless an AppUserModelID is set:
 // `new Notification().show()` returns without error and nothing appears. The
 // AUMID must match the installed Start Menu shortcut's AUMID, which
-// electron-builder derives from the build `appId` (com.workprise.clara) —
+// electron-builder derives from the build `appId` (com.claragram.clara) —
 // keep this string in sync with package.json `build.appId`. macOS/Linux don't
 // need this, so gate it on Windows. (Fixes: desktop approval/turn notifications
 // never firing on Windows.)
@@ -7117,7 +7117,7 @@ function installMediaPermissions() {
 // OAuth remote-gateway auth.
 //
 // Hosted Clara gateways gate the dashboard behind an OAuth provider (e.g.
-// Workprise) instead of a static session token. The auth model is
+// Claragram) instead of a static session token. The auth model is
 // fundamentally different from the token path:
 //
 //   * REST is authed by HttpOnly session cookies (``clara_session_at``),
@@ -10835,7 +10835,7 @@ async function probeRemoteAuthMode(rawUrl) {
 
   if (authRequired) {
     // Best-effort: a gated gateway exposes the registered providers so the
-    // button can read "Sign in with Workprise" instead of a generic
+    // button can read "Sign in with Claragram" instead of a generic
     // label, and so a username/password provider can be distinguished from
     // an OAuth-redirect one (``supports_password``). A failure here doesn't
     // change the auth mode, so swallow it.
@@ -17233,7 +17233,7 @@ function showAboutPanelFresh() {
       applicationVersion: skew.outOfSync
         ? `${resolveClaraVersion()} — app build out of date, update the desktop app`
         : resolveClaraVersion(),
-      copyright: 'Copyright © 2026 Workprise'
+      copyright: 'Copyright © 2026 Claragram'
     })
     app.showAboutPanel()
   })

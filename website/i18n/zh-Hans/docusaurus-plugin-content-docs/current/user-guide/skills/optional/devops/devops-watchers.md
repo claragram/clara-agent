@@ -81,7 +81,7 @@ python $CLARA_HOME/skills/devops/watchers/scripts/watch_rss.py \
 
 ```bash
 python $CLARA_HOME/skills/devops/watchers/scripts/watch_github.py \
-  --name clara-issues --repo Workprise/clara-agent --scope issues
+  --name clara-issues --repo claragram/clara-agent --scope issues
 ```
 
 轮询任意 JSON API：

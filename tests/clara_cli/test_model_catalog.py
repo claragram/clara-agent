@@ -139,7 +139,7 @@ class TestFallbackChain:
 
     PRIMARY = "https://agent.claraprise.com/docs/api/model-catalog.json"
     FALLBACK = (
-        "https://raw.githubusercontent.com/Workprise/clara-agent"
+        "https://raw.githubusercontent.com/claragram/clara-agent"
         "/main/website/static/api/model-catalog.json"
     )
 

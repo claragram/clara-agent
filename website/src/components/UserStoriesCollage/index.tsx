@@ -302,7 +302,7 @@ export default function UserStoriesCollage(): JSX.Element {
           Add your story to this page
         </a>{' '}
         by editing <code>userStories.json</code>, or post it in the{' '}
-        <a href="https://discord.gg/Workprise" target="_blank" rel="noopener noreferrer">
+        <a href="https://discord.gg/claragram" target="_blank" rel="noopener noreferrer">
           Claragram Discord
         </a>{' '}
         and we&apos;ll pick it up.

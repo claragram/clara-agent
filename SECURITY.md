@@ -6,8 +6,8 @@ scope for vulnerability reports.
 
 ## 1. Reporting a Vulnerability
 
-Report privately via [GitHub Security Advisories](https://github.com/claraprise/clara-agent/security/advisories/new)
-or **security@workprise.com**. Do not open public issues for
+Report privately via [GitHub Security Advisories](https://github.com/claragram/clara-agent/security/advisories/new)
+or **info@claragram.com**. Do not open public issues for
 security vulnerabilities. **Clara Agent does not operate a bug
 bounty program.**
 
@@ -330,6 +330,6 @@ that:
 - **Coordinated disclosure window:** 90 days from report, or until a
   fix is released, whichever comes first.
 - **Channel:** the GHSA thread or email correspondence with
-  security@workprise.com.
+  info@claragram.com.
 - **Credit:** reporters are credited in release notes unless
   anonymity is requested.

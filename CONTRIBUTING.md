@@ -24,8 +24,8 @@ A quick search before you build saves your time and keeps the PR queue clean —
 
 - **Search both open *and* merged PRs and issues** for your topic or error symptom — the duplicate-check in the PR template fires at review time, after you've already done the work:
   ```bash
-  gh search issues --repo Workprise/clara-agent "<your terms>"
-  gh search prs --repo Workprise/clara-agent --state all "<your terms>"
+  gh search issues --repo claragram/clara-agent "<your terms>"
+  gh search prs --repo claragram/clara-agent --state all "<your terms>"
   ```
   Or use the web UI: [issues](https://github.com/claraprise/clara-agent/issues?q=) · [PRs (all states)](https://github.com/claraprise/clara-agent/pulls?q=is%3Apr).
 - **The issue tracker can lag the code.** Many requested features are already implemented in-tree, so also search the source (`search_files`, or your editor's grep) for the capability before proposing it.
@@ -63,7 +63,7 @@ Bundled skills (in `skills/`) ship with every Clara install. They should be **br
 
 If your skill is official and useful but not universally needed (e.g., a paid service integration, a heavyweight dependency), put it in **`optional-skills/`** — it ships with the repo but isn't activated by default. Users can discover it via `clara skills browse` (labeled "official") and install it with `clara skills install` (no third-party warning, built-in trust).
 
-If your skill is specialized, community-contributed, or niche, it's better suited for a **Skills Hub** — upload it to a skills registry and share it in the [Workprise Discord](https://discord.gg/Workprise). Users can install it with `clara skills install`.
+If your skill is specialized, community-contributed, or niche, it's better suited for a **Skills Hub** — upload it to a skills registry and share it in the [Claragram Discord](https://discord.gg/claragram). Users can install it with `clara skills install`.
 
 ---
 
@@ -96,7 +96,7 @@ Publish these as a **standalone plugin repo** instead:
 - Implement the relevant ABC and use the existing plugin discovery path (`~/.clara/plugins/`, project `.clara/plugins/`, or a pip entry point) — see [Build a Clara Plugin](https://agent.claraprise.com/docs/guides/build-a-clara-plugin)
 - Register lifecycle hooks (`pre_tool_call`, `post_tool_call`, `pre_llm_call`, `post_llm_call`, `on_session_start`, `on_session_end`), tools (`ctx.register_tool`), and CLI subcommands (`ctx.register_cli_command`) through the surface we already expose — no core changes needed
 - If your plugin needs a capability the framework doesn't expose, that's a feature request to **widen the generic plugin surface** (a new hook or `ctx` method) — never special-case your plugin in core
-- Promote it in the [Workprise Discord](https://discord.gg/Workprise) `#plugins-skills-and-skins` channel so users can find and install it
+- Promote it in the [Claragram Discord](https://discord.gg/claragram) `#plugins-skills-and-skins` channel so users can find and install it
 
 A well-built third-party-product plugin can clear automated review and still be closed for this reason — it's a placement decision, not a verdict on the code. PRs that add such a directory under `plugins/` will be closed with a pointer to publish it as its own repo.
 
@@ -982,7 +982,7 @@ test(tools): add unit tests for file_operations
 
 ## Community
 
-- **Discord**: [discord.gg/Workprise](https://discord.gg/Workprise) — for questions, showcasing projects, and sharing skills
+- **Discord**: [discord.gg/claragram](https://discord.gg/claragram) — for questions, showcasing projects, and sharing skills
 - **GitHub Discussions**: For design proposals and architecture discussions
 - **Skills Hub**: Upload specialized skills to a registry and share them with the community
 

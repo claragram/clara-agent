@@ -2492,7 +2492,7 @@ def switch_model(
     # /chat/completions. resolve_runtime_provider already sets this when it
     # succeeds; always re-derive from the *final* (post-normalize) model so
     # alias clears / empty fallbacks cannot leave Claude on the OpenAI wire.
-    if target_provider in {"clara", "clara-portal", "workprise"}:
+    if target_provider in {"clara", "clara-portal", "claragram", "workprise"}:
         from clara_cli.providers import clara_api_mode
 
         api_mode = clara_api_mode(new_model)

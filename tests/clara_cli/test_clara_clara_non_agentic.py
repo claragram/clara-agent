@@ -31,7 +31,7 @@ from clara_cli.model_switch import (
         "clara-4-405b",
         "clara_4_70b",
         "openrouter/clara3:70b",
-        "openrouter/workprise/clara-4-405b",
+        "openrouter/claragram/clara-4-405b",
         "Workprise/Clara3",
         "clara-3.1",
     ],

@@ -1,7 +1,7 @@
 name: openai
 version: 1.0.0
 description: "OpenAI image generation backend (gpt-image-2). Saves generated images to $CLARA_HOME/cache/images/."
-author: Workprise
+author: Claragram
 kind: backend
 requires_env:
   - OPENAI_API_KEY

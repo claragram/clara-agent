@@ -9339,7 +9339,7 @@ def _build_call_kwargs(
             except Exception:
                 pass
         _clara_on_messages = False
-        if _provider_norm in {"clara", "clara-portal", "workprise"}:
+        if _provider_norm in {"clara", "clara-portal", "claragram", "workprise"}:
             from clara_cli.providers import clara_api_mode
 
             _clara_on_messages = clara_api_mode(model) == "anthropic_messages"
@@ -9466,7 +9466,7 @@ def _build_call_kwargs(
     # compression/title/vision calls on the same upstream instance as the
     # main turn (cache warmth) — tags alone are not enough on /v1/messages.
     _provider_for_portal = str(provider or "").strip().lower()
-    if _provider_for_portal in {"clara", "clara-portal", "workprise"}:
+    if _provider_for_portal in {"clara", "clara-portal", "claragram", "workprise"}:
         if "tags" not in merged_extra:
             merged_extra["tags"] = _clara_portal_tags()
         if "session_id" not in merged_extra:
@@ -9490,7 +9490,7 @@ def _build_call_kwargs(
         provider_norm = str(provider or "").strip().lower()
         effective_base = base_url or ""
         _clara_on_messages = False
-        if provider_norm in {"clara", "clara-portal", "workprise"}:
+        if provider_norm in {"clara", "clara-portal", "claragram", "workprise"}:
             from clara_cli.providers import clara_api_mode
 
             _clara_on_messages = clara_api_mode(model) == "anthropic_messages"

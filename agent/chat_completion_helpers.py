@@ -600,7 +600,7 @@ def _merge_clara_portal_messages_extra_body(agent, anthropic_kwargs: dict) -> di
     only — not ``provider_preferences`` (those become a top-level ``provider``
     routing object on the OpenAI wire). Never blocks a turn on tagging.
     """
-    if getattr(agent, "provider", None) not in {"clara", "clara-portal", "workprise"}:
+    if getattr(agent, "provider", None) not in {"clara", "clara-portal", "claragram", "workprise"}:
         return anthropic_kwargs
     try:
         from providers import get_provider_profile
@@ -2172,7 +2172,7 @@ def build_api_kwargs(agent, api_messages: list, tools_for_api: list | None = Non
         base_url_host_matches(agent._base_url_lower, "models.github.ai")
         or base_url_host_matches(agent._base_url_lower, "githubcopilot.com")
     )
-    _is_clara = base_url_host_matches(agent._base_url_lower, "workprise.com")
+    _is_clara = base_url_host_matches(agent._base_url_lower, "claragram.com")
     _is_nvidia = base_url_host_matches(agent._base_url_lower, "integrate.api.nvidia.com")
     _is_kimi = (
         base_url_host_matches(agent.base_url, "api.kimi.com")
@@ -2846,7 +2846,7 @@ def try_activate_fallback(agent, reason: "FailoverReason | None" = None) -> bool
         if not fb_api_mode_explicit and fb_api_mode == "chat_completions":
             if fb_provider == "openai-codex":
                 fb_api_mode = "codex_responses"
-            elif fb_provider in {"clara", "clara-portal", "workprise"}:
+            elif fb_provider in {"clara", "clara-portal", "claragram", "workprise"}:
                 # Portal is dual-wire: anthropic/* must land on /v1/messages.
                 # resolve_provider_client still returns an OpenAI client for
                 # Clara; the anthropic_messages branch below rebuilds the native

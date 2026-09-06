@@ -135,9 +135,9 @@ clara = ClaraProfile(
     name="clara",
     aliases=("clara-portal", "workprise"),
     env_vars=("CLARA_API_KEY",),
-    display_name="Workprise",
+    display_name="Claragram",
     description="Workprise — Clara model family",
-    signup_url="https://workprise.com/",
+    signup_url="https://claragram.com/",
     fallback_models=(
         "clara-3-405b",
         "clara-3-70b",

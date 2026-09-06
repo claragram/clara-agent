@@ -43,7 +43,7 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-REPO_URL_SSH="git@github.com:Workprise/clara-agent.git"
+REPO_URL_SSH="git@github.com:claragram/clara-agent.git"
 REPO_URL_HTTPS="https://github.com/claraprise/clara-agent.git"
 CLARA_HOME="${CLARA_HOME:-$HOME/.clara}"
 # INSTALL_DIR is resolved AFTER arg parsing and OS detection so we can pick an
@@ -220,7 +220,7 @@ print_banner() {
     echo "┌─────────────────────────────────────────────────────────┐"
     echo "│             ⚕ Clara Agent Installer                    │"
     echo "├─────────────────────────────────────────────────────────┤"
-    echo "│  An open source AI agent by Workprise.              │"
+    echo "│  An open source AI agent by Claragram.              │"
     echo "└─────────────────────────────────────────────────────────┘"
     echo -e "${NC}"
 }

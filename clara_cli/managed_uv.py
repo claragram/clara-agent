@@ -44,7 +44,7 @@ _RUNTIME_DIR_NAME = ".clara-runtime"
 _VENV_NAME = "venv"
 _ALT_VENV_NAME = ".venv"
 _REPAIR_LOCK_NAME = "runtime-repair.lock"
-_MACOS_MANAGED_PYTHON_IDENTIFIER = "com.workprise.clara.managed-python"
+_MACOS_MANAGED_PYTHON_IDENTIFIER = "com.claragram.clara.managed-python"
 
 # ---------------------------------------------------------------------------
 # Public helpers

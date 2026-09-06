@@ -3160,9 +3160,9 @@ OFFICIAL_REPO_URLS = {
     "https://github.com/claragram/clara-agent",
     "git@github.com:claragram/clara-agent",
     "https://github.com/claraprise/clara-agent.git",
-    "git@github.com:Workprise/clara-agent.git",
+    "git@github.com:claragram/clara-agent.git",
     "https://github.com/claraprise/clara-agent",
-    "git@github.com:Workprise/clara-agent",
+    "git@github.com:claragram/clara-agent",
 }
 
 OFFICIAL_REPO_URL = "https://github.com/claragram/clara-agent.git"
@@ -3302,7 +3302,7 @@ def _sync_with_upstream_if_needed(
 
         print()
         print("ℹ Your fork is not tracking the official Clara repository.")
-        print("  This means you may miss updates from Workprise/clara-agent.")
+        print("  This means you may miss updates from claragram/clara-agent.")
         print()
 
         if assume_yes or (
@@ -9552,7 +9552,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
             print(
                 "  ℹ macOS: if Clara re-prompts for permissions you already "
                 "granted (toggle shows ON), the stored grant is stale — run "
-                "`tccutil reset ScreenCapture com.workprise.clara` (repeat "
+                "`tccutil reset ScreenCapture com.claragram.clara` (repeat "
                 "per affected service), toggle it ON in System Settings, then "
                 "fully quit & relaunch once."
             )

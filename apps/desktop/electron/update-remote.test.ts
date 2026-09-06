@@ -6,7 +6,7 @@
  * (Wired into npm test:desktop:platforms in package.json.)
  *
  * Why this matters: a public install can carry
- * origin=git@github.com:Workprise/clara-agent.git. A background
+ * origin=git@github.com:claragram/clara-agent.git. A background
  * `git fetch origin` then authenticates over SSH and, with a FIDO2/passkey
  * key, triggers an unexplained hardware-touch prompt. isOfficialSshRemote
  * must reliably recognize the official SSH remote (in every URL form,

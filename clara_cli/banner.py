@@ -143,7 +143,7 @@ _OFFICIAL_REPO_CANONICAL = "github.com/claragram/clara-agent"
 _OFFICIAL_REPO_CANONICALS = {
     "github.com/claragram/clara-agent",
     "github.com/claraprise/clara-agent",
-    "github.com/workprise/clara-agent",
+    "github.com/claragram/clara-agent",
 }
 
 

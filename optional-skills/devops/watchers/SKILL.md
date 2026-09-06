@@ -66,7 +66,7 @@ Watch a GitHub repo (set `GITHUB_TOKEN` in `${CLARA_HOME:-~/.clara}/.env` to avo
 
 ```bash
 python $CLARA_HOME/skills/devops/watchers/scripts/watch_github.py \
-  --name clara-issues --repo Workprise/clara-agent --scope issues
+  --name clara-issues --repo claragram/clara-agent --scope issues
 ```
 
 Poll an arbitrary JSON API:

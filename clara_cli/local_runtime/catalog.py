@@ -345,7 +345,7 @@ def recommended_id(budget: HardwareBudget,
 # the offline truth. A reverted commit on main heals every install on
 # its next fetch, and day-0 entries reach users without an app release.
 
-_CATALOG_URL = ("https://raw.githubusercontent.com/Workprise/clara-agent"
+_CATALOG_URL = ("https://raw.githubusercontent.com/claragram/clara-agent"
                 "/main/clara_cli/local_runtime/catalog.json")
 _SCHEMA_VERSION = 1
 _REFRESH_TTL_S = 6 * 3600

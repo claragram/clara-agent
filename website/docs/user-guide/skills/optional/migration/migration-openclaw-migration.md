@@ -17,7 +17,7 @@ Import an OpenClaw setup (memories, skills) into Clara.
 | Source | Optional — install with `clara skills install official/migration/openclaw-migration` |
 | Path | `optional-skills/migration\openclaw-migration` |
 | Version | `1.0.0` |
-| Author | Clara Agent (Workprise) |
+| Author | Clara Agent (Claragram) |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `Migration`, `OpenClaw`, `Clara`, `Memory`, `Persona`, `Import` |

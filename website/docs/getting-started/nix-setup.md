@@ -42,17 +42,17 @@ No clone needed. Nix fetches, builds, and runs everything:
 
 ```bash
 # Run the desktop app
-nix run github:Workprise/clara-agent#desktop
+nix run github:claragram/clara-agent#desktop
 
 # Or install persistently
-nix profile install github:Workprise/clara-agent#desktop
+nix profile install github:claragram/clara-agent#desktop
 
 # run the tui
-nix run github:Workprise/clara-agent -- setup
-nix run github:Workprise/clara-agent -- --tui
+nix run github:claragram/clara-agent -- setup
+nix run github:claragram/clara-agent -- --tui
 
 # or install it in your profile
-nix profile install github:Workprise/clara-agent
+nix profile install github:claragram/clara-agent
 clara setup
 clara --tui
 ```
@@ -95,7 +95,7 @@ This module needs NixOS. Clara is an agent for one person. If you want an agent 
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    clara-agent.url = "github:Workprise/clara-agent";
+    clara-agent.url = "github:claragram/clara-agent";
   };
 
   outputs = { nixpkgs, clara-agent, ... }: {
@@ -612,7 +612,7 @@ The option set is the same set that the NixOS module uses. It is `services.clara
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    clara-agent.url = "github:Workprise/clara-agent";
+    clara-agent.url = "github:claragram/clara-agent";
   };
 }
 ```
@@ -860,7 +860,7 @@ External flakes can override the package directly:
 
 ```nix
 {
-  inputs.clara-agent.url = "github:Workprise/clara-agent";
+  inputs.clara-agent.url = "github:claragram/clara-agent";
   outputs = { clara-agent, nixpkgs, ... }: {
     nixpkgs.overlays = [ clara-agent.overlays.default ];
     # Then:

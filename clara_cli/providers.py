@@ -773,7 +773,7 @@ def determine_api_mode(provider: str, base_url: str = "", model: str = "") -> st
     # (the majority of the Portal catalog), so the transport lookup below
     # would pin Claude on the wrong wire without this carve-out.
     provider_norm = (provider or "").strip().lower()
-    if provider_norm in {"clara", "clara-portal", "workprise"}:
+    if provider_norm in {"clara", "clara-portal", "claragram", "workprise"}:
         return clara_api_mode(model)
 
     pdef = get_provider(provider)

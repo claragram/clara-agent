@@ -399,7 +399,7 @@ test('isClaraCloudAgentUrl detects cloud agent hosts', () => {
   // Negative cases
   assert.equal(isClaraCloudAgentUrl('http://127.0.0.1:9000'), false)
   assert.equal(isClaraCloudAgentUrl('https://gateway.example.com'), false)
-  assert.equal(isClaraCloudAgentUrl('https://workprise.com'), false)
+  assert.equal(isClaraCloudAgentUrl('https://claragram.com'), false)
   assert.equal(isClaraCloudAgentUrl('not-a-url'), false)
 })
 
@@ -433,8 +433,8 @@ test('waitForClaraReady surfaces actionable error for cloud agent 503', async ()
   } catch (error: any) {
     assert.ok(error.message.includes('Clara Cloud agent'), `unexpected message: ${error.message}`)
     assert.ok(error.message.includes('503'), `should mention status code: ${error.message}`)
-    assert.ok(error.message.includes('portal.claraprise.com'), `should mention portal: ${error.message}`)
-    assert.ok(error.message.includes('discord.gg/Workprise'), `should mention Discord: ${error.message}`)
+    assert.ok(error.message.includes('portal.claragram.com'), `should mention portal: ${error.message}`)
+    assert.ok(error.message.includes('discord.gg/claragram'), `should mention Discord: ${error.message}`)
     assert.equal(error.isCloudBackendDown, true)
     assert.equal(error.statusCode, 503)
     assert.ok(attempts > 1, 'should have retried before failing')

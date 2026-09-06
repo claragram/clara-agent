@@ -17,7 +17,7 @@ Build PowerPoint decks headless with python-pptx.
 | Source | Optional — install with `clara skills install official/finance/pptx-author` |
 | Path | `optional-skills/finance\pptx-author` |
 | Version | `1.0.0` |
-| Author | Anthropic (adapted by Workprise) |
+| Author | Anthropic (adapted by Claragram) |
 | License | Apache-2.0 |
 | Platforms | linux, macos, windows |
 | Tags | `powerpoint`, `pptx`, `python-pptx`, `presentation`, `finance` |

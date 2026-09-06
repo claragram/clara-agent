@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "Principes de l'IA responsable"
-description: "Les 6 principes fondamentaux de l'IA éthique, souveraine et responsable chez Clara Agent et Workprise"
+description: "Les 6 principes fondamentaux de l'IA éthique, souveraine et responsable chez Clara Agent et Claragram"
 ---
 
 # Principes de l’IA responsable
@@ -19,7 +19,7 @@ Ces six principes constituent la base de tous nos efforts en matière d’IA au 
 
 ## Responsible AI Principles (English)
 
-These six principles form the foundation of all our artificial intelligence initiatives across Workprise and Claraprise:
+These six principles form the foundation of all our artificial intelligence initiatives across Claragram and Claraprise:
 
 * **Fairness** — Clara Agent aims to design AI systems that ensure high quality of service, equal resource availability, and minimize potential stereotypes based on demographic, cultural, or other factors.
 * **Reliability and Safety** — Clara Agent develops AI systems in full compliance with its core ideas, values, and design principles to prevent harm.

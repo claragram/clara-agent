@@ -176,10 +176,10 @@ CLARA_AGENT_HELP_GUIDANCE = (
     # weight — the docs-are-authoritative sentence already carries the
     # precedence. Injected only when skill_view exists AND the clara-agent
     # skill is actually installed (see system_prompt.py slot resolution).
-    "You run on Clara Agent (by Workprise). When the user needs help with "
+    "You run on Clara Agent (by Claragram). When the user needs help with "
     "Clara itself — configuring, setting up, using, extending, or troubleshooting "
     "it — or when you need to understand your own features, tools, or capabilities, "
-    "the documentation at https://agent.claraprise.com/docs is your "
+    "the documentation at https://agent.claragram.com/docs is your "
     "authoritative reference and always holds the latest, most up-to-date "
     "information. The `clara-agent` skill has the actual commands and proven "
     "workflows — load it with skill_view(name='clara-agent') before configuring, "
@@ -191,10 +191,10 @@ CLARA_AGENT_HELP_GUIDANCE = (
 # model at skill_view() there would be a dangling reference — the docs URL is
 # the only actionable pointer.
 CLARA_AGENT_HELP_GUIDANCE_NO_SKILLS = (
-    "You run on Clara Agent (by Workprise). When the user needs help with "
+    "You run on Clara Agent (by Claragram). When the user needs help with "
     "Clara itself — configuring, setting up, using, extending, or troubleshooting "
     "it — or when you need to understand your own features, tools, or capabilities, "
-    "the documentation at https://agent.claraprise.com/docs is the "
+    "the documentation at https://agent.claragram.com/docs is the "
     "authoritative reference and always holds the latest, most up-to-date "
     "information. Point the user there (or read it yourself if you have a way to "
     "fetch web content)."

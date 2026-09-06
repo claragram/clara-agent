@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 #: silently redirected to any host by an inherited variable, with nothing
 #: visible in their config to show it. Tests and the staging E2E write this
 #: key into a throwaway profile instead.
-DEFAULT_ENDPOINT = "https://telemetry.workprise.com/v1/telemetry"
+DEFAULT_ENDPOINT = "https://telemetry.claragram.com/v1/telemetry"
 
 _LOCAL_HOSTS = frozenset({"localhost", "127.0.0.1", "::1", "[::1]"})
 

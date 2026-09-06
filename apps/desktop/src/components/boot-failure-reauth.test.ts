@@ -151,20 +151,20 @@ describe('deriveProviderShape', () => {
   })
 
   it('OAuth shape when the provider is a redirect IDP', () => {
-    expect(deriveProviderShape([{ name: 'clara', displayName: 'Workprise', supportsPassword: false }])).toEqual({
+    expect(deriveProviderShape([{ name: 'clara', displayName: 'Claragram', supportsPassword: false }])).toEqual({
       isPassword: false,
-      providerLabel: 'Workprise'
+      providerLabel: 'Claragram'
     })
   })
 
   it('mixed deployment keeps generic OAuth copy (not every provider is password)', () => {
     const shape = deriveProviderShape([
       { name: 'basic', displayName: 'Username & Password', supportsPassword: true },
-      { name: 'clara', displayName: 'Workprise', supportsPassword: false }
+      { name: 'clara', displayName: 'Claragram', supportsPassword: false }
     ])
 
     expect(shape.isPassword).toBe(false)
-    expect(shape.providerLabel).toBe('Username & Password / Workprise')
+    expect(shape.providerLabel).toBe('Username & Password / Claragram')
   })
 
   it('falls back to name when displayName is empty', () => {
@@ -182,8 +182,8 @@ describe('signInLabel', () => {
   })
 
   it('OAuth gateway names the provider', () => {
-    expect(signInLabel({ url: 'x', isPassword: false, providerLabel: 'Workprise' })).toBe(
-      'Sign in with Workprise'
+    expect(signInLabel({ url: 'x', isPassword: false, providerLabel: 'Claragram' })).toBe(
+      'Sign in with Claragram'
     )
   })
 

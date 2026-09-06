@@ -175,7 +175,7 @@ const config: Config = {
           items: [
             { label: 'Web Portal', href: 'https://portal.claragram.com' },
             { label: 'GitHub Organization', href: 'https://github.com/claraprise' },
-            { label: 'Contact', href: 'mailto:contact@workprise.com' },
+            { label: 'Contact', href: 'mailto:contact@claragram.com' },
           ],
         },
         {
@@ -186,7 +186,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Built by <a href="https://workprise.com">Workprise</a> · Claraprise · ${new Date().getFullYear()}`,
+      copyright: `Built by <a href="https://claragram.com">Claragram</a> · Claraprise · ${new Date().getFullYear()}`,
     },
     prism: {
       theme: prismThemes.github,

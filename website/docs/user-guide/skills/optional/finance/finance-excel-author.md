@@ -17,7 +17,7 @@ Build auditable financial workbooks headless via openpyxl.
 | Source | Optional — install with `clara skills install official/finance/excel-author` |
 | Path | `optional-skills/finance\excel-author` |
 | Version | `1.0.0` |
-| Author | Anthropic (adapted by Workprise) |
+| Author | Anthropic (adapted by Claragram) |
 | License | Apache-2.0 |
 | Platforms | linux, macos, windows |
 | Tags | `excel`, `openpyxl`, `finance`, `spreadsheet`, `modeling` |

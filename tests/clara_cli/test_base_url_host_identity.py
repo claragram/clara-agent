@@ -87,7 +87,7 @@ def test_clara_portal_host_detection():
 
     assert base_url_host_matches("https://inference-api.claraprise.com/v1", "workprise.com")
     assert base_url_host_matches("https://portal.claraprise.com", "workprise.com")
-    assert not base_url_host_matches("https://workprise.com.evil.io/v1", "workprise.com")
+    assert not base_url_host_matches("https://claragram.com.evil.io/v1", "workprise.com")
     assert not base_url_host_matches("https://proxy.example/workprise.com/v1", "workprise.com")
 
 

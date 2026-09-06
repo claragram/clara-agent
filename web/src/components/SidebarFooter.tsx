@@ -21,7 +21,7 @@ export function SidebarFooter({ status }: SidebarFooterProps) {
       </Typography>
 
       <a
-        href="https://workprise.com"
+        href="https://claragram.com"
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
