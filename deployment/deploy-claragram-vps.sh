@@ -100,11 +100,6 @@ echo -e "\n${YELLOW}[5/6] Configuration du Reverse Proxy NGINX...${NC}"
 cp "${REPO_DIR}/deployment/nginx/claragram.com.conf" /etc/nginx/sites-available/claragram.com.conf
 ln -sf /etc/nginx/sites-available/claragram.com.conf /etc/nginx/sites-enabled/
 
-if [ -f "${REPO_DIR}/deployment/nginx/workprise.fr.conf" ]; then
-  cp "${REPO_DIR}/deployment/nginx/workprise.fr.conf" /etc/nginx/sites-available/workprise.fr.conf
-  ln -sf /etc/nginx/sites-available/workprise.fr.conf /etc/nginx/sites-enabled/
-fi
-
 # Remove default site if present
 rm -f /etc/nginx/sites-enabled/default
 
