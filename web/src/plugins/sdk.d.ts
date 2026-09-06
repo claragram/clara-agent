@@ -178,8 +178,6 @@ declare global {
   interface Window {
     __CLARA_PLUGIN_SDK__?: ClaraPluginSDK;
     __CLARA_PLUGINS__?: PluginRegistry;
-    __HERMES_PLUGIN_SDK__?: ClaraPluginSDK;
-    __HERMES_PLUGINS__?: PluginRegistry;
   }
 }
 

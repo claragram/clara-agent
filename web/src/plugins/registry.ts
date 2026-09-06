@@ -189,8 +189,4 @@ export function exposePluginSDK() {
     // Hooks
     useI18n,
   };
-
-  // Backwards-compatibility aliases for plugins referencing legacy globals
-  window.__HERMES_PLUGINS__ = window.__CLARA_PLUGINS__;
-  window.__HERMES_PLUGIN_SDK__ = window.__CLARA_PLUGIN_SDK__;
 }

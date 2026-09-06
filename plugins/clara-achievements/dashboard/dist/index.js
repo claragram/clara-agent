@@ -1,12 +1,12 @@
 (function () {
   "use strict";
   // clara-achievements dashboard plugin
-  // Originally authored by @PCinkusz — https://github.com/PCinkusz/hermes-achievements (MIT).
+  // Originally authored by @PCinkusz — https://github.com/PCinkusz/clara-achievements (MIT).
   // Bundled into clara-agent. Upstream repo remains the staging ground for new
   // badges and UI iteration; the in-progress scan banner below is a small addition
   // layered on top of the original dist bundle.
-  const SDK = window.__CLARA_PLUGIN_SDK__ || window.__HERMES_PLUGIN_SDK__;
-  const registry = window.__CLARA_PLUGINS__ || window.__HERMES_PLUGINS__;
+  const SDK = window.__CLARA_PLUGIN_SDK__;
+  const registry = window.__CLARA_PLUGINS__;
   if (!SDK || !registry) return;
 
   const React = SDK.React;
@@ -724,7 +724,4 @@
   }
 
   registry.register("clara-achievements", AchievementsPage);
-  if (typeof registry.register === "function") {
-    try { registry.register("hermes-achievements", AchievementsPage); } catch (_) {}
-  }
 })();
