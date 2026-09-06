@@ -9,18 +9,17 @@ This repo on github will not be updated.
 
 ---
 
-> **Helpyourself security fork**
+> **Claragram Security-Hardened Fork**
 >
-> `getitcheappro/image-size-patched` carries narrow denial-of-service fixes for
-> malformed ICNS, HEIF, and JPEG XL containers. Helpyourself pins an audited
-> commit from this fork while upstream has no patched release. The regression
-> tests in `specs/security.spec.ts` cover all three malformed inputs.
+> `@claragram/image-size` carries narrow denial-of-service fixes for
+> malformed ICNS, HEIF, and JPEG XL containers, audited and maintained by
+> [Claragram](https://claragram.com).
+> The regression tests in `specs/security.spec.ts` cover all three malformed inputs.
 
-# image-size
+# @claragram/image-size
 
-[![Build Status](https://circleci.com/gh/image-size/image-size.svg?style=shield)](https://circleci.com/gh/image-size/image-size)
-[![Package Version](https://img.shields.io/npm/v/image-size.svg)](https://www.npmjs.com/package/image-size)
-[![Downloads](https://img.shields.io/npm/dm/image-size.svg)](http://npm-stat.com/charts.html?package=image-size&author=netroy&from=&to=)
+[![Package Version](https://img.shields.io/npm/v/@claragram/image-size.svg)](https://www.npmjs.com/package/@claragram/image-size)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Fast, lightweight NodeJS package to get dimensions of any image file or buffer.
 
@@ -57,11 +56,11 @@ Fast, lightweight NodeJS package to get dimensions of any image file or buffer.
 ## Installation
 
 ```shell
-npm install image-size
+npm install @claragram/image-size
 # or
-yarn add image-size
+yarn add @claragram/image-size
 # or
-pnpm add image-size
+pnpm add @claragram/image-size
 ```
 
 ## Usage
@@ -70,9 +69,9 @@ pnpm add image-size
 Best for streams, network requests, or when you already have the image data in memory.
 
 ```javascript
-import { imageSize } from 'image-size'
+import { imageSize } from '@claragram/image-size'
 // or
-const { imageSize } = require('image-size')
+const { imageSize } = require('@claragram/image-size')
 
 const dimensions = imageSize(buffer)
 console.log(dimensions.width, dimensions.height)

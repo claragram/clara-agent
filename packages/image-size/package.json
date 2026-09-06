@@ -1,7 +1,7 @@
 {
-  "name": "@claraportal/image-size",
-  "version": "2.0.3",
-  "description": "get dimensions of any image file",
+  "name": "@claragram/image-size",
+  "version": "2.0.4",
+  "description": "get dimensions of any image file (Claragram security-hardened fork)",
   "publishConfig": {
     "access": "public"
   },
@@ -79,9 +79,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/image-size/image-size.git"
+    "url": "https://github.com/claragram/clara-agent.git",
+    "directory": "packages/image-size"
   },
-  "author": "netroy <aditya@netroy.in> (http://netroy.in/)",
+  "homepage": "https://claragram.com",
+  "bugs": {
+    "url": "https://github.com/claragram/clara-agent/issues"
+  },
+  "author": "Claragram (originally netroy)",
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
