@@ -1,0 +1,35 @@
+# ==============================================================================
+# Claraship Pro Sandbox Reverse Proxy (Local Host / VM)
+# Domain: claraship.com & Subdomains
+# ==============================================================================
+
+{
+    # Enable internal local self-signed TLS certificates
+    local_certs
+    admin off
+}
+
+# 1. Main Website & Documentation (Port 3010)
+http://claraship.com, http://www.claraship.com, http://agent.claraship.com,
+https://claraship.com, https://www.claraship.com, https://agent.claraship.com {
+    rewrite /install.sh /docs/install.sh
+    rewrite /install.ps1 /docs/install.ps1
+    rewrite /downloads/* /docs{path}
+    reverse_proxy 127.0.0.1:3010
+}
+
+# 2. Clara Agent Dashboard & Session Manager (Port 9119)
+http://portal.claraship.com, https://portal.claraship.com {
+    reverse_proxy 127.0.0.1:9119 {
+        header_up Host 127.0.0.1:9119
+        header_up X-Forwarded-Host {host}
+    }
+}
+
+# 3. Clara API & Inference Gateway (Port 9119)
+http://api.claraship.com, https://api.claraship.com {
+    reverse_proxy 127.0.0.1:9119 {
+        header_up Host 127.0.0.1:9119
+        header_up X-Forwarded-Host {host}
+    }
+}

@@ -15,7 +15,7 @@ platform-gated features are supported), see **[Platform Support](./platform-supp
 
 ## Quick Install
 ### With the Clara Desktop installer on macOS or Windows (recommended)
-To easily install the command-line and desktop applications, [download the Clara Desktop installer](https://claraship.com/) from our website and run it.
+To easily install the command-line and desktop applications, [download the Clara Desktop installer (macOS .dmg)](/docs/downloads/Claraship-mac-arm64.dmg) or [portable archive (.zip)](/docs/downloads/Claraship-mac-arm64.zip) and run it.
 
 ### Without Clara Desktop:
 For a command-line only install without Clara Desktop, run:

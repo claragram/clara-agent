@@ -3,6 +3,10 @@
 /venv.old/
 /venv.stale.runtime-*/
 /bin/
+website/static/downloads/
+website/build/downloads/
+*.dmg
+*.blockmap
 /.clara-runtime/
 /_pycache/
 *.pyc*

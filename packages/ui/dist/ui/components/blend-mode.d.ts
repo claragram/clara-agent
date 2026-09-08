@@ -11,7 +11,7 @@ export declare const withBlendMode: <P extends BlendColors>(Component: React.Com
     (props: Omit<P, keyof BlendColors> & Partial<BlendModeOpts>): import("react").JSX.Element;
     displayName: string;
 };
-export declare const BlendMode: import("../..").PolyComponent<"div", BlendModeOwnProps>;
+export declare const BlendMode: import("../../utils").PolyComponent<"div", BlendModeOwnProps>;
 interface BlendModeOwnProps extends BlendModeOpts {
     children?: ((colors: BlendColors) => React.ReactNode) | React.ReactNode;
 }

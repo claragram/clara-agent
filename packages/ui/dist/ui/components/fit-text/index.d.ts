@@ -1,5 +1,5 @@
 import { type PolyProps } from '../../../utils';
-export declare const FitText: import("../../..").PolyComponent<"span", OwnProps>;
+export declare const FitText: import("../../../utils").PolyComponent<"span", OwnProps>;
 interface OwnProps {
     children: string;
     max?: string;

@@ -12,4 +12,4 @@ export declare const hexToVec3: (hex: string) => THREE.Vector3;
 export declare const truncate: (text: string, options: {
     length: number;
 }) => string;
-export declare const stripWpStyles: (html: string) => string;
+export declare const stripWpStyles: (html: string) => any;

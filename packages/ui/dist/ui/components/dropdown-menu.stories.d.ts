@@ -1,0 +1,10 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { DropdownMenu } from './dropdown-menu';
+declare const meta: Meta<typeof DropdownMenu>;
+export default meta;
+type Story = StoryObj<typeof DropdownMenu>;
+export declare const Down: Story;
+export declare const Up: Story;
+export declare const Right: Story;
+export declare const Left: Story;
+export declare const AllDirections: Story;

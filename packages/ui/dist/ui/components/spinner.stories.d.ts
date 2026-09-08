@@ -1,0 +1,10 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Spinner } from './spinner';
+declare const meta: Meta<typeof Spinner>;
+export default meta;
+type Story = StoryObj<typeof Spinner>;
+export declare const Playground: Story;
+export declare const InlineWithText: Story;
+export declare const Sizes: Story;
+export declare const Tones: Story;
+export declare const Gallery: Story;
