@@ -16,15 +16,15 @@ import {
   X,
 } from "lucide-react";
 import * as QRCode from "qrcode";
-import { Badge } from "@claragram/ui/ui/components/badge";
-import { Button } from "@claragram/ui/ui/components/button";
-import { Card, CardContent } from "@claragram/ui/ui/components/card";
-import { Input } from "@claragram/ui/ui/components/input";
-import { Label } from "@claragram/ui/ui/components/label";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
-import { Switch } from "@claragram/ui/ui/components/switch";
-import { Toast } from "@claragram/ui/ui/components/toast";
-import { useToast } from "@claragram/ui/hooks/use-toast";
+import { Badge } from "@claraship/ui/ui/components/badge";
+import { Button } from "@claraship/ui/ui/components/button";
+import { Card, CardContent } from "@claraship/ui/ui/components/card";
+import { Input } from "@claraship/ui/ui/components/input";
+import { Label } from "@claraship/ui/ui/components/label";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
+import { Switch } from "@claraship/ui/ui/components/switch";
+import { Toast } from "@claraship/ui/ui/components/toast";
+import { useToast } from "@claraship/ui/hooks/use-toast";
 import { api } from "@/lib/api";
 import type {
   MessagingPlatform,

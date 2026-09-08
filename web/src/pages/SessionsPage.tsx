@@ -49,17 +49,17 @@ import type {
 import { timeAgo } from "@/lib/utils";
 import { Markdown } from "@/components/Markdown";
 import { PlatformsCard } from "@/components/PlatformsCard";
-import { Toast } from "@claragram/ui/ui/components/toast";
-import { Button } from "@claragram/ui/ui/components/button";
-import { Checkbox } from "@claragram/ui/ui/components/checkbox";
-import { ListItem } from "@claragram/ui/ui/components/list-item";
-import { Segmented } from "@claragram/ui/ui/components/segmented";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
-import { Badge } from "@claragram/ui/ui/components/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@claragram/ui/ui/components/card";
+import { Toast } from "@claraship/ui/ui/components/toast";
+import { Button } from "@claraship/ui/ui/components/button";
+import { Checkbox } from "@claraship/ui/ui/components/checkbox";
+import { ListItem } from "@claraship/ui/ui/components/list-item";
+import { Segmented } from "@claraship/ui/ui/components/segmented";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
+import { Badge } from "@claraship/ui/ui/components/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@claraship/ui/ui/components/card";
 import { DeleteConfirmDialog } from "@/components/DeleteConfirmDialog";
-import { useConfirmDelete } from "@claragram/ui/hooks/use-confirm-delete";
-import { Input } from "@claragram/ui/ui/components/input";
+import { useConfirmDelete } from "@claraship/ui/hooks/use-confirm-delete";
+import { Input } from "@claraship/ui/ui/components/input";
 import {
   Dialog,
   DialogContent,
@@ -67,9 +67,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@claragram/ui/ui/components/dialog";
+} from "@claraship/ui/ui/components/dialog";
 import { useSystemActions } from "@/contexts/useSystemActions";
-import { useToast } from "@claragram/ui/hooks/use-toast";
+import { useToast } from "@claraship/ui/hooks/use-toast";
 import { useI18n } from "@/i18n";
 import { usePageHeader } from "@/contexts/usePageHeader";
 import { PluginSlot } from "@/plugins";

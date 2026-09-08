@@ -15,7 +15,7 @@ Clara isn't just a CLI tool. You can import `AIAgent` directly and use it progra
 Clone Clara and create its supported editable development environment:
 
 ```bash
-git clone https://github.com/claragram/clara-agent.git
+git clone https://github.com/claraship/clara-agent.git
 cd clara-agent
 uv sync
 ```

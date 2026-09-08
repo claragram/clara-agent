@@ -2,7 +2,7 @@
 name: openclaw-migration
 description: Import an OpenClaw setup (memories, skills) into Clara.
 version: 1.0.0
-author: Clara Agent (Claragram)
+author: Clara Agent (Claraship)
 license: MIT
 platforms: [linux, macos, windows]
 metadata:

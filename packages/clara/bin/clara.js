@@ -45,14 +45,14 @@ if (!claraBinary) {
 }
 
 if (!claraBinary) {
-  console.log('\x1b[35m%s\x1b[0m', '☤ Clara Agent — Claragram (claragram.com)');
+  console.log('\x1b[35m%s\x1b[0m', '☤ Clara Agent — Claraship (claraship.com)');
   console.log('Clara runtime not detected. Initiating automated setup...\n');
 
-  const rawFallback = 'https://raw.githubusercontent.com/claragram/clara-agent/main/scripts/install.sh';
-  const primaryUrl = 'https://agent.claragram.com/install.sh';
+  const rawFallback = 'https://raw.githubusercontent.com/claraship/clara-agent/main/scripts/install.sh';
+  const primaryUrl = 'https://agent.claraship.com/install.sh';
 
   if (isWindows) {
-    const installCmd = `try { iex (irm ${primaryUrl}) } catch { iex (irm https://raw.githubusercontent.com/claragram/clara-agent/main/scripts/install.ps1) }`;
+    const installCmd = `try { iex (irm ${primaryUrl}) } catch { iex (irm https://raw.githubusercontent.com/claraship/clara-agent/main/scripts/install.ps1) }`;
     const install = spawnSync(
       'powershell',
       ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', installCmd],
@@ -60,7 +60,7 @@ if (!claraBinary) {
     );
     if (install.status !== 0) {
       console.error('Installation encountered an issue. Run manually:');
-      console.error('  iex (irm https://agent.claragram.com/install.ps1)');
+      console.error('  iex (irm https://agent.claraship.com/install.ps1)');
       process.exit(install.status || 1);
     }
   } else {
@@ -70,7 +70,7 @@ if (!claraBinary) {
     });
     if (install.status !== 0) {
       console.error('Installation encountered an issue. Run manually:');
-      console.error('  curl -fsSL https://agent.claragram.com/install.sh | bash');
+      console.error('  curl -fsSL https://agent.claraship.com/install.sh | bash');
       process.exit(install.status || 1);
     }
   }

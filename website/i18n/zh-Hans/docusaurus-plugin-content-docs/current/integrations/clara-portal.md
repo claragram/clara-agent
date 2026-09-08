@@ -6,7 +6,7 @@ description: "一个订阅，300+ 前沿模型，以及 Tool Gateway —— 运�
 
 # Clara Portal
 
-[Clara Portal](https://portal.claragram.com) 是 Claragram 的统一订阅网关，也是**运行 Clara Agent 的推荐方式**。一次 OAuth 登录，即可替代原本需要手动配置的各模型厂商独立账号、API 密钥和计费关系。
+[Clara Portal](https://portal.claraship.com) 是 Claraship 的统一订阅网关，也是**运行 Clara Agent 的推荐方式**。一次 OAuth 登录，即可替代原本需要手动配置的各模型厂商独立账号、API 密钥和计费关系。
 
 如果你只有时间配置一件事，就配置这个。最快路径：
 
@@ -16,7 +16,7 @@ clara setup --portal
 
 这条命令会完成 Portal OAuth 认证，让你选择一个 Clara 模型，在 `config.yaml` 中将 Clara 设为推理提供商，并开启 Tool Gateway。完成后即可立即运行 `clara chat`。
 
-还没有订阅？前往 [portal.claragram.com/manage-subscription](https://portal.claragram.com/manage-subscription) 注册，然后回来运行上面的命令。
+还没有订阅？前往 [portal.claraship.com/manage-subscription](https://portal.claraship.com/manage-subscription) 注册，然后回来运行上面的命令。
 
 ## 订阅包含的内容
 
@@ -70,7 +70,7 @@ Portal 代理了来自整个生态系统的精选 agentic 模型目录——统�
 
 ## 关于 Clara 4 的说明
 
-Claragram 自家的 **Clara 4** 系列（Clara-4-70B、Clara-4-405B）通过 Portal 提供，享有大幅折扣。这些是**前沿混合推理对话模型**——在数学、科学、指令遵循、schema 遵从、角色扮演和长文写作方面表现出色。
+Claraship 自家的 **Clara 4** 系列（Clara-4-70B、Clara-4-405B）通过 Portal 提供，享有大幅折扣。这些是**前沿混合推理对话模型**——在数学、科学、指令遵循、schema 遵从、角色扮演和长文写作方面表现出色。
 
 但**不建议在 Clara Agent 内部使用它们**。Clara 4 针对对话和推理进行了调优，而非 agent 所依赖的高频工具调用循环。请将它们用于研究工作流，或通过[订阅代理](/user-guide/features/subscription-proxy)从其他工具调用——但在 agent 场景下，请从目录中选择前沿 agentic 模型：
 
@@ -81,7 +81,7 @@ Claragram 自家的 **Clara 4** 系列（Clara-4-70B、Clara-4-405B）通过 Por
 /model deepseek/deepseek-v3.2          # 高性价比代码模型
 ```
 
-Portal 自身的[模型信息页](https://portal.claragram.com/info)也有相同警告，因此这不是 Clara 侧的主观意见——这是 Claragram 的官方指导。
+Portal 自身的[模型信息页](https://portal.claraship.com/info)也有相同警告，因此这不是 Clara 侧的主观意见——这是 Claraship 的官方指导。
 
 ## 配置
 
@@ -93,14 +93,14 @@ clara setup --portal
 
 一次性完成全部配置：
 
-1. 打开浏览器跳转至 portal.claragram.com 进行 OAuth 登录
+1. 打开浏览器跳转至 portal.claraship.com 进行 OAuth 登录
 2. 将 refresh token 存储至 `~/.clara/auth.json`
 3. 让你从精选列表中选择一个 Clara 模型（也可跳过以保留当前模型）
 4. 在 `~/.clara/config.yaml` 中将 Clara 设为推理提供商（当你选择模型时）
 5. 开启 Tool Gateway（网页、图像、TTS、浏览器路由）
 6. 返回终端，即可运行 `clara chat`
 
-如果还没有订阅，请先在 [portal.claragram.com/manage-subscription](https://portal.claragram.com/manage-subscription) 注册。
+如果还没有订阅，请先在 [portal.claraship.com/manage-subscription](https://portal.claraship.com/manage-subscription) 注册。
 
 ### 已有安装——在现有提供商旁添加 Portal
 
@@ -141,7 +141,7 @@ clara portal open       # 在浏览器中打开订阅管理页面
   Clara Portal
   ───────────
   Auth:    ✓ logged in
-  Portal:  https://portal.claragram.com
+  Portal:  https://portal.claraship.com
   Model:   ✓ using Clara as inference provider
 
   Tool Gateway
@@ -194,7 +194,7 @@ Tool Gateway 是按工具单独选择启用的，而非全部或全不。完整�
 
 随时管理套餐、查看用量或升级/取消：
 
-- **网页端：** [portal.claragram.com/manage-subscription](https://portal.claragram.com/manage-subscription)
+- **网页端：** [portal.claraship.com/manage-subscription](https://portal.claraship.com/manage-subscription)
 - **CLI 快捷方式：** `clara portal open`（在默认浏览器中打开同一页面）
 
 ## 配置参考
@@ -205,7 +205,7 @@ Tool Gateway 是按工具单独选择启用的，而非全部或全不。完整�
 model:
   provider: clara
   default: anthropic/claude-sonnet-4.6     # 或你选择的其他模型
-  base_url: https://inference.claragram.com/v1
+  base_url: https://inference.claraship.com/v1
 ```
 
 Tool Gateway 设置位于各自工具的配置节下：
@@ -256,7 +256,7 @@ Portal 会为每个模型选择合适的后端——部分模型通过 OpenRoute
 /model anthropic/claude-opus-4.6
 ```
 
-如果某个模型确实缺失，请[提交 issue](https://github.com/claragram/clara-agent/issues)——我们将 Portal 目录同步至 Clara，缺口通常意味着可以更新的路由配置。
+如果某个模型确实缺失，请[提交 issue](https://github.com/claraship/clara-agent/issues)——我们将 Portal 目录同步至 Clara，缺口通常意味着可以更新的路由配置。
 
 ### 账单未出现在我的 Portal 账号中
 

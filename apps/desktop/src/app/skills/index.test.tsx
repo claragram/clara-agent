@@ -296,7 +296,7 @@ describe('SkillsView toolset management', { timeout: 60_000 }, () => {
       window.dispatchEvent(
         new MessageEvent('message', {
           data: { type: 'clara-skill-pick', name: 'web-research', identifier: 'web-research' },
-          origin: 'https://agent.claragram.com'
+          origin: 'https://agent.claraship.com'
         })
       )
     })

@@ -1301,12 +1301,12 @@ app.setName(APP_NAME)
 // Windows toast notifications silently no-op unless an AppUserModelID is set:
 // `new Notification().show()` returns without error and nothing appears. The
 // AUMID must match the installed Start Menu shortcut's AUMID, which
-// electron-builder derives from the build `appId` (com.claragram.clara) —
+// electron-builder derives from the build `appId` (com.claraship.clara) —
 // keep this string in sync with package.json `build.appId`. macOS/Linux don't
 // need this, so gate it on Windows. (Fixes: desktop approval/turn notifications
 // never firing on Windows.)
 if (IS_WINDOWS) {
-  app.setAppUserModelId('com.claragram.clara')
+  app.setAppUserModelId('com.claraship.clara')
 }
 
 // Seed the native About panel with the live Clara version. This is refreshed
@@ -1316,7 +1316,7 @@ if (IS_WINDOWS) {
 app.setAboutPanelOptions({
   applicationName: APP_NAME,
   applicationVersion: resolveClaraVersion(),
-  copyright: 'Copyright © 2026 Claragram'
+  copyright: 'Copyright © 2026 Claraship'
 })
 
 // Custom scheme for streaming audio/video into the renderer. Local paths read
@@ -7117,7 +7117,7 @@ function installMediaPermissions() {
 // OAuth remote-gateway auth.
 //
 // Hosted Clara gateways gate the dashboard behind an OAuth provider (e.g.
-// Claragram) instead of a static session token. The auth model is
+// Claraship) instead of a static session token. The auth model is
 // fundamentally different from the token path:
 //
 //   * REST is authed by HttpOnly session cookies (``clara_session_at``),
@@ -8130,7 +8130,7 @@ async function freshGatewayWsUrl(profile) {
 // Canonical Clara portal base URL, overridable for staging/dev. Mirrors the CLI
 // convention (clara_cli/auth.py DEFAULT_CLARA_PORTAL_URL + the same env names)
 // so a single override flips every Clara surface to the same portal.
-const DEFAULT_CLARA_PORTAL_URL = 'https://portal.claragram.com'
+const DEFAULT_CLARA_PORTAL_URL = 'https://portal.claraship.com'
 
 function resolvePortalBaseUrl() {
   const raw = process.env.CLARA_PORTAL_BASE_URL || process.env.CLARA_PORTAL_BASE_URL || DEFAULT_CLARA_PORTAL_URL
@@ -10835,7 +10835,7 @@ async function probeRemoteAuthMode(rawUrl) {
 
   if (authRequired) {
     // Best-effort: a gated gateway exposes the registered providers so the
-    // button can read "Sign in with Claragram" instead of a generic
+    // button can read "Sign in with Claraship" instead of a generic
     // label, and so a username/password provider can be distinguished from
     // an OAuth-redirect one (``supports_password``). A failure here doesn't
     // change the auth mode, so swallow it.
@@ -17233,7 +17233,7 @@ function showAboutPanelFresh() {
       applicationVersion: skew.outOfSync
         ? `${resolveClaraVersion()} — app build out of date, update the desktop app`
         : resolveClaraVersion(),
-      copyright: 'Copyright © 2026 Claragram'
+      copyright: 'Copyright © 2026 Claraship'
     })
     app.showAboutPanel()
   })

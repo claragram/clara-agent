@@ -1,5 +1,5 @@
 {
-  description = "Clara Agent - AI agent framework by Claragram";
+  description = "Clara Agent - AI agent framework by Claraship";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

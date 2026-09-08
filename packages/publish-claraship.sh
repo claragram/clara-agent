@@ -35,7 +35,7 @@ fi
 
 echo "============================================================"
 echo "👤 Authenticated as npm user: ${CURRENT_USER}"
-echo "🏢 Target Organization: @claragram"
+echo "🏢 Target Organization: @claraship"
 echo "============================================================"
 
 # If no OTP was provided via argument and stdin is a terminal, prompt for it
@@ -92,17 +92,17 @@ publish_pkg() {
 }
 
 case "$TARGET" in
-  image-size|@claragram/image-size)
+  image-size|@claraship/image-size)
     publish_pkg "image-size"
     ;;
-  ui|@claragram/ui)
+  ui|@claraship/ui)
     publish_pkg "ui"
     ;;
-  clara|@claragram/clara)
+  clara|@claraship/clara)
     publish_pkg "clara"
     ;;
   all|--all)
-    echo "🚀 Publishing all Claragram packages..."
+    echo "🚀 Publishing all Claraship packages..."
     publish_pkg "image-size"
     publish_pkg "ui"
     publish_pkg "clara"
@@ -115,6 +115,6 @@ esac
 
 echo ""
 echo "============================================================"
-echo "🎉 All requested packages published to @claragram successfully!"
-echo "🏢 View organization: https://www.npmjs.com/org/claragram"
+echo "🎉 All requested packages published to @claraship successfully!"
+echo "🏢 View organization: https://www.npmjs.com/org/claraship"
 echo "============================================================"

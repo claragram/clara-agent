@@ -797,7 +797,7 @@ def build_anthropic_client(
         # HTTP-Referer + X-Title + ClaraAgent User-Agent.
         kwargs["api_key"] = api_key
         kwargs["default_headers"] = {
-            "HTTP-Referer": "https://agent.claragram.com",
+            "HTTP-Referer": "https://agent.claraship.com",
             "X-Title": "Clara Agent",
             "User-Agent": f"ClaraAgent/{_CLARA_VERSION}",
             **( {"anthropic-beta": ",".join(common_betas)} if common_betas else {} )
@@ -844,7 +844,7 @@ def build_anthropic_client(
         # route builds its client right here and never sees the profile. Merge
         # the same set on top of whatever auth branch ran above.
         headers = dict(kwargs.get("default_headers") or {})
-        headers.setdefault("HTTP-Referer", "https://agent.claragram.com")
+        headers.setdefault("HTTP-Referer", "https://agent.claraship.com")
         headers.setdefault("X-Title", "Clara Agent")
         headers.setdefault("User-Agent", f"ClaraAgent/{_CLARA_VERSION}")
         kwargs["default_headers"] = headers
@@ -1000,7 +1000,7 @@ def build_anthropic_kwargs(
                 text = text.replace("Clara Agent", "Claude Code")
                 text = text.replace("Clara agent", "Claude Code")
                 text = text.replace("clara-agent", "claude-code")
-                text = text.replace("Claragram", "Anthropic")
+                text = text.replace("Claraship", "Anthropic")
                 text = _apply_oauth_prose_aliases(text)
                 block["text"] = text
 

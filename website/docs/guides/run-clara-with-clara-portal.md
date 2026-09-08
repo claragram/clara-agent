@@ -6,7 +6,7 @@ description: "Start-to-finish walkthrough: subscribe, set up, switch models, ena
 
 # Run Clara Agent with Clara Portal
 
-This guide walks you through running Clara Agent on a [Clara Portal](https://portal.claragram.com) subscription end to end — from signing up to verifying that every tool routes correctly. If you just want the overview of what the Portal is and what's in the subscription, see the [Clara Portal integration page](/integrations/clara-portal). This page is the task script.
+This guide walks you through running Clara Agent on a [Clara Portal](https://portal.claraship.com) subscription end to end — from signing up to verifying that every tool routes correctly. If you just want the overview of what the Portal is and what's in the subscription, see the [Clara Portal integration page](/integrations/clara-portal). This page is the task script.
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ You do **not** need: an OpenAI key, an Anthropic key, a Firecrawl account, a FAL
 
 ## 1. Get a subscription
 
-Open [portal.claragram.com/manage-subscription](https://portal.claragram.com/manage-subscription), sign up, and pick a plan.
+Open [portal.claraship.com/manage-subscription](https://portal.claraship.com/manage-subscription), sign up, and pick a plan.
 
 Already subscribed? Skip to step 2.
 
@@ -30,7 +30,7 @@ clara setup --portal
 
 This single command does five things:
 
-1. Opens your browser to portal.claragram.com for OAuth login
+1. Opens your browser to portal.claraship.com for OAuth login
 2. Stores the refresh token at `~/.clara/auth.json`
 3. Sets `model.provider: clara` in `~/.clara/config.yaml`
 4. Picks a default agentic model (`anthropic/claude-sonnet-4.6` or similar)
@@ -66,7 +66,7 @@ You should see:
   Clara Portal
   ───────────
   Auth:    ✓ logged in
-  Portal:  https://portal.claragram.com
+  Portal:  https://portal.claraship.com
   Model:   ✓ using Clara as inference provider
 
   Tool Gateway
@@ -122,7 +122,7 @@ clara config set model.default anthropic/claude-sonnet-4.6
 
 Clara-4-70B and Clara-4-405B are available on the Portal at deep discounts, but they're **chat/reasoning models**, not tool-call-tuned. They will struggle with multi-step agent loops. Use them for conversation/research work through the [subscription proxy](/user-guide/features/subscription-proxy) from non-agent tools. For Clara Agent itself, stick to the frontier agentic models above.
 
-The Portal's own [info page](https://portal.claragram.com/info) carries this warning too — it's the official Clara guidance, not just a Clara-side opinion.
+The Portal's own [info page](https://portal.claraship.com/info) carries this warning too — it's the official Clara guidance, not just a Clara-side opinion.
 
 ## 6. (Optional) Customize Tool Gateway routing
 
@@ -235,7 +235,7 @@ The Portal catalog draws on OpenRouter's model list (300+) plus models served th
 /model openai/o1-2025-12-17
 ```
 
-If a model is genuinely unavailable, [open an issue](https://github.com/claragram/clara-agent/issues) — most gaps are routing config we can update.
+If a model is genuinely unavailable, [open an issue](https://github.com/claraship/clara-agent/issues) — most gaps are routing config we can update.
 
 ### Billing not appearing on my Portal account
 

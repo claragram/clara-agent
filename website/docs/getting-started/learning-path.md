@@ -110,11 +110,11 @@ page is for built-in Clara core development, not the usual user/custom-tool path
 
 ### "I want to train models"
 
-Use reinforcement learning to fine-tune model behavior with Clara Agent's RL training pipeline (powered by [Atropos](https://github.com/claragram/atropos)).
+Use reinforcement learning to fine-tune model behavior with Clara Agent's RL training pipeline (powered by [Atropos](https://github.com/claraship/atropos)).
 
 1. [Quickstart](/getting-started/quickstart)
 2. [Configuration](/user-guide/configuration)
-3. [Atropos RL Environments](https://github.com/claragram/atropos) (external)
+3. [Atropos RL Environments](https://github.com/claraship/atropos) (external)
 4. [Provider Routing](/user-guide/features/provider-routing)
 5. [Architecture](/developer-guide/architecture)
 

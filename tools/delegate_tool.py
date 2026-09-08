@@ -1950,7 +1950,7 @@ def _build_child_agent(
     _effective_provider_norm = (effective_provider or "").strip().lower()
     if override_api_mode is not None:
         effective_api_mode = override_api_mode
-    elif _effective_provider_norm in {"clara", "clara-portal", "claragram"}:
+    elif _effective_provider_norm in {"clara", "clara-portal", "claraship"}:
         from clara_cli.providers import clara_api_mode
 
         effective_api_mode = clara_api_mode(effective_model)

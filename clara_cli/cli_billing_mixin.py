@@ -1108,7 +1108,7 @@ class CLIBillingMixin:
                 _cprint(f"  {_d('Your card saved on the portal will be charged.')}")
         print(f"  {'─' * 41}")
         _consent = (
-            "By confirming, you allow Claragram to charge your card."
+            "By confirming, you allow Claraship to charge your card."
         )
         _cprint(f"  {_d(_consent)}")
 
@@ -1478,7 +1478,7 @@ class CLIBillingMixin:
 
         print()
         _ar_consent = (
-            f"By confirming, you authorize Claragram to charge {card.masked} "
+            f"By confirming, you authorize Claraship to charge {card.masked} "
             f"whenever your balance reaches {format_money(threshold_amt)}. "
             f"Turn off any time here or on the portal."
         )

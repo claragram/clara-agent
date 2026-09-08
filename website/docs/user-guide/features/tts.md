@@ -9,7 +9,7 @@ description: "Text-to-speech and voice message transcription across all platform
 Clara Agent supports both text-to-speech output and voice message transcription across all messaging platforms.
 
 :::tip Clara Subscribers
-If you have a paid [Clara Portal](https://portal.claragram.com) subscription, OpenAI TTS is available through the **[Tool Gateway](tool-gateway.md)** without a separate OpenAI API key. New installs can run `clara setup --portal` to log in and turn on every gateway tool at once; existing installs can pick **Clara Subscription** for just TTS via `clara model` or `clara tools`.
+If you have a paid [Clara Portal](https://portal.claraship.com) subscription, OpenAI TTS is available through the **[Tool Gateway](tool-gateway.md)** without a separate OpenAI API key. New installs can run `clara setup --portal` to log in and turn on every gateway tool at once; existing installs can pick **Clara Subscription** for just TTS via `clara model` or `clara tools`.
 :::
 
 ## Text-to-Speech

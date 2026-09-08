@@ -25,20 +25,20 @@ describe('deriveRemoteAuthProviderShape', () => {
 
   it('keeps OAuth copy for redirect providers and mixed deployments', () => {
     expect(
-      deriveRemoteAuthProviderShape([{ name: 'clara', displayName: 'Claragram', supportsPassword: false }])
+      deriveRemoteAuthProviderShape([{ name: 'clara', displayName: 'Claraship', supportsPassword: false }])
     ).toEqual({
       isPassword: false,
-      providerLabel: 'Claragram'
+      providerLabel: 'Claraship'
     })
 
     expect(
       deriveRemoteAuthProviderShape([
         { name: 'basic', displayName: 'Username & Password', supportsPassword: true },
-        { name: 'clara', displayName: 'Claragram', supportsPassword: false }
+        { name: 'clara', displayName: 'Claraship', supportsPassword: false }
       ])
     ).toEqual({
       isPassword: false,
-      providerLabel: 'Username & Password / Claragram'
+      providerLabel: 'Username & Password / Claraship'
     })
   })
 

@@ -7,10 +7,10 @@ const config: Config = {
   tagline: 'The self-improving AI agent',
   favicon: 'img/favicon.ico',
 
-  url: 'https://claragram.com',
+  url: 'https://claraship.com',
   baseUrl: '/docs/',
 
-  organizationName: 'claragram',
+  organizationName: 'claraship',
   projectName: 'clara-agent',
 
   onBrokenLinks: 'warn',
@@ -138,8 +138,8 @@ const config: Config = {
           position: 'left',
         },
         {
-          href: 'https://claragram.com',
-          label: 'Claragram',
+          href: 'https://claraship.com',
+          label: 'Claraship',
           position: 'left',
         },
         {
@@ -147,12 +147,12 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://portal.claragram.com',
+          href: 'https://portal.claraship.com',
           label: 'Portal',
           position: 'right',
         },
         {
-          href: 'https://github.com/claragram',
+          href: 'https://github.com/claraship',
           label: 'GitHub',
           position: 'right',
         },
@@ -173,20 +173,20 @@ const config: Config = {
         {
           title: 'Ecosystem',
           items: [
-            { label: 'Web Portal', href: 'https://portal.claragram.com' },
-            { label: 'GitHub Organization', href: 'https://github.com/claragram' },
-            { label: 'Contact', href: 'mailto:info@claragram.com' },
+            { label: 'Web Portal', href: 'https://portal.claraship.com' },
+            { label: 'GitHub Organization', href: 'https://github.com/claraship' },
+            { label: 'Contact', href: 'mailto:hey@claraship.com' },
           ],
         },
         {
           title: 'Company',
           items: [
-            { label: 'Claragram', href: 'https://claragram.com' },
-            { label: 'Claragram', href: 'https://claragram.com' },
+            { label: 'Claraship', href: 'https://claraship.com' },
+            { label: 'Claraship', href: 'https://claraship.com' },
           ],
         },
       ],
-      copyright: `Built by <a href="https://claragram.com">Claragram</a> · Claragram · ${new Date().getFullYear()}`,
+      copyright: `Built by <a href="https://claraship.com">Claraship</a> · Claraship · ${new Date().getFullYear()}`,
     },
     prism: {
       theme: prismThemes.github,

@@ -305,7 +305,7 @@ export function BootFailureOverlay() {
       {
         key: 'portal',
         label: copy.cloudDownCheckPortal,
-        onClick: () => openExternalLink('https://portal.claragram.com'),
+        onClick: () => openExternalLink('https://portal.claraship.com'),
         icon: <ExternalLink />
       },
       localAction,
@@ -313,7 +313,7 @@ export function BootFailureOverlay() {
       {
         key: 'discord',
         label: copy.cloudDownDiscord,
-        onClick: () => openExternalLink('https://discord.gg/claragram'),
+        onClick: () => openExternalLink('https://discord.gg/j9vzaxnsg'),
         variant: 'ghost'
       },
       { ...settingsAction, variant: 'ghost' }

@@ -123,7 +123,7 @@ tail -f ~/.clara/logs/update.log
 clara --version
 ```
 
-与 [GitHub releases 页面](https://github.com/claragram/clara-agent/releases) 上的最新版本进行比较。
+与 [GitHub releases 页面](https://github.com/claraship/clara-agent/releases) 上的最新版本进行比较。
 
 ### 从消息平台更新
 

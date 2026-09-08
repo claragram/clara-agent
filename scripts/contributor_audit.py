@@ -66,11 +66,11 @@ IGNORED_PATTERNS = [
 IGNORED_EMAILS = {
     "noreply@anthropic.com",
     "noreply@github.com",
-    "info@claragram.com",
+    "hey@claraship.com",
     "cursoragent@cursor.com",
-    "info@claragram.com",
+    "hey@claraship.com",
     "clara-audit@example.com",
-    "info@claragram.com",
+    "hey@claraship.com",
     "clara@habibilabs.dev",
     "omx@oh-my-codex.dev",
     "codex@openai.com",
@@ -123,7 +123,7 @@ def gh_pr_list():
         result = subprocess.run(
             [
                 "gh", "pr", "list",
-                "--repo", "claragram/clara-agent",
+                "--repo", "claraship/clara-agent",
                 "--state", "merged",
                 "--json", "number,title,body,author,mergedAt",
                 "--limit", "300",

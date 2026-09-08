@@ -101,7 +101,7 @@ test('bootstrap installer carries microphone entitlement for launcher attributio
     'entitlements.plist',
     'the macOS bootstrap installer must sign with its entitlements.plist. ' +
       'When /Applications/Clara.app is the setup launcher, macOS TCC treats ' +
-      'com.claragram.clara.setup as the responsible process for the desktop ' +
+      'com.claraship.clara.setup as the responsible process for the desktop ' +
       'app it opens; without audio-input on the setup app, microphone access is ' +
       'denied before a permission prompt can appear.'
   )

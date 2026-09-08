@@ -75,7 +75,7 @@ FAKE_REMOTE="/work/repos/clara-agent.git"
 # Only used to fetch an old install.sh for the flag probe below; the sandbox does
 # its own fetching. Same override dev-sandbox.sh honours, so a fork can retarget
 # both together.
-UPSTREAM_URL="${CLARA_DEV_SANDBOX_UPSTREAM:-https://github.com/claragram/clara-agent.git}"
+UPSTREAM_URL="${CLARA_DEV_SANDBOX_UPSTREAM:-https://github.com/claraship/clara-agent.git}"
 
 # Installer transcripts live outside the sandbox root: the sandbox is recreated
 # and (unless --keep) deleted, and these logs are the most useful artifact when

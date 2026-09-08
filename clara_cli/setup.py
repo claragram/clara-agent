@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 
-_DOCS_BASE = "https://agent.claragram.com/docs"
+_DOCS_BASE = "https://agent.claraship.com/docs"
 
 
 def _model_config_dict(config: Dict[str, Any]) -> Dict[str, Any]:
@@ -2228,7 +2228,7 @@ def _setup_webhooks():
     print_warning("   internet. For security, run the gateway in a sandboxed environment")
     print_warning("   (Docker, VM, etc.) to limit blast radius from prompt injection.")
     print()
-    print_info("   Full guide: https://agent.claragram.com/docs/user-guide/messaging/webhooks/")
+    print_info("   Full guide: https://agent.claraship.com/docs/user-guide/messaging/webhooks/")
     print()
 
     port = prompt("Webhook port (default 8644)")
@@ -2255,7 +2255,7 @@ def _setup_webhooks():
     print_info("      http://your-server:8644/webhooks/<route-name>")
     print()
     print_info("   Route configuration guide:")
-    print_info("   https://agent.claragram.com/docs/user-guide/messaging/webhooks/#configuring-routes")
+    print_info("   https://agent.claraship.com/docs/user-guide/messaging/webhooks/#configuring-routes")
     print()
     print_info("   Open config in your editor:  clara config edit")
     print_info("   Open config in your editor:  clara config edit")
@@ -2961,7 +2961,7 @@ def _run_portal_one_shot(config: dict) -> None:
     print_info("    web search, image generation, TTS, browser automation")
     print_info("    — all routed through your Clara Portal sub.")
     print()
-    print_info("  Sign up: https://portal.claragram.com/manage-subscription")
+    print_info("  Sign up: https://portal.claraship.com/manage-subscription")
     print()
 
     # _model_flow_clara handles BOTH the logged-out path (device-code OAuth,
@@ -3427,7 +3427,7 @@ def _run_first_time_quick_setup(config: dict, clara_home, is_existing: bool):
     print_header("Clara Portal")
     print_info("One subscription, 300+ models, plus the Tool Gateway:")
     print_info("  web search, image generation, TTS, browser automation.")
-    print_info("Sign up: https://portal.claragram.com/manage-subscription")
+    print_info("Sign up: https://portal.claraship.com/manage-subscription")
     print()
     try:
         from clara_cli.main import _model_flow_clara

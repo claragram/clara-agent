@@ -26,9 +26,9 @@ import webbrowser
 from clara_cli.colors import Colors, color
 from clara_cli.config import load_config
 
-DEFAULT_PORTAL_URL = "https://portal.claragram.com"
-SUBSCRIPTION_URL = "https://portal.claragram.com/manage-subscription"
-DOCS_URL = "https://agent.claragram.com/docs/user-guide/features/tool-gateway"
+DEFAULT_PORTAL_URL = "https://portal.claraship.com"
+SUBSCRIPTION_URL = "https://portal.claraship.com/manage-subscription"
+DOCS_URL = "https://agent.claraship.com/docs/user-guide/features/tool-gateway"
 
 
 def _cmd_status(args) -> int:

@@ -26,9 +26,9 @@ import { ExternalLink, Loader2Icon, Lock } from '@/lib/icons'
 import { $sendDiagnostics, confirmSendDiagnostics, dismissSendDiagnostics } from '@/store/send-diagnostics'
 
 const SUPPORT_LINKS = [
-  { key: 'github', url: 'https://github.com/claragram/clara-agent/issues' },
-  { key: 'portal', url: 'https://portal.claragram.com/help' },
-  { key: 'discord', url: 'https://discord.gg/claragram' }
+  { key: 'github', url: 'https://github.com/claraship/clara-agent/issues' },
+  { key: 'portal', url: 'https://portal.claraship.com/help' },
+  { key: 'discord', url: 'https://discord.gg/j9vzaxnsg' }
 ] as const
 
 export function SendDiagnosticsHost() {

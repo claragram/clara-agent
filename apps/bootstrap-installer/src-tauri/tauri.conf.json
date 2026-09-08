@@ -2,7 +2,7 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Clara",
   "version": "0.0.1",
-  "identifier": "com.claragram.clara.setup",
+  "identifier": "com.claraship.clara.setup",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://127.0.0.1:5175",
@@ -36,8 +36,8 @@
     "category": "DeveloperTool",
     "shortDescription": "Clara",
     "longDescription": "Installs Clara Agent on your machine. Drives scripts/install.ps1 (Windows) and scripts/install.sh (macOS/Linux).",
-    "publisher": "Claragram",
-    "copyright": "Copyright © 2026 Claragram",
+    "publisher": "Claraship",
+    "copyright": "Copyright © 2026 Claraship",
     "targets": [
       "app",
       "dmg",

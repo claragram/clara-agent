@@ -1196,7 +1196,7 @@ export const ru = defineLocale({
       sshErrHostKey:
         'Ключ хоста ИЗМЕНИЛСЯ с последнего подключения. Убедитесь, что это ожидаемо, затем выполните ssh-keygen -R <host> и переподключитесь.',
       sshErrNotInstalled:
-        'Clara не установлен на удалённой машине. Установите его там (curl -fsSL https://agent.claragram.com/install.sh | sh) или задайте путь к Clara.',
+        'Clara не установлен на удалённой машине. Установите его там (curl -fsSL https://agent.claraship.com/install.sh | sh) или задайте путь к Clara.',
       sshErrPlatform:
         'Неподдерживаемая удалённая платформа. SSH-режим Clara Desktop поддерживает удалённые хосты Linux, macOS и Windows.',
       sshErrTimeout: 'SSH-соединение истекло. Хост может быть недоступен или «спит».',

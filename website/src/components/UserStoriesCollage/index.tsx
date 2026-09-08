@@ -295,15 +295,15 @@ export default function UserStoriesCollage(): JSX.Element {
       <div className={styles.footer}>
         Built something with Clara?{' '}
         <a
-          href="https://github.com/claragram/clara-agent/edit/main/website/src/data/userStories.json"
+          href="https://github.com/claraship/clara-agent/edit/main/website/src/data/userStories.json"
           target="_blank"
           rel="noopener noreferrer"
         >
           Add your story to this page
         </a>{' '}
         by editing <code>userStories.json</code>, or post it in the{' '}
-        <a href="https://discord.gg/claragram" target="_blank" rel="noopener noreferrer">
-          Claragram Discord
+        <a href="https://discord.gg/j9vzaxnsg" target="_blank" rel="noopener noreferrer">
+          Claraship Discord
         </a>{' '}
         and we&apos;ll pick it up.
       </div>

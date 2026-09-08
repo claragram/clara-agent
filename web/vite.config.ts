@@ -82,7 +82,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       "@clara/shared": path.resolve(__dirname, "../apps/shared/src"),
     },
-    // When @claragram/ui is symlinked via `file:../../design-language`,
+    // When @claraship/ui is symlinked via `file:../../design-language`,
     // Node's module resolution would pick up shared deps from
     // design-language/node_modules/*, giving us two copies + breaking
     // hooks (useRef-of-null), webgl contexts, etc. Force everything that
@@ -139,7 +139,7 @@ export default defineConfig({
             },
             {
               name: "ui",
-              test: /node_modules[\\/]@claragram[\\/]ui([\\/]|$)/,
+              test: /node_modules[\\/]@claraship[\\/]ui([\\/]|$)/,
             },
             {
               name: "vendor",

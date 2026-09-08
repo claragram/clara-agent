@@ -6,7 +6,7 @@ description: "One subscription, 300+ frontier models, and the Tool Gateway — t
 
 # Clara Portal
 
-[Clara Portal](https://portal.claragram.com) is Claragram's unified subscription gateway and **the recommended way to run Clara Agent**. One OAuth login replaces the juggling act of separate accounts, API keys, and billing relationships across every model lab, search API, image generator, and browser provider you'd otherwise need to wire up by hand.
+[Clara Portal](https://portal.claraship.com) is Claraship's unified subscription gateway and **the recommended way to run Clara Agent**. One OAuth login replaces the juggling act of separate accounts, API keys, and billing relationships across every model lab, search API, image generator, and browser provider you'd otherwise need to wire up by hand.
 
 If you only have time to set up one thing, set up this. The fastest path:
 
@@ -16,7 +16,7 @@ clara setup --portal
 
 That single command runs the Portal OAuth, lets you pick a Clara model, sets Clara as your inference provider in `config.yaml`, and turns on the Tool Gateway. You're ready to `clara chat` immediately after.
 
-Don't have a subscription yet? [portal.claragram.com/manage-subscription](https://portal.claragram.com/manage-subscription) — sign up, then come back and run the command above.
+Don't have a subscription yet? [portal.claraship.com/manage-subscription](https://portal.claraship.com/manage-subscription) — sign up, then come back and run the command above.
 
 ## What's in the subscription
 
@@ -74,7 +74,7 @@ Because everything routes through one OAuth-authenticated Portal session, you do
 
 ## A note on Clara 4
 
-Claragram's own **Clara 4** family (Clara-4-70B, Clara-4-405B) is available through the Portal at heavily discounted rates. These are **frontier hybrid-reasoning chat models** — strong at math, science, instruction following, schema adherence, roleplay, and long-form writing.
+Claraship's own **Clara 4** family (Clara-4-70B, Clara-4-405B) is available through the Portal at heavily discounted rates. These are **frontier hybrid-reasoning chat models** — strong at math, science, instruction following, schema adherence, roleplay, and long-form writing.
 
 They are **not recommended for use inside Clara Agent**, however. Clara 4 is tuned for chat and reasoning, not the rapid-fire tool-calling loop the agent relies on. Use them for research workflows or via the [subscription proxy](/user-guide/features/subscription-proxy) from other tooling — but for agent work, pick a frontier agentic model from the catalog instead:
 
@@ -85,7 +85,7 @@ They are **not recommended for use inside Clara Agent**, however. Clara 4 is tun
 /model deepseek/deepseek-v4-pro        # cost-effective coder
 ```
 
-The Portal's own [model info page](https://portal.claragram.com/info) carries the same warning, so this isn't a Clara-side opinion — it's the official guidance from Claragram.
+The Portal's own [model info page](https://portal.claraship.com/info) carries the same warning, so this isn't a Clara-side opinion — it's the official guidance from Claraship.
 
 ## Setup
 
@@ -97,14 +97,14 @@ clara setup --portal
 
 This runs the full setup in one shot:
 
-1. Opens your browser to portal.claragram.com for OAuth login
+1. Opens your browser to portal.claraship.com for OAuth login
 2. Stores the refresh token at `~/.clara/auth.json`
 3. Lets you pick a Clara model from the curated list (or skip to keep your current one)
 4. Sets Clara as your inference provider in `~/.clara/config.yaml` (when you pick a model)
 5. Turns on the Tool Gateway (web, image, TTS, browser routing)
 6. Returns you to your terminal ready to `clara chat`
 
-If you don't have a subscription yet, sign up at [portal.claragram.com/manage-subscription](https://portal.claragram.com/manage-subscription) first.
+If you don't have a subscription yet, sign up at [portal.claraship.com/manage-subscription](https://portal.claraship.com/manage-subscription) first.
 
 ### Existing install — add Portal alongside other providers
 
@@ -146,7 +146,7 @@ clara portal open       # open the subscription management page in your browser
   Clara Portal
   ───────────
   Auth:    ✓ logged in
-  Portal:  https://portal.claragram.com
+  Portal:  https://portal.claraship.com
   Model:   ✓ using Clara as inference provider
 
   Tool Gateway
@@ -199,7 +199,7 @@ The Tool Gateway is opt-in per tool, not all-or-nothing. The managed backends sh
 
 Manage your plan, view usage, or upgrade/cancel at any time:
 
-- **Web:** [portal.claragram.com/manage-subscription](https://portal.claragram.com/manage-subscription)
+- **Web:** [portal.claraship.com/manage-subscription](https://portal.claraship.com/manage-subscription)
 - **CLI shortcut:** `clara portal open` (opens the same page in your default browser)
 
 ## Configuration reference
@@ -210,7 +210,7 @@ After `clara setup --portal`, `~/.clara/config.yaml` will look like:
 model:
   provider: clara
   default: anthropic/claude-sonnet-4.6     # or whatever model you picked
-  base_url: https://inference-api.claragram.com/v1
+  base_url: https://inference-api.claraship.com/v1
 ```
 
 The Tool Gateway settings live under their respective tool sections — each category has a single selection key, and picking **Clara Subscription** in `clara tools` (or `clara setup --portal`) writes the value `clara`:
@@ -270,7 +270,7 @@ The Portal routes each model to a suitable backend — some through OpenRouter, 
 /model anthropic/claude-opus-4.6
 ```
 
-If a model is genuinely missing, [open an issue](https://github.com/claragram/clara-agent/issues) — we surface the Portal's catalog to Clara and gaps usually mean a routing config we can update.
+If a model is genuinely missing, [open an issue](https://github.com/claraship/clara-agent/issues) — we surface the Portal's catalog to Clara and gaps usually mean a routing config we can update.
 
 ### Bills not appearing on my Portal account
 

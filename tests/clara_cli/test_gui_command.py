@@ -457,12 +457,12 @@ def _make_signable_app(desktop_dir: Path) -> Path:
     (ent_dir / "entitlements.mac.inherit.plist").write_text("<plist/>", encoding="utf-8")
 
     app = desktop_dir / "release" / "mac-arm64" / "Clara.app"
-    _write_info_plist(app, "com.claragram.clara")
+    _write_info_plist(app, "com.claraship.clara")
     (app / "Contents" / "MacOS").mkdir(parents=True)
     (app / "Contents" / "MacOS" / "Clara").write_text("", encoding="utf-8")
 
     helper = app / "Contents" / "Frameworks" / "Clara Helper.app"
-    _write_info_plist(helper, "com.claragram.clara.helper")
+    _write_info_plist(helper, "com.claraship.clara.helper")
 
     native_dir = app / "Contents" / "Resources" / "app.asar.unpacked" / "node_modules" / "pty"
     native_dir.mkdir(parents=True)

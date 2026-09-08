@@ -109,9 +109,9 @@ class TestMacOSManagedPythonSigning:
             "-",
             "--timestamp=none",
             "--identifier",
-            "com.claragram.clara.managed-python",
+            "com.claraship.clara.managed-python",
             "--requirements",
-            '=designated => identifier "com.claragram.clara.managed-python"',
+            '=designated => identifier "com.claraship.clara.managed-python"',
             str(python),
         ]
         assert calls[1][0] == [

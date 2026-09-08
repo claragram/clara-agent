@@ -1,5 +1,5 @@
 [Unit]
-Description=Claragram.com Website & Documentation (Docusaurus)
+Description=Claraship.com Website & Documentation (Docusaurus)
 After=network.target
 
 [Service]

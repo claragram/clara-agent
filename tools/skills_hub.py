@@ -3507,13 +3507,13 @@ class OptionalSkillSource(SkillSource):
     """
     Fetch skills from the optional-skills/ directory shipped with the repo.
 
-    These skills are official (maintained by Claragram) but not activated
+    These skills are official (maintained by Claraship) but not activated
     by default — they don't appear in the system prompt and aren't copied to
     ~/.clara/skills/ during setup.  They are discoverable via the Skills Hub
     (search / install / inspect) and labelled "official" with "builtin" trust.
     """
 
-    OFFICIAL_REPO = "claragram/clara-agent"
+    OFFICIAL_REPO = "claraship/clara-agent"
     OPTIONAL_SKILLS_PREFIX = "optional-skills"
 
     def __init__(self, auth: Optional[GitHubAuth] = None):
@@ -4504,7 +4504,7 @@ def check_for_skill_updates(
 # Clara centralized index source
 # ---------------------------------------------------------------------------
 
-CLARA_INDEX_URL = "https://agent.claragram.com/docs/api/skills-index.json"
+CLARA_INDEX_URL = "https://agent.claraship.com/docs/api/skills-index.json"
 CLARA_INDEX_TTL = 6 * 3600  # 6 hours
 
 

@@ -85,10 +85,10 @@ def test_local_endpoint_hostname_detection():
 def test_clara_portal_host_detection():
     from utils import base_url_host_matches
 
-    assert base_url_host_matches("https://inference-api.claragram.com/v1", "claragram.com")
-    assert base_url_host_matches("https://portal.claragram.com", "claragram.com")
-    assert not base_url_host_matches("https://claragram.com.evil.io/v1", "claragram.com")
-    assert not base_url_host_matches("https://proxy.example/claragram.com/v1", "claragram.com")
+    assert base_url_host_matches("https://inference-api.claraship.com/v1", "claraship.com")
+    assert base_url_host_matches("https://portal.claraship.com", "claraship.com")
+    assert not base_url_host_matches("https://claraship.com.evil.io/v1", "claraship.com")
+    assert not base_url_host_matches("https://proxy.example/claraship.com/v1", "claraship.com")
 
 
 # ── Widened class coverage (follow-up to #85737) ─────────────────────────────

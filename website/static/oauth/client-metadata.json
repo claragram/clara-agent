@@ -1,8 +1,8 @@
 {
-  "client_id": "https://claragram.github.io/clara-agent/docs/oauth/client-metadata.json",
+  "client_id": "https://claraship.github.io/clara-agent/docs/oauth/client-metadata.json",
   "client_name": "Clara Agent",
-  "client_uri": "https://claragram.com",
-  "logo_uri": "https://claragram.github.io/clara-agent/docs/img/logo.png",
+  "client_uri": "https://claraship.com",
+  "logo_uri": "https://claraship.github.io/clara-agent/docs/img/logo.png",
   "application_type": "native",
   "grant_types": ["authorization_code", "refresh_token"],
   "response_types": ["code"],

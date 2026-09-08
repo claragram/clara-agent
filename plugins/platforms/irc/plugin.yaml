@@ -7,7 +7,7 @@ description: >
   Connects to an IRC server and relays messages between an IRC channel
   (or DMs) and the Clara agent.  No external dependencies — uses
   Python's stdlib asyncio for the IRC protocol.
-author: Claragram
+author: Claraship
 # ``requires_env`` entries are surfaced in ``clara config`` UI via the
 # platform-plugin env var injector in ``clara_cli/config.py``.
 requires_env:

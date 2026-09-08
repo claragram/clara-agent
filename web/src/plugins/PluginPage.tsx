@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
 import {
   getPluginComponent,
   getPluginLoadError,

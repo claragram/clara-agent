@@ -1028,7 +1028,7 @@ def _print_curator_first_run_notice() -> None:
     print("  Preview now:  clara curator run --dry-run")
     print("  Pause it:     clara curator pause")
     print(
-        "  Docs:         https://agent.claragram.com/docs/user-guide/features/curator"
+        "  Docs:         https://agent.claraship.com/docs/user-guide/features/curator"
     )
 
 def _print_fts_optimize_available_notice() -> None:
@@ -2206,7 +2206,7 @@ def _update_via_zip(args, *, had_desktop_app_before_update: bool = False) -> boo
         _m().sys.exit(1)
     _abort_zip_update_if_dirty_tree()
     zip_url = (
-        f"https://github.com/claragram/clara-agent/archive/refs/heads/{branch}.zip"
+        f"https://github.com/claraship/clara-agent/archive/refs/heads/{branch}.zip"
     )
 
     print("→ Downloading latest version...")
@@ -2363,7 +2363,7 @@ def _update_via_zip(args, *, had_desktop_app_before_update: bool = False) -> boo
         print("  Your existing install was left in place.")
         print(
             "  Re-run `clara update` to retry; if the agent won't start, "
-            "reinstall from https://agent.claragram.com"
+            "reinstall from https://agent.claraship.com"
         )
         _m().sys.exit(1)
     finally:
@@ -3155,17 +3155,17 @@ def _discard_stashed_changes(
     return True
 
 OFFICIAL_REPO_URLS = {
-    "https://github.com/claragram/clara-agent.git",
-    "git@github.com:claragram/clara-agent.git",
-    "https://github.com/claragram/clara-agent",
-    "git@github.com:claragram/clara-agent",
-    "https://github.com/claragram/clara-agent.git",
-    "git@github.com:claragram/clara-agent.git",
-    "https://github.com/claragram/clara-agent",
-    "git@github.com:claragram/clara-agent",
+    "https://github.com/claraship/clara-agent.git",
+    "git@github.com:claraship/clara-agent.git",
+    "https://github.com/claraship/clara-agent",
+    "git@github.com:claraship/clara-agent",
+    "https://github.com/claraship/clara-agent.git",
+    "git@github.com:claraship/clara-agent.git",
+    "https://github.com/claraship/clara-agent",
+    "git@github.com:claraship/clara-agent",
 }
 
-OFFICIAL_REPO_URL = "https://github.com/claragram/clara-agent.git"
+OFFICIAL_REPO_URL = "https://github.com/claraship/clara-agent.git"
 
 SKIP_UPSTREAM_PROMPT_FILE = ".skip_upstream_prompt"
 
@@ -3302,7 +3302,7 @@ def _sync_with_upstream_if_needed(
 
         print()
         print("ℹ Your fork is not tracking the official Clara repository.")
-        print("  This means you may miss updates from claragram/clara-agent.")
+        print("  This means you may miss updates from claraship/clara-agent.")
         print()
 
         if assume_yes or (
@@ -3312,7 +3312,7 @@ def _sync_with_upstream_if_needed(
             # without persisting the decline so interactive runs still get asked.
             print("  Skipping upstream setup (non-interactive run).")
             print(
-                "  Add it later with: git remote add upstream https://github.com/claragram/clara-agent.git"
+                "  Add it later with: git remote add upstream https://github.com/claraship/clara-agent.git"
             )
             return False
 
@@ -3338,7 +3338,7 @@ def _sync_with_upstream_if_needed(
             print("→ Adding upstream remote...")
             if _add_upstream_remote(git_cmd, cwd):
                 print(
-                    "  ✓ Added upstream: https://github.com/claragram/clara-agent.git"
+                    "  ✓ Added upstream: https://github.com/claraship/clara-agent.git"
                 )
                 has_upstream = True
             else:
@@ -3346,7 +3346,7 @@ def _sync_with_upstream_if_needed(
                 return False
         else:
             print(
-                "  Skipped. Run 'git remote add upstream https://github.com/claragram/clara-agent.git' to add later."
+                "  Skipped. Run 'git remote add upstream https://github.com/claraship/clara-agent.git' to add later."
             )
             _mark_skip_upstream_prompt()
             return False
@@ -8495,7 +8495,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
         else:
             print("✗ Not a git repository. Please reinstall:")
             print(
-                "  curl -fsSL https://agent.claragram.com/install.sh | bash"
+                "  curl -fsSL https://agent.claraship.com/install.sh | bash"
             )
             sys.exit(1)
 
@@ -9527,7 +9527,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
             print(f"  ⚠ {failing_module} still fails to import after updating:")
             print(f"      {import_error}")
             print("    Run `clara update` again — if it persists, reinstall:")
-            print("    https://agent.claragram.com")
+            print("    https://agent.claraship.com")
 
         node_failures = _update_node_dependencies()
         _m()._build_web_ui(_m().PROJECT_ROOT / "web")
@@ -9552,7 +9552,7 @@ def _cmd_update_impl(args, gateway_mode: bool):
             print(
                 "  ℹ macOS: if Clara re-prompts for permissions you already "
                 "granted (toggle shows ON), the stored grant is stale — run "
-                "`tccutil reset ScreenCapture com.claragram.clara` (repeat "
+                "`tccutil reset ScreenCapture com.claraship.clara` (repeat "
                 "per affected service), toggle it ON in System Settings, then "
                 "fully quit & relaunch once."
             )

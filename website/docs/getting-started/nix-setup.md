@@ -42,17 +42,17 @@ No clone needed. Nix fetches, builds, and runs everything:
 
 ```bash
 # Run the desktop app
-nix run github:claragram/clara-agent#desktop
+nix run github:claraship/clara-agent#desktop
 
 # Or install persistently
-nix profile install github:claragram/clara-agent#desktop
+nix profile install github:claraship/clara-agent#desktop
 
 # run the tui
-nix run github:claragram/clara-agent -- setup
-nix run github:claragram/clara-agent -- --tui
+nix run github:claraship/clara-agent -- setup
+nix run github:claraship/clara-agent -- --tui
 
 # or install it in your profile
-nix profile install github:claragram/clara-agent
+nix profile install github:claraship/clara-agent
 clara setup
 clara --tui
 ```
@@ -70,7 +70,7 @@ The `default` package adds ~700 MB to the closure. If you only need messaging pl
 <summary><strong>Running from a local clone</strong></summary>
 
 ```bash
-git clone https://github.com/claragram/clara-agent.git
+git clone https://github.com/claraship/clara-agent.git
 cd clara-agent
 nix develop
 clara setup
@@ -95,7 +95,7 @@ This module needs NixOS. Clara is an agent for one person. If you want an agent 
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    clara-agent.url = "github:claragram/clara-agent";
+    clara-agent.url = "github:claraship/clara-agent";
   };
 
   outputs = { nixpkgs, clara-agent, ... }: {
@@ -612,7 +612,7 @@ The option set is the same set that the NixOS module uses. It is `services.clara
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    clara-agent.url = "github:claragram/clara-agent";
+    clara-agent.url = "github:claraship/clara-agent";
   };
 }
 ```
@@ -860,7 +860,7 @@ External flakes can override the package directly:
 
 ```nix
 {
-  inputs.clara-agent.url = "github:claragram/clara-agent";
+  inputs.clara-agent.url = "github:claraship/clara-agent";
   outputs = { clara-agent, nixpkgs, ... }: {
     nixpkgs.overlays = [ clara-agent.overlays.default ];
     # Then:

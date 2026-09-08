@@ -74,7 +74,7 @@ def _warn_memory_provider_unavailable(name: str, reason: str = "") -> None:
     log for itself. Without this warning a provider whose credentials/config are
     missing is silently dropped — the user has ``memory.provider`` set but gets
     no memory and no diagnostic. A common trigger is systemd/gateway services
-    not inheriting ``~/.clara/.env``. See claragram/clara-agent#2765.
+    not inheriting ``~/.clara/.env``. See claraship/clara-agent#2765.
 
     ``reason`` is the provider's ``unavailable_reason()`` — a provider-specific,
     actionable hint (e.g. which package to install). Because an unavailable
@@ -750,7 +750,7 @@ def init_agent(
         # AWS Bedrock — auto-detect from provider name or base URL
         # (bedrock-runtime.<region>.amazonaws.com).
         agent.api_mode = "bedrock_converse"
-    elif agent.provider in {"clara", "clara-portal", "claragram"}:
+    elif agent.provider in {"clara", "clara-portal", "claraship"}:
         # Portal is dual-wire: anthropic/* → Messages, everything else →
         # chat_completions. Callers that already pass api_mode win above;
         # this covers direct AIAgent construction without a resolved runtime.
@@ -2953,7 +2953,7 @@ def init_agent(
             _clara_warn = _check_clara_model_warning(agent.model or "")
             if _clara_warn:
                 _user_msg = (
-                    "⚠ Claragram Clara 3 & 4 models are NOT agentic — they "
+                    "⚠ Claraship Clara 3 & 4 models are NOT agentic — they "
                     "lack reliable tool-calling for agent workflows (delegation, "
                     "cron, proactive tools). Consider an agentic model instead "
                     "(Claude, GPT, Gemini, Qwen-Coder, etc.)."

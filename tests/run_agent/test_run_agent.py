@@ -5316,7 +5316,7 @@ class TestClaraCredentialRefresh:
             captured.update(kwargs)
             return {
                 "api_key": "new-clara-key",
-                "base_url": "https://inference-api.claragram.com/v1",
+                "base_url": "https://inference-api.claraship.com/v1",
             }
 
         def _fake_openai(**kwargs):
@@ -5352,7 +5352,7 @@ class TestClaraCredentialRefresh:
         assert captured["force_refresh"] is True
         assert rebuilt["kwargs"]["api_key"] == "new-clara-key"
         assert (
-            rebuilt["kwargs"]["base_url"] == "https://inference-api.claragram.com/v1"
+            rebuilt["kwargs"]["base_url"] == "https://inference-api.claraship.com/v1"
         )
         assert "default_headers" not in rebuilt["kwargs"]
         assert isinstance(agent.client, _RebuiltClient)
@@ -5371,9 +5371,9 @@ class TestClaraCredentialRefresh:
         agent.api_mode = "anthropic_messages"
         agent.model = "anthropic/claude-opus-4.8"
         agent.api_key = "stale-clara-key"
-        agent.base_url = "https://inference-api.claragram.com/v1"
+        agent.base_url = "https://inference-api.claraship.com/v1"
         agent._anthropic_api_key = "stale-clara-key"
-        agent._anthropic_base_url = "https://inference-api.claragram.com/v1"
+        agent._anthropic_base_url = "https://inference-api.claraship.com/v1"
         agent._client_kwargs = {}
         agent.client = None
 
@@ -5387,7 +5387,7 @@ class TestClaraCredentialRefresh:
             captured.update(kwargs)
             return {
                 "api_key": "fresh-portal-jwt",
-                "base_url": "https://inference-api.claragram.com/v1",
+                "base_url": "https://inference-api.claraship.com/v1",
             }
 
         def _fake_rebuild():
@@ -5409,10 +5409,10 @@ class TestClaraCredentialRefresh:
         assert ok is True
         assert captured["force_refresh"] is True
         assert agent.api_key == "fresh-portal-jwt"
-        assert agent.base_url == "https://inference-api.claragram.com/v1"
+        assert agent.base_url == "https://inference-api.claraship.com/v1"
         assert agent._anthropic_api_key == "fresh-portal-jwt"
         assert agent._anthropic_base_url == (
-            "https://inference-api.claragram.com/v1"
+            "https://inference-api.claraship.com/v1"
         )
         assert rebuild_calls["count"] == 1
         assert isinstance(agent._anthropic_client, _RebuiltAnthropic)
@@ -5588,7 +5588,7 @@ class TestGpt5ApiModeRouting:
     def test_clara_gpt5_stays_on_chat_completions(self, agent):
         """Clara serves gpt-5.x on /chat/completions — must not upgrade to codex_responses."""
         agent.provider = "clara"
-        agent.base_url = "https://inference-api.claragram.com/v1"
+        agent.base_url = "https://inference-api.claraship.com/v1"
         agent.api_mode = "chat_completions"
         agent.model = "openai/gpt-5.5"
         if (

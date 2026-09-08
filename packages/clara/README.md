@@ -1,6 +1,6 @@
-# @claragram/clara ☤
+# @claraship/clara ☤
 
-The self-improving AI agent CLI launcher by **[Claragram](https://claragram.com)**.
+The self-improving AI agent CLI launcher by **[Claraship](https://claraship.com)**.
 
 Run Clara anywhere directly from your terminal with `npx` or install globally with `npm`.
 
@@ -8,10 +8,10 @@ Run Clara anywhere directly from your terminal with `npx` or install globally wi
 
 ```bash
 # Run immediately without global installation
-npx @claragram/clara
+npx @claraship/clara
 
 # Or install globally
-npm install -g @claragram/clara
+npm install -g @claraship/clara
 clara
 ```
 
@@ -24,11 +24,11 @@ clara
 
 ## Documentation & Links
 
-- 📖 **Documentation:** [https://claragram.com/docs/](https://claragram.com/docs/)
-- 🌐 **Website:** [https://claragram.com](https://claragram.com)
-- 💬 **Discord:** [https://discord.gg/Claragram](https://discord.gg/Claragram)
-- 🐙 **GitHub:** [https://github.com/claragram/clara-agent](https://github.com/claragram/clara-agent)
+- 📖 **Documentation:** [https://claraship.com/docs/](https://claraship.com/docs/)
+- 🌐 **Website:** [https://claraship.com](https://claraship.com)
+- 💬 **Discord:** [https://discord.gg/j9vzaxnsg](https://discord.gg/j9vzaxnsg)
+- 🐙 **GitHub:** [https://github.com/claraship/clara-agent](https://github.com/claraship/clara-agent)
 
 ## License
 
-MIT © [Claragram](https://claragram.com)
+MIT © [Claraship](https://claraship.com)

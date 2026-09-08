@@ -25,9 +25,9 @@
  * terminal pane keeps working unimpaired.
  */
 
-import { Button } from "@claragram/ui/ui/components/button";
-import { Badge } from "@claragram/ui/ui/components/badge";
-import { Card } from "@claragram/ui/ui/components/card";
+import { Button } from "@claraship/ui/ui/components/button";
+import { Badge } from "@claraship/ui/ui/components/badge";
+import { Card } from "@claraship/ui/ui/components/card";
 
 import { ModelPickerDialog } from "@/components/ModelPickerDialog";
 import { ModelReloadConfirm } from "@/components/ModelReloadConfirm";

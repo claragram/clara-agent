@@ -8,13 +8,13 @@ platforms: [linux, macos, windows]
 metadata:
   clara:
     tags: [clara, setup, configuration, multi-agent, spawning, cli, gateway, bots, bot-mode, features, themes, skins, desktop-plugins, tui-widgets, petdex, development]
-    homepage: https://github.com/claragram/clara-agent
+    homepage: https://github.com/claraship/clara-agent
     related_skills: [claude-code, codex, opencode]
 ---
 
 # Clara Agent
 
-Clara Agent is an open-source AI agent framework by Claragram that runs in your terminal, a native desktop app, messaging platforms, and IDEs. It's in the same category as Claude Code (Anthropic), Codex (OpenAI), and OpenClaw — autonomous coding and task-execution agents that use tool calling to interact with your system. Clara works with any LLM provider (OpenRouter, Anthropic, OpenAI, Google, DeepSeek, xAI, local models, and 20+ others) and runs on Linux, macOS, Windows, and WSL.
+Clara Agent is an open-source AI agent framework by Claraship that runs in your terminal, a native desktop app, messaging platforms, and IDEs. It's in the same category as Claude Code (Anthropic), Codex (OpenAI), and OpenClaw — autonomous coding and task-execution agents that use tool calling to interact with your system. Clara works with any LLM provider (OpenRouter, Anthropic, OpenAI, Google, DeepSeek, xAI, local models, and 20+ others) and runs on Linux, macOS, Windows, and WSL.
 
 What makes Clara different:
 
@@ -28,7 +28,7 @@ What makes Clara different:
 
 **This skill is a hub.** The body covers identity, quick start, spawning/orchestration, and hard invariants. Everything else lives in reference files — **load the matching reference (below) before answering**; do not answer detail questions from the body alone.
 
-**Docs:** https://agent.claragram.com/docs/
+**Docs:** https://agent.claraship.com/docs/
 
 ## Scope & Verification
 
@@ -36,9 +36,9 @@ This skill is a concise operating guide, not the complete source of truth for ev
 
 Good verification targets, cheapest first:
 
-- **Every shipped feature, one line each: https://agent.claragram.com/docs/llms.txt.** Start here for any "can Clara do X?" or "how do I do X?" — it indexes the entire documentation set with a link to the page that answers. It is generated from the docs tree on every build, so it is never behind the product. Fetch it with `web_extract`, or `curl -s https://agent.claragram.com/docs/llms.txt` when web tools are off. The whole documentation set in one file is at `/docs/llms-full.txt`.
+- **Every shipped feature, one line each: https://agent.claraship.com/docs/llms.txt.** Start here for any "can Clara do X?" or "how do I do X?" — it indexes the entire documentation set with a link to the page that answers. It is generated from the docs tree on every build, so it is never behind the product. Fetch it with `web_extract`, or `curl -s https://agent.claraship.com/docs/llms.txt` when web tools are off. The whole documentation set in one file is at `/docs/llms-full.txt`.
 - CLI commands: `clara --help`, `clara <command> --help`, and `clara_cli/main.py`
-- Source tree: https://github.com/claragram/clara-agent
+- Source tree: https://github.com/claraship/clara-agent
 
 Never answer "Clara can't do that" from memory. Clara ships far more than this skill body describes, and the index exists so a negative answer is always checkable.
 
@@ -46,7 +46,7 @@ Never answer "Clara can't do that" from memory. Clara ships far more than this s
 
 ```bash
 # Install (shell installer — sets up uv, Python, the venv, and the launcher)
-curl -fsSL https://agent.claragram.com/install.sh | bash
+curl -fsSL https://agent.claraship.com/install.sh | bash
 
 # Interactive chat (default surface; set display.interface: tui to launch the Ink TUI instead)
 clara
@@ -88,7 +88,7 @@ Profiles use `~/.clara/profiles/<name>/` with the same layout. When a profile is
 
 | User wants... | Load |
 |---|---|
-| **Anything not listed below — "can Clara do X?", "how do I set up X?"** | **https://agent.claragram.com/docs/llms.txt** |
+| **Anything not listed below — "can Clara do X?", "how do I set up X?"** | **https://agent.claraship.com/docs/llms.txt** |
 | Bots that chat, run routines, or message each other; the Bots tab | docs: `/user-guide/bot-mode` |
 | CLI commands, subcommands, flags, "how do I run X" | `references/cli-reference.md` |
 | In-session slash commands | `references/slash-commands.md` |

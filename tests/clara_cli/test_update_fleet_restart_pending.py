@@ -80,7 +80,7 @@ def _patch_update_deps(monkeypatch, tmp_path, run_side_effect):
     monkeypatch.setattr(
         clara_main,
         "_get_origin_url",
-        lambda *a, **k: "https://github.com/claragram/clara-agent.git",
+        lambda *a, **k: "https://github.com/claraship/clara-agent.git",
     )
     monkeypatch.setattr(clara_main, "_is_fork", lambda *a, **k: False)
     monkeypatch.setattr(

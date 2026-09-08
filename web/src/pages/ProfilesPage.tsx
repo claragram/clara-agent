@@ -23,25 +23,25 @@ import {
   X,
 } from "lucide-react";
 import spinners from "unicode-animations";
-import { H2 } from "@claragram/ui/ui/components/typography/h2";
+import { H2 } from "@claraship/ui/ui/components/typography/h2";
 import { api } from "@/lib/api";
 import type { ActiveProfileInfo, ProfileInfo } from "@/lib/api";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import { DeleteConfirmDialog } from "@/components/DeleteConfirmDialog";
-import { useToast } from "@claragram/ui/hooks/use-toast";
-import { useConfirmDelete } from "@claragram/ui/hooks/use-confirm-delete";
+import { useToast } from "@claraship/ui/hooks/use-toast";
+import { useConfirmDelete } from "@claraship/ui/hooks/use-confirm-delete";
 import { useModalBehavior } from "@/hooks/useModalBehavior";
-import { Toast } from "@claragram/ui/ui/components/toast";
-import { Card, CardContent } from "@claragram/ui/ui/components/card";
-import { Badge } from "@claragram/ui/ui/components/badge";
-import { Button } from "@claragram/ui/ui/components/button";
-import { Input } from "@claragram/ui/ui/components/input";
-import { Label } from "@claragram/ui/ui/components/label";
+import { Toast } from "@claraship/ui/ui/components/toast";
+import { Card, CardContent } from "@claraship/ui/ui/components/card";
+import { Badge } from "@claraship/ui/ui/components/badge";
+import { Button } from "@claraship/ui/ui/components/button";
+import { Input } from "@claraship/ui/ui/components/input";
+import { Label } from "@claraship/ui/ui/components/label";
 import {
   Select,
   SelectOption,
-} from "@claragram/ui/ui/components/select";
-import { Checkbox } from "@claragram/ui/ui/components/checkbox";
+} from "@claraship/ui/ui/components/select";
+import { Checkbox } from "@claraship/ui/ui/components/checkbox";
 import { useI18n } from "@/i18n";
 import { usePageHeader } from "@/contexts/usePageHeader";
 import { cn, themedBody } from "@/lib/utils";

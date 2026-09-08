@@ -31,7 +31,7 @@ class TestDoctorPlatformHints:
 
         hint = doctor._sqlite_upgrade_hint()
 
-        assert "docker pull claragram/clara-agent:latest" in hint
+        assert "docker pull claraship/clara-agent:latest" in hint
         assert "recreate all Clara containers" in hint
         assert "clara update" not in hint
 
@@ -1588,7 +1588,7 @@ class TestMacOSTCCGrants:
         monkeypatch.setattr(
             doctor_mod,
             "_macos_desktop_dr",
-            lambda app: 'designated => identifier "com.claragram.clara" and cdhash H"97e692f3890f781fa0ad5ad6cb9d769cfaf42628"',
+            lambda app: 'designated => identifier "com.claraship.clara" and cdhash H"97e692f3890f781fa0ad5ad6cb9d769cfaf42628"',
         )
         doctor_mod.check_macos_tcc_grants()
         out = capsys.readouterr().out
@@ -1607,7 +1607,7 @@ class TestMacOSTCCGrants:
         monkeypatch.setattr(
             doctor_mod,
             "_macos_desktop_dr",
-            lambda app: 'designated => identifier "com.claragram.clara"',
+            lambda app: 'designated => identifier "com.claraship.clara"',
         )
         doctor_mod.check_macos_tcc_grants()
         out = capsys.readouterr().out
@@ -1616,7 +1616,7 @@ class TestMacOSTCCGrants:
         # Identifier-pinned is stable but not the strongest anchor — the check
         # should point at the cert-anchored upgrade path.
         assert "--setup-tcc-identity" in out
-        assert "tccutil reset ScreenCapture com.claragram.clara" in out
+        assert "tccutil reset ScreenCapture com.claraship.clara" in out
         assert "toggle" in out
         assert "relaunch" in out
 
@@ -1633,14 +1633,14 @@ class TestMacOSTCCGrants:
         monkeypatch.setattr(
             doctor_mod,
             "_macos_desktop_dr",
-            lambda app: 'designated => identifier "com.claragram.clara" and certificate root = H"aabbcc"',
+            lambda app: 'designated => identifier "com.claraship.clara" and certificate root = H"aabbcc"',
         )
         doctor_mod.check_macos_tcc_grants()
         out = capsys.readouterr().out
         assert "TCC signing identity is stable" in out
         assert "certificate-anchored" in out
         assert "--setup-tcc-identity" not in out
-        assert "tccutil reset ScreenCapture com.claragram.clara" in out
+        assert "tccutil reset ScreenCapture com.claraship.clara" in out
 
     def test_warns_when_dr_unreadable(self, monkeypatch, capsys, tmp_path):
         """codesign failure → warn, never crash."""

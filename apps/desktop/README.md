@@ -1,13 +1,13 @@
 # Clara Desktop ☤
 
 <p align="center">
-  <a href="https://github.com/claragram/clara-agent/releases"><img src="https://img.shields.io/badge/Download-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-FFD700?style=for-the-badge" alt="Download"></a>
-  <a href="https://claragram.com/docs/"><img src="https://img.shields.io/badge/Docs-claragram.com-FFD700?style=for-the-badge" alt="Documentation"></a>
-  <a href="https://discord.gg/Claragram"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/claragram/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
+  <a href="https://github.com/claraship/clara-agent/releases"><img src="https://img.shields.io/badge/Download-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-FFD700?style=for-the-badge" alt="Download"></a>
+  <a href="https://claraship.com/docs/"><img src="https://img.shields.io/badge/Docs-claraship.com-FFD700?style=for-the-badge" alt="Documentation"></a>
+  <a href="https://discord.gg/j9vzaxnsg"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
+  <a href="https://github.com/claraship/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
 </p>
 
-**The native desktop app for [Clara Agent](../../README.md) — the self-improving AI agent from [Claragram](https://claragram.com).** Same agent, same skills, same memory as the CLI and gateway, in a polished native window — chat with streaming tool output, side-by-side previews, a file browser, voice, and settings, no terminal required. Available for **macOS, Windows, and Linux**.
+**The native desktop app for [Clara Agent](../../README.md) — the self-improving AI agent from [Claraship](https://claraship.com).** Same agent, same skills, same memory as the CLI and gateway, in a polished native window — chat with streaming tool output, side-by-side previews, a file browser, voice, and settings, no terminal required. Available for **macOS, Windows, and Linux**.
 
 <table>
 <tr><td><b>Chat with the full agent</b></td><td>Streaming responses, live tool activity, structured tool summaries, and the same conversation history as every other Clara surface.</td></tr>
@@ -34,7 +34,7 @@ It builds and launches the GUI against your existing install — same config, ke
 
 ### Prebuilt installers
 
-Prebuilt installers are built and distributed via [the Clara Desktop website.](https://claragram.com/).
+Prebuilt installers are built and distributed via [the Clara Desktop website.](https://claraship.com/).
 
 ---
 
@@ -213,7 +213,7 @@ rm "$HOME/.clara/clara-agent/.clara-bootstrap-complete"
 # Rebuild a broken Python venv
 rm -rf "$HOME/.clara/clara-agent/venv"
 # Reset a stuck macOS microphone prompt (macOS only)
-tccutil reset Microphone com.claragram.clara
+tccutil reset Microphone com.claraship.clara
 ```
 
 **Windows (PowerShell):**
@@ -231,9 +231,9 @@ Remove-Item -Recurse -Force "$env:LOCALAPPDATA\clara\clara-agent\venv"
 
 ## Community
 
-- 💬 [Discord](https://discord.gg/Claragram)
-- 📖 [Documentation](https://claragram.com/docs/)
-- 🐛 [Issues](https://github.com/claragram/clara-agent/issues)
+- 💬 [Discord](https://discord.gg/j9vzaxnsg)
+- 📖 [Documentation](https://claraship.com/docs/)
+- 🐛 [Issues](https://github.com/claraship/clara-agent/issues)
 
 ---
 
@@ -241,4 +241,4 @@ Remove-Item -Recurse -Force "$env:LOCALAPPDATA\clara\clara-agent\venv"
 
 MIT — see [LICENSE](../../LICENSE).
 
-Built by [Claragram](https://claragram.com).
+Built by [Claraship](https://claraship.com).

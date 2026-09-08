@@ -289,7 +289,7 @@ class TestResolveVisionMainFirst:
         """
         clara_client = MagicMock()
         clara_client.api_key = "jwt-test"
-        clara_client.base_url = "https://inference-api.claragram.com/v1"
+        clara_client.base_url = "https://inference-api.claraship.com/v1"
 
         def fake_try_clara(vision=False):
             seen["vision"] = vision

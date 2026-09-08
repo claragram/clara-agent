@@ -4,9 +4,9 @@ import { resolvePluginSourceLinks } from './plugin-source-urls'
 
 describe('resolvePluginSourceLinks', () => {
   it('maps owner/repo to github browse and clone urls', () => {
-    expect(resolvePluginSourceLinks('claragram/clara-example-plugins')).toEqual({
-      gitUrl: 'https://github.com/claragram/clara-example-plugins.git',
-      browseUrl: 'https://github.com/claragram/clara-example-plugins',
+    expect(resolvePluginSourceLinks('claraship/clara-example-plugins')).toEqual({
+      gitUrl: 'https://github.com/claraship/clara-example-plugins.git',
+      browseUrl: 'https://github.com/claraship/clara-example-plugins',
       subdir: null
     })
   })

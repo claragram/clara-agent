@@ -4902,7 +4902,7 @@ def _build_compact_banner() -> str:
 
     w = min(shutil.get_terminal_size().columns - 2, 88)
     if w < 30:
-        return f"\n[{title_color}]{tiny_line}[/] [dim {dim_color}]- Claragram[/]\n"
+        return f"\n[{title_color}]{tiny_line}[/] [dim {dim_color}]- Claraship[/]\n"
 
     inner = w - 2  # inside the box border
     bar = "═" * w
@@ -9140,7 +9140,7 @@ class ClaraCLI(CLIAgentSetupMixin, CLICommandsMixin, CLIBillingMixin):
         if is_clara_clara_non_agentic(model_name):
             self._console_print()
             self._console_print(
-                "[bold yellow]⚠  Claragram Clara 3 & 4 models are NOT agentic and are not "
+                "[bold yellow]⚠  Claraship Clara 3 & 4 models are NOT agentic and are not "
                 "designed for use with Clara Agent.[/]"
             )
             self._console_print(

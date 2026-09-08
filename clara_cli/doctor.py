@@ -1082,7 +1082,7 @@ def check_macos_tcc_grants() -> None:
     keeps the System Settings toggle ON while macOS re-prompts on every
     capture (issue #86385).
 
-    Post-#73681 builds pin ``designated => identifier "com.claragram.clara"``
+    Post-#73681 builds pin ``designated => identifier "com.claraship.clara"``
     (no cdhash), so new grants survive rebuilds — but grants made to older
     binaries remain stale until re-granted once. The stale state is not
     directly readable (TCC.db needs Full Disk Access), so this check reports
@@ -1130,7 +1130,7 @@ def check_macos_tcc_grants() -> None:
         )
     check_info(
         "If macOS still re-prompts for permissions (toggle shows ON): the stored "
-        "grant is stale — run `tccutil reset ScreenCapture com.claragram.clara` "
+        "grant is stale — run `tccutil reset ScreenCapture com.claraship.clara` "
         "(repeat per affected service), toggle it ON in System Settings, then "
         "fully quit & relaunch Clara once."
     )
@@ -1145,7 +1145,7 @@ def _desktop_app_bundle() -> Path | None:
     trees coexist (stale cross-build), the newest wins, matching
     ``_desktop_packaged_executable``'s selection. ``/Applications/Clara.app``
     is deliberately not probed: it is the separately-signed Clara-Setup
-    launcher (``com.claragram.clara.setup``, certificate-anchored), whose
+    launcher (``com.claraship.clara.setup``, certificate-anchored), whose
     grants are stable by construction and unaffected by rebuilds.
     """
     root = Path(__file__).resolve().parents[1]

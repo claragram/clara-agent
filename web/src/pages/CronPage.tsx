@@ -4,11 +4,11 @@ import {
   createCronTriggerController,
 } from "@clara/shared";
 import { Clock, Pause, Pencil, Play, Trash2, X, Zap } from "lucide-react";
-import { Badge } from "@claragram/ui/ui/components/badge";
-import { Button } from "@claragram/ui/ui/components/button";
-import { Select, SelectOption } from "@claragram/ui/ui/components/select";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
-import { H2 } from "@claragram/ui/ui/components/typography/h2";
+import { Badge } from "@claraship/ui/ui/components/badge";
+import { Button } from "@claraship/ui/ui/components/button";
+import { Select, SelectOption } from "@claraship/ui/ui/components/select";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
+import { H2 } from "@claraship/ui/ui/components/typography/h2";
 import { api } from "@/lib/api";
 import type {
   CronJob,
@@ -38,17 +38,17 @@ import {
   type ScheduleBuilderState,
   type ScheduleDescribeStrings,
 } from "@/lib/schedule";
-import { useToast } from "@claragram/ui/hooks/use-toast";
-import { useConfirmDelete } from "@claragram/ui/hooks/use-confirm-delete";
+import { useToast } from "@claraship/ui/hooks/use-toast";
+import { useConfirmDelete } from "@claraship/ui/hooks/use-confirm-delete";
 import { useModalBehavior } from "@/hooks/useModalBehavior";
-import { Toast } from "@claragram/ui/ui/components/toast";
-import { Card, CardContent } from "@claragram/ui/ui/components/card";
-import { Input } from "@claragram/ui/ui/components/input";
-import { Label } from "@claragram/ui/ui/components/label";
+import { Toast } from "@claraship/ui/ui/components/toast";
+import { Card, CardContent } from "@claraship/ui/ui/components/card";
+import { Input } from "@claraship/ui/ui/components/input";
+import { Label } from "@claraship/ui/ui/components/label";
 import { useI18n } from "@/i18n";
 import { usePageHeader } from "@/contexts/usePageHeader";
 import { PluginSlot } from "@/plugins";
-import { Segmented } from "@claragram/ui/ui/components/segmented";
+import { Segmented } from "@claraship/ui/ui/components/segmented";
 import { AutomationBlueprints } from "@/components/AutomationBlueprints";
 import { cn, themedBody } from "@/lib/utils";
 

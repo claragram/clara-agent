@@ -76,10 +76,10 @@ describe('resolveOauthPartition (#92183 per-connection cookie jars)', () => {
 
   it('keeps cloud connections on the legacy partition (silent portal cascade needs the shared jar)', () => {
     const reg = registry('local', [
-      { id: 'cloud-1', kind: 'cloud', url: 'https://agent.claragram.com', authMode: 'oauth' }
+      { id: 'cloud-1', kind: 'cloud', url: 'https://agent.claraship.com', authMode: 'oauth' }
     ])
 
-    expect(resolveOauthPartition('https://agent.claragram.com/api/status', { registry: reg })).toBe(
+    expect(resolveOauthPartition('https://agent.claraship.com/api/status', { registry: reg })).toBe(
       LEGACY_OAUTH_PARTITION
     )
   })
@@ -93,7 +93,7 @@ describe('resolveOauthPartition (#92183 per-connection cookie jars)', () => {
   it('falls back to the legacy partition for unmatched, portal, and malformed inputs', () => {
     const reg = registry('local', [remote('conn-a', 'https://gw-a.example.com')])
 
-    expect(resolveOauthPartition('https://portal.claragram.com/api/agents', { registry: reg })).toBe(
+    expect(resolveOauthPartition('https://portal.claraship.com/api/agents', { registry: reg })).toBe(
       LEGACY_OAUTH_PARTITION
     )
     expect(resolveOauthPartition('not a url', { registry: reg })).toBe(LEGACY_OAUTH_PARTITION)

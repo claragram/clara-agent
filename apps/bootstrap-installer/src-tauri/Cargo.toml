@@ -2,7 +2,7 @@
 name = "clara-bootstrap"
 version = "0.0.1"
 description = "Clara Setup — signed installer that drives scripts/install.ps1"
-authors = ["Claragram <info@claragram.com>"]
+authors = ["Claraship <hey@claraship.com>"]
 edition = "2021"
 rust-version = "1.77"
 

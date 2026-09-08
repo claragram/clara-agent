@@ -319,7 +319,7 @@ _IMAGE_TOO_LARGE_PATTERNS = [
 # Matched as the full observed sentence on purpose — shorter fragments
 # ("downloaded response does not contain a valid") also match non-image
 # download failures and would misroute them into strip-and-retry.
-# See: https://github.com/claragram/clara-agent/issues/69078
+# See: https://github.com/claraship/clara-agent/issues/69078
 _IMAGE_CORRUPT_PATTERNS = [
     "invalid png image",
     "invalid jpeg image",
@@ -337,7 +337,7 @@ _IMAGE_CORRUPT_PATTERNS = [
 # messages in-place, record the (provider, model) for the rest of the
 # session so we don't waste another call learning the same lesson, retry.
 #
-# See: https://github.com/claragram/clara-agent/issues/27344
+# See: https://github.com/claraship/clara-agent/issues/27344
 _MULTIMODAL_TOOL_CONTENT_PATTERNS = [
     # Xiaomi MiMo: {"error":{"code":"400","message":"Param Incorrect","param":"text is not set"}}
     "text is not set",

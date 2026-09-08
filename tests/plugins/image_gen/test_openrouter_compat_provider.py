@@ -383,7 +383,7 @@ class TestGenerate:
     def test_posts_to_resolved_base_url(self):
         """Clara routes to its own base URL — proves the same code serves both."""
         clara_runtime = _runtime_ok(
-            provider="clara", base_url="https://inference.claragram.com/v1", api_key="clara-tok"
+            provider="clara", base_url="https://inference.claraship.com/v1", api_key="clara-tok"
         )
         with patch(_RUNTIME, return_value=clara_runtime), \
              patch("requests.post", return_value=_mock_chat_response([_PNG_DATA_URI])) as mock_post, \
@@ -396,7 +396,7 @@ class TestGenerate:
         assert result["success"] is True
         assert result["provider"] == "clara"
         url = mock_post.call_args[0][0]
-        assert url == "https://inference.claragram.com/v1/chat/completions"
+        assert url == "https://inference.claraship.com/v1/chat/completions"
 
     def test_api_error(self):
         import requests as req_lib
@@ -576,7 +576,7 @@ class TestImageApiSurface:
         from plugins.image_gen.openrouter import _build_providers
 
         clara_runtime = _runtime_ok(
-            provider="clara", base_url="https://inference.claragram.com/v1", api_key="clara-tok"
+            provider="clara", base_url="https://inference.claraship.com/v1", api_key="clara-tok"
         )
         with patch(_RUNTIME, return_value=clara_runtime), \
              patch("requests.post", return_value=_mock_chat_response([_PNG_DATA_URI])) as mock_post, \
@@ -585,7 +585,7 @@ class TestImageApiSurface:
             result = clara.generate(prompt="a pet", model="openai/gpt-image-2")
 
         assert result["success"] is True
-        assert mock_post.call_args[0][0] == "https://inference.claragram.com/v1/chat/completions"
+        assert mock_post.call_args[0][0] == "https://inference.claraship.com/v1/chat/completions"
 
     # -- per-model parameter filtering ------------------------------------
 

@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { H2 } from "@claragram/ui/ui/components/typography/h2";
-import { Card, CardContent } from "@claragram/ui/ui/components/card";
-import { Badge } from "@claragram/ui/ui/components/badge";
-import { Button } from "@claragram/ui/ui/components/button";
-import { Input } from "@claragram/ui/ui/components/input";
-import { Label } from "@claragram/ui/ui/components/label";
-import { Checkbox } from "@claragram/ui/ui/components/checkbox";
-import { Toast } from "@claragram/ui/ui/components/toast";
-import { useToast } from "@claragram/ui/hooks/use-toast";
+import { H2 } from "@claraship/ui/ui/components/typography/h2";
+import { Card, CardContent } from "@claraship/ui/ui/components/card";
+import { Badge } from "@claraship/ui/ui/components/badge";
+import { Button } from "@claraship/ui/ui/components/button";
+import { Input } from "@claraship/ui/ui/components/input";
+import { Label } from "@claraship/ui/ui/components/label";
+import { Checkbox } from "@claraship/ui/ui/components/checkbox";
+import { Toast } from "@claraship/ui/ui/components/toast";
+import { useToast } from "@claraship/ui/hooks/use-toast";
 import { api } from "@/lib/api";
 import type {
   McpHttpAuth,

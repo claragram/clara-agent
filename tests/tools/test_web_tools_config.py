@@ -73,14 +73,14 @@ class TestFirecrawlClientConfig:
 
     def test_tool_gateway_domain_builds_firecrawl_gateway_origin(self):
         """Shared gateway domain should derive the Firecrawl vendor hostname."""
-        with patch.dict(os.environ, {"TOOL_GATEWAY_DOMAIN": "claragram.com"}):
+        with patch.dict(os.environ, {"TOOL_GATEWAY_DOMAIN": "claraship.com"}):
             with patch("tools.web_tools._read_clara_access_token", return_value="clara-token"):
                 with patch("tools.web_tools.Firecrawl") as mock_fc:
                     from tools.web_tools import _get_firecrawl_client
                     result = _get_firecrawl_client()
                     mock_fc.assert_called_once_with(
                         api_key="clara-token",
-                        api_url="https://firecrawl-gateway.claragram.com",
+                        api_url="https://firecrawl-gateway.claraship.com",
                     )
                     assert result is mock_fc.return_value
 

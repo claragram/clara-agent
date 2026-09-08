@@ -30,7 +30,7 @@ Prices are FAL's pricing at time of writing; check [fal.ai](https://fal.ai/) for
 ## Setup
 
 :::tip Clara Subscribers
-If you have a paid [Clara Portal](https://portal.claragram.com) subscription, you can use image generation through the **[Tool Gateway](tool-gateway.md)** without a FAL API key. Your model selection persists across both paths. New installs can run `clara setup --portal` to log in and turn on every gateway tool at once; existing installs can pick **Clara Subscription** as the image-gen backend via `clara tools`.
+If you have a paid [Clara Portal](https://portal.claraship.com) subscription, you can use image generation through the **[Tool Gateway](tool-gateway.md)** without a FAL API key. Your model selection persists across both paths. New installs can run `clara setup --portal` to log in and turn on every gateway tool at once; existing installs can pick **Clara Subscription** as the image-gen backend via `clara tools`.
 
 If the managed gateway returns `HTTP 4xx` for a specific model, that model isn't yet proxied on the portal side — the agent will tell you so, with remediation steps (switch to FAL.ai in `clara tools` with your own `FAL_KEY` for direct access, or pick a different model).
 :::

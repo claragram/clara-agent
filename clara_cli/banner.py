@@ -138,12 +138,12 @@ _UPDATE_CHECK_CACHE_SECONDS = 6 * 3600
 # (e.g. nix-built clara — no local git history to count against).
 UPDATE_AVAILABLE_NO_COUNT = -1
 
-_UPSTREAM_REPO_URL = "https://github.com/claragram/clara-agent.git"
-_OFFICIAL_REPO_CANONICAL = "github.com/claragram/clara-agent"
+_UPSTREAM_REPO_URL = "https://github.com/claraship/clara-agent.git"
+_OFFICIAL_REPO_CANONICAL = "github.com/claraship/clara-agent"
 _OFFICIAL_REPO_CANONICALS = {
-    "github.com/claragram/clara-agent",
-    "github.com/claragram/clara-agent",
-    "github.com/claragram/clara-agent",
+    "github.com/claraship/clara-agent",
+    "github.com/claraship/clara-agent",
+    "github.com/claraship/clara-agent",
 }
 
 
@@ -212,7 +212,7 @@ def _github_compare_behind(current_rev: str, target_rev: str) -> Optional[int]:
     if not (_is_full_sha(current_rev) and _is_full_sha(target_rev)):
         return None
     url = (
-        "https://api.github.com/repos/claragram/clara-agent/"
+        "https://api.github.com/repos/claraship/clara-agent/"
         f"compare/{current_rev}...{target_rev}"
     )
     try:
@@ -604,7 +604,7 @@ def _compute_git_banner_state(repo_dir: Optional[Path] = None) -> Optional[dict]
     return {"upstream": upstream, "local": local, "ahead": max(ahead, 0)}
 
 
-_RELEASE_URL_BASE = "https://github.com/claragram/clara-agent/releases/tag"
+_RELEASE_URL_BASE = "https://github.com/claraship/clara-agent/releases/tag"
 _latest_release_cache: Optional[tuple] = None  # (tag, url) once resolved
 
 
@@ -613,7 +613,7 @@ def get_latest_release_tag(repo_dir: Optional[Path] = None) -> Optional[tuple]:
 
     Local-only — runs ``git describe --tags --abbrev=0`` against the
     Clara checkout. Cached per-process. Release URL always points at the
-    canonical Claragram/clara-agent repo (forks don't get a link).
+    canonical Claraship/clara-agent repo (forks don't get a link).
     """
     global _latest_release_cache
     if _latest_release_cache is not None:
@@ -1045,7 +1045,7 @@ def build_welcome_banner(console: "Console", model: str, cwd: str,
             preset_name = preset_name[:25] + "..."
         agg_str = f" [dim {dim}]·[/] [dim {dim}]agg {agg_label}[/]" if agg_label else ""
         ctx_str = f" [dim {dim}]·[/] [dim {dim}]{_format_context_length(context_length)} context[/]" if context_length else ""
-        left_lines.append(f"[{accent}]MoA: {preset_name}[/]{agg_str}{ctx_str} [dim {dim}]·[/] [dim {dim}]Claragram[/]")
+        left_lines.append(f"[{accent}]MoA: {preset_name}[/]{agg_str}{ctx_str} [dim {dim}]·[/] [dim {dim}]Claraship[/]")
     else:
         if not (model or "").strip() or (model or "").strip().lower() == "unknown":
             # Unconfigured install: say so in red instead of a blank/"unknown"
@@ -1062,7 +1062,7 @@ def build_welcome_banner(console: "Console", model: str, cwd: str,
             if len(model_short) > 28:
                 model_short = model_short[:25] + "..."
             ctx_str = f" [dim {dim}]·[/] [dim {dim}]{_format_context_length(context_length)} context[/]" if context_length else ""
-            left_lines.append(f"[{accent}]{model_short}[/]{ctx_str} [dim {dim}]·[/] [dim {dim}]Claragram[/]")
+            left_lines.append(f"[{accent}]{model_short}[/]{ctx_str} [dim {dim}]·[/] [dim {dim}]Claraship[/]")
 
     if os.getenv("CLARA_YOLO_MODE"):
         left_lines.append(f"[bold red]⚠ YOLO mode[/] [dim {dim}]— all approval prompts bypassed[/]")

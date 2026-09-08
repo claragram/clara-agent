@@ -118,7 +118,7 @@ kimi = KimiProfile(
     fixed_temperature=OMIT_TEMPERATURE,
     default_max_tokens=32000,
     default_headers={
-        "HTTP-Referer": "https://agent.claragram.com",
+        "HTTP-Referer": "https://agent.claraship.com",
         "X-Title": "Clara Agent",
         "User-Agent": f"ClaraAgent/{_CLARA_VERSION}",
     },
@@ -133,7 +133,7 @@ kimi_cn = KimiProfile(
     fixed_temperature=OMIT_TEMPERATURE,
     default_max_tokens=32000,
     default_headers={
-        "HTTP-Referer": "https://agent.claragram.com",
+        "HTTP-Referer": "https://agent.claraship.com",
         "X-Title": "Clara Agent",
         "User-Agent": f"ClaraAgent/{_CLARA_VERSION}",
     },

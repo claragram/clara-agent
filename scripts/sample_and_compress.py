@@ -28,11 +28,11 @@ load_dotenv()
 
 # Default datasets to sample from
 DEFAULT_DATASETS = [
-    "Claragram/swe-terminus-agent-glm-kimi-minimax",
-    "claragram/clara-agent-megascience-sft1",
-    "Claragram/Clara-Agent-Thinking-GLM-4.7-SFT2",
-    "Claragram/Clara-Agent-Thinking-GLM-4.7-SFT1",
-    "Claragram/terminal-tasks-glm-clara-agent"
+    "Claraship/swe-terminus-agent-glm-kimi-minimax",
+    "claraship/clara-agent-megascience-sft1",
+    "Claraship/Clara-Agent-Thinking-GLM-4.7-SFT2",
+    "Claraship/Clara-Agent-Thinking-GLM-4.7-SFT1",
+    "Claraship/terminal-tasks-glm-clara-agent"
 ]
 
 
@@ -41,7 +41,7 @@ def load_dataset_from_hf(dataset_name: str) -> List[Dict[str, Any]]:
     Load a dataset from HuggingFace.
     
     Args:
-        dataset_name: HuggingFace dataset name (e.g., "Claragram/dataset-name")
+        dataset_name: HuggingFace dataset name (e.g., "Claraship/dataset-name")
         
     Returns:
         List of trajectory entries
@@ -402,7 +402,7 @@ def main(
     print(f"📁 Compressed batches: {compressed_dir}")
     print(f"📁 Final output:       {final_output}")
     print("\nTo upload to HuggingFace:")
-    print(f"   huggingface-cli upload Claragram/{output_name} {final_output}")
+    print(f"   huggingface-cli upload Claraship/{output_name} {final_output}")
 
 
 if __name__ == "__main__":

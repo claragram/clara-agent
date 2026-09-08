@@ -11,7 +11,7 @@
 #
 services:
   gateway:
-    image: claragram/clara-agent:latest
+    image: claraship/clara-agent:latest
     container_name: clara
     restart: unless-stopped
     volumes:
@@ -22,7 +22,7 @@ services:
     command: ["gateway", "run"]
 
   dashboard:
-    image: claragram/clara-agent:latest
+    image: claraship/clara-agent:latest
     container_name: clara-dashboard
     restart: unless-stopped
     depends_on:

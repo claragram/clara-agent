@@ -17,8 +17,8 @@ use, web search, and 22 messaging platforms were absent from the index every
 LLM reads to learn what Clara does.
 
 Both publish at:
-  https://agent.claragram.com/docs/llms.txt
-  https://agent.claragram.com/docs/llms-full.txt
+  https://agent.claraship.com/docs/llms.txt
+  https://agent.claraship.com/docs/llms-full.txt
 
 The `/docs/` prefix is not a mistake — Docusaurus serves `website/static/`
 at the `docs/` base path. Clients and IDE plugins that probe the classic
@@ -39,7 +39,7 @@ WEBSITE = SCRIPT_DIR.parent
 DOCS = WEBSITE / "docs"
 STATIC = WEBSITE / "static"
 
-SITE_BASE = "https://agent.claragram.com/docs"
+SITE_BASE = "https://agent.claraship.com/docs"
 
 # The product story: which pages lead, and in what order. Everything not named
 # here is still indexed — ABSORB decides where it lands — so this list is safe
@@ -296,7 +296,7 @@ def emit_llms_index() -> str:
     lines.append("# Clara Agent")
     lines.append("")
     lines.append(
-        "> The self-improving AI agent built by Claragram. A terminal-native "
+        "> The self-improving AI agent built by Claraship. A terminal-native "
         "autonomous coding and task agent with persistent memory, agent-created skills, "
         "and a messaging gateway that lives on 21+ messaging platforms — 19 native to "
         "the gateway plus IRC and Microsoft Teams via plugins (Telegram, Discord, Slack, "
@@ -306,12 +306,12 @@ def emit_llms_index() -> str:
     )
     lines.append("")
     lines.append(
-        "Install: `curl -fsSL https://raw.githubusercontent.com/Claragram/"
+        "Install: `curl -fsSL https://raw.githubusercontent.com/Claraship/"
         "clara-agent/main/scripts/install.sh | bash`  "
         "(Linux, macOS, WSL2, Termux)"
     )
     lines.append("")
-    lines.append("Repo: https://github.com/claragram/clara-agent")
+    lines.append("Repo: https://github.com/claraship/clara-agent")
     lines.append("")
 
     for section, items in SECTIONS:
@@ -345,8 +345,8 @@ def emit_llms_full() -> str:
             "Started, Using Clara, Features, Messaging, Integrations, Guides, "
             "Developer Guide, Reference, then everything else.\n"
         ),
-        "Canonical site: https://agent.claragram.com/docs\n",
-        "Short index: https://agent.claragram.com/docs/llms.txt\n",
+        "Canonical site: https://agent.claraship.com/docs\n",
+        "Short index: https://agent.claraship.com/docs/llms.txt\n",
         "\n---\n\n",
     ]
 

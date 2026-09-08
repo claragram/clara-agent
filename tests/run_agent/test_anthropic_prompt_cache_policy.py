@@ -659,7 +659,7 @@ class TestQwenAlibabaFamily:
         # provider=opencode/alibaba) and serves 0% cache hits.
         agent = _make_agent(
             provider="clara",
-            base_url="https://inference-api.claragram.com/v1",
+            base_url="https://inference-api.claraship.com/v1",
             api_mode="chat_completions",
             model="qwen3.6-plus",
         )
@@ -671,7 +671,7 @@ class TestQwenAlibabaFamily:
         # routed through Portal keep their existing fall-through behavior.
         agent = _make_agent(
             provider="clara",
-            base_url="https://inference-api.claragram.com/v1",
+            base_url="https://inference-api.claraship.com/v1",
             api_mode="chat_completions",
             model="openai/gpt-5.4",
         )
@@ -998,7 +998,7 @@ class TestClaraPortalAnthropicWire:
     def test_portal_claude_on_the_messages_wire_uses_the_native_layout(self):
         agent = _make_agent(
             provider="clara",
-            base_url="https://inference-api.claragram.com/v1",
+            base_url="https://inference-api.claraship.com/v1",
             api_mode="anthropic_messages",
             model="anthropic/claude-opus-4.8",
         )
@@ -1009,7 +1009,7 @@ class TestClaraPortalAnthropicWire:
         /chat/completions must not be flipped to inner-block markers."""
         agent = _make_agent(
             provider="clara",
-            base_url="https://inference-api.claragram.com/v1",
+            base_url="https://inference-api.claraship.com/v1",
             api_mode="chat_completions",
             model="anthropic/claude-opus-4.8",
         )

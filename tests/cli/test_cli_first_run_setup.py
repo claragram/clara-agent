@@ -177,7 +177,7 @@ def test_offer_first_run_setup_routes_into_shared_picker(monkeypatch):
         lambda **kw: {
             "provider": "clara",
             "api_key": "portal-token",
-            "base_url": "https://inference-api.claragram.com/v1",
+            "base_url": "https://inference-api.claraship.com/v1",
             "source": "oauth",
         },
     )

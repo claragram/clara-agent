@@ -691,7 +691,7 @@ class TestChatCompletionsGeminiNativeExtraBodyStrip:
             [{"role": "user", "content": "hi"}],
             None,
             provider_profile=self._clara_profile(),
-            base_url="https://inference.claragram.com/v1",
+            base_url="https://inference.claraship.com/v1",
             session_id="s1",
             max_tokens=None,
         )

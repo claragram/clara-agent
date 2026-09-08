@@ -142,7 +142,7 @@ class TestConstruction:
             client_id="agent:inst1", portal_url="https://portal.example.com"
         )
         assert p.name == "clara"
-        assert p.display_name == "Claragram"
+        assert p.display_name == "Claraship"
 
     def test_extracts_agent_instance_id(self):
         p = clara_plugin.ClaraDashboardAuthProvider(
@@ -191,7 +191,7 @@ class TestPluginRegister:
         ctx.register_dashboard_auth_provider.assert_called_once()
         registered = ctx.register_dashboard_auth_provider.call_args.args[0]
         assert isinstance(registered, clara_plugin.ClaraDashboardAuthProvider)
-        assert registered._portal_url == "https://portal.claragram.com"
+        assert registered._portal_url == "https://portal.claraship.com"
         # Skip reason cleared on successful registration.
         assert clara_plugin.LAST_SKIP_REASON == ""
 
@@ -205,7 +205,7 @@ class TestPluginRegister:
         ctx = MagicMock()
         clara_plugin.register(ctx)
         registered = ctx.register_dashboard_auth_provider.call_args.args[0]
-        assert registered._portal_url == "https://portal.claragram.com"
+        assert registered._portal_url == "https://portal.claraship.com"
 
 
 # ---------------------------------------------------------------------------
@@ -257,7 +257,7 @@ class TestConfigYamlSource:
         assert registered._client_id == "agent:from-config"
         # Defaults to production portal URL when neither config nor env
         # specifies one.
-        assert registered._portal_url == "https://portal.claragram.com"
+        assert registered._portal_url == "https://portal.claraship.com"
 
 
     def test_env_overrides_config_client_id(self, patch_config, monkeypatch):

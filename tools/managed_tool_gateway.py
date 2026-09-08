@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 from clara_constants import get_clara_home
 from tools.tool_backend_helpers import managed_clara_tools_enabled
 
-_DEFAULT_TOOL_GATEWAY_DOMAIN = "claragram.com"
+_DEFAULT_TOOL_GATEWAY_DOMAIN = "claraship.com"
 _DEFAULT_TOOL_GATEWAY_SCHEME = "https"
 _CLARA_ACCESS_TOKEN_REFRESH_SKEW_SECONDS = 120
 

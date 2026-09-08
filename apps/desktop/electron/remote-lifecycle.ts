@@ -176,7 +176,7 @@ async function locateClara(ssh, remoteClaraPath) {
     //   - version checking: `<python> --version` printed "Python x.y.z" instead of
     //     the Clara version, and
     //   - capability probing: `<python> serve --help` failed entirely.
-    // See https://github.com/claragram/clara-agent/issues/74411
+    // See https://github.com/claraship/clara-agent/issues/74411
     return candidate
   }
 
@@ -236,7 +236,7 @@ async function locateClara(ssh, remoteClaraPath) {
 
   const err: any = new Error(
     'Clara is not installed on the remote host (could not find a `clara` executable). ' +
-      'Install it on the remote with:  curl -fsSL https://agent.claragram.com/install.sh | sh  ' +
+      'Install it on the remote with:  curl -fsSL https://agent.claraship.com/install.sh | sh  ' +
       '— or set the Clara path explicitly in the SSH connection settings.'
   )
 

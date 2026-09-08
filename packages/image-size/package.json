@@ -1,7 +1,7 @@
 {
-  "name": "@claragram/image-size",
+  "name": "@claraship/image-size",
   "version": "2.0.4",
-  "description": "get dimensions of any image file (Claragram security-hardened fork)",
+  "description": "get dimensions of any image file (Claraship security-hardened fork)",
   "publishConfig": {
     "access": "public"
   },
@@ -81,14 +81,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/claragram/clara-agent.git",
+    "url": "https://github.com/claraship/clara-agent.git",
     "directory": "packages/image-size"
   },
-  "homepage": "https://claragram.com",
+  "homepage": "https://claraship.com",
   "bugs": {
-    "url": "https://github.com/claragram/clara-agent/issues"
+    "url": "https://github.com/claraship/clara-agent/issues"
   },
-  "author": "Claragram (originally netroy)",
+  "author": "Claraship (originally netroy)",
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "1.9.4",

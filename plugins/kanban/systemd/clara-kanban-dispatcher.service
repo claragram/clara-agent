@@ -15,7 +15,7 @@
 
 [Unit]
 Description=Clara Kanban dispatcher (DEPRECATED standalone daemon — prefer gateway-embedded dispatch)
-Documentation=https://agent.claragram.com/docs/user-guide/features/kanban
+Documentation=https://agent.claraship.com/docs/user-guide/features/kanban
 After=network.target
 
 [Service]

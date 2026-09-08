@@ -1,21 +1,21 @@
-# @claragram/ui
+# @claraship/ui
 
-The shared design system for React UI @ Claragram. Components, hooks, utils, fonts, overlays, and design tokens.
+The shared design system for React UI @ Claraship. Components, hooks, utils, fonts, overlays, and design tokens.
 
 ## Setup
 
 ```bash
-npm i @claragram/ui
+npm i @claraship/ui
 # or
-pnpm i @claragram/ui
+pnpm i @claraship/ui
 ```
 
 Import global styles and fonts in your app's root CSS:
 
 ```css
 @import 'tailwindcss';
-@import '@claragram/ui/styles/fonts.css';
-@import '@claragram/ui/styles/globals.css';
+@import '@claraship/ui/styles/fonts.css';
+@import '@claraship/ui/styles/globals.css';
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ import {
   Grid,
   Card,
   Dialog
-} from '@claragram/ui'
+} from '@claraship/ui'
 ```
 
 ## local development
@@ -62,7 +62,7 @@ pnpm build     # tsc → dist/ + copies css / fonts / assets
 releases are published automatically when PRs merge to `main`. the github
 workflow bumps the package version from the merged PR labels (`major`, `minor`,
 or `patch`), pushes the tag, publishes to npm via trusted publishing, and
-creates a [GitHub Release](https://github.com/claragram/clara-agent/releases)
+creates a [GitHub Release](https://github.com/claraship/clara-agent/releases)
 with notes from `CHANGELOG.md`.
 
 before merging:

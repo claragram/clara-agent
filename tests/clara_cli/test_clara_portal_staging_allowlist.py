@@ -4,7 +4,7 @@ _ALLOWED_CLARA_INFERENCE_HOSTS treatment.
 
 Real incident (2026-07): a hosted agent provisioned by clara-account-service
 on the `staging` Vercel environment is stamped with
-``CLARA_PORTAL_BASE_URL=https://portal.staging-claragram.com`` in its
+``CLARA_PORTAL_BASE_URL=https://portal.staging-claraship.com`` in its
 container env (the documented dev/staging override), while its bootstrap
 ``auth.json`` ALSO persists ``portal_base_url`` to the same staging host.
 
@@ -50,11 +50,11 @@ class TestPortalEnvOverrideHelper:
         _CLARA_PORTAL_ALLOWED_HOSTS, and the helper must return it anyway —
         gating happens only for network-provenance values."""
         monkeypatch.setenv(
-            "CLARA_PORTAL_BASE_URL", "https://portal.staging-claragram.com"
+            "CLARA_PORTAL_BASE_URL", "https://portal.staging-claraship.com"
         )
-        assert "portal.staging-claragram.com" not in _CLARA_PORTAL_ALLOWED_HOSTS
+        assert "portal.staging-claraship.com" not in _CLARA_PORTAL_ALLOWED_HOSTS
         assert (
-            _clara_portal_env_override() == "https://portal.staging-claragram.com"
+            _clara_portal_env_override() == "https://portal.staging-claraship.com"
         )
 
 
@@ -122,7 +122,7 @@ class TestResolveAccessTokenEnvOverrideWins:
         allowlist-rejection warning must never fire."""
         import clara_cli.auth as auth
 
-        staging_portal = "https://portal.staging-claragram.com"
+        staging_portal = "https://portal.staging-claraship.com"
         monkeypatch.setenv("CLARA_HOME", str(tmp_path))
         monkeypatch.setenv("CLARA_PORTAL_BASE_URL", staging_portal)
         self._write_auth_file(tmp_path, stored_portal_url=staging_portal)

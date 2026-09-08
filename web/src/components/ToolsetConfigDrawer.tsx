@@ -7,14 +7,14 @@ import type {
   ToolsetInfo,
   ToolsetProvider,
 } from "@/lib/api";
-import { useToast } from "@claragram/ui/hooks/use-toast";
-import { Button } from "@claragram/ui/ui/components/button";
-import { Input } from "@claragram/ui/ui/components/input";
-import { Label } from "@claragram/ui/ui/components/label";
-import { Badge } from "@claragram/ui/ui/components/badge";
-import { Switch } from "@claragram/ui/ui/components/switch";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
-import { Toast } from "@claragram/ui/ui/components/toast";
+import { useToast } from "@claraship/ui/hooks/use-toast";
+import { Button } from "@claraship/ui/ui/components/button";
+import { Input } from "@claraship/ui/ui/components/input";
+import { Label } from "@claraship/ui/ui/components/label";
+import { Badge } from "@claraship/ui/ui/components/badge";
+import { Switch } from "@claraship/ui/ui/components/switch";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
+import { Toast } from "@claraship/ui/ui/components/toast";
 import { cn, themedBody } from "@/lib/utils";
 
 interface Props {

@@ -746,7 +746,7 @@ def _is_clara_inference_route(provider: str, base_url: str) -> bool:
         return True
     base = str(base_url or "")
     return (
-        base_url_host_matches(base, "inference-api.claragram.com")
+        base_url_host_matches(base, "inference-api.claraship.com")
     )
 
 
@@ -5450,7 +5450,7 @@ def run_conversation(
                         print(f"{agent.log_prefix}   Most likely: Portal OAuth expired, account out of credits, or agent key revoked.")
                     print(f"{agent.log_prefix}   Troubleshooting:")
                     print(f"{agent.log_prefix}     • Re-authenticate: clara auth add clara")
-                    print(f"{agent.log_prefix}     • Check credits / billing: https://portal.claragram.com")
+                    print(f"{agent.log_prefix}     • Check credits / billing: https://portal.claraship.com")
                     print(f"{agent.log_prefix}     • Verify stored credentials: {_dhh}/auth.json")
                     print(f"{agent.log_prefix}     • Switch providers temporarily: /model <model> --provider openrouter")
                 if (
@@ -6805,7 +6805,7 @@ def run_conversation(
                                 agent._vprint(f"{agent.log_prefix}   💡 Clara Portal OAuth token was rejected (HTTP 401). Your token may be", force=True)
                                 agent._vprint(f"{agent.log_prefix}      expired, revoked, or your account may be out of credits. To fix:", force=True)
                                 agent._vprint(f"{agent.log_prefix}      1. Re-authenticate: clara portal", force=True)
-                                agent._vprint(f"{agent.log_prefix}      2. Check your portal account: https://portal.claragram.com", force=True)
+                                agent._vprint(f"{agent.log_prefix}      2. Check your portal account: https://portal.claraship.com", force=True)
                                 # ``:free`` is OpenRouter slug syntax; Clara Portal will reject
                                 # the model name even after a successful re-auth.
                                 if isinstance(_model, str) and _model.endswith(":free"):

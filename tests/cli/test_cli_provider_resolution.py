@@ -321,7 +321,7 @@ def test_model_flow_clara_does_not_restore_stale_custom_api_key(tmp_path, monkey
     monkeypatch.setattr(
         "clara_cli.auth.resolve_clara_runtime_credentials",
         lambda *args, **kwargs: {
-            "base_url": "https://inference-api.claragram.com/v1",
+            "base_url": "https://inference-api.claraship.com/v1",
             "api_key": "clara-key",
         },
     )
@@ -350,7 +350,7 @@ def test_model_flow_clara_does_not_restore_stale_custom_api_key(tmp_path, monkey
     model = config.get("model")
     assert model["provider"] == "clara"
     assert model["default"] == selected_model
-    assert model["base_url"] == "https://inference-api.claragram.com/v1"
+    assert model["base_url"] == "https://inference-api.claraship.com/v1"
     assert "api_key" not in model
     assert "api_mode" not in model
 
@@ -577,8 +577,8 @@ def test_cmd_model_forwards_clara_login_tls_options(monkeypatch):
 
     clara_main.cmd_model(
         SimpleNamespace(
-            portal_url="https://portal.claragram.com",
-            inference_url="https://inference.claragram.com/v1",
+            portal_url="https://portal.claraship.com",
+            inference_url="https://inference.claraship.com/v1",
             client_id="clara-local",
             scope="openid profile",
             no_browser=True,
@@ -589,8 +589,8 @@ def test_cmd_model_forwards_clara_login_tls_options(monkeypatch):
     )
 
     assert captured == {
-        "portal_url": "https://portal.claragram.com",
-        "inference_url": "https://inference.claragram.com/v1",
+        "portal_url": "https://portal.claraship.com",
+        "inference_url": "https://inference.claraship.com/v1",
         "client_id": "clara-local",
         "scope": "openid profile",
         "no_browser": True,

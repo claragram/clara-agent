@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# ☤ Clara Agent & Claragram: Unified Master Control & Dev Orchestrator
+# ☤ Clara Agent & Claraship: Unified Master Control & Dev Orchestrator
 # ==============================================================================
 # Usage:
 #   ./dev-control.sh <command>
@@ -40,7 +40,7 @@ activate_venv() {
 print_header() {
   echo ""
   echo "======================================================================"
-  echo " ☤ Clara Agent / Claragram: $1"
+  echo " ☤ Clara Agent / Claraship: $1"
   echo "======================================================================"
   echo ""
 }
@@ -118,7 +118,7 @@ case "${1:-help}" in
       -v "$SCRIPT_DIR":/opt/clara-src \
       -v "$HOME/.clara":/opt/data \
       -w /opt/clara-src \
-      claragram/clara-agent bash
+      claraship/clara-agent bash
     ;;
 
   test)
@@ -146,7 +146,7 @@ case "${1:-help}" in
     ;;
 
   *)
-    echo "☤ Clara Agent / Claragram Orchestration Script"
+    echo "☤ Clara Agent / Claraship Orchestration Script"
     echo ""
     echo "Usage: ./dev-control.sh [command]"
     echo ""

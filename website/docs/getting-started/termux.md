@@ -49,7 +49,7 @@ That does not stop Clara from working well as a phone-native CLI agent — it ju
 ## Community-maintained native `pkg` option
 
 :::caution Contributor-operated distribution
-This APT repository is **community-maintained by `@adybag14-cyber` and is not an official Claragram distribution**. Claragram does not build, sign, host, or audit these packages. Enabling the repository means trusting the contributor-operated repository and its signing key. Termux itself remains a Tier 2 / best-effort platform.
+This APT repository is **community-maintained by `@adybag14-cyber` and is not an official Claraship distribution**. Claraship does not build, sign, host, or audit these packages. Enabling the repository means trusting the contributor-operated repository and its signing key. Termux itself remains a Tier 2 / best-effort platform.
 :::
 
 For users who prefer a native package-manager install rather than building Python/Rust dependencies on the phone, a community-maintained APT repository is available. The repository bootstrap and packaging sources are published in [`adybag14-cyber/termux-python`](https://github.com/adybag14-cyber/termux-python), with the Clara package build in [`adybag14-cyber/termux-clara`](https://github.com/adybag14-cyber/termux-clara).
@@ -83,7 +83,7 @@ Packaging/repository/signing problems for this option should be reported to the 
 Clara now ships a Termux-aware installer path:
 
 ```bash
-curl -fsSL https://claragram.com/install.sh | bash
+curl -fsSL https://claraship.com/install.sh | bash
 ```
 
 On Termux, the installer automatically:
@@ -135,7 +135,7 @@ Then use `python3.13` in place of `python` in the commands below
 ### 2. Clone Clara
 
 ```bash
-git clone https://github.com/claragram/clara-agent.git
+git clone https://github.com/claraship/clara-agent.git
 cd clara-agent
 ```
 

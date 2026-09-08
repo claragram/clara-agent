@@ -17,10 +17,10 @@ import type {
   AnalyticsSkillEntry,
 } from "@/lib/api";
 import { timeAgo } from "@/lib/utils";
-import { Button } from "@claragram/ui/ui/components/button";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
-import { Stats } from "@claragram/ui/ui/components/stats";
-import { Card, CardContent, CardHeader, CardTitle } from "@claragram/ui/ui/components/card";
+import { Button } from "@claraship/ui/ui/components/button";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
+import { Stats } from "@claraship/ui/ui/components/stats";
+import { Card, CardContent, CardHeader, CardTitle } from "@claraship/ui/ui/components/card";
 import { usePageHeader } from "@/contexts/usePageHeader";
 import { useI18n } from "@/i18n";
 import { PluginSlot } from "@/plugins";

@@ -46,7 +46,7 @@ python -m pip install -e '.[termux]' -c constraints-termux.txt
 Clara 现已内置 Termux 感知的安装路径：
 
 ```bash
-curl -fsSL https://claragram.com/install.sh | bash
+curl -fsSL https://claraship.com/install.sh | bash
 ```
 
 在 Termux 上，安装程序会自动：
@@ -80,7 +80,7 @@ pkg install -y git python clang rust make pkg-config libffi openssl nodejs ripgr
 ### 2. 克隆 Clara
 
 ```bash
-git clone https://github.com/claragram/clara-agent.git
+git clone https://github.com/claraship/clara-agent.git
 cd clara-agent
 ```
 

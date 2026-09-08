@@ -92,9 +92,9 @@ class TestClaraModelReasoningCapabilities:
         from clara_cli.models import clara_catalog_url
 
         monkeypatch.setenv(
-            "CLARA_INFERENCE_BASE_URL", "https://staging.claragram.com/v1"
+            "CLARA_INFERENCE_BASE_URL", "https://staging.claraship.com/v1"
         )
-        assert clara_catalog_url() == "https://staging.claragram.com/v1/models"
+        assert clara_catalog_url() == "https://staging.claraship.com/v1/models"
 
         monkeypatch.delenv("CLARA_INFERENCE_BASE_URL")
         assert clara_catalog_url().endswith("/v1/models")

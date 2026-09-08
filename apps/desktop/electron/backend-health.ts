@@ -99,7 +99,7 @@ export function isServerSideHttpError(error: unknown): {
  *    runs BEFORE the readiness loop; and
  *  - readiness-probe exhaustion in waitForClaraReady().
  *
- * Returns null unless the backend is a *.agents.claragram.com host AND the
+ * Returns null unless the backend is a *.agents.claraship.com host AND the
  * error classifies as 502/503/504. When it matches, returns an error carrying:
  * isCloudBackendDown, statusCode, detail, and the original cause. The renderer
  * overlay keys on isCloudBackendDown/statusCode; main owns the classification.
@@ -129,9 +129,9 @@ export function makeClaraCloudBackendDownError(baseUrl: string, error: unknown):
   const err = new Error(
     `Clara Cloud agent ${hostname} is down ` +
       `(HTTP ${serverError.statusCode}: server-side fault). ` +
-      'Check https://portal.claragram.com for backend status, ' +
+      'Check https://portal.claraship.com for backend status, ' +
       'or switch to Local mode in Settings → Gateway. ' +
-      'You can also reach out on Discord at discord.gg/claragram ' +
+      'You can also reach out on Discord at discord.gg/j9vzaxnsg ' +
       'for immediate assistance. ' +
       `Original detail: ${detail}`
   ) as any
@@ -146,7 +146,7 @@ export function makeClaraCloudBackendDownError(baseUrl: string, error: unknown):
 
 /**
  * True when the backend URL points at a Clara-managed Clara Cloud instance
- * (e.g. ares-3009.agents.claragram.com). These are Fly.io-hosted machines
+ * (e.g. ares-3009.agents.claraship.com). These are Fly.io-hosted machines
  * the user cannot restart themselves — a 503 from one means the server is down
  * and the recovery path is Portal/Discord/wait.
  */
@@ -154,7 +154,7 @@ export function isClaraCloudAgentUrl(baseUrl: string): boolean {
   try {
     const host = new URL(baseUrl).hostname
 
-    return host.endsWith('.agents.claragram.com')
+    return host.endsWith('.agents.claraship.com')
   } catch {
     return false
   }

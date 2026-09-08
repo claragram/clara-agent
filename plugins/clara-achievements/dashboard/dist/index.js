@@ -258,7 +258,7 @@
     ctx.fillStyle = "#8b95a8";
     ctx.font = "600 20px ui-monospace, 'SF Mono', Menlo, monospace";
     ctx.textBaseline = "bottom";
-    ctx.fillText("CLARA AGENT  ·  agent.claragram.com", 70, H - 40);
+    ctx.fillText("CLARA AGENT  ·  agent.claraship.com", 70, H - 40);
 
     // "UNLOCKED" stamp upper-right
     ctx.textBaseline = "top";
@@ -340,7 +340,7 @@
         tier_part: tierPart,
         name: achievement.name,
       });
-      return tmpl + "\n\n@claragram · https://agent.claragram.com";
+      return tmpl + "\n\n@claraship · https://agent.claraship.com";
     }
 
     function shareOnX() {

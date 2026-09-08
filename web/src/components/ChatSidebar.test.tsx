@@ -61,13 +61,13 @@ vi.mock("@/components/ModelReloadConfirm", () => ({
 vi.mock("@/components/ReasoningPicker", () => ({
   ReasoningPicker: () => null,
 }));
-vi.mock("@claragram/ui/ui/components/button", () => ({
+vi.mock("@claraship/ui/ui/components/button", () => ({
   Button: ({ children }: { children?: ReactNode }) => <button>{children}</button>,
 }));
-vi.mock("@claragram/ui/ui/components/badge", () => ({
+vi.mock("@claraship/ui/ui/components/badge", () => ({
   Badge: ({ children }: { children?: ReactNode }) => <span>{children}</span>,
 }));
-vi.mock("@claragram/ui/ui/components/card", () => ({
+vi.mock("@claraship/ui/ui/components/card", () => ({
   Card: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
 }));
 

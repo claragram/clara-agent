@@ -356,19 +356,19 @@ def _fetch_picker_live_models(
 # ---------------------------------------------------------------------------
 
 _CLARA_MODEL_WARNING = (
-    "Claragram Clara 3 & 4 models are NOT agentic and are not designed "
+    "Claraship Clara 3 & 4 models are NOT agentic and are not designed "
     "for use with Clara Agent. They lack the tool-calling capabilities "
     "required for agent workflows. Consider using an agentic model instead "
     "(Claude, GPT, Gemini, DeepSeek, etc.)."
 )
 
-# Match only the real Claragram Clara 3 / Clara 4 chat families.
+# Match only the real Claraship Clara 3 / Clara 4 chat families.
 # The previous substring check (`"clara" in name.lower()`) false-positived on
 # unrelated local Modelfiles like ``clara-brain:qwen3-14b-ctx16k`` that just
 # happen to carry "clara" in their tag but are fully tool-capable.
 #
 # Positive examples the regex must match:
-#   Claragram/Clara-3-Llama-3.1-70B, clara-4-405b, openrouter/clara3:70b
+#   Claraship/Clara-3-Llama-3.1-70B, clara-4-405b, openrouter/clara3:70b
 # Negative examples it must NOT match:
 #   clara-brain:qwen3-14b-ctx16k, qwen3:14b, claude-opus-4-6
 _CLARA_CLARA_NON_AGENTIC_RE = re.compile(
@@ -2492,7 +2492,7 @@ def switch_model(
     # /chat/completions. resolve_runtime_provider already sets this when it
     # succeeds; always re-derive from the *final* (post-normalize) model so
     # alias clears / empty fallbacks cannot leave Claude on the OpenAI wire.
-    if target_provider in {"clara", "clara-portal", "claragram"}:
+    if target_provider in {"clara", "clara-portal", "claraship"}:
         from clara_cli.providers import clara_api_mode
 
         api_mode = clara_api_mode(new_model)
@@ -3123,7 +3123,7 @@ def list_authenticated_providers(
     curated: dict[str, list[str]] = dict(_PROVIDER_MODELS)
     curated["openrouter"] = [mid for mid, _ in OPENROUTER_MODELS]
     # "clara" pulls from the remote model-catalog manifest published at
-    # https://agent.claragram.com/docs/api/model-catalog.json so
+    # https://agent.claraship.com/docs/api/model-catalog.json so
     # newly added Portal models surface in the /model picker without
     # requiring a Clara release. Falls back to the in-repo
     # _PROVIDER_MODELS["clara"] snapshot when the manifest is unreachable.

@@ -25,17 +25,17 @@
     "audit:fix:tui": "npm audit fix --workspace ui-tui",
     "check": "npm run --ws check",
     "fix": "npm run --ws fix",
-    "publish:packages": "bash packages/publish-claragram.sh"
+    "publish:packages": "bash packages/publish-claraship.sh"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/claragram/clara-agent.git"
+    "url": "git+https://github.com/claraship/clara-agent.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/claragram/clara-agent/issues"
+    "url": "https://github.com/claraship/clara-agent/issues"
   },
-  "homepage": "https://github.com/claragram/clara-agent#readme",
+  "homepage": "https://github.com/claraship/clara-agent#readme",
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "eslint-plugin-perfectionist": "5.10.0",

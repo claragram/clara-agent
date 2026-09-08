@@ -1,7 +1,7 @@
 {
-  "name": "@claragram/clara",
+  "name": "@claraship/clara",
   "version": "0.21.0",
-  "description": "Clara Agent CLI launcher — run Clara anywhere with npx @claragram/clara",
+  "description": "Clara Agent CLI launcher — run Clara anywhere with npx @claraship/clara",
   "type": "module",
   "bin": {
     "clara": "./bin/clara.js"
@@ -16,7 +16,7 @@
   },
   "keywords": [
     "clara",
-    "claragram",
+    "claraship",
     "ai-agent",
     "agent",
     "llm",
@@ -24,15 +24,15 @@
     "assistant",
     "terminal"
   ],
-  "author": "Claragram <info@claragram.com> (https://claragram.com)",
+  "author": "Claraship <hey@claraship.com> (https://claraship.com)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/claragram/clara-agent.git",
+    "url": "https://github.com/claraship/clara-agent.git",
     "directory": "packages/clara"
   },
-  "homepage": "https://claragram.com",
+  "homepage": "https://claraship.com",
   "bugs": {
-    "url": "https://github.com/claragram/clara-agent/issues"
+    "url": "https://github.com/claraship/clara-agent/issues"
   }
 }

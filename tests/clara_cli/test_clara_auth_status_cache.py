@@ -2,7 +2,7 @@
 
 The cache avoids re-validating Clara credentials on every menu paint —
 `clara tools` → "All Platforms" used to fire ~31 OAuth refresh POSTs
-against portal.claragram.com during one render. The cache is keyed
+against portal.claraship.com during one render. The cache is keyed
 on auth.json path + mtime so profile switches stay isolated while
 login/logout flows invalidate naturally; tests and other writers can
 also call invalidate_clara_auth_status_cache().

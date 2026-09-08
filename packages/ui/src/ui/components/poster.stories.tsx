@@ -434,12 +434,12 @@ export const DispatchPricingTeaser: Story = {
   args: {
     aspect: 'square',
     body: 'New tiers. Same autonomous agent, scaled to how you actually run it — solo on a laptop, shared across a team, or sovereign on your own hardware.',
-    channel: 'CLARAGRAM • CLARA AGENT',
+    channel: 'CLARASHIP • CLARA AGENT',
     eyebrow: 'PRICING / 2026',
     headline: ['Pricing', 'That Grows', 'With You.'],
     scale: 1,
     seal: 'v0.9 · 2026',
-    signature: 'claragram.com',
+    signature: 'claraship.com',
     tags: ['Studio · free', 'Pro · $20/mo', 'Sovereign · on-prem'],
     tint: '#ccaa88',
     variant: 'dispatch'
@@ -469,7 +469,7 @@ export const DispatchTriptych: TriptychStory = {
           eyebrow={showLabels ? 'TIER / 001' : undefined}
           headline={showLabels ? ['Clara', 'Studio.'] : ['']}
           seal={showLabels ? 'FREE · MIT' : undefined}
-          signature={showLabels ? 'claragram.com / studio' : undefined}
+          signature={showLabels ? 'claraship.com / studio' : undefined}
           src={TIERS[0].src}
           tags={showLabels ? ['Local-first', 'Unlimited tools', 'MIT'] : []}
           tint={TIERS[0].tint}
@@ -481,7 +481,7 @@ export const DispatchTriptych: TriptychStory = {
           eyebrow={showLabels ? 'TIER / 002' : undefined}
           headline={showLabels ? ['Clara', 'Pro.'] : ['']}
           seal={showLabels ? '$20/mo' : undefined}
-          signature={showLabels ? 'claragram.com / pro' : undefined}
+          signature={showLabels ? 'claraship.com / pro' : undefined}
           src={TIERS[2].src}
           tags={
             showLabels
@@ -497,7 +497,7 @@ export const DispatchTriptych: TriptychStory = {
           eyebrow={showLabels ? 'TIER / 003' : undefined}
           headline={showLabels ? ['Clara', 'Sovereign.'] : ['']}
           seal={showLabels ? 'talk to us' : undefined}
-          signature={showLabels ? 'claragram.com / sovereign' : undefined}
+          signature={showLabels ? 'claraship.com / sovereign' : undefined}
           src={TIERS[3].src}
           tags={
             showLabels

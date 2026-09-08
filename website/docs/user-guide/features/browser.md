@@ -37,7 +37,7 @@ Key capabilities:
 ## Setup
 
 :::tip Clara Subscribers
-If you have a paid [Clara Portal](https://portal.claragram.com) subscription, you can use browser automation through the **[Tool Gateway](tool-gateway.md)** without any separate API keys. New installs can run `clara setup --portal` to log in and turn on every gateway tool at once; existing installs can pick **Clara Subscription** as the browser provider via `clara model` or `clara tools`.
+If you have a paid [Clara Portal](https://portal.claraship.com) subscription, you can use browser automation through the **[Tool Gateway](tool-gateway.md)** without any separate API keys. New installs can run `clara setup --portal` to log in and turn on every gateway tool at once; existing installs can pick **Clara Subscription** as the browser provider via `clara model` or `clara tools`.
 :::
 
 ### Browser Use cloud mode
@@ -597,7 +597,7 @@ The `browser` toolset must be included in your config's `toolsets` list or enabl
 Navigate to a URL. Must be called before any other browser tool. Initializes the Browserbase session.
 
 ```
-Navigate to https://github.com/claragram
+Navigate to https://github.com/claraship
 ```
 
 :::tip

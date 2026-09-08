@@ -381,7 +381,7 @@ export interface HeaderProps {
   themeToggle?: boolean
 }
 
-/** @deprecated Use `SocialLink` from `@claragram/ui`. Same shape. */
+/** @deprecated Use `SocialLink` from `@claraship/ui`. Same shape. */
 export type HeaderSocial = SocialLink
 
 interface MobileNavLinkProps {

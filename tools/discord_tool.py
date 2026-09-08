@@ -100,7 +100,7 @@ def _discord_request(
         headers={
             "Authorization": f"Bot {token}",
             "Content-Type": "application/json",
-            "User-Agent": "Clara-Agent (https://github.com/claragram/clara-agent)",
+            "User-Agent": "Clara-Agent (https://github.com/claraship/clara-agent)",
         },
     )
 

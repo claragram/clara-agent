@@ -1,19 +1,19 @@
 {
-  "name": "@claragram/ui",
+  "name": "@claraship/ui",
   "version": "0.18.3",
-  "description": "Claragram UI design system and components",
+  "description": "Claraship UI design system and components",
   "publishConfig": {
     "access": "public"
   },
-  "author": "Claragram",
+  "author": "Claraship",
   "repository": {
     "type": "git",
-    "url": "https://github.com/claragram/clara-agent.git",
+    "url": "https://github.com/claraship/clara-agent.git",
     "directory": "packages/ui"
   },
-  "homepage": "https://claragram.com",
+  "homepage": "https://claraship.com",
   "bugs": {
-    "url": "https://github.com/claragram/clara-agent/issues"
+    "url": "https://github.com/claraship/clara-agent/issues"
   },
   "type": "module",
   "license": "MIT",

@@ -45,7 +45,7 @@ Las habilidades incluidas (en `skills/`) se envían con cada instalación de Cla
 
 Si tu habilidad es oficial y útil pero no universalmente necesaria (ej., una integración de servicio de pago, una dependencia pesada), ponla en **`optional-skills/`** — se envía con el repositorio pero no está activada por defecto. Los usuarios pueden descubrirla a través de `clara skills browse` (etiquetada como "oficial") e instalarla con `clara skills install` (sin advertencia de terceros, confianza integrada).
 
-Si tu habilidad es especializada, contribuida por la comunidad o de nicho, es mejor para un **Skills Hub** — súbela a un registro de habilidades y compártela en el [Discord de Claragram](https://discord.gg/claragram). Los usuarios pueden instalarla con `clara skills install`.
+Si tu habilidad es especializada, contribuida por la comunidad o de nicho, es mejor para un **Skills Hub** — súbela a un registro de habilidades y compártela en el [Discord de Claraship](https://discord.gg/j9vzaxnsg). Los usuarios pueden instalarla con `clara skills install`.
 
 ---
 
@@ -81,7 +81,7 @@ Esto no es una barra de calidad — es una decisión de acoplamiento y mantenimi
 ### Clonar e instalar
 
 ```bash
-git clone https://github.com/claragram/clara-agent.git
+git clone https://github.com/claraship/clara-agent.git
 cd clara-agent
 
 # Crear venv con Python 3.11
@@ -194,7 +194,7 @@ clara-agent/
 ├── skills/                   # Habilidades incluidas (copiadas a ~/.clara/skills/ en la instalación)
 ├── optional-skills/          # Habilidades opcionales oficiales (descubribles vía hub, no activadas por defecto)
 ├── tests/                    # Suite de tests
-├── website/                  # Sitio de documentación (agent.claragram.com)
+├── website/                  # Sitio de documentación (agent.claraship.com)
 │
 ├── cli-config.yaml.example   # Configuración de ejemplo (copiada a ~/.clara/config.yaml)
 └── AGENTS.md                 # Guía de desarrollo para asistentes de codificación IA
@@ -581,7 +581,7 @@ test(tools): añadir tests unitarios para file_operations
 
 ## Reportar Issues
 
-- Usa [GitHub Issues](https://github.com/claragram/clara-agent/issues)
+- Usa [GitHub Issues](https://github.com/claraship/clara-agent/issues)
 - Incluye: SO, versión de Python, versión de Clara (`clara --version`), traza de error completa
 - Incluye pasos para reproducir
 - Verifica los issues existentes antes de crear duplicados
@@ -591,7 +591,7 @@ test(tools): añadir tests unitarios para file_operations
 
 ## Comunidad
 
-- **Discord**: [discord.gg/claragram](https://discord.gg/claragram) — para preguntas, mostrar proyectos y compartir habilidades
+- **Discord**: [discord.gg/j9vzaxnsg](https://discord.gg/j9vzaxnsg) — para preguntas, mostrar proyectos y compartir habilidades
 - **GitHub Discussions**: Para propuestas de diseño y discusiones de arquitectura
 - **Skills Hub**: Sube habilidades especializadas a un registro y compártelas con la comunidad
 

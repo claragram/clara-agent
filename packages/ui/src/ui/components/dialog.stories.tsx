@@ -124,7 +124,7 @@ export const WithForm: Story = {
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="email">Email</Label>
-            <Input defaultValue="info@claragram.com" id="email" type="email" />
+            <Input defaultValue="hey@claraship.com" id="email" type="email" />
           </div>
         </div>
 

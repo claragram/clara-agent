@@ -1784,7 +1784,7 @@ DEFAULT_CONFIG = {
         # touch config.yaml. Local dev / non-Fly deploys can set either
         # surface; missing values fall through to the plugin's defaults
         # (no provider registered when ``client_id`` is empty;
-        # ``portal_url`` defaults to https://portal.claragram.com).
+        # ``portal_url`` defaults to https://portal.claraship.com).
         "oauth": {
             "client_id": "",  # agent:{instance_id} — Portal provisions this
             "portal_url": "",  # blank → use plugin default (production Portal)
@@ -2809,7 +2809,7 @@ DEFAULT_CONFIG = {
         "chronos": {
             # NAS / portal base URL the agent calls to arm/cancel one-shots
             # and that mints the inbound fire JWT (used as the expected issuer).
-            "portal_url": "https://portal.claragram.com",
+            "portal_url": "https://portal.claraship.com",
             # The agent's OWN publicly-reachable base URL for NAS→agent fires
             # (NAS POSTs {callback_url}/api/cron/fire). Empty → Chronos is
             # unavailable and the resolver falls back to the built-in ticker.
@@ -3115,7 +3115,7 @@ DEFAULT_CONFIG = {
     # The default URL is served by the docs site GitHub Pages deploy.
     "model_catalog": {
         "enabled": True,
-        "url": "https://agent.claragram.com/docs/api/model-catalog.json",
+        "url": "https://agent.claraship.com/docs/api/model-catalog.json",
         # Disk cache TTL in minutes.  The gateway refreshes the catalogs on
         # this cadence in the background; the CLI refetches on the next
         # /model or `clara model` invocation once the cache is older than
@@ -3609,7 +3609,7 @@ DEFAULT_CONFIG = {
             # environment variable: that would let an inherited value silently
             # redirect telemetry a user consented to send to Clara. Non-HTTPS
             # is refused unless the host is localhost.
-            "endpoint": "https://telemetry.claragram.com/v1/telemetry",
+            "endpoint": "https://telemetry.claraship.com/v1/telemetry",
         },
     },
 
@@ -4586,7 +4586,7 @@ OPTIONAL_ENV_VARS = {
         "advanced": True,
     },
     "TOOL_GATEWAY_DOMAIN": {
-        "description": "Shared tool-gateway domain suffix for Clara Subscribers only, used to derive vendor hosts, e.g. claragram.com -> firecrawl-gateway.claragram.com",
+        "description": "Shared tool-gateway domain suffix for Clara Subscribers only, used to derive vendor hosts, e.g. claraship.com -> firecrawl-gateway.claraship.com",
         "prompt": "Tool-gateway domain suffix",
         "url": None,
         "password": False,

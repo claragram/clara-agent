@@ -34,7 +34,7 @@ _IN_NIX_BUILD = os.environ.get("CLARA_NIX_BUILD") == "1"
 _BLOCK_MESSAGE = (
     "Building wheels or sdists for clara-agent is not supported.\n"
     "Clara is distributed via the shell installer, Docker image, or Nix.\n"
-    "See: https://agent.claragram.com/docs/getting-started/installation\n"
+    "See: https://agent.claraship.com/docs/getting-started/installation\n"
     "\n"
     "If you are developing, use an editable install instead:\n"
     "  uv sync          # or: uv pip install -e .\n"

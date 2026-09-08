@@ -21,8 +21,8 @@ import {
 import { ListRow, SectionHeading, SettingsContent } from './primitives'
 import { UninstallSection } from './uninstall-section'
 
-const RELEASE_NOTES_URL = 'https://github.com/claragram/clara-agent/releases'
-const INSTALLER_URL = 'https://agent.claragram.com/'
+const RELEASE_NOTES_URL = 'https://github.com/claraship/clara-agent/releases'
+const INSTALLER_URL = 'https://agent.claraship.com/'
 
 function relativeTime(ms: number | undefined, a: Translations['settings']['about']) {
   if (!ms) {

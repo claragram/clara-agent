@@ -425,7 +425,7 @@ class TestDelegateTask(unittest.TestCase):
         """Portal is dual-wire — same provider + different model prefix must
         not inherit the parent's Messages/chat_completions mode verbatim."""
         parent = _make_mock_parent(depth=0)
-        parent.base_url = "https://inference-api.claragram.com/v1"
+        parent.base_url = "https://inference-api.claraship.com/v1"
         parent.api_key = "portal-jwt"
         parent.provider = "clara"
         parent.api_mode = "anthropic_messages"
@@ -1198,7 +1198,7 @@ class TestDelegationProviderIntegration(unittest.TestCase):
         }
         parent = _make_mock_parent(depth=0)
         parent.provider = "clara"
-        parent.base_url = "https://inference-api.claragram.com/v1"
+        parent.base_url = "https://inference-api.claraship.com/v1"
         parent.api_key = "clara-key-abc"
 
         with patch("run_agent.AIAgent") as MockAgent:

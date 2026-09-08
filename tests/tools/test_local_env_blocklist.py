@@ -4,8 +4,8 @@ Verifies that Clara-managed provider, tool, and gateway env vars are
 stripped from subprocess environments so external CLIs are not silently
 misrouted or handed Clara secrets.
 
-See: https://github.com/claragram/clara-agent/issues/1002
-See: https://github.com/claragram/clara-agent/issues/1264
+See: https://github.com/claraship/clara-agent/issues/1002
+See: https://github.com/claraship/clara-agent/issues/1264
 """
 
 import os

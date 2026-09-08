@@ -48,21 +48,21 @@ Pick the row that matches your goal:
 
 ## 1. Install Clara Agent
 ### With the Clara Desktop installer on macOS or Windows (recommended)
-To easily install the command-line and desktop applications, [download the Clara Desktop installer](https://claragram.com/) from our website and run it.
+To easily install the command-line and desktop applications, [download the Clara Desktop installer](https://claraship.com/) from our website and run it.
 
 ### Without Clara Desktop:
 For a command-line only install without Clara Desktop, run:
 
 #### Linux / macOS / WSL2 / Android (Termux)
 ```bash
-curl -fsSL https://claragram.com/install.sh | bash
+curl -fsSL https://claraship.com/install.sh | bash
 ```
 
 #### Windows (native)
 
 Run in powershell:
 ```powershell
-iex (irm https://claragram.com/install.ps1) 
+iex (irm https://claraship.com/install.ps1) 
 ```
 
 :::tip Android / Termux

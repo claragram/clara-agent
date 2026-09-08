@@ -19,23 +19,23 @@ import { api } from "@/lib/api";
 import type { EnvVarInfo } from "@/lib/api";
 import { removeDeletedEnvVarFromState } from "@/lib/env-state";
 import { DeleteConfirmDialog } from "@/components/DeleteConfirmDialog";
-import { Toast } from "@claragram/ui/ui/components/toast";
-import { useConfirmDelete } from "@claragram/ui/hooks/use-confirm-delete";
-import { useToast } from "@claragram/ui/hooks/use-toast";
+import { Toast } from "@claraship/ui/ui/components/toast";
+import { useConfirmDelete } from "@claraship/ui/hooks/use-confirm-delete";
+import { useToast } from "@claraship/ui/hooks/use-toast";
 import { OAuthProvidersCard } from "@/components/OAuthProvidersCard";
-import { Button } from "@claragram/ui/ui/components/button";
-import { ListItem } from "@claragram/ui/ui/components/list-item";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
+import { Button } from "@claraship/ui/ui/components/button";
+import { ListItem } from "@claraship/ui/ui/components/list-item";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@claragram/ui/ui/components/card";
-import { Badge } from "@claragram/ui/ui/components/badge";
-import { Input } from "@claragram/ui/ui/components/input";
-import { Label } from "@claragram/ui/ui/components/label";
+} from "@claraship/ui/ui/components/card";
+import { Badge } from "@claraship/ui/ui/components/badge";
+import { Input } from "@claraship/ui/ui/components/input";
+import { Label } from "@claraship/ui/ui/components/label";
 import { useI18n } from "@/i18n";
 import { usePageHeader } from "@/contexts/usePageHeader";
 import { PluginSlot } from "@/plugins";

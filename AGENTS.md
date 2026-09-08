@@ -129,7 +129,7 @@ conservative at the waist.
   this repo. They place an ongoing maintenance burden on us to keep them working
   against a fast-moving core, for a backend we don't own. Ship them as a
   **standalone plugin repo** users install into `~/.clara/plugins/` (or via a
-  pip entry point), and promote them in the Claragram Discord
+  pip entry point), and promote them in the Claraship Discord
   (`#plugins-skills-and-skins`). This is a coupling-and-maintenance decision, not
   a quality bar — the plugin can be excellent and still be a close. PRs that add
   such a directory to the tree are closed with a pointer to publish it as its own
@@ -876,7 +876,7 @@ the existing plugin discovery path and use the ABCs/hooks/ctx surface
 we expose; nothing special is needed in core. The reason is
 maintenance load: every product we absorb into the tree becomes our
 burden to keep working against a fast-moving core, for a backend we
-don't own. Promote standalone plugins in the Claragram Discord
+don't own. Promote standalone plugins in the Claraship Discord
 (`#plugins-skills-and-skins`). PRs that add such a directory under
 `plugins/` are closed with a pointer to publish it as its own repo —
 this is a coupling decision, not a quality judgment. (The
@@ -917,7 +917,7 @@ plug into `agent/context_engine.py`; image-gen providers into
 `agent/image_gen_provider.py`. Reference / docs-companion plugins
 (`example-dashboard`, `strike-freedom-cockpit`, `plugin-llm-example`,
 `plugin-llm-async-example`) live in the
-[`clara-example-plugins`](https://github.com/claragram/clara-example-plugins)
+[`clara-example-plugins`](https://github.com/claraship/clara-example-plugins)
 companion repo, not in this tree.
 
 ### Bot Mode (`apps/desktop/src/plugins/clara-bots/`)

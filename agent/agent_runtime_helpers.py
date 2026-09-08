@@ -1453,7 +1453,7 @@ def try_recover_primary_transport(
     # pool *does* need the rebuild every other anthropic_messages provider
     # already gets — don't blanket-skip the dual-wire path.
     if (
-        provider_lower in {"clara", "clara-portal", "claragram"}
+        provider_lower in {"clara", "clara-portal", "claraship"}
         and getattr(agent, "api_mode", None) != "anthropic_messages"
     ):
         return False
@@ -2473,7 +2473,7 @@ def anthropic_prompt_cache_policy(
     # Clara Portal proxies to OpenRouter behind the scenes — identical
     # OpenAI-wire envelope cache_control semantics. Treat it as an
     # OpenRouter-equivalent endpoint for caching layout purposes.
-    is_clara_portal = base_url_host_matches(eff_base_url, "claragram.com")
+    is_clara_portal = base_url_host_matches(eff_base_url, "claraship.com")
     is_anthropic_wire = eff_api_mode == "anthropic_messages"
     is_native_anthropic = (
         is_anthropic_wire

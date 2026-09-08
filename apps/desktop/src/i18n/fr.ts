@@ -1197,7 +1197,7 @@ export const fr: Translations = {
       sshErrHostKey:
         'La clé d\'hôte a CHANGÉ depuis votre dernière connexion. Vérifiez si cela est normal, puis exécutez ssh-keygen -R <hôte> et reconnectez-vous.',
       sshErrNotInstalled:
-        'Clara n\'est pas installé sur l\'hôte distant. Installez-le là-bas (curl -fsSL https://agent.claragram.com/install.sh | sh) ou spécifiez le chemin vers Clara.',
+        'Clara n\'est pas installé sur l\'hôte distant. Installez-le là-bas (curl -fsSL https://agent.claraship.com/install.sh | sh) ou spécifiez le chemin vers Clara.',
       sshErrPlatform:
         'Plateforme distante non prise en charge. Le mode SSH prend en charge les hôtes distants Linux, macOS et Windows.',
       sshErrTimeout: 'Délai d\'attente SSH dépassé. L\'hôte est peut-être inaccessible ou en veille.',
@@ -2587,7 +2587,7 @@ export const fr: Translations = {
       createDesc: 'Nommez un espace de travail et associez-y un ou plusieurs dossiers.',
       renameTitle: 'Renommer le projet',
       addFolderTitle: 'Ajouter un dossier',
-      namePlaceholder: 'ex. Projet Claragram',
+      namePlaceholder: 'ex. Projet Claraship',
       foldersLabel: 'Dossiers',
       ideaLabel: 'Idée',
       ideaPlaceholder: "What's this project about? (saved to IDEA.md)",

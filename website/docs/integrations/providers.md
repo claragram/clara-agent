@@ -70,7 +70,7 @@ In the `model:` config section, you can use either `default:` or `model:` as the
 
 ### Clara Portal
 
-[Clara Portal](https://portal.claragram.com) is Claragram's unified subscription gateway and **the recommended way to run Clara Agent**. One OAuth login covers 300+ frontier agentic models (Claude, GPT, Gemini, DeepSeek, Qwen, Kimi, GLM, MiniMax, Grok, ...) plus the [Tool Gateway](/user-guide/features/tool-gateway) (web search, image generation, TTS, browser automation) — billed against your Clara subscription instead of separate per-provider accounts.
+[Clara Portal](https://portal.claraship.com) is Claraship's unified subscription gateway and **the recommended way to run Clara Agent**. One OAuth login covers 300+ frontier agentic models (Claude, GPT, Gemini, DeepSeek, Qwen, Kimi, GLM, MiniMax, Grok, ...) plus the [Tool Gateway](/user-guide/features/tool-gateway) (web search, image generation, TTS, browser automation) — billed against your Clara subscription instead of separate per-provider accounts.
 
 ```bash
 clara setup --portal     # fresh install — OAuth + provider + gateway in one command
@@ -78,7 +78,7 @@ clara model              # existing install — pick "Clara Portal" from the lis
 clara portal info        # inspect login + routing at any time
 ```
 
-Don't have a subscription yet? Get one at [portal.claragram.com/manage-subscription](https://portal.claragram.com/manage-subscription).
+Don't have a subscription yet? Get one at [portal.claraship.com/manage-subscription](https://portal.claraship.com/manage-subscription).
 
 **For full details:** see the dedicated [Clara Portal integration page](/integrations/clara-portal) (what's in the subscription, model catalog, troubleshooting) and the step-by-step [Run Clara Agent with Clara Portal guide](/guides/run-clara-with-clara-portal).
 

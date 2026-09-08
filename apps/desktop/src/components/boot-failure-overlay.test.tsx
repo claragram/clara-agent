@@ -147,14 +147,14 @@ describe('BootFailureOverlay', () => {
   })
 
   it('recovers a cloud connection through the portal cascade instead of native OAuth', async () => {
-    const gatewayUrl = 'https://agent-1.agents.claragram.com'
+    const gatewayUrl = 'https://agent-1.agents.claraship.com'
     const logout = vi.fn().mockResolvedValue({ ok: true, connected: false })
     const nativeLogin = vi.fn().mockResolvedValue({ ok: true, connected: false })
-    const cloudStatus = vi.fn().mockResolvedValue({ portalBaseUrl: 'https://portal.claragram.com', signedIn: false })
+    const cloudStatus = vi.fn().mockResolvedValue({ portalBaseUrl: 'https://portal.claraship.com', signedIn: false })
 
     const cloudLogin = vi.fn().mockResolvedValue({
       ok: true,
-      portalBaseUrl: 'https://portal.claragram.com',
+      portalBaseUrl: 'https://portal.claraship.com',
       signedIn: true
     })
 
@@ -194,7 +194,7 @@ describe('BootFailureOverlay', () => {
   it('shows the Clara Cloud down recovery when the backend flags isCloudBackendDown', async () => {
     const restore = stubDesktop(remoteToken)
     $desktopBoot.set({
-      error: 'Clara Cloud agent ares-3009.agents.claragram.com is down (HTTP 503: server-side fault).',
+      error: 'Clara Cloud agent ares-3009.agents.claraship.com is down (HTTP 503: server-side fault).',
       fakeMode: false,
       isCloudBackendDown: true,
       message: 'boot failed',
@@ -222,7 +222,7 @@ describe('BootFailureOverlay', () => {
       expect(screen.getByRole('button', { name: /use local gateway/i })).toBeTruthy()
       // The electron-built error message (portal / local mode / Discord) is
       // still surfaced in the error box.
-      expect(screen.getByText(/ares-3009\.agents\.claragram\.com/i)).toBeTruthy()
+      expect(screen.getByText(/ares-3009\.agents\.claraship\.com/i)).toBeTruthy()
     } finally {
       restore()
     }

@@ -56,15 +56,15 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { Button } from "@claragram/ui/ui/components/button";
-import { SelectionSwitcher } from "@claragram/ui/ui/components/selection-switcher";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
-import { Typography } from "@claragram/ui/ui/components/typography/index";
-import { ConfirmDialog } from "@claragram/ui/ui/components/confirm-dialog";
+import { Button } from "@claraship/ui/ui/components/button";
+import { SelectionSwitcher } from "@claraship/ui/ui/components/selection-switcher";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
+import { Typography } from "@claraship/ui/ui/components/typography/index";
+import { ConfirmDialog } from "@claraship/ui/ui/components/confirm-dialog";
 import { cn } from "@/lib/utils";
 import { SidebarFooter } from "@/components/SidebarFooter";
 import { SidebarStatusStrip, gatewayLine } from "@/components/SidebarStatusStrip";
-import { useBelowBreakpoint } from "@claragram/ui/hooks/use-below-breakpoint";
+import { useBelowBreakpoint } from "@claraship/ui/hooks/use-below-breakpoint";
 import { useSidebarStatus } from "@/hooks/useSidebarStatus";
 import { AuthWidget } from "@/components/AuthWidget";
 import { PageHeaderProvider } from "@/contexts/PageHeaderProvider";

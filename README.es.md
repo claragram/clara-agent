@@ -4,21 +4,21 @@
 
 # Clara Agent ☤
 <p align="center">
-  <a href="https://agent.claragram.com/">Clara Agent</a> | <a href="https://agent.claragram.com/">Clara Desktop</a>
+  <a href="https://agent.claraship.com/">Clara Agent</a> | <a href="https://agent.claraship.com/">Clara Desktop</a>
 </p>
 <p align="center">
-  <a href="https://claragram.com/docs/"><img src="https://img.shields.io/badge/Docs-claragram.com-FFD700?style=for-the-badge" alt="Documentación"></a>
-  <a href="https://discord.gg/Claragram"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/claragram/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/Licencia-MIT-green?style=for-the-badge" alt="Licencia: MIT"></a>
-  <a href="https://claragram.com"><img src="https://img.shields.io/badge/Creado%20por-Claragram-blueviolet?style=for-the-badge" alt="Creado por Claragram"></a>
+  <a href="https://claraship.com/docs/"><img src="https://img.shields.io/badge/Docs-claraship.com-FFD700?style=for-the-badge" alt="Documentación"></a>
+  <a href="https://discord.gg/j9vzaxnsg"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
+  <a href="https://github.com/claraship/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/Licencia-MIT-green?style=for-the-badge" alt="Licencia: MIT"></a>
+  <a href="https://claraship.com"><img src="https://img.shields.io/badge/Creado%20por-Claraship-blueviolet?style=for-the-badge" alt="Creado por Claraship"></a>
   <a href="README.md"><img src="https://img.shields.io/badge/Lang-English-blue?style=for-the-badge" alt="English"></a>
   <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/Lang-中文-red?style=for-the-badge" alt="中文"></a>
   <a href="README.ur-pk.md"><img src="https://img.shields.io/badge/Lang-اردو-green?style=for-the-badge" alt="اردو"></a>
 </p>
 
-**El agente de IA con mejora continua creado por [Claragram](https://claragram.com).** Es el único agente con un bucle de aprendizaje integrado: crea habilidades a partir de la experiencia, las mejora durante el uso, se impulsa a sí mismo a persistir el conocimiento, busca en sus propias conversaciones pasadas y construye un modelo cada vez más profundo de quién eres a lo largo de las sesiones. Ejecútalo en un VPS de $5, un clúster de GPUs o infraestructura sin servidor que cuesta casi nada cuando está inactivo. No está atado a tu laptop — habla con él desde Telegram mientras trabaja en una VM en la nube.
+**El agente de IA con mejora continua creado por [Claraship](https://claraship.com).** Es el único agente con un bucle de aprendizaje integrado: crea habilidades a partir de la experiencia, las mejora durante el uso, se impulsa a sí mismo a persistir el conocimiento, busca en sus propias conversaciones pasadas y construye un modelo cada vez más profundo de quién eres a lo largo de las sesiones. Ejecútalo en un VPS de $5, un clúster de GPUs o infraestructura sin servidor que cuesta casi nada cuando está inactivo. No está atado a tu laptop — habla con él desde Telegram mientras trabaja en una VM en la nube.
 
-Usa cualquier modelo que quieras — [Clara Portal](https://portal.claragram.com), [OpenRouter](https://openrouter.ai) (más de 200 modelos), [NovitaAI](https://novita.ai), [NVIDIA NIM](https://build.nvidia.com) (Nemotron), [Xiaomi MiMo](https://platform.xiaomimimo.com), [z.ai/GLM](https://z.ai), [Kimi/Moonshot](https://platform.moonshot.ai), [MiniMax](https://www.minimax.io), [Hugging Face](https://huggingface.co), OpenAI, o tu propio endpoint. Cambia con `clara model` — sin cambios de código, sin dependencias.
+Usa cualquier modelo que quieras — [Clara Portal](https://portal.claraship.com), [OpenRouter](https://openrouter.ai) (más de 200 modelos), [NovitaAI](https://novita.ai), [NVIDIA NIM](https://build.nvidia.com) (Nemotron), [Xiaomi MiMo](https://platform.xiaomimimo.com), [z.ai/GLM](https://z.ai), [Kimi/Moonshot](https://platform.moonshot.ai), [MiniMax](https://www.minimax.io), [Hugging Face](https://huggingface.co), OpenAI, o tu propio endpoint. Cambia con `clara model` — sin cambios de código, sin dependencias.
 
 <table>
 <tr><td><b>Una interfaz de terminal real</b></td><td>TUI completa con edición multilínea, autocompletado de comandos, historial de conversaciones, interrupción y redirección, y salida de herramientas en streaming.</td></tr>
@@ -37,24 +37,24 @@ Usa cualquier modelo que quieras — [Clara Portal](https://portal.claragram.com
 ### Linux, macOS, WSL2, Termux
 
 ```bash
-curl -fsSL https://agent.claragram.com/install.sh | bash
+curl -fsSL https://agent.claraship.com/install.sh | bash
 ```
 
 ### Windows (nativo, PowerShell)
 
-> **Nota:** En Windows nativo, Clara funciona sin WSL — la CLI, el gateway, la TUI y las herramientas funcionan de forma nativa. Si prefieres usar WSL2, el comando de Linux/macOS de arriba también funciona allí. ¿Encontraste un error? Por favor [crea un issue](https://github.com/claragram/clara-agent/issues).
+> **Nota:** En Windows nativo, Clara funciona sin WSL — la CLI, el gateway, la TUI y las herramientas funcionan de forma nativa. Si prefieres usar WSL2, el comando de Linux/macOS de arriba también funciona allí. ¿Encontraste un error? Por favor [crea un issue](https://github.com/claraship/clara-agent/issues).
 
 Ejecuta esto en PowerShell:
 
 ```powershell
-iex (irm https://agent.claragram.com/install.ps1)
+iex (irm https://agent.claraship.com/install.ps1)
 ```
 
 El instalador se encarga de todo: uv, Python 3.11, Node.js, ripgrep, ffmpeg, **y un Git Bash portátil** (MinGit, descomprimido en `%LOCALAPPDATA%\clara\git` — no requiere administrador, completamente aislado de cualquier instalación de Git del sistema). Clara usa este Git Bash incluido para ejecutar comandos de shell.
 
 Si ya tienes Git instalado, el instalador lo detecta y lo usa en su lugar. De lo contrario, una descarga de ~45MB de MinGit es todo lo que necesitas — no tocará ni interferirá con ningún Git del sistema.
 
-> **Android / Termux:** La ruta manual probada está documentada en la [guía de Termux](https://agent.claragram.com/docs/getting-started/termux). En Termux, Clara instala el extra `.[termux]` curado porque el extra completo `.[all]` actualmente incluye dependencias de voz incompatibles con Android.
+> **Android / Termux:** La ruta manual probada está documentada en la [guía de Termux](https://agent.claraship.com/docs/getting-started/termux). En Termux, Clara instala el extra `.[termux]` curado porque el extra completo `.[all]` actualmente incluye dependencias de voz incompatibles con Android.
 >
 > **Windows:** Windows nativo es totalmente compatible — el comando de PowerShell de arriba instala todo. Si prefieres usar WSL2, el comando de Linux también funciona allí. La instalación nativa de Windows se encuentra en `%LOCALAPPDATA%\clara`; WSL2 instala en `~/.clara` como en Linux.
 
@@ -81,13 +81,13 @@ clara update       # Actualiza a la última versión
 clara doctor       # Diagnostica cualquier problema
 ```
 
-📖 **[Documentación completa →](https://agent.claragram.com/docs/)**
+📖 **[Documentación completa →](https://agent.claraship.com/docs/)**
 
 ---
 
 ## Evita la colección de claves API — Clara Portal
 
-Clara funciona con cualquier proveedor que quieras — eso no cambiará. Pero si prefieres no recopilar cinco claves API separadas para el modelo, búsqueda web, generación de imágenes, TTS y un navegador en la nube, **[Clara Portal](https://portal.claragram.com)** las cubre todas bajo una sola suscripción:
+Clara funciona con cualquier proveedor que quieras — eso no cambiará. Pero si prefieres no recopilar cinco claves API separadas para el modelo, búsqueda web, generación de imágenes, TTS y un navegador en la nube, **[Clara Portal](https://portal.claraship.com)** las cubre todas bajo una sola suscripción:
 
 - **Más de 300 modelos** — elige cualquiera con `/model <nombre>`
 - **Tool Gateway** — búsqueda web (Firecrawl), generación de imágenes (FAL), texto a voz (OpenAI), navegador en la nube (Browser Use), todo enrutado a través de tu suscripción. Sin cuentas adicionales.
@@ -98,7 +98,7 @@ Un comando desde una instalación nueva:
 clara setup --portal
 ```
 
-Esto te autentica vía OAuth, establece Clara como tu proveedor y activa el Tool Gateway. Comprueba qué está conectado en cualquier momento con `clara portal info`. Detalles completos en la [página de documentación del Tool Gateway](https://agent.claragram.com/docs/user-guide/features/tool-gateway).
+Esto te autentica vía OAuth, establece Clara como tu proveedor y activa el Tool Gateway. Comprueba qué está conectado en cualquier momento con `clara portal info`. Detalles completos en la [página de documentación del Tool Gateway](https://agent.claraship.com/docs/user-guide/features/tool-gateway).
 
 Puedes seguir usando tus propias claves por herramienta cuando quieras — el gateway es por backend, no todo o nada.
 
@@ -120,31 +120,31 @@ Clara tiene dos puntos de entrada: inicia la interfaz de terminal con `clara`, o
 | Interrumpir trabajo actual          | `Ctrl+C` o enviar un nuevo mensaje            | `/stop` o enviar un nuevo mensaje                                                 |
 | Estado específico de plataforma     | `/platforms`                                  | `/status`, `/sethome`                                                             |
 
-Para las listas de comandos completas, consulta la [guía de CLI](https://agent.claragram.com/docs/user-guide/cli) y la [guía del Gateway de Mensajería](https://agent.claragram.com/docs/user-guide/messaging).
+Para las listas de comandos completas, consulta la [guía de CLI](https://agent.claraship.com/docs/user-guide/cli) y la [guía del Gateway de Mensajería](https://agent.claraship.com/docs/user-guide/messaging).
 
 ---
 
 ## Documentación
 
-Toda la documentación está en **[agent.claragram.com/docs](https://agent.claragram.com/docs/)**:
+Toda la documentación está en **[agent.claraship.com/docs](https://agent.claraship.com/docs/)**:
 
 | Sección                                                                                             | Contenido                                                    |
 | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| [Inicio rápido](https://agent.claragram.com/docs/getting-started/quickstart)              | Instalar → configurar → primera conversación en 2 minutos   |
-| [Uso de CLI](https://agent.claragram.com/docs/user-guide/cli)                             | Comandos, atajos de teclado, personalidades, sesiones        |
-| [Configuración](https://agent.claragram.com/docs/user-guide/configuration)               | Archivo de configuración, proveedores, modelos, todas las opciones |
-| [Gateway de Mensajería](https://agent.claragram.com/docs/user-guide/messaging)           | Telegram, Discord, Slack, WhatsApp, Signal, Home Assistant   |
-| [Seguridad](https://agent.claragram.com/docs/user-guide/security)                        | Aprobación de comandos, emparejamiento por DM, aislamiento en contenedor |
-| [Herramientas y Toolsets](https://agent.claragram.com/docs/user-guide/features/tools)   | Más de 40 herramientas, sistema de toolsets, backends de terminal |
-| [Sistema de Habilidades](https://agent.claragram.com/docs/user-guide/features/skills)   | Memoria procedimental, Skills Hub, creación de habilidades   |
-| [Memoria](https://agent.claragram.com/docs/user-guide/features/memory)                   | Memoria persistente, perfiles de usuario, mejores prácticas  |
-| [Integración MCP](https://agent.claragram.com/docs/user-guide/features/mcp)              | Conecta cualquier servidor MCP para capacidades extendidas   |
-| [Programación Cron](https://agent.claragram.com/docs/user-guide/features/cron)           | Tareas programadas con entrega a plataforma                  |
-| [Archivos de Contexto](https://agent.claragram.com/docs/user-guide/features/context-files) | Contexto de proyecto que da forma a cada conversación      |
-| [Arquitectura](https://agent.claragram.com/docs/developer-guide/architecture)            | Estructura del proyecto, bucle del agente, clases principales |
-| [Contribuir](https://agent.claragram.com/docs/developer-guide/contributing)              | Configuración de desarrollo, proceso de PR, estilo de código |
-| [Referencia de CLI](https://agent.claragram.com/docs/reference/cli-commands)             | Todos los comandos y flags                                   |
-| [Variables de Entorno](https://agent.claragram.com/docs/reference/environment-variables) | Referencia completa de variables de entorno                  |
+| [Inicio rápido](https://agent.claraship.com/docs/getting-started/quickstart)              | Instalar → configurar → primera conversación en 2 minutos   |
+| [Uso de CLI](https://agent.claraship.com/docs/user-guide/cli)                             | Comandos, atajos de teclado, personalidades, sesiones        |
+| [Configuración](https://agent.claraship.com/docs/user-guide/configuration)               | Archivo de configuración, proveedores, modelos, todas las opciones |
+| [Gateway de Mensajería](https://agent.claraship.com/docs/user-guide/messaging)           | Telegram, Discord, Slack, WhatsApp, Signal, Home Assistant   |
+| [Seguridad](https://agent.claraship.com/docs/user-guide/security)                        | Aprobación de comandos, emparejamiento por DM, aislamiento en contenedor |
+| [Herramientas y Toolsets](https://agent.claraship.com/docs/user-guide/features/tools)   | Más de 40 herramientas, sistema de toolsets, backends de terminal |
+| [Sistema de Habilidades](https://agent.claraship.com/docs/user-guide/features/skills)   | Memoria procedimental, Skills Hub, creación de habilidades   |
+| [Memoria](https://agent.claraship.com/docs/user-guide/features/memory)                   | Memoria persistente, perfiles de usuario, mejores prácticas  |
+| [Integración MCP](https://agent.claraship.com/docs/user-guide/features/mcp)              | Conecta cualquier servidor MCP para capacidades extendidas   |
+| [Programación Cron](https://agent.claraship.com/docs/user-guide/features/cron)           | Tareas programadas con entrega a plataforma                  |
+| [Archivos de Contexto](https://agent.claraship.com/docs/user-guide/features/context-files) | Contexto de proyecto que da forma a cada conversación      |
+| [Arquitectura](https://agent.claraship.com/docs/developer-guide/architecture)            | Estructura del proyecto, bucle del agente, clases principales |
+| [Contribuir](https://agent.claraship.com/docs/developer-guide/contributing)              | Configuración de desarrollo, proceso de PR, estilo de código |
+| [Referencia de CLI](https://agent.claraship.com/docs/reference/cli-commands)             | Todos los comandos y flags                                   |
+| [Variables de Entorno](https://agent.claraship.com/docs/reference/environment-variables) | Referencia completa de variables de entorno                  |
 
 ---
 
@@ -185,7 +185,7 @@ Consulta `clara claw migrate --help` para todas las opciones, o usa la habilidad
 Inicio rápido para colaboradores — clona y comienza con `setup-clara.sh`:
 
 ```bash
-git clone https://github.com/claragram/clara-agent.git
+git clone https://github.com/claraship/clara-agent.git
 cd clara-agent
 ./setup-clara.sh     # instala uv, crea venv, instala .[all], enlaza ~/.local/bin/clara
 ./clara              # detecta automáticamente el venv, no necesitas hacer `source` primero
@@ -205,9 +205,9 @@ scripts/run_tests.sh
 
 ## Comunidad
 
-- 💬 [Discord](https://discord.gg/Claragram)
+- 💬 [Discord](https://discord.gg/j9vzaxnsg)
 - 📚 [Skills Hub](https://agentskills.io)
-- 🐛 [Issues](https://github.com/claragram/clara-agent/issues)
+- 🐛 [Issues](https://github.com/claraship/clara-agent/issues)
 - 🔌 [computer-use-linux](https://github.com/avifenesh/computer-use-linux) — Servidor MCP de control de escritorio Linux para Clara y otros hosts MCP, con árboles de accesibilidad AT-SPI, entrada Wayland/X11, capturas de pantalla y targeting de ventanas del compositor.
 - 🔌 [ClaraClaw](https://github.com/AaronWong1999/claraclaw) — Puente WeChat comunitario: Ejecuta Clara Agent y OpenClaw en la misma cuenta de WeChat.
 
@@ -217,4 +217,4 @@ scripts/run_tests.sh
 
 MIT — ver [LICENSE](LICENSE).
 
-Creado por [Claragram](https://claragram.com).
+Creado por [Claraship](https://claraship.com).

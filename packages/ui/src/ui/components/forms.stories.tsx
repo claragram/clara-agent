@@ -21,7 +21,7 @@ export const AllFormControls: Story = {
   render: () => {
     function FormDemo() {
       const [name, setName] = useState('Clara')
-      const [email, setEmail] = useState('info@claragram.com')
+      const [email, setEmail] = useState('hey@claraship.com')
       const [provider, setProvider] = useState('anthropic')
       const [logging, setLogging] = useState(true)
       const [telemetry, setTelemetry] = useState(false)

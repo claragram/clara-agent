@@ -9,16 +9,16 @@ This repo on github will not be updated.
 
 ---
 
-> **Claragram Security-Hardened Fork**
+> **Claraship Security-Hardened Fork**
 >
-> `@claragram/image-size` carries narrow denial-of-service fixes for
+> `@claraship/image-size` carries narrow denial-of-service fixes for
 > malformed ICNS, HEIF, and JPEG XL containers, audited and maintained by
-> [Claragram](https://claragram.com).
+> [Claraship](https://claraship.com).
 > The regression tests in `specs/security.spec.ts` cover all three malformed inputs.
 
-# @claragram/image-size
+# @claraship/image-size
 
-[![Package Version](https://img.shields.io/npm/v/@claragram/image-size.svg)](https://www.npmjs.com/package/@claragram/image-size)
+[![Package Version](https://img.shields.io/npm/v/@claraship/image-size.svg)](https://www.npmjs.com/package/@claraship/image-size)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Fast, lightweight NodeJS package to get dimensions of any image file or buffer.
@@ -56,11 +56,11 @@ Fast, lightweight NodeJS package to get dimensions of any image file or buffer.
 ## Installation
 
 ```shell
-npm install @claragram/image-size
+npm install @claraship/image-size
 # or
-yarn add @claragram/image-size
+yarn add @claraship/image-size
 # or
-pnpm add @claragram/image-size
+pnpm add @claraship/image-size
 ```
 
 ## Usage
@@ -69,9 +69,9 @@ pnpm add @claragram/image-size
 Best for streams, network requests, or when you already have the image data in memory.
 
 ```javascript
-import { imageSize } from '@claragram/image-size'
+import { imageSize } from '@claraship/image-size'
 // or
-const { imageSize } = require('@claragram/image-size')
+const { imageSize } = require('@claraship/image-size')
 
 const dimensions = imageSize(buffer)
 console.log(dimensions.width, dimensions.height)

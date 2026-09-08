@@ -1,9 +1,9 @@
-import { Button } from "@claragram/ui/ui/components/button";
-import { Checkbox } from "@claragram/ui/ui/components/checkbox";
-import { ListItem } from "@claragram/ui/ui/components/list-item";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
-import { Input } from "@claragram/ui/ui/components/input";
-import { Label } from "@claragram/ui/ui/components/label";
+import { Button } from "@claraship/ui/ui/components/button";
+import { Checkbox } from "@claraship/ui/ui/components/checkbox";
+import { ListItem } from "@claraship/ui/ui/components/list-item";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
+import { Input } from "@claraship/ui/ui/components/input";
+import { Label } from "@claraship/ui/ui/components/label";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import type { GatewayClient } from "@/lib/gatewayClient";
 import { Check, RefreshCw, Search, X } from "lucide-react";

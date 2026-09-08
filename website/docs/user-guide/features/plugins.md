@@ -521,7 +521,7 @@ index and keep working exactly as before. An explicit `--ref <sha>` always
 overrides the index pin.
 
 **How the index is fetched.** The index lives at a canonical URL
-(`https://raw.githubusercontent.com/Claragram/clara-plugin-index/main/index.json`,
+(`https://raw.githubusercontent.com/Claraship/clara-plugin-index/main/index.json`,
 overridable via `clara config set plugins.index_url <url>`). Fetches are
 cached under `~/.clara/cache/plugin_index.json` for 24 hours; when the
 remote is unreachable the stale cache is used, and when there is no cache at
@@ -533,12 +533,12 @@ all a bundled seed copy ships with Clara — so search works fully offline.
 {
   "name": "clara-media-studio",
   "description": "Generative media workspace plugin.",
-  "author": "Claragram",
+  "author": "Claraship",
   "tags": ["media", "image-gen"],
-  "repo": "Claragram/clara-media-studio",
+  "repo": "Claraship/clara-media-studio",
   "ref": "<40-char commit SHA>",
   "subdir": null,
-  "homepage": "https://github.com/claragram/clara-media-studio",
+  "homepage": "https://github.com/claraship/clara-media-studio",
   "capabilities": ["tools", "dashboard"],
   "api_version": 1,
   "added_at": "2026-08-12"
@@ -551,7 +551,7 @@ SHA, and optional `subdir` supports monorepos. The bundled seed file
 
 **Submitting a plugin.** The index is maintained as a plain JSON file —
 submit a pull request to the
-[clara-plugin-index](https://github.com/claragram/clara-plugin-index)
+[clara-plugin-index](https://github.com/claraship/clara-plugin-index)
 repository adding your entry (name, description, author, tags, `owner/repo`,
 and a pinned commit SHA). Review covers the entry's *metadata* only.
 

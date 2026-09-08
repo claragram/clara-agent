@@ -4,17 +4,17 @@
 
 # Clara Agent ☤
 <p align="center">
-  <a href="https://agent.claragram.com/">Clara Agent</a> | <a href="https://agent.claragram.com/">Clara Desktop</a> | <a href="https://claragram.com/">Claragram (claragram.com)</a>
+  <a href="https://agent.claraship.com/">Clara Agent</a> | <a href="https://agent.claraship.com/">Clara Desktop</a> | <a href="https://claraship.com/">Claraship (claraship.com)</a>
 </p>
 <p align="center">
-  <a href="https://claragram.com"><img src="https://img.shields.io/badge/Claragram-claragram.com-blue?style=for-the-badge" alt="Claragram"></a>
-  <a href="https://claragram.com/docs/"><img src="https://img.shields.io/badge/Docs-claragram.com-FFD700?style=for-the-badge" alt="Documentation"></a>
-  <a href="https://github.com/claragram/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="Licence MIT"></a>
-  <a href="https://claragram.com"><img src="https://img.shields.io/badge/Développé%20par-Claragram-blueviolet?style=for-the-badge" alt="Claragram"></a>
+  <a href="https://claraship.com"><img src="https://img.shields.io/badge/Claraship-claraship.com-blue?style=for-the-badge" alt="Claraship"></a>
+  <a href="https://claraship.com/docs/"><img src="https://img.shields.io/badge/Docs-claraship.com-FFD700?style=for-the-badge" alt="Documentation"></a>
+  <a href="https://github.com/claraship/clara-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="Licence MIT"></a>
+  <a href="https://claraship.com"><img src="https://img.shields.io/badge/Développé%20par-Claraship-blueviolet?style=for-the-badge" alt="Claraship"></a>
   <a href="README.md"><img src="https://img.shields.io/badge/Lang-English-blue?style=for-the-badge" alt="English"></a>
 </p>
 
-**L'agent IA autonome et auto-apprenant développé par [Claragram](https://claragram.com).**
+**L'agent IA autonome et auto-apprenant développé par [Claraship](https://claraship.com).**
 
 Clara est un agent IA conçu pour apprendre de ses expériences, créer des compétences de manière autonome, persister son contexte et exécuter des tâches complexes sur votre machine locale, VPS ou infrastructure cloud.
 
@@ -27,7 +27,7 @@ Clara est un agent IA conçu pour apprendre de ses expériences, créer des comp
 - **Apprentissage continu & Mémoire persistante** : Création automatique de compétences personnalisées et recherche dans l'historique de session.
 - **Planificateur Cron intégré** : Automatisation de rapports quotidiens, veilles et sauvegardes récurrentes en langage naturel.
 - **Délégation et sous-agents** : Exécution de workflows parallèles avec sous-agents isolés.
-- **Multi-modèles** : Compatible avec [Clara Portal](https://portal.claragram.com), OpenAI, Anthropic, OpenRouter ou tout modèle local/serveur privé.
+- **Multi-modèles** : Compatible avec [Clara Portal](https://portal.claraship.com), OpenAI, Anthropic, OpenRouter ou tout modèle local/serveur privé.
 
 ---
 
@@ -35,12 +35,12 @@ Clara est un agent IA conçu pour apprendre de ses expériences, créer des comp
 
 ### Linux, macOS, WSL2
 ```bash
-curl -fsSL https://agent.claragram.com/install.sh | bash
+curl -fsSL https://agent.claraship.com/install.sh | bash
 ```
 
 ### Windows (PowerShell)
 ```powershell
-iex (irm https://agent.claragram.com/install.ps1)
+iex (irm https://agent.claraship.com/install.ps1)
 ```
 
 ---
@@ -61,6 +61,6 @@ clara gateway run
 ---
 
 ## Services & Support
-- **Claragram** : [claragram.com](https://claragram.com)
-- **Suite Claragram** : [claragram.com](https://claragram.com)
-- **Organisation parente** : [Claragram](https://claragram.com)
+- **Claraship** : [claraship.com](https://claraship.com)
+- **Suite Claraship** : [claraship.com](https://claraship.com)
+- **Organisation parente** : [Claraship](https://claraship.com)

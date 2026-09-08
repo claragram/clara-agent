@@ -116,7 +116,7 @@ const state = (overrides: Partial<SubscriptionStateResponse> = {}): Subscription
   role: 'OWNER',
   current: null,
   tiers: [],
-  portal_url: 'https://portal.claragram.com/billing',
+  portal_url: 'https://portal.claraship.com/billing',
   ...overrides
 })
 

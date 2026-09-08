@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import { Input } from "@claragram/ui/ui/components/input";
-import { Label } from "@claragram/ui/ui/components/label";
-import { Select, SelectOption } from "@claragram/ui/ui/components/select";
-import { Button } from "@claragram/ui/ui/components/button";
+import { Input } from "@claraship/ui/ui/components/input";
+import { Label } from "@claraship/ui/ui/components/label";
+import { Select, SelectOption } from "@claraship/ui/ui/components/select";
+import { Button } from "@claraship/ui/ui/components/button";
 import { useI18n } from "@/i18n";
 import {
   buildScheduleString,

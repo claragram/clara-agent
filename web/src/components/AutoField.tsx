@@ -1,7 +1,7 @@
-import { Select, SelectOption } from "@claragram/ui/ui/components/select";
-import { Switch } from "@claragram/ui/ui/components/switch";
-import { Input } from "@claragram/ui/ui/components/input";
-import { Label } from "@claragram/ui/ui/components/label";
+import { Select, SelectOption } from "@claraship/ui/ui/components/select";
+import { Switch } from "@claraship/ui/ui/components/switch";
+import { Input } from "@claraship/ui/ui/components/input";
+import { Label } from "@claraship/ui/ui/components/label";
 
 function FieldHint({ schema, schemaKey }: { schema: Record<string, unknown>; schemaKey: string }) {
   const keyPath = schemaKey.includes(".") ? schemaKey : "";

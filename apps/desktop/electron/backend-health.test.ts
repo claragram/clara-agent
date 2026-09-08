@@ -392,14 +392,14 @@ test('isServerSideHttpError detects 502/503/504', () => {
 
 test('isClaraCloudAgentUrl detects cloud agent hosts', () => {
   // Positive cases
-  assert.equal(isClaraCloudAgentUrl('https://ares-3009.agents.claragram.com'), true)
-  assert.equal(isClaraCloudAgentUrl('https://ares-3009.agents.claragram.com/api/health'), true)
-  assert.equal(isClaraCloudAgentUrl('http://test.agents.claragram.com'), true)
+  assert.equal(isClaraCloudAgentUrl('https://ares-3009.agents.claraship.com'), true)
+  assert.equal(isClaraCloudAgentUrl('https://ares-3009.agents.claraship.com/api/health'), true)
+  assert.equal(isClaraCloudAgentUrl('http://test.agents.claraship.com'), true)
 
   // Negative cases
   assert.equal(isClaraCloudAgentUrl('http://127.0.0.1:9000'), false)
   assert.equal(isClaraCloudAgentUrl('https://gateway.example.com'), false)
-  assert.equal(isClaraCloudAgentUrl('https://claragram.com'), false)
+  assert.equal(isClaraCloudAgentUrl('https://claraship.com'), false)
   assert.equal(isClaraCloudAgentUrl('not-a-url'), false)
 })
 
@@ -408,7 +408,7 @@ test('waitForClaraReady surfaces actionable error for cloud agent 503', async ()
   const currentTime = { value: 0 }
 
   try {
-    await waitForClaraReady('https://ares-3009.agents.claragram.com', {
+    await waitForClaraReady('https://ares-3009.agents.claraship.com', {
       fetchPublicJson: async () => {
         attempts++
         // Always return 503
@@ -433,8 +433,8 @@ test('waitForClaraReady surfaces actionable error for cloud agent 503', async ()
   } catch (error: any) {
     assert.ok(error.message.includes('Clara Cloud agent'), `unexpected message: ${error.message}`)
     assert.ok(error.message.includes('503'), `should mention status code: ${error.message}`)
-    assert.ok(error.message.includes('portal.claragram.com'), `should mention portal: ${error.message}`)
-    assert.ok(error.message.includes('discord.gg/claragram'), `should mention Discord: ${error.message}`)
+    assert.ok(error.message.includes('portal.claraship.com'), `should mention portal: ${error.message}`)
+    assert.ok(error.message.includes('discord.gg/j9vzaxnsg'), `should mention Discord: ${error.message}`)
     assert.equal(error.isCloudBackendDown, true)
     assert.equal(error.statusCode, 503)
     assert.ok(attempts > 1, 'should have retried before failing')
@@ -508,18 +508,18 @@ test('isServerSideHttpError structured path excludes 500/401/403/404/429 even wh
 test('makeClaraCloudBackendDownError produces the Cloud shape and preserves cause', () => {
   const err = new Error('upstream unavailable') as any
   err.statusCode = 503
-  const result = makeClaraCloudBackendDownError('https://ares-3009.agents.claragram.com', err)
+  const result = makeClaraCloudBackendDownError('https://ares-3009.agents.claraship.com', err)
   assert.ok(result)
   assert.equal((result as any).isCloudBackendDown, true)
   assert.equal((result as any).statusCode, 503)
   assert.equal((result as any).cause, err)
-  assert.ok(result?.message.includes('Clara Cloud agent ares-3009.agents.claragram.com is down'))
+  assert.ok(result?.message.includes('Clara Cloud agent ares-3009.agents.claraship.com is down'))
 })
 
 test('makeClaraCloudBackendDownError returns null for a Cloud 401 (routes to reauth)', () => {
   const err = new Error('Unauthorized') as any
   err.statusCode = 401
-  assert.equal(makeClaraCloudBackendDownError('https://ares-3009.agents.claragram.com', err), null)
+  assert.equal(makeClaraCloudBackendDownError('https://ares-3009.agents.claraship.com', err), null)
 })
 
 test('makeClaraCloudBackendDownError returns null for a non-Cloud 503 (generic remote failure)', () => {
@@ -531,7 +531,7 @@ test('makeClaraCloudBackendDownError returns null for a non-Cloud 503 (generic r
 
 test('makeClaraCloudBackendDownError preserves legacy string-prefix compatibility', () => {
   const result = makeClaraCloudBackendDownError(
-    'https://ares-3009.agents.claragram.com',
+    'https://ares-3009.agents.claraship.com',
     new Error('503: Service Unavailable')
   )
 

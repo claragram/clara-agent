@@ -29,12 +29,12 @@ import {
   shouldCloseOuterModalOnEscape,
 } from "@/lib/dashboard-modal-shell";
 import { formatTokenCount } from "@/lib/format";
-import { Button } from "@claragram/ui/ui/components/button";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
-import { Stats } from "@claragram/ui/ui/components/stats";
-import { Card, CardContent, CardHeader, CardTitle } from "@claragram/ui/ui/components/card";
-import { Badge } from "@claragram/ui/ui/components/badge";
-import { Switch } from "@claragram/ui/ui/components/switch";
+import { Button } from "@claraship/ui/ui/components/button";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
+import { Stats } from "@claraship/ui/ui/components/stats";
+import { Card, CardContent, CardHeader, CardTitle } from "@claraship/ui/ui/components/card";
+import { Badge } from "@claraship/ui/ui/components/badge";
+import { Switch } from "@claraship/ui/ui/components/switch";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useModalBehavior } from "@/hooks/useModalBehavior";
 import { usePageHeader } from "@/contexts/usePageHeader";

@@ -339,7 +339,7 @@ RUN set -eu; \
         printf '%s\n' "${CLARA_GIT_SHA}" > /opt/clara/.clara_build_sha; \
     fi; \
     mkdir -p /etc/clara; \
-    CLARA_GIT_SHA="${CLARA_GIT_SHA}" python3 -c 'import json, os, pathlib, tomllib; project = tomllib.loads(pathlib.Path("/opt/clara/pyproject.toml").read_text(encoding="utf-8"))["project"]; marker = pathlib.Path("/etc/clara/image-provenance.json"); marker.write_text(json.dumps({"schema": 1, "deployment_kind": "image", "manager": "docker", "image": "claragram/clara-agent", "version": project["version"], "revision": os.environ.get("CLARA_GIT_SHA") or None}, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8"); marker.chmod(0o444)'
+    CLARA_GIT_SHA="${CLARA_GIT_SHA}" python3 -c 'import json, os, pathlib, tomllib; project = tomllib.loads(pathlib.Path("/opt/clara/pyproject.toml").read_text(encoding="utf-8"))["project"]; marker = pathlib.Path("/etc/clara/image-provenance.json"); marker.write_text(json.dumps({"schema": 1, "deployment_kind": "image", "manager": "docker", "image": "claraship/clara-agent", "version": project["version"], "revision": os.environ.get("CLARA_GIT_SHA") or None}, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8"); marker.chmod(0o444)'
 
 # ---------- s6-overlay service wiring ----------
 # Static services declared at build time: main-clara + dashboard.

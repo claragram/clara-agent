@@ -1,6 +1,6 @@
-# ☤ Clara Agent & Claragram: Complete Architectural Blueprint & Ecosystem Index
+# ☤ Clara Agent & Claraship: Complete Architectural Blueprint & Ecosystem Index
 
-This document provides an exhaustive, production-grade architectural specification and technical index of the **Clara Agent** platform built by **Claragram**. It covers the agent runtime, API servers, web dashboards, desktop applications, multi-platform gateways, tool execution environments, memory systems, and plugin infrastructure.
+This document provides an exhaustive, production-grade architectural specification and technical index of the **Clara Agent** platform built by **Claraship**. It covers the agent runtime, API servers, web dashboards, desktop applications, multi-platform gateways, tool execution environments, memory systems, and plugin infrastructure.
 
 ---
 
@@ -25,7 +25,7 @@ This document provides an exhaustive, production-grade architectural specificati
 
 ```
                                   ┌────────────────────────────────────────┐
-                                  │       CLARAGRAM PORTAL / API       │
+                                  │       CLARASHIP PORTAL / API       │
                                   │   (Inference, Models, Data Synthesis)   │
                                   └───────────────────┬────────────────────┘
                                                       │ HTTPS / OAuth2
@@ -248,7 +248,7 @@ Clara features a multi-tiered memory architecture:
   * `pre_tool_call` / `post_tool_call`
   * `on_session_start` / `on_session_end`
 
-### 9.2 Claragram Portal (`docs/integrations/clara-portal.md`)
+### 9.2 Claraship Portal (`docs/integrations/clara-portal.md`)
 * Integrated OAuth2 provider with token refresh.
 * Direct access to fine-tuned Clara models, dataset synthesis pipelines, and hosted inference clusters.
 
@@ -366,6 +366,6 @@ Clara works with cloud APIs (Clara Portal, OpenRouter) or local weights download
   ollama run clara3:70b
   ```
 * **Hugging Face Open Weights (vLLM / SGLang / llama.cpp)**:
-  * [`Claragram/Clara-3-Llama-3.1-8B`](https://huggingface.co/Claragram/Clara-3-Llama-3.1-8B)
-  * [`Claragram/Clara-3-Llama-3.1-70B`](https://huggingface.co/Claragram/Clara-3-Llama-3.1-70B)
-  * [`Claragram/Clara-Clara-2-Mistral-7B-DPO`](https://huggingface.co/Claragram/Clara-Clara-2-Mistral-7B-DPO)
+  * [`Claraship/Clara-3-Llama-3.1-8B`](https://huggingface.co/Claraship/Clara-3-Llama-3.1-8B)
+  * [`Claraship/Clara-3-Llama-3.1-70B`](https://huggingface.co/Claraship/Clara-3-Llama-3.1-70B)
+  * [`Claraship/Clara-Clara-2-Mistral-7B-DPO`](https://huggingface.co/Claraship/Clara-Clara-2-Mistral-7B-DPO)

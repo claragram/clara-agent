@@ -5,7 +5,7 @@ Prior to this check, the warning fired on any model whose name contained
 local Modelfiles such as ``clara-brain:qwen3-14b-ctx16k`` — a tool-capable
 Qwen3 wrapper that happens to live under the "clara" tag namespace.
 
-``is_clara_clara_non_agentic`` should only match the actual Claragram
+``is_clara_clara_non_agentic`` should only match the actual Claraship
 Clara-3 / Clara-4 chat family.
 """
 
@@ -23,16 +23,16 @@ from clara_cli.model_switch import (
 @pytest.mark.parametrize(
     "model_name",
     [
-        "Claragram/Clara-3-Llama-3.1-70B",
-        "Claragram/Clara-3-Llama-3.1-405B",
+        "Claraship/Clara-3-Llama-3.1-70B",
+        "Claraship/Clara-3-Llama-3.1-405B",
         "clara-3",
         "Clara-3",
         "clara-4",
         "clara-4-405b",
         "clara_4_70b",
         "openrouter/clara3:70b",
-        "openrouter/claragram/clara-4-405b",
-        "Claragram/Clara3",
+        "openrouter/claraship/clara-4-405b",
+        "Claraship/Clara3",
         "clara-3.1",
     ],
 )

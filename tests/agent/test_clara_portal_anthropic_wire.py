@@ -1,7 +1,7 @@
 """Clara Portal ``anthropic/*`` models route on the native Messages wire.
 
 Portal serves its ``anthropic/*`` catalog at
-``https://inference-api.claragram.com/v1/messages`` alongside the
+``https://inference-api.claraship.com/v1/messages`` alongside the
 OpenAI-compatible ``/v1/chat/completions`` used by everything else it proxies.
 These tests pin the contracts that make that routing correct:
 
@@ -23,7 +23,7 @@ import pytest
 from clara_cli import runtime_provider as rp
 from clara_cli.providers import clara_api_mode
 
-PORTAL_URL = "https://inference-api.claragram.com/v1"
+PORTAL_URL = "https://inference-api.claraship.com/v1"
 # Staging / preview hosts used via CLARA_INFERENCE_BASE_URL — not the prod
 # hostname, so Portal behaviour must key off provider=clara.
 STAGING_URL = "https://ai.wildebeest-newton.ts.net/v1"
@@ -177,7 +177,7 @@ class TestClientShape:
             _requires_bearer_auth,
         )
 
-        spoofed = "https://inference-api.claragram.com.attacker.test/v1"
+        spoofed = "https://inference-api.claraship.com.attacker.test/v1"
         assert not _is_clara_portal_endpoint(spoofed)
         assert not _requires_bearer_auth(spoofed)
 

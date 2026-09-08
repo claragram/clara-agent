@@ -115,7 +115,7 @@ INSTALLER_PATH=""
 # reachable from main -- so "can a user two releases back still update?" is
 # expressible. --from-main is shorthand for refs/heads/main.
 INSTALL_REF=""
-UPSTREAM_URL="${CLARA_DEV_SANDBOX_UPSTREAM:-https://github.com/claragram/clara-agent.git}"
+UPSTREAM_URL="${CLARA_DEV_SANDBOX_UPSTREAM:-https://github.com/claraship/clara-agent.git}"
 
 if [ "${1:-}" = install ]; then
   INSTALL_SHORTCUT=true
@@ -266,16 +266,16 @@ if [ -n "$HTTP_ROOT" ]; then
   cp -a "$HTTP_ROOT/." "$SANDBOX_ROOT/root/http/"
 fi
 if [ "$INSTALL_SHORTCUT" = true ]; then
-  mkdir -p "$SANDBOX_ROOT/root/http/agent.claragram.com"
+  mkdir -p "$SANDBOX_ROOT/root/http/agent.claraship.com"
   if [ -n "$INSTALL_REF" ]; then
     git -C "$UPSTREAM_REPO" show "$UPSTREAM_COMMIT:scripts/install.sh" \
-      > "$SANDBOX_ROOT/root/http/agent.claragram.com/install.sh"
+      > "$SANDBOX_ROOT/root/http/agent.claraship.com/install.sh"
   else
-    cp -a "$INSTALLER_PATH" "$SANDBOX_ROOT/root/http/agent.claragram.com/install.sh"
+    cp -a "$INSTALLER_PATH" "$SANDBOX_ROOT/root/http/agent.claraship.com/install.sh"
   fi
   set -- bash -c '
     set +e
-    curl -fsSL https://agent.claragram.com/install.sh | bash -s -- "$@"
+    curl -fsSL https://agent.claraship.com/install.sh | bash -s -- "$@"
     install_status=$?
     if [ "$install_status" -eq 0 ] && [ -f /work/promote-main ]; then
       next_main=$(cat /work/promote-main)

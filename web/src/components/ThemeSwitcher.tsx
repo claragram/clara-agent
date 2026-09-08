@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Palette, Check, Type } from "lucide-react";
-import { Button } from "@claragram/ui/ui/components/button";
-import { ListItem } from "@claragram/ui/ui/components/list-item";
-import { BottomSheet } from "@claragram/ui/ui/components/bottom-sheet";
-import { Typography } from "@claragram/ui/ui/components/typography/index";
-import { useBelowBreakpoint } from "@claragram/ui/hooks/use-below-breakpoint";
+import { Button } from "@claraship/ui/ui/components/button";
+import { ListItem } from "@claraship/ui/ui/components/list-item";
+import { BottomSheet } from "@claraship/ui/ui/components/bottom-sheet";
+import { Typography } from "@claraship/ui/ui/components/typography/index";
+import { useBelowBreakpoint } from "@claraship/ui/hooks/use-below-breakpoint";
 import { BUILTIN_THEMES, THEME_DEFAULT_FONT_ID, useTheme } from "@/themes";
 import type { DashboardTheme, FontChoice, ThemeListEntry } from "@/themes";
 import { useI18n } from "@/i18n";

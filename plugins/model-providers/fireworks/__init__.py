@@ -28,7 +28,7 @@ fireworks = ProviderProfile(
     # generic profile.default_headers path, so they survive switch_model and
     # credential rotation.
     default_headers={
-        "HTTP-Referer": "https://agent.claragram.com",
+        "HTTP-Referer": "https://agent.claraship.com",
         "X-Title": "Clara Agent",
         "User-Agent": f"ClaraAgent/{_CLARA_VERSION}",
     },

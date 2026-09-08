@@ -3,7 +3,7 @@ import { Users } from "lucide-react";
 import {
   Select,
   SelectOption,
-} from "@claragram/ui/ui/components/select";
+} from "@claraship/ui/ui/components/select";
 import { useProfileScope } from "@/contexts/useProfileScope";
 import { useI18n } from "@/i18n";
 import { cn } from "@/lib/utils";

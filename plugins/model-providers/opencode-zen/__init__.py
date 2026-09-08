@@ -21,7 +21,7 @@ from providers.base import ProviderProfile
 # rotation. Without them OpenCode only sees the OpenAI SDK's generic
 # "OpenAI/Python x.y.z" User-Agent and can't tell the traffic is Clara Agent.
 _ATTRIBUTION_HEADERS = {
-    "HTTP-Referer": "https://agent.claragram.com",
+    "HTTP-Referer": "https://agent.claraship.com",
     "X-Title": "Clara Agent",
     "User-Agent": f"ClaraAgent/{_CLARA_VERSION}",
 }

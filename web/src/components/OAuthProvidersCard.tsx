@@ -7,18 +7,18 @@ import {
   Terminal,
 } from "lucide-react";
 import { api, type OAuthProvider } from "@/lib/api";
-import { Button } from "@claragram/ui/ui/components/button";
-import { CopyButton } from "@claragram/ui/ui/components/command-block";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
+import { Button } from "@claraship/ui/ui/components/button";
+import { CopyButton } from "@claraship/ui/ui/components/command-block";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@claragram/ui/ui/components/card";
-import { Badge } from "@claragram/ui/ui/components/badge";
-import { ConfirmDialog } from "@claragram/ui/ui/components/confirm-dialog";
+} from "@claraship/ui/ui/components/card";
+import { Badge } from "@claraship/ui/ui/components/badge";
+import { ConfirmDialog } from "@claraship/ui/ui/components/confirm-dialog";
 import { OAuthLoginModal } from "@/components/OAuthLoginModal";
 import { useI18n } from "@/i18n";
 

@@ -42,23 +42,23 @@ import type {
 import { useProfileScope } from "@/contexts/useProfileScope";
 import { ToolsetConfigDrawer } from "@/components/ToolsetConfigDrawer";
 import { SkillEditorDialog } from "@/components/SkillEditorDialog";
-import { useToast } from "@claragram/ui/hooks/use-toast";
-import { Toast } from "@claragram/ui/ui/components/toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@claragram/ui/ui/components/card";
-import { Badge } from "@claragram/ui/ui/components/badge";
-import { Button } from "@claragram/ui/ui/components/button";
-import { ListItem } from "@claragram/ui/ui/components/list-item";
-import { Spinner } from "@claragram/ui/ui/components/spinner";
-import { Switch } from "@claragram/ui/ui/components/switch";
+import { useToast } from "@claraship/ui/hooks/use-toast";
+import { Toast } from "@claraship/ui/ui/components/toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@claraship/ui/ui/components/card";
+import { Badge } from "@claraship/ui/ui/components/badge";
+import { Button } from "@claraship/ui/ui/components/button";
+import { ListItem } from "@claraship/ui/ui/components/list-item";
+import { Spinner } from "@claraship/ui/ui/components/spinner";
+import { Switch } from "@claraship/ui/ui/components/switch";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@claragram/ui/ui/components/dialog";
+} from "@claraship/ui/ui/components/dialog";
 import { cn } from "@/lib/utils";
-import { Input } from "@claragram/ui/ui/components/input";
+import { Input } from "@claraship/ui/ui/components/input";
 import { useI18n } from "@/i18n";
 import { usePageHeader } from "@/contexts/usePageHeader";
 import { PluginSlot } from "@/plugins";

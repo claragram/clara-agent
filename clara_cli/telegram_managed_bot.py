@@ -20,7 +20,7 @@ import httpx
 
 # Default pairing API base URL (Clara-hosted Cloudflare Worker).
 # Override for PoC/staging with TELEGRAM_ONBOARDING_URL.
-DEFAULT_API_URL = "https://setup.agent.claragram.com"
+DEFAULT_API_URL = "https://setup.agent.claraship.com"
 TELEGRAM_ONBOARDING_URL_ENV = "TELEGRAM_ONBOARDING_URL"
 
 # The Clara-hosted manager bot username (without @). The backend returns the

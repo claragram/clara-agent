@@ -35,7 +35,7 @@ import clara_cli.plugins as plugins_mod
 from tools import transcription_tools
 
 
-PROMPT = "Clara, Teknium, Claragram, kanban"
+PROMPT = "Clara, Teknium, Claraship, kanban"
 
 
 # ---------------------------------------------------------------------------
