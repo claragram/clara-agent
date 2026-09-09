@@ -1,0 +1,35 @@
+# ==============================================================================
+# Cloudflare Tunnel Ingress Configuration for Claraship
+# Routes public domains to local containerized services with zero open ports.
+# ==============================================================================
+
+# Replace with your tunnel UUID after running `cloudflared tunnel create claraship`
+# tunnel: <YOUR-TUNNEL-UUID>
+# credentials-file: /root/.cloudflared/<YOUR-TUNNEL-UUID>.json
+
+ingress:
+  # 1. Main Website & Multi-language Documentation
+  - hostname: claraship.com
+    service: http://localhost:80
+    originRequest:
+      noTLSVerify: true
+
+  - hostname: www.claraship.com
+    service: http://localhost:80
+    originRequest:
+      noTLSVerify: true
+
+  # 2. Clara Web Dashboard & Interactive Streaming Chat
+  - hostname: portal.claraship.com
+    service: http://localhost:9119
+    originRequest:
+      noTLSVerify: true
+
+  # 3. REST / SSE / WebSocket API Gateway
+  - hostname: api.claraship.com
+    service: http://localhost:9119
+    originRequest:
+      noTLSVerify: true
+
+  # Catch-all rule for non-matching traffic
+  - service: http_status:404
