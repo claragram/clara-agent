@@ -1,0 +1,118 @@
+# ==============================================================================
+# Claraship Production Docker Compose Stack
+# Full Autonomous AI Agent Platform with Reverse Proxy & Multi-locale Docs
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Edge Ingress: Caddy 2 Reverse Proxy with Automatic Let's Encrypt TLS
+  # ----------------------------------------------------------------------------
+  caddy:
+    image: caddy:2-alpine
+    container_name: claraship-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3 QUIC
+    environment:
+      - DOMAIN=${DOMAIN:-claraship.com}
+      - ACME_EMAIL=${ACME_EMAIL:-admin@claraship.com}
+    volumes:
+      - ./deploy/Caddyfile.prod:/etc/caddy/Caddyfile:ro
+      - ./website/static/downloads:/var/www/downloads:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - claraship-net
+    depends_on:
+      clara-core:
+        condition: service_healthy
+      docs:
+        condition: service_started
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  # ----------------------------------------------------------------------------
+  # 2. Application Core: Clara Agent Engine, API Gateway & Web Dashboard
+  # ----------------------------------------------------------------------------
+  clara-core:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: claraship/core:latest
+    container_name: claraship-core
+    restart: unless-stopped
+    expose:
+      - "9119"
+    volumes:
+      - clara_data:/opt/data
+    environment:
+      - CLARA_HOME=/opt/data
+      - CLARA_PORT=9119
+      - CLARA_HOST=0.0.0.0
+      - CLARA_DISABLE_LAZY_INSTALLS=0
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - CLARA_DEFAULT_MODEL=${CLARA_DEFAULT_MODEL:-deepseek/deepseek-v4-flash}
+      - CLARA_SESSION_TOKEN=${CLARA_SESSION_TOKEN:-}
+      # Channel integration tokens
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN:-}
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN:-}
+      - SLACK_APP_TOKEN=${SLACK_APP_TOKEN:-}
+    command: ["dashboard", "--host", "0.0.0.0", "--port", "9119", "--no-open"]
+    networks:
+      - claraship-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9119/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # ----------------------------------------------------------------------------
+  # 3. Static Documentation & Public Portal Engine
+  # ----------------------------------------------------------------------------
+  docs:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.docs
+    image: claraship/docs:latest
+    container_name: claraship-docs
+    restart: unless-stopped
+    expose:
+      - "80"
+    networks:
+      - claraship-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+# ------------------------------------------------------------------------------
+# Persistent Storage Volumes
+# ------------------------------------------------------------------------------
+volumes:
+  clara_data:
+    name: claraship_data
+  caddy_data:
+    name: claraship_caddy_data
+  caddy_config:
+    name: claraship_caddy_config
+
+# ------------------------------------------------------------------------------
+# Isolated Internal Bridge Network
+# ------------------------------------------------------------------------------
+networks:
+  claraship-net:
+    name: claraship-network
+    driver: bridge

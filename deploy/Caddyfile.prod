@@ -1,0 +1,119 @@
+# ==============================================================================
+# Claraship Production Caddyfile
+# Multi-domain configuration with automated Let's Encrypt / ZeroSSL TLS,
+# HTTP/3 (QUIC), Zstd/Gzip compression, and WebSockets/SSE streaming.
+# ==============================================================================
+
+{
+	email {$ACME_EMAIL:admin@claraship.com}
+	admin off
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+# ------------------------------------------------------------------------------
+# Security Snippet
+# ------------------------------------------------------------------------------
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-XSS-Protection "1; mode=block"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
+
+(compression) {
+	encode zstd gzip
+}
+
+# ------------------------------------------------------------------------------
+# Redirect www to apex domain
+# ------------------------------------------------------------------------------
+www.{$DOMAIN:claraship.com} {
+	redir https://{$DOMAIN:claraship.com}{uri} permanent
+}
+
+# ------------------------------------------------------------------------------
+# 1. Main Website & Documentation (claraship.com)
+# ------------------------------------------------------------------------------
+{$DOMAIN:claraship.com} {
+	import security_headers
+	import compression
+
+	# Static downloads (Desktop apps DMG, ZIP, installer packages)
+	handle /downloads/* {
+		root * /var/www/downloads
+		header Cache-Control "public, max-age=86400"
+		file_server {
+			browse
+		}
+	}
+
+	# API skills and blueprints static json cache
+	handle /api/skills.json {
+		reverse_proxy docs:80 {
+			header_up Host {host}
+		}
+	}
+
+	# Main Docusaurus Documentation and Landing pages
+	handle {
+		reverse_proxy docs:80 {
+			header_up Host {host}
+		}
+	}
+}
+
+# ------------------------------------------------------------------------------
+# 2. Clara Agent Dashboard & Embedded Chat (portal.claraship.com)
+# ------------------------------------------------------------------------------
+portal.{$DOMAIN:claraship.com} {
+	import security_headers
+	import compression
+
+	header X-Frame-Options "SAMEORIGIN"
+
+	# Streaming & WebSocket endpoints for agent chat and interactive PTY
+	handle /api/pty* {
+		reverse_proxy clara-core:9119 {
+			header_up Host {host}
+			flush_interval -1
+		}
+	}
+
+	handle /api/chat* {
+		reverse_proxy clara-core:9119 {
+			header_up Host {host}
+			flush_interval -1
+		}
+	}
+
+	# General dashboard frontend and backend API
+	handle {
+		reverse_proxy clara-core:9119 {
+			header_up Host {host}
+		}
+	}
+}
+
+# ------------------------------------------------------------------------------
+# 3. Public REST / SSE API Gateway (api.claraship.com)
+# ------------------------------------------------------------------------------
+api.{$DOMAIN:claraship.com} {
+	import security_headers
+	import compression
+
+	request_body {
+		max_size 500MB
+	}
+
+	handle {
+		reverse_proxy clara-core:9119 {
+			header_up Host {host}
+			flush_interval -1
+		}
+	}
+}
